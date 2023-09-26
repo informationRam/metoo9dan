@@ -40,9 +40,9 @@ public class Notice {
     private String status;
 
     @Column(name="read_cnt") //조회수
-    private int readCnt;
+    private Integer readCnt;
 
     @Column(name="is_imp") //중요글 여부
-    private boolean isImp;
+    private Boolean isImp;
 
 }
