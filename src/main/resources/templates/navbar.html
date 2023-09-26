@@ -1,0 +1,11 @@
+<nav th:fragment="navbarFragment" class="">
+    <div layout:fragment="navbar" class="container-fluid" style="border: 1px solid black;">
+        네비게이션바 영역
+        <a th:href="@{/}"> home </a>
+        <div>
+            <a th:href="@{#}"> 로그인</a>
+            <a th:href="@{#}"> 로그아웃</a>
+        </div>
+    </div>
+
+</nav>
