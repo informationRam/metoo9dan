@@ -22,17 +22,17 @@ public class GroupStudents {
     private LocalDateTime applicationDate;  //신청일
 
     @Column(name="is_approved")
-    private boolean isApproved; //승인여부
+    private Boolean isApproved; //승인여부
 
     @Column(name="approved_date")
-    private LocalDateTime approvedDate; //신청일
+    private LocalDateTime approvedDate; //승인 일자
 
     @ManyToOne(fetch = FetchType.LAZY) // 학습그룹테이블-다대일 관계
     @JoinColumn(name = "group_no", referencedColumnName = "group_no") // 외래 키 설정  //그룹번호
     private StudyGroups studyGroups;
 
     @ManyToOne(fetch = FetchType.LAZY) // 회원테이블-다대일 관계
-    @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정 //회원번호
+    @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정 //회원번호_학생
     private Member member;
 
 }

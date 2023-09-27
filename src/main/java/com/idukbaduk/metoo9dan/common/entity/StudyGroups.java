@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@Table(name="Study_groups")
+@Table(name="study_groups")
 public class StudyGroups {
 
     @Id
