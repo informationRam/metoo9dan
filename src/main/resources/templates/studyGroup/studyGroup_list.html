@@ -21,7 +21,11 @@
                     </thead>
                     <tbody>
                     <tr  th:each="studyGroup, loop : ${studyGroup}">
-                        <td th:text="${studyGroup.group_name}"></td>
+                        <td>
+                            <a href="/studygroup/detail/${studyGroup.group_no}"
+                               th:href="@{|/studygroup/detail/${studyGroup.group_no}|}"
+                               th:text="${studyGroup.group_name}"></a>
+                        </td>
                         <td th:text="${studyGroup.game_name}"></td>
                         <td th:text="${studyGroup.group_TO}"></td>
                         <td th:text="${studyGroup.subscription_duration}"></td>
@@ -34,4 +38,6 @@
         </div>
     </div>
 </div>
+
+
 </html>

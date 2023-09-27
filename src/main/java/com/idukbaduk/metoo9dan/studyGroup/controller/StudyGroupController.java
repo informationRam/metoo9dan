@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,7 +21,9 @@ public class StudyGroupController {
     private final StudyGroupService studyGroupService;
     //학습 그룹 등록(교육자)
 
+
     //학습 그룹 등록 상세(교육자)
+
 
     //학습 그룹 목록 조회(교육자)
     @GetMapping("/list")
@@ -31,16 +34,26 @@ public class StudyGroupController {
         return "studyGroup/studyGroup_list";
     }
 
+
     //학습 그룹 상세 조회(교육자)
-    @GetMapping("/detail")
+    @GetMapping("/detail/{group_no}")
+    public String groupDetail(Model model, @PathVariable("group_no") int group_no){
+        List<GroupsDetailListDTO> GroupDetail = studyGroupService.getDetailList(group_no);
+        model.addAttribute("GroupDetail",GroupDetail);
+        System.out.println("GroupDetail="+GroupDetail);
+        return "studyGroup/studyGroup_detail";
+    }
+  /*  @GetMapping("/detail")
     public String groupDetail(Model model,@RequestParam(defaultValue="1") int group_no){
         List<GroupsDetailListDTO> GroupDetail = studyGroupService.getDetailList(group_no);
         model.addAttribute("GroupDetail",GroupDetail);
         System.out.println("GroupDetail="+GroupDetail);
       return "studyGroup/studyGroup_detail";
-    }
+    }*/
+
 
     //학습 그룹 가입 신청(학생)
+
 
     //학습 그룹 가입 확인(학생)
 }

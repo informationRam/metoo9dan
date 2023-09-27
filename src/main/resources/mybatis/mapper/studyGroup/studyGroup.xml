@@ -25,6 +25,7 @@
 		]]>
     </select>
 
+    <!--날짜 부분 다시 확인-->
     <select id="GroupDetailList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
         <![CDATA[
         SELECT

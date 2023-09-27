@@ -12,20 +12,23 @@
                 <table class="table">
                     <thead class="table-dark">
                     <tr>
-                        <th>학습그룹명</th>
-                        <th>게임콘텐츠명</th>
-                        <th>그룹T/O</th>
-                        <th>구독기간</th>
-                        <th>등록 학생수</th>
+                        <th>No</th>
+                        <th>학생이름</th>
+                        <th>연락처</th>
+                        <th>이메일</th>
+                        <th>가입일자</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr  th:each="studyGroup, loop : ${studyGroup}">
-                        <td th:text="${studyGroup.group_name}"></td>
-                        <td th:text="${studyGroup.game_name}"></td>
-                        <td th:text="${studyGroup.group_TO}"></td>
-                        <td th:text="${studyGroup.subscription_duration}"></td>
-                        <td th:text="${studyGroup.aproved_num}"></td>
+                    <tr  th:each="GroupDetail, idx : ${GroupDetail}">
+                        <div>
+                           <!-- 학습그룹 : ${GroupDetail.group_name}-->
+                        </div>
+                        <td th:text="${idx.index + 1}"></td>
+                        <td th:text="${GroupDetail.name}"></td>
+                        <td th:text="${GroupDetail.tel}"></td>
+                        <td th:text="${GroupDetail.email}"></td>
+                        <td th:text="${#dates.format(GroupDetail.join_date,'yyyy-MM-dd')}"></td>
                     </tr>
                     </tbody>
                 </table>

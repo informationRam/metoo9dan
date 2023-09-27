@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @ToString
@@ -14,8 +16,8 @@ public class GroupsDetailListDTO {
     private int group_size;//그룹 제한 인원
     private int aproved_num; //그룹가입인원
     private String name; //그룹가입학생
-    private int tel; //그룹가입학생 번호
-    private int email; //그룹가입학생 이메일
-    private int join_date; //그룹가입학생 가입일
+    private String tel; //그룹가입학생 번호
+    private String email; //그룹가입학생 이메일
+    private Date join_date; //그룹가입학생 가입일
 
 }
