@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.studyGroup.service;
 
+import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.repository.StudyGroupRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,9 @@ public class StudyGroupService {
 
     public List<StudyGroupsListDTO> getList(int member_no) {
         return studyGroupRepository.getGroupList(member_no);
+    }
+
+    public List<GroupsDetailListDTO> getDetailList(int group_no) {
+        return studyGroupRepository.getGroupDetailList(group_no);
     }
 }

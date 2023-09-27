@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.studyGroup.controller;
 
+import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.service.StudyGroupService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,13 @@ public class StudyGroupController {
     }
 
     //학습 그룹 상세 조회(교육자)
+    @GetMapping("/detail")
+    public String groupDetail(Model model,@RequestParam(defaultValue="1") int group_no){
+        List<GroupsDetailListDTO> GroupDetail = studyGroupService.getDetailList(group_no);
+        model.addAttribute("GroupDetail",GroupDetail);
+        System.out.println("GroupDetail="+GroupDetail);
+      return "studyGroup/studyGroup_detail";
+    }
 
     //학습 그룹 가입 신청(학생)
 
