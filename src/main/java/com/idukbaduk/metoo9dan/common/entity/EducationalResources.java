@@ -37,9 +37,6 @@ public class EducationalResources {
     @Column(name="creation_date",columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;    //datetime  NOT NULL    COMMENT '등록일',
 
-    @Column(name="game_content_no")
-    private Integer gameContentNo;  //int NOT NULL    COMMENT '게임 컨텐츠 번호',
-
     @ManyToOne(fetch = FetchType.LAZY) // 게임콘텐츠-다대일 관계
     @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no", insertable = false, updatable = false) // 외래 키 설정
     private GameContents gameContents;
