@@ -9,7 +9,10 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 import java.beans.Transient;
 import java.time.LocalDateTime;
@@ -34,6 +37,9 @@ class Metoo9danApplicationTests {
 
 	@Autowired
 	private EntityManager entityManager;
+
+	@Autowired
+	private MemberService memberService;
 
 	@Test
 	void DBConnectionTest() throws Exception {
@@ -107,5 +113,39 @@ class Metoo9danApplicationTests {
 
 	}
 
+	@Test
+	public void testRegisterEducator() {
+		// 교육자 정보 생성
+		Member member = new Member();
+		member.setName("안찌구");
+		member.setTel("010-1234-5678");
+		member.setEmail("1235@email.com");
+		member.setMemberId("zzigu");
+		member.setPassword("1234");
+		member.setJoinDate(LocalDateTime.now());
+		member.setRole("normal");
+		member.setGender("F");
+		member.setPrivacyConsent(true);
+		member.setEmailConsent(true);
+		member.setSmsConsent(true);
+		member.setMemberMemo("회원관리시 메모 남기는 영역입니다");
+		// 나머지 필드 설정
 
+		EducatorInfo educatorInfo = new EducatorInfo();
+		educatorInfo.setSido("서울");
+		educatorInfo.setSigungu("강남구");
+		educatorInfo.setSchoolName("중앙정보");
+
+		// 교육자 회원 가입
+		memberService.registerEducator(member, educatorInfo);
+
+		// 회원과 교육자 정보가 저장되었는지 확인
+		Member savedMember = memberRepository.findById(member.getMemberNo()).orElse(null);
+		EducatorInfo savedEducatorInfo = educatorinfoRepository.findById(member.getMemberNo()).orElse(null);
+
+		assertNotNull(savedMember);
+		assertNotNull(savedEducatorInfo);
+
+		// 이후 검증 로직 추가
+	}
 }

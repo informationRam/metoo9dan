@@ -16,7 +16,7 @@ public class GroupStudents {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="group_students_no")
-    private Integer groupStudentsNO;  //그룹신청번호
+    private Integer groupStudentsNo;  //그룹신청번호
 
     @Column(name="application_date")
     private LocalDateTime applicationDate;  //신청일
