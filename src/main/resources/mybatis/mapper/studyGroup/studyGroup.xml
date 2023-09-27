@@ -25,8 +25,37 @@
 		]]>
     </select>
 
-    <!--날짜 부분 다시 확인-->
-    <select id="GroupDetailList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
+
+    <select id="GroupMemberList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
+        <![CDATA[
+        SELECT m.name,m.tel,m.email,m.join_date
+        FROM baduk.members m
+        JOIN baduk.group_students gs
+        ON m.member_no=gs.member_no
+        WHERE gs.group_no=#{group_no};
+		]]>
+    </select>
+
+    <select id="GroupInfo" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
+        <![CDATA[
+        SELECT
+             s.group_no,
+            s.group_name,
+            g.game_name,
+            s.group_size,
+            (SELECT COUNT(member_no)
+             FROM baduk.group_students gs
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num
+        FROM
+            baduk.study_groups s
+        JOIN
+            baduk.game_contents g ON s.game_content_no=g.game_content_no
+        WHERE
+            s.group_no=#{group_no};
+		]]>
+    </select>
+
+    <!--<select id="GroupDetailList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
         <![CDATA[
         SELECT
             s.group_no,
@@ -51,6 +80,6 @@
         WHERE
             s.group_no = #{group_no};
 		]]>
-    </select>
+    </select>-->
 
 </mapper>

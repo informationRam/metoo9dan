@@ -39,8 +39,11 @@ public class StudyGroupController {
     @GetMapping("/detail/{group_no}")
     public String groupDetail(Model model, @PathVariable("group_no") int group_no){
         List<GroupsDetailListDTO> GroupDetail = studyGroupService.getDetailList(group_no);
+        List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(group_no);
         model.addAttribute("GroupDetail",GroupDetail);
+        model.addAttribute("GroupInfo",GroupInfo);
         System.out.println("GroupDetail="+GroupDetail);
+        System.out.println("GroupInfo="+GroupInfo);
         return "studyGroup/studyGroup_detail";
     }
   /*  @GetMapping("/detail")

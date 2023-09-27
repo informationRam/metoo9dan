@@ -19,6 +19,9 @@ public class StudyGroupRepository {
     }
 
     public List<GroupsDetailListDTO> getGroupDetailList(int group_no){
-        return sqlSession.selectList("StudyGroup.GroupDetailList",group_no);
+        return sqlSession.selectList("StudyGroup.GroupMemberList",group_no);
+    }
+    public List<GroupsDetailListDTO> getGroupInfo(int group_no){
+        return sqlSession.selectList("StudyGroup.GroupInfo",group_no);
     }
 }

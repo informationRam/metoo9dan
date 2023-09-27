@@ -8,7 +8,7 @@
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <p/>
-           <!-- <div>
+            <div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -19,16 +19,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="GroupDetail, idx : ${GroupDetail}">
-                            <td th:text="${GroupDetail.group_name}"></td>
-                            <td th:text="${GroupDetail.game_name}"></td>
-                            <td th:text="${GroupDetail.group_size}"></td>
-                            <td th:text="${GroupDetail.aproved_num}"></td>
+                        <tr th:each="GroupInfo : ${GroupInfo}">
+                            <td th:text="${GroupInfo.group_name}"></td>
+                            <td th:text="${GroupInfo.game_name}"></td>
+                            <td th:text="${GroupInfo.group_size}"></td>
+                            <td th:text="${GroupInfo.aproved_num}"></td>
                         </tr>
                     </tbody>
 
                 </table>
-            </div>-->
+            </div>
 
             <div>
                 <table class="table">
