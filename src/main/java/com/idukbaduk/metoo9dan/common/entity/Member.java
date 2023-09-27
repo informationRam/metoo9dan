@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.management.relation.Role;
 import java.time.LocalDateTime;
@@ -42,13 +43,13 @@ public class Member {
     @Column
     private String gender;           //enum('male', 'female')  NOT NULL    COMMENT '성별',
 
-    @Column(name="privacy_consent")
+    @Column(name="privacy_consent",columnDefinition = "TINYINT(1)")
     private Boolean privacyConsent;  //boolean NOT NULL    COMMENT '개인정보동의',
 
-    @Column(name="email_consent")
+    @Column(name="email_consent",columnDefinition = "TINYINT(1)")
     private Boolean emailConsent;    //boolean NOT NULL    COMMENT '이메일수신동의',
 
-    @Column(name="sms_consent")
+    @Column(name="sms_consent",columnDefinition = "TINYINT(1)")
     private Boolean smsConsent;      //boolean NOT NULL    COMMENT 'sms수신동의',
 
 }

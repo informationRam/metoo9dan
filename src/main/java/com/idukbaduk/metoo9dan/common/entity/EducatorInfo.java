@@ -1,6 +1,5 @@
 package com.idukbaduk.metoo9dan.common.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,9 +10,13 @@ import lombok.Data;
 public class EducatorInfo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="member_no")
-    private Integer memberNo;    //int NOT NULL    COMMENT '회원번호',
+    @Column(name = "member_no")
+    private Integer memberNo;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @MapsId //@MapsId 는 @id로 지정한 컬럼에 @OneToOne 이나 @ManyToOne 관계를 매핑시키는 역할
+    @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정
+    private Member member;
 
     @Column
     private String sido;         //varchar(20)    NOT NULL    COMMENT '시도',
