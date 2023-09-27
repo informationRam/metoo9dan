@@ -3,14 +3,13 @@ package com.idukbaduk.metoo9dan.studyGroup.controller;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.service.StudyGroupService;
+import com.idukbaduk.metoo9dan.studyGroup.validation.StudyGroupForm;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +22,18 @@ public class StudyGroupController {
 
 
     //학습 그룹 등록 상세(교육자)
+    //학습 그룹 폼
+    @GetMapping("/add")
+    public String add(StudyGroupForm studyGroupForm){
+        return "studyGroup/studyGroup_form";
+    }
 
+    //학습 그룹 등록 처리
+    @PostMapping("/add")
+    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm){
+
+        return "";
+    }
 
     //학습 그룹 목록 조회(교육자)
     @GetMapping("/list")
@@ -59,4 +69,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 확인(학생)
+
+
+
 }
