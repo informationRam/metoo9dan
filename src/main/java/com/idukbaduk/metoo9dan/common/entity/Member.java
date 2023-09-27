@@ -63,4 +63,6 @@ public class Member {
     @Column(name="birth")
     private Date birth;             //date NOT NULL "생일"
 
+    @Column(name="member_memo")
+    private String memberMemo;      //varchar(300) NULL COMMENT "회원별 메모"
 }
