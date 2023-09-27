@@ -39,6 +39,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.2'
 	testImplementation 'org.springframework.security:spring-security-test'
+	//YJ:문자인증발송용 의존성추가
+	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: 'latest.release'
+
 }
 
 tasks.named('test') {
