@@ -14,7 +14,7 @@
             <div>
                 <form action="">
                     <label for="listSize">표기:
-                        <select id="listSize" name="listSize"> <!--onchange="changeUrl(this.value)"-->
+                        <select id="listSize" name="listSize" onchange="changeUrl(this.value)"> <!--onchange="changeUrl(this.value)"-->
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
@@ -51,9 +51,9 @@
                 </form>
             </div>
             <div>
-                총 게시물 <a th:text="${noticePage.getTotalElements}"></a>개 조회되었습니다.
-                <table style="border: 1px solid black;">
-                    <thead>
+                <a th:text="|총 게시물 ${noticePage.getTotalElements}개 조회되었습니다.|"></a>
+                <table class="table">
+                    <thead class="table-success">
                         <tr>
                             <th>No</th>
                             <th>분류</th>
@@ -64,7 +64,7 @@
                             <th>댓글수</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="table-hover">
                         <tr th:each="notice : ${noticePage}">
                             <!--*페이징처리에서 글번호 공식에 사용되는 개념
                                 questionPage.getTotalElements:전체 게시물 개수
@@ -81,10 +81,13 @@
                             <!--2? =12-(1*10)-0 -->
                             <!--1? =12-(1*10)-1 -->
                             <td th:text="${notice.noticeNo}"></td>
-                            <td th:text="${notice.noticeType}"></td>
-                            <td th:text="${notice.noticeTitle}"></td>
-                            <td th:text="${notice.noticeContent}"></td>
-                            <td th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd')}"></td>
+                            <td>
+                                <a th:if="${notice.noticeType.equals('noti')}" th:text="공지"></a>
+                                <a th:if="${!notice.noticeType.equals('noti')}" th:text="자주 묻는 질문"></a>
+                            </td>
+                            <td><a href="/notice/detail/${notice.noticeNo}" th:href="@{|/notice/detail/${notice.noticeNo}|}" th:text="${notice.noticeTitle}"></a></td>
+                            <td th:text="${notice.member.memberId}"></td>
+                            <td th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd HH:mm')}"></td>
                             <td th:text="${notice.readCnt}"></td>
                             <td >댓글수</td>
                         </tr>
@@ -104,9 +107,7 @@
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->
-<script>
-    changeUrl(url){
-        location.href = url
-    }
-</script>
+   <!--changeUrl(url){
+       location.href = url
+   }-->
 </html>
