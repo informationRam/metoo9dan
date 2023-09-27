@@ -75,12 +75,11 @@ class Metoo9danApplicationTests {
 
 
 	@Test
-	@Transactional
 	void gamefileTest() throws Exception {
 		Member member = new Member();
-		member.setName("이름2");
-		member.setTel("010-2222-2222");
-		member.setEmail("222@email.com");
+		member.setName("이름5555");
+		member.setTel("010-2222-5555");
+		member.setEmail("555@email.com");
 		member.setMemberId("id");
 		member.setPassword("pw");
 		member.setJoinDate(LocalDateTime.now());
