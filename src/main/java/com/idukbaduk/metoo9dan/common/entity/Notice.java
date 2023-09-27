@@ -3,12 +3,14 @@ package com.idukbaduk.metoo9dan.common.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name="NOTICE")
 public class Notice {
     //공지 테이블
