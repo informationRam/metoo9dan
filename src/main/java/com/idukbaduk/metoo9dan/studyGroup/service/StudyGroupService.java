@@ -25,4 +25,7 @@ public class StudyGroupService {
     public List<GroupsDetailListDTO> getDetailList(int group_no) {
         return studyGroupRepository.getGroupDetailList(group_no);
     }
+    public List<GroupsDetailListDTO> getGroupInfo(int group_no) {
+        return studyGroupRepository.getGroupInfo(group_no);
+    }
 }
