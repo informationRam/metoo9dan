@@ -13,7 +13,7 @@ public class EducatorInfo {
     @Column(name = "member_no")
     private Integer memberNo;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId //@MapsId 는 @id로 지정한 컬럼에 @OneToOne 이나 @ManyToOne 관계를 매핑시키는 역할
     @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정
     private Member member;
