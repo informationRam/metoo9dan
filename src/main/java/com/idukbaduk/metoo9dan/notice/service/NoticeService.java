@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.notice.service;
 
 import com.idukbaduk.metoo9dan.common.entity.Notice;
+import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 //NoticeController의 비즈니스 로직을 처리하는 클래스
 @RequiredArgsConstructor
@@ -27,5 +29,15 @@ public class NoticeService {
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
 
         return noticeRepository.findAll(pageable);
+    }
+
+    //상세조회
+    public Notice getNotice(Integer noticeNo) {
+        Optional<Notice> notice = noticeRepository.findById(noticeNo);
+        if(notice.isPresent()){
+            return notice.get();
+        } else {
+            throw new DataNotFoundException("NOTICE NOT FOUND");
+        }
     }
 }

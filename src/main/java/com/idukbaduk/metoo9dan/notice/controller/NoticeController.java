@@ -32,4 +32,12 @@ public class NoticeController {
         System.out.println("noticePage: "+noticePage.getTotalPages());
         return "notice/noticeList";
     }
+
+    @GetMapping("/detail/{noticeNo}")
+    public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo,
+                                  Model model){
+        Notice notice = noticeService.getNotice(noticeNo);
+        model.addAttribute("notice", notice);
+        return "notice/noticeDetail";
+    }
 }
