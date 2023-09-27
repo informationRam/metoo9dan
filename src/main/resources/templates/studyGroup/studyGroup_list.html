@@ -12,6 +12,7 @@
                 <table class="table">
                     <thead class="table-dark">
                     <tr>
+                        <th>선택</th>
                         <th>학습그룹명</th>
                         <th>게임콘텐츠명</th>
                         <th>그룹T/O</th>
@@ -22,10 +23,9 @@
                     <tbody>
                     <tr  th:each="studyGroup, loop : ${studyGroup}">
                         <td>
-                            <a href="/studygroup/detail/${studyGroup.group_no}"
-                               th:href="@{|/studygroup/detail/${studyGroup.group_no}|}"
-                               th:text="${studyGroup.group_name}"></a>
+                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${studyGroup.group_no}" />
                         </td>
+                        <td th:text="${studyGroup.group_name}"></td>
                         <td th:text="${studyGroup.game_name}"></td>
                         <td th:text="${studyGroup.group_TO}"></td>
                         <td th:text="${studyGroup.subscription_duration}"></td>
@@ -33,11 +33,51 @@
                     </tr>
                     </tbody>
                 </table>
+                <button id="viewButton">학습 그룹 상세 조회 하기</button>
             </div>
             <p/>
         </div>
     </div>
 </div>
-
-
 </html>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // 조회 버튼 클릭 시
+    document.getElementById("viewButton").addEventListener("click", function () {
+        var selectedGroupNo = null;
+
+        // 선택된 체크박스 찾기
+        var checkboxes = document.querySelectorAll(".groupCheckbox");
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedGroupNo = checkbox.value;
+                return; // 첫 번째 선택된 체크박스만 처리
+            }
+        });
+
+        if (selectedGroupNo !== null) {
+            // 선택된 그룹 번호를 사용하여 링크로 이동
+            window.location.href = "/studygroup/detail/" + selectedGroupNo;
+        } else {
+            alert("그룹을 선택하세요.");
+        }
+    });
+
+    // 체크박스 클릭 시 다른 체크박스의 선택을 해제
+    var checkboxes = document.querySelectorAll(".groupCheckbox");
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener("click", function () {
+            if (this.checked) {
+                // 다른 체크박스 선택 해제
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }
+        });
+    });
+
+});
+</script>
+
