@@ -25,4 +25,31 @@
 		]]>
     </select>
 
+    <select id="GroupDetailList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
+        <![CDATA[
+        SELECT
+            s.group_no,
+            s.group_name,
+            g.game_name,
+            s.group_size,
+            (SELECT COUNT(member_no)
+             FROM baduk.group_students gs
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
+            m.name,
+            m.tel,
+            m.email,
+            m.join_date
+        FROM
+            baduk.study_groups s
+        JOIN
+            baduk.game_contents g ON s.game_content_no = g.game_content_no
+        JOIN
+            baduk.group_students gs ON s.group_no = gs.group_no
+        JOIN
+            baduk.members m ON gs.member_no = m.member_no
+        WHERE
+            s.group_no = #{group_no};
+		]]>
+    </select>
+
 </mapper>
