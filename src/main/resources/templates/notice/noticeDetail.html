@@ -9,39 +9,41 @@
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h2>공지사항</h2>
-            <!-- 조회 컨트롤러 영역 -->
-            <!--각각의 option value 값에 넘어가는 url을 모두 써줘야함. 변하는 값에 맞게끔.-->
-            <div>
+            <div class="py-2">
                 <div>
-                    <div>
+                    <div> <!--글상세 헤더정보-->
                         <!--<a th:text="${notice.noticeType}">분류</a>-->
                         <a th:if="${notice.noticeType.equals('noti')}" th:text="공지"></a>
-                        <a th:if="${!notice.noticeType.equals('noti')}" th:text="자주 묻는 질문"></a>
+                        <a th:if="${!notice.noticeType.equals('noti')}" th:text="자주묻는질문"></a>
                         <a th:text="${notice.status}">상태</a><br/><!--운영관리자한테만-->
-                        <h4 th:text="${notice.noticeTitle}">제목</h4>
+                        <h4 th:text="${notice.noticeTitle}">제목</h4><hr/>
                         <a th:text="|작성자: ${notice.member.memberId}|">작성자</a>
                         <a th:text="|작성일: ${#temporals.format(notice.writeDate, 'yyy-MM-dd HH:mm')}|">작성일</a><!--운영관리자한테만-->
                         <a th:text="|게시일: ${#temporals.format(notice.postDate, 'yyy-MM-dd HH:mm')}|">게시일</a>
                         <a th:text="|조회수: ${notice.readCnt}|">조회수</a>
-
                     </div>
-                    <div th:text="${notice.noticeContent}">
-                        내용
+                    <div th:text="${notice.noticeContent}">내용</div>
+                    <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
+                    <div>
+                        <a href="#" th:href="@{#}" class="btn btn-secondary">수정</a>
+                        <a href="#" th:href="@{#}" class="btn btn-danger">삭제</a>
                     </div>
                 </div>
+                <hr/>
                 <!--댓글개수 출력. 임시로 조회수 넣음-->
                 <h6 th:text="|${notice.readCnt}개의 댓글|"></h6>
                 <!--댓글목록 시작-->
                 <div class="card">
                     <div class="card-body">
-                        <span class="d-flex justify-content-start">
+                        <div class="d-flex justify-content-between">
                             <span class="badge bg-primary p-2 text-start">작성자</span>
-                        </span>
-                        <span class="d-flex justify-content-end">
                             <span class="badge bg-light text-dark p-2 text-start">작성일</span>
-                        </span>
+                        </div>
                         <div class="card-text">댓글내용</div>
-                        <div>댓글작성자가 수정 삭제 하는 버튼 예정</div>
+                        <div>
+                            <a href="#" th:href="@{#}" class="btn btn-secondary">수정</a>
+                            <a href="#" th:href="@{#}" class="btn btn-danger">삭제</a>
+                        </div>
                     </div>
                 </div>
                 <!--댓글 등록 폼
