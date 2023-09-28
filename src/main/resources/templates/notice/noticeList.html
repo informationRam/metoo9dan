@@ -82,8 +82,8 @@
                             <!--1? =12-(1*10)-1 -->
                             <td th:text="${notice.noticeNo}"></td>
                             <td>
-                                <a th:if="${notice.noticeType.equals('noti')}" th:text="공지"></a>
-                                <a th:if="${!notice.noticeType.equals('noti')}" th:text="자주 묻는 질문"></a>
+                                <a th:if="${notice.noticeType.equals('noti')}" th:text="공지사항"></a>
+                                <a th:if="${notice.noticeType.equals('faq')}" th:text="자주묻는질문"></a>
                             </td>
                             <td><a href="/notice/detail/${notice.noticeNo}" th:href="@{|/notice/detail/${notice.noticeNo}|}" th:text="${notice.noticeTitle}"></a></td>
                             <td th:text="${notice.member.memberId}"></td>
