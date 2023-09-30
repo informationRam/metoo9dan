@@ -7,7 +7,27 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            테스트!
+            <div class="container">
+                <h2>SMS 내역 조회</h2>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>requestId</th>
+                        <th>요청 시간</th>
+                        <th>Status Code</th>
+                        <th>Status Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr >
+                        <td th:text="${response.requestId}"></td>
+                        <td th:text="${response.requestTime}"></td>
+                        <td th:text="${response.statusCode}"></td>
+                        <td th:text="${response.statusName}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
