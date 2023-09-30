@@ -6,7 +6,6 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Getter
 @Builder
 public class SmsRequestDTO {
