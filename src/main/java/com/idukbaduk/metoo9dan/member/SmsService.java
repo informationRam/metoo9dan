@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +45,11 @@ public class SmsService {
 
     @Value("${naver-cloud-sms.senderPhone}")
     private String phone;
+
+    //secureRandom으로 보안성 강화 인증번호 생성
+    private final SecureRandom secureRandom = new SecureRandom();
+    private final String numericCharacters = "0123456789";
+
 
     public String makeSignature(Long time) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
         String space = " ";					// one space
@@ -93,9 +99,9 @@ public class SmsService {
         // SMS 내용을 직접 설정: 텍스트와 난수 합치기
         String smsContent = "[나도9단] 인증번호 [" + randomContent  + "]를 입력해주세요";
 
-//      // SMS 발송 처리
-//      List<MessageDTO> messages = new ArrayList<>();
-//      messages.add(messageDto);
+//        // 여럿에 동일한 sms 내용 보낼때 사용
+//        List<MessageDTO> messages = new ArrayList<>();
+//        messages.add(messageDto);
 
         //발송 내용 설정: DTO에서 선언한 @Builder 사용
         SmsRequestDTO request = SmsRequestDTO.builder()
@@ -119,9 +125,17 @@ public class SmsService {
     }
     private String generateRandomContent() {
         // 여기에서 난수 생성 로직을 구현
-        // 예를 들어, 6자리 난수 생성
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            int randomIndex = secureRandom.nextInt(numericCharacters.length());
+            sb.append(numericCharacters.charAt(randomIndex));
+        }
+        return sb.toString();
+    }
+
+   /*     // 예를 들어, 6자리 난수 생성
         Random random = new Random();
         int randomValue = 100000 + random.nextInt(900000); // 100000부터 999999까지의 난수 생성
         return String.valueOf(randomValue);
-    }
+    }*/
 }
