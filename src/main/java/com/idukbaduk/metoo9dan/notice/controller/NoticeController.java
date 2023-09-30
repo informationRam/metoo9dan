@@ -22,22 +22,25 @@ public class NoticeController {
 
     // 공지사항 등록 메뉴를 누르면 공지사항 목록을 보여줌
     @GetMapping("/list")
-    public String getNoticeList(@RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
-                                @RequestParam(value = "listSize", defaultValue = "10") int listSize,
-                                Model model){
+    public String getNoticeList(Model model,
+                                @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+                                @RequestParam(value = "listSize", defaultValue = "10") int listSize
+                                ){
 
         Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
-        System.out.println("listSize: "+listSize);
         model.addAttribute("noticePage", noticePage);
         System.out.println("noticePage: "+noticePage.getTotalPages());
         return "notice/noticeList";
     }
 
+    // 상세조회 (+댓글조회 및 작성 폼)
     @GetMapping("/detail/{noticeNo}")
     public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo,
                                   Model model){
-        Notice notice = noticeService.getNotice(noticeNo);
+        Notice notice = noticeService.getNotice(noticeNo); //조회수 증가기능 포함
         model.addAttribute("notice", notice);
         return "notice/noticeDetail";
     }
+
+
 }

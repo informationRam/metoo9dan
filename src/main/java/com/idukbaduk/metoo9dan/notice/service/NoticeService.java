@@ -3,11 +3,16 @@ package com.idukbaduk.metoo9dan.notice.service;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,17 +30,36 @@ public class NoticeService {
     public Page<Notice> getList(int pageNo, int listSize) {
 
         List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("isImp")); //중요 게시글인 경우 내림차순 정렬.
         sorts.add(Sort.Order.desc("writeDate")); //작성일 기준으로 내림차순 정렬.
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
+        //Specification<Notice> specification = search(keyword);
 
+        //return noticeRepository.findAll(specification, pageable);
         return noticeRepository.findAll(pageable);
+    }
+
+    //검색
+    public Specification<Notice> search(String keyword) {
+        return new Specification<Notice>() {
+            @Override
+            public Predicate toPredicate(Root<Notice> notice, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                query.distinct(true); //중복 제거
+                
+                return criteriaBuilder.or(criteriaBuilder.like(notice.get("noticeTitle"), "%" + keyword + "%"), //제목
+                                          criteriaBuilder.like(notice.get("noticeContent"), "%" + keyword + "%")); //내용
+            }
+        };
     }
 
     //상세조회
     public Notice getNotice(Integer noticeNo) {
         Optional<Notice> notice = noticeRepository.findById(noticeNo);
         if(notice.isPresent()){
-            return notice.get();
+            Notice getNotice = notice.get();
+            getNotice.setReadCnt(getNotice.getReadCnt()+1); //조회수 증가처리
+            this.noticeRepository.save(getNotice);
+            return getNotice;
         } else {
             throw new DataNotFoundException("NOTICE NOT FOUND");
         }
