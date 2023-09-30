@@ -107,22 +107,15 @@ public class SmsService {
                 .messages(Collections.singletonList(messageDto))
                 .build();
 
-        //발송 내용 json 형태로 반환
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(request);
-
-        // jsonBody와 헤더 조립
         HttpEntity<String> httpBody = new HttpEntity<>(body, headers);
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        SmsResponseDTO response = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+ serviceId +"/messages"), httpBody, SmsResponseDTO.class);
 
-        //restTemplate로 post 요청 보내고 오류가 없으면 202코드 반환
-        SmsResponseDTO smsResponseDto = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+ serviceId +"/messages"), httpBody, SmsResponseDTO.class);
-
-        //SmsResponseDTO responseDto = new SmsResponseDTO(randomContent);
-        // redisUtil.setDataExpire(smsConfirmNum, messageDto.getTo(), 60 * 3L); // 유효시간 3분
-        return smsResponseDto;
+        return response;
     }
     private String generateRandomContent() {
         // 여기에서 난수 생성 로직을 구현
