@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
@@ -30,17 +29,17 @@ public class joinController {
     //SMS 발송 뷰페이지 반환
     @GetMapping("/sms")
     public String getSmsPage() {
-
         return "/member/sendSms";
     }
     
     //SMS 발송 결과 뷰페이지 반환
     @PostMapping("/sms/send")
-    public SmsResponseDTO sendSms(@RequestBody MessageDTO messageDto) throws  UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
-        SmsResponseDTO responseDto  = smsService.sendSms(messageDto);
+    public String sendSmsWithRandomContent(@RequestParam("to") String to, Model model) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        SmsResponseDTO response = smsService.sendSms(to);
         model.addAttribute("response", response);
         return "/member/smsResult";
     }
+
 
 
 }
