@@ -6,6 +6,7 @@ import lombok.*;
 //SMS 발송 대상 및 내용 담기
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @Getter
 @Builder
 public class MessageDTO {
