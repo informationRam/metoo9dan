@@ -124,7 +124,7 @@ public class SmsService {
         return response;
     }
     private String generateRandomContent() {
-        // 여기에서 난수 생성 로직을 구현
+        // 난수 생성 로직 구현
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 6; i++) {
             int randomIndex = secureRandom.nextInt(numericCharacters.length());
