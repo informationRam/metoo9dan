@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan.notice.service;
 
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
+import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeReplyRepository;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeRepository;
@@ -79,5 +80,19 @@ public class NoticeService {
     public List<NoticeReply> getNoticeReply(Notice notice) {
         List<NoticeReply> noticeReply = noticeReplyRepository.findByNotice(notice);
         return noticeReply;
+    }
+
+    //공지사항 등록처리
+    public void add(String title, String content) {
+        Notice notice = new Notice();
+        notice.setNoticeTitle(title);
+        notice.setNoticeContent(content);
+        //notice.setNoticeType();
+        //notice.setImp();
+        //notice.setMemberNo();
+        //notice.setStatus();
+        //notice.setWriteDate();
+        //notice.setPostDate();
+        noticeRepository.save(notice);
     }
 }

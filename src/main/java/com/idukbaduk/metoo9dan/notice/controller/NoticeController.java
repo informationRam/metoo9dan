@@ -3,15 +3,15 @@ package com.idukbaduk.metoo9dan.notice.controller;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.service.NoticeService;
+import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,5 +49,25 @@ public class NoticeController {
         return "notice/noticeDetail";
     }
 
+    //작성폼 보여줘 요청
+    @GetMapping("/add")
+    public String noticeAddForm(NoticeForm noticeForm){
 
+        return "notice/noticeForm";
+    }
+
+    //공지사항 등록 처리해줘 요청 (임시)
+    @PostMapping("/add")
+    public String add(@Valid NoticeForm noticeForm,
+                      BindingResult bindingResult
+                      ){
+        if(!bindingResult.hasErrors()){
+            noticeService.add(noticeForm.getTitle(),
+                              noticeForm.getContent());
+
+        } else {
+            return "/notice/noticeForm"; //에러가 있으면, noticeForm.html로 이동.
+        }
+        return "redirect:/notice/list"; //질문목록조회 요청
+    }
 }
