@@ -3,7 +3,6 @@ package com.idukbaduk.metoo9dan.member.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.idukbaduk.metoo9dan.member.SmsService;
-import com.idukbaduk.metoo9dan.member.dto.MessageDTO;
 import com.idukbaduk.metoo9dan.member.dto.SmsResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -23,7 +22,7 @@ import java.security.NoSuchAlgorithmException;
 @RequiredArgsConstructor
 @Controller
 
-public class joinController {
+public class userController {
 
     private final SmsService smsService;
 
