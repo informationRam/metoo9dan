@@ -3,31 +3,40 @@
 <div layout:fragment="content" class="container my-3">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
                 <div class="mb-3">
                     <label for="group_name" class="form-label">그룹명</label>
-                    <input type="text" th:field="*{group_name}" class="form-control"/>
+                    <input type="text" th:field="*{groupName}" class="form-control"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_size" class="form-label">그룹인원</label>
-                    <input type="text" th:field="*{group_size}" class="form-control"/>
+                    <input type="number" th:field="*{groupSize}" class="form-control"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_start_date" class="form-label">그룹 시작일</label>
-                    <input type="text" th:field="*{group_start_date}" class="form-control"/>
+                    <input type="date" th:field="*{groupStartDate}" class="form-control"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_finish_date" class="form-label">그룹 종료일</label>
-                    <input type="text" th:field="*{group_finish_date}" class="form-control"/>
+                    <input type="date" th:field="*{groupFinishDate}" class="form-control"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_introduce" class="form-label">그룹 소개글</label>
-                    <textarea type="text" th:field="*{group_introduce}" class="form-control"/>
+                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control"/>
                 </div>
+                <div class="mb-3">
+                    <label for="game_content_no" class="form-label">게임콘텐츠no</label>
+                    <input type="number" th:field="*{gameContentNo}" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label for="member_no" class="form-label">회원번호</label>
+                    <input type="number" th:field="*{memberNo}" class="form-control"/>
+                </div>
+                <input type="submit" value="등록" class="btn btn-primary my-2"/>
             </form>
 
         </div>
