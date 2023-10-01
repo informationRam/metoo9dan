@@ -1,7 +1,9 @@
 package com.idukbaduk.metoo9dan.notice.service;
 
 import com.idukbaduk.metoo9dan.common.entity.Notice;
+import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
+import com.idukbaduk.metoo9dan.notice.repository.NoticeReplyRepository;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final NoticeReplyRepository noticeReplyRepository;
 
     //목록조회
     public Page<Notice> getList(int pageNo, int listSize) {
@@ -56,12 +59,25 @@ public class NoticeService {
     public Notice getNotice(Integer noticeNo) {
         Optional<Notice> notice = noticeRepository.findById(noticeNo);
         if(notice.isPresent()){
-            Notice getNotice = notice.get();
-            getNotice.setReadCnt(getNotice.getReadCnt()+1); //조회수 증가처리
-            this.noticeRepository.save(getNotice);
-            return getNotice;
+            return notice.get();
         } else {
             throw new DataNotFoundException("NOTICE NOT FOUND");
         }
+    }
+
+    //조회수 증가 처리
+    public void readCntUp(Integer noticeNo){
+        Optional<Notice> notice = noticeRepository.findById(noticeNo);
+        if(notice.isPresent()) {
+            Notice getNotice = notice.get();
+            getNotice.setReadCnt(getNotice.getReadCnt() + 1); //조회수 증가처리
+            this.noticeRepository.save(getNotice);
+        }
+    }
+
+    //댓글 목록조회
+    public List<NoticeReply> getNoticeReply(Notice notice) {
+        List<NoticeReply> noticeReply = noticeReplyRepository.findByNotice(notice);
+        return noticeReply;
     }
 }

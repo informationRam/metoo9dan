@@ -96,7 +96,7 @@
                             <td th:text="${notice.member.memberId}"></td>
                             <td th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd HH:mm')}"></td>
                             <td th:text="${notice.readCnt}"></td>
-                            <td >댓글수</td>
+                            <td th:text="${}">댓글수</td>
                         </tr>
                         <tr th:if="${noticePage.isEmpty()}">
                             <td colspan="7" class="">검색 결과가 없습니다.</td>
