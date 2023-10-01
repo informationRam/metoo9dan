@@ -64,11 +64,9 @@
                             <th>작성자</th>
                             <th>등록일시</th>
                             <th>조회수</th>
-                            <th>댓글수</th>
                         </tr>
                     </thead>
                     <tbody class="table-hover">
-                        <tr th:each="notice : ${noticePage}">
                             <!--*페이징처리에서 글번호 공식에 사용되는 개념
                                 questionPage.getTotalElements:전체 게시물 개수
                                 questionPage.number:현재 페이지 번호
@@ -83,6 +81,7 @@
                             <!--3? =12-(0*10)-9 -->
                             <!--2? =12-(1*10)-0 -->
                             <!--1? =12-(1*10)-1 -->
+                        <tr th:each="notice : ${noticePage}">
                             <td th:text="${notice.noticeNo}"></td>
                             <td> <!--운영관리자한테만-->
                                 <a th:if="${notice.status.equals('post')}" th:text="게시"></a>
@@ -92,14 +91,16 @@
                                 <a th:if="${notice.noticeType.equals('noti')}" th:text="공지사항"></a>
                                 <a th:if="${notice.noticeType.equals('faq')}" th:text="자주묻는질문"></a>
                             </td>
-                            <td><a href="/notice/detail/${notice.noticeNo}" th:href="@{|/notice/detail/${notice.noticeNo}|}" th:text="${notice.noticeTitle}"></a></td>
+                            <td><a href="/notice/detail/${notice.noticeNo}" th:href="@{|/notice/detail/${notice.noticeNo}|}" th:text="${notice.noticeTitle}"></a>
+                            <span class="text-danger small ms-1"
+                                  th:if="${notice.replyCnt>0}"
+                                  th:text="${notice.replyCnt}"></span></td>
                             <td th:text="${notice.member.memberId}"></td>
                             <td th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd HH:mm')}"></td>
                             <td th:text="${notice.readCnt}"></td>
-                            <td th:text="${}">댓글수</td>
                         </tr>
                         <tr th:if="${noticePage.isEmpty()}">
-                            <td colspan="7" class="">검색 결과가 없습니다.</td>
+                            <td colspan="6" class="">검색 결과가 없습니다.</td>
                         </tr>
                     </tbody>
                 </table>

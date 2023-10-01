@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -47,4 +48,15 @@ public class Notice {
     @Column(name="is_imp") //중요글 여부
     private Boolean isImp;
 
+    //댓글수를 출력하기 위한 메소드 선언 -> DB에 영향없음.
+    public Integer getReplyCnt(){
+        if(noticeReplies != null){
+            return noticeReplies.size();
+        } else{
+            return 0;
+        }
+    }
+    //이 해당필드가 NoticeReply 엔티티의 'notice 필드'에 의해 매핑된다는 의미.
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
+    private List<NoticeReply> noticeReplies;
 }

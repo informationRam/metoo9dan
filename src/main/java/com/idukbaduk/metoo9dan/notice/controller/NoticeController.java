@@ -32,8 +32,6 @@ public class NoticeController {
 
         Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
         model.addAttribute("noticePage", noticePage);
-        //noticeService.getNotice(noticePage.getContent().); 어떻게... noticeNo를 리스트에서 뿌려줄 것인가...
-        System.out.println("noticePage: "+noticePage.getTotalPages());
         return "notice/noticeList";
     }
 
