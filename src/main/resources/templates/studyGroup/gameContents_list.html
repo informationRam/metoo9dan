@@ -1,0 +1,46 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <p/>[학습 그룹 등록]
+            <div>
+                <table class="table">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>선택</th>
+                        <th>게임콘텐츠명</th>
+                        <th>학습시작일</th>
+                        <th>학습종료일</th>
+                        <th>학습가능인원</th>
+                        <th>그룹지정된 인원</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  th:each="gameContents, loop : ${gameContents}">
+                        <td>
+                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${gameContents.game_content_no}" />
+                        </td>
+                        <td th:text="${gameContents.game_name}"></td>
+                        <td th:text="${#dates.format(gameContents.payment_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(gameContents.subscription_end_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${gameContents.max_subscribers}"></td>
+                        <td th:text="${gameContents.appointed_group_num}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button id="viewButton">학습 그룹 상세 입력</button>
+            </div>
+            <p/>
+        </div>
+    </div>
+</div>
+</html>
+<script>
+
+</script>
+

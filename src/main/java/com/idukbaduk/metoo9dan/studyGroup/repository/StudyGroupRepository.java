@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.studyGroup.repository;
 
+import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,9 @@ public class StudyGroupRepository {
     }
     public List<GroupsDetailListDTO> getGroupInfo(int group_no){
         return sqlSession.selectList("StudyGroup.GroupInfo",group_no);
+    }
+
+    public List<GameContentsListDTO> getGameList(int member_no) {
+        return sqlSession.selectList("StudyGroup.GameContentList",member_no);
     }
 }

@@ -3,6 +3,7 @@ package com.idukbaduk.metoo9dan.studyGroup.service;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
+import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
@@ -46,10 +47,14 @@ public class StudyGroupService {
         studyGroups.setGroupStartDate(group_start_date);
         studyGroups.setGroupFinishDate(group_finish_date);
         studyGroups.setGroupIntroduce(group_introduce);
-        studyGroups.setGameContents(gameContents);  // 게임 콘텐츠 엔티티 객체 직접 사용
+        studyGroups.setGameContents(gameContents);
         studyGroups.setMember(member);
         //studyGroups.setGameContents(gameContentRepository.findById(game_content_no).orElse(null));
         //studyGroups.setMember(memberRepository.findById(member_no).orElse(null));
         groupMakeRepository.save(studyGroups);
+    }
+
+    public List<GameContentsListDTO> getGameList(int member_no) {
+        return studyGroupRepository.getGameList(member_no);
     }
 }
