@@ -91,6 +91,7 @@
         LEFT JOIN (
             SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
             FROM baduk.study_groups
+            WHERE member_no = #{member_no}
             GROUP BY game_content_no, member_no
         ) s ON g.game_content_no = s.game_content_no
         WHERE p.member_no = #{member_no}

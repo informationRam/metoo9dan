@@ -23,7 +23,7 @@
                     <tbody>
                     <tr  th:each="gameContents, loop : ${gameContents}">
                         <td>
-                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${gameContents.game_content_no}" />
+                            <input type="checkbox" class="groupCheckbox" name="selectedGame" th:value="${gameContents.game_content_no}" />
                         </td>
                         <td th:text="${gameContents.game_name}"></td>
                         <td th:text="${#dates.format(gameContents.payment_date,'yyyy-MM-dd')}"></td>
@@ -41,6 +41,49 @@
 </div>
 </html>
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 조회 버튼 클릭 시
+        document.getElementById("viewButton").addEventListener("click", function () {
+            var selectedGameContentNo = null;
 
+            // 선택된 체크박스 찾기
+            var checkboxes = document.querySelectorAll(".groupCheckbox");
+            checkboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    selectedGameContentNo = checkbox.value;
+                    return; // 첫 번째 선택된 체크박스만 처리
+                }
+            });
+
+            if (selectedGameContentNo !== null) {
+                // 선택된 게임콘텐츠 번호를 사용하여 링크로 이동
+                window.location.href = "/studygroup/add/" + selectedGameContentNo;
+                // 선택된 게임콘텐츠 번호를 폼 필드에 설정
+                //document.getElementById("gameContentNo").value = selectedGameContentNo;
+
+                // 폼 제출
+                //document.getElementById("studyGroupForm").submit();
+
+            } else {
+                alert("그룹을 선택하세요.");
+            }
+        });
+
+        // 체크박스 클릭 시 다른 체크박스의 선택을 해제
+        var checkboxes = document.querySelectorAll(".groupCheckbox");
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener("click", function () {
+                if (this.checked) {
+                    // 다른 체크박스 선택 해제
+                    checkboxes.forEach(function (otherCheckbox) {
+                        if (otherCheckbox !== checkbox) {
+                            otherCheckbox.checked = false;
+                        }
+                    });
+                }
+            });
+        });
+
+    });
 </script>
 
