@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan.studyGroup.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
@@ -14,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +31,14 @@ public class StudyGroupController {
     private final MemberRepository memberRepository;
 
 
-    //학습 그룹 등록(교육자)
+    //학습 그룹 등록(교육자), 게임콘텐츠 조회
+    @GetMapping("/gameList")
+    public String gamelist(Model model,@RequestParam(defaultValue="1") int member_no){
+        List<GameContentsListDTO> gameContents = studyGroupService.getGameList(member_no);
+        model.addAttribute("gameContents",gameContents);
+        System.out.println("gameContents="+gameContents);
+        return "studyGroup/gameContents_list";
+    }
 
 
     //학습 그룹 등록 상세(교육자)
@@ -39,7 +48,7 @@ public class StudyGroupController {
         return "studyGroup/studyGroup_form";
     }
 
-    //학습 그룹 등록 처리
+
    /* @PostMapping("/add")
     public String studygroupAdd(@Valid StudyGroupForm studyGroupForm){
         studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents.getGameContentNo(),member.getMemberNo());
@@ -47,7 +56,10 @@ public class StudyGroupController {
     }*/
 
     @PostMapping("/add")
-    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm){
+    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
+            return "studyGroup/studyGroup_form"; //question_form.html문서로 이동
+        }
         Integer gameContentNo = studyGroupForm.getGameContentNo();
         Integer memberNo = studyGroupForm.getMemberNo();
 
@@ -60,7 +72,7 @@ public class StudyGroupController {
             studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member);
         }
 
-        return "studyGroup/studyGroup_form";
+        return "redirect:/studygroup/list";
     }
 
 

@@ -9,7 +9,8 @@
             s.group_no,
             s.group_name,
             g.game_name,
-            g.subscription_duration,
+            s.group_start_date,
+            s.group_finish_date,
             (SELECT COUNT(member_no)
              FROM baduk.group_students gs
              WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
@@ -81,5 +82,20 @@
             s.group_no = #{group_no};
 		]]>
     </select>-->
+
+    <select id="GameContentList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
+        <![CDATA[
+        SELECT distinct g.game_content_no,g.game_name, g.max_subscribers, p.payment_date, DATE_ADD(p.payment_date, INTERVAL g.subscription_duration MONTH) AS subscription_end_date, s.appointed_group_num
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        LEFT JOIN (
+            SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
+            FROM baduk.study_groups
+            GROUP BY game_content_no, member_no
+        ) s ON g.game_content_no = s.game_content_no
+        WHERE p.member_no = #{member_no}
+		]]>
+    </select>
+
 
 </mapper>

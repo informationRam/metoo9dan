@@ -7,7 +7,7 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <p/>
+            <p/>[학습 그룹 리스트]
             <div>
                 <table class="table">
                     <thead class="table-dark">
@@ -16,7 +16,9 @@
                         <th>학습그룹명</th>
                         <th>게임콘텐츠명</th>
                         <th>그룹T/O</th>
-                        <th>구독기간</th>
+                        <!--<th>구독기간</th>-->
+                        <th>그룹 시작일</th>
+                        <th>그룹 종료일</th>
                         <th>등록 학생수</th>
                     </tr>
                     </thead>
@@ -28,7 +30,9 @@
                         <td th:text="${studyGroup.group_name}"></td>
                         <td th:text="${studyGroup.game_name}"></td>
                         <td th:text="${studyGroup.group_TO}"></td>
-                        <td th:text="${studyGroup.subscription_duration}"></td>
+                        <!--<td th:text="${studyGroup.subscription_duration}"></td>-->
+                        <td th:text="${#dates.format(studyGroup.group_start_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(studyGroup.group_finish_date,'yyyy-MM-dd')}"></td>
                         <td th:text="${studyGroup.aproved_num}"></td>
                     </tr>
                     </tbody>
