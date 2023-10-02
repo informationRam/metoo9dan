@@ -25,8 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudyGroupController {
     private final StudyGroupService studyGroupService;
-    //private final GameContents gameContents;
-    //private final Member member;
     private final GameContentRepository gameContentRepository;
     private final MemberRepository memberRepository;
 
@@ -43,32 +41,28 @@ public class StudyGroupController {
 
     //학습 그룹 등록 상세(교육자)
     //학습 그룹 폼
-    @GetMapping("/add")
+    @GetMapping("/add/{game_content_no}")
     public String add(StudyGroupForm studyGroupForm){
+
         return "studyGroup/studyGroup_form";
     }
 
-
-   /* @PostMapping("/add")
-    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm){
-        studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents.getGameContentNo(),member.getMemberNo());
-        return "studyGroup/studyGroup_form";
-    }*/
-
-    @PostMapping("/add")
-    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm, BindingResult bindingResult){
+    //학습 그룹 등록 처리
+    @PostMapping("/add/{game_content_no}")
+    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,@PathVariable("game_content_no") int game_content_no,Model model){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
-            return "studyGroup/studyGroup_form"; //question_form.html문서로 이동
+            return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
         }
-        Integer gameContentNo = studyGroupForm.getGameContentNo();
+        //Integer gameContentNo = studyGroupForm.getGameContentNo();
         Integer memberNo = studyGroupForm.getMemberNo();
 
-        GameContents gameContents = gameContentRepository.findById(gameContentNo).orElse(null);
+        GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
         Member member = memberRepository.findById(memberNo).orElse(null);
-
+        model.addAttribute("game_content_no", game_content_no);
         if (gameContents == null || member == null) {
             // 에러 처리 (올바른 게임 콘텐츠 번호와 회원 번호를 받아야 함)
         } else {
+
             studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member);
         }
 

@@ -9,6 +9,7 @@
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <p>[학습 그룹 등록 폼]</p>
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
+                <div th:replace="~{form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
                     <label for="group_name" class="form-label">그룹명</label>
                     <input type="text" th:field="*{groupName}" class="form-control"/>
@@ -30,8 +31,9 @@
                     <textarea type="text" th:field="*{groupIntroduce}" class="form-control"/>
                 </div>
                 <div class="mb-3">
-                    <label for="game_content_no" class="form-label">게임콘텐츠no</label>
-                    <input type="number" th:field="*{gameContentNo}" class="form-control"/>
+                    <!--<label for="game_content_no" class="form-label">게임콘텐츠no</label>-->
+                    <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
+                    <!--<input type="hidden" th:field="*{gameContentNo}" class="form-control" th:value="${game_content_no}"/>-->
                 </div>
                 <div class="mb-3">
                     <label for="member_no" class="form-label">회원번호</label>
