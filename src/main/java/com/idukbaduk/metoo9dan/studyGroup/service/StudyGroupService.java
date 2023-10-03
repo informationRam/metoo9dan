@@ -1,19 +1,18 @@
 package com.idukbaduk.metoo9dan.studyGroup.service;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.GroupStudents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
-import com.idukbaduk.metoo9dan.studyGroup.repository.GroupRepository;
-import com.idukbaduk.metoo9dan.studyGroup.repository.MemberRepository;
-import com.idukbaduk.metoo9dan.studyGroup.repository.StudyGroupRepository;
+import com.idukbaduk.metoo9dan.studyGroup.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +22,7 @@ import java.util.Optional;
 public class StudyGroupService {
     private final StudyGroupRepository studyGroupRepository;
     private final GroupRepository groupRepository;
+    private final GroupStudentsRepository groupStudentsRepository;
     private final GameContentRepository gameContentRepository;
     private final MemberRepository memberRepository;
 
@@ -86,5 +86,15 @@ public class StudyGroupService {
     //학습그룹 가입신청 리스트
     public List<GroupJoinListDTO> getGroupJoinList() {
         return studyGroupRepository.getGroupJoinList();
+    }
+
+    public void groupJoin(StudyGroups studyGroups, Member member, LocalDateTime application_date, Boolean is_approved,LocalDateTime approved_date){
+        GroupStudents groupStudents = new GroupStudents();
+        groupStudents.setStudyGroups(studyGroups);
+        groupStudents.setMember(member);
+        groupStudents.setApplicationDate(LocalDateTime.now());
+        groupStudents.setIsApproved(Boolean.FALSE);
+        groupStudents.setApprovedDate(approved_date);
+        groupStudentsRepository.save(groupStudents);
     }
 }
