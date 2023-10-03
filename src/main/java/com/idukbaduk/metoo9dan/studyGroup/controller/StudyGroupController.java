@@ -4,6 +4,7 @@ import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
+import com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
@@ -137,8 +138,14 @@ public class StudyGroupController {
     //학습 그룹 가입 승인(교육자)
 
 
-    //학습 그룹 가입 신청(학생)
-
+    //학습 그룹 가입 신청(학생),학습 그룹 리스트
+    @GetMapping("/joinList")
+    public String join(Model model){
+        List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList();
+        model.addAttribute("groupJoinList",groupJoinList);
+        System.out.println("groupJoinList="+groupJoinList);
+        return "studyGroup/studyGroup_joinList";
+    }
 
     //학습 그룹 가입 확인(학생)
 
