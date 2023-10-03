@@ -4,20 +4,16 @@ import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
+import com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
-import com.idukbaduk.metoo9dan.studyGroup.repository.GroupMakeRepository;
+import com.idukbaduk.metoo9dan.studyGroup.repository.GroupRepository;
 import com.idukbaduk.metoo9dan.studyGroup.repository.MemberRepository;
 import com.idukbaduk.metoo9dan.studyGroup.repository.StudyGroupRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StudyGroupService {
     private final StudyGroupRepository studyGroupRepository;
-    private final GroupMakeRepository groupMakeRepository;
+    private final GroupRepository groupRepository;
     private final GameContentRepository gameContentRepository;
     private final MemberRepository memberRepository;
 
@@ -57,7 +53,7 @@ public class StudyGroupService {
         studyGroups.setMember(member);
         //studyGroups.setGameContents(gameContentRepository.findById(game_content_no).orElse(null));
         //studyGroups.setMember(memberRepository.findById(member_no).orElse(null));
-        groupMakeRepository.save(studyGroups);
+        groupRepository.save(studyGroups);
     }
 
     //게임콘텐츠 리스트
@@ -67,15 +63,16 @@ public class StudyGroupService {
 
     //학습그룹 삭제
     public void delete(StudyGroups studyGroups) {
-        groupMakeRepository.delete(studyGroups);
+        groupRepository.delete(studyGroups);
     }
 
     //학습그룹 가져오기
     public StudyGroups getGruop(int group_no) {
-        Optional<StudyGroups> studyGroups = groupMakeRepository.findById(group_no);
+        Optional<StudyGroups> studyGroups = groupRepository.findById(group_no);
         return studyGroups.get();
     }
 
+    //학습그룹 수정하기
     public void modify(StudyGroups studyGroups,String group_name, Integer group_size, Date group_start_date, Date group_finish_date, String group_introduce, Member member) {
         studyGroups.setGroupName(group_name);
         studyGroups.setGroupSize(group_size);
@@ -83,6 +80,11 @@ public class StudyGroupService {
         studyGroups.setGroupFinishDate(group_finish_date);
         studyGroups.setGroupIntroduce(group_introduce);
         studyGroups.setMember(member);
-        groupMakeRepository.save(studyGroups);
+        groupRepository.save(studyGroups);
+    }
+
+    //학습그룹 가입신청 리스트
+    public List<GroupJoinListDTO> getGroupJoinList() {
+        return studyGroupRepository.getGroupJoinList();
     }
 }
