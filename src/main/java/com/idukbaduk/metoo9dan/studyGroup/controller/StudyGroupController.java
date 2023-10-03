@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan.studyGroup.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
 import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
@@ -58,7 +59,7 @@ public class StudyGroupController {
 
         GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
         Member member = memberRepository.findById(memberNo).orElse(null);
-        model.addAttribute("game_content_no", game_content_no);
+        //model.addAttribute("game_content_no", game_content_no);
         if (gameContents == null || member == null) {
             // 에러 처리 (올바른 게임 콘텐츠 번호와 회원 번호를 받아야 함)
         } else {
@@ -91,13 +92,20 @@ public class StudyGroupController {
         System.out.println("GroupInfo="+GroupInfo);
         return "studyGroup/studyGroup_detail";
     }
-  /*  @GetMapping("/detail")
-    public String groupDetail(Model model,@RequestParam(defaultValue="1") int group_no){
-        List<GroupsDetailListDTO> GroupDetail = studyGroupService.getDetailList(group_no);
-        model.addAttribute("GroupDetail",GroupDetail);
-        System.out.println("GroupDetail="+GroupDetail);
-      return "studyGroup/studyGroup_detail";
-    }*/
+
+
+    //학습 그룹 수정(교육자)
+
+
+    //학습 그룹 삭제(교육자)
+    @GetMapping("/delete/{group_no}")
+    public String delete(@PathVariable("group_no") int group_no){
+        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
+        studyGroupService.delete(studyGroups);
+        return "redirect:/studygroup/list";
+    }
+
+    //학습 그룹 가입 승인(교육자)
 
 
     //학습 그룹 가입 신청(학생)

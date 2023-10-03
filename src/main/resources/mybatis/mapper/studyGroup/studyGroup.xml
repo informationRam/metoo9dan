@@ -13,7 +13,7 @@
             s.group_finish_date,
             (SELECT COUNT(member_no)
              FROM baduk.group_students gs
-             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
             s.group_size - (SELECT COUNT(member_no)
                             FROM baduk.group_students gs
                             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_TO
@@ -46,7 +46,7 @@
             s.group_size,
             (SELECT COUNT(member_no)
              FROM baduk.group_students gs
-             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num
         FROM
             baduk.study_groups s
         JOIN
