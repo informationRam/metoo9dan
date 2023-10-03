@@ -3,18 +3,14 @@ package com.idukbaduk.metoo9dan.studyGroup.controller;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
+import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
+import com.idukbaduk.metoo9dan.studyGroup.repository.GroupRepository;
 import com.idukbaduk.metoo9dan.studyGroup.repository.MemberRepository;
 import com.idukbaduk.metoo9dan.studyGroup.service.StudyGroupService;
 import com.idukbaduk.metoo9dan.studyGroup.validation.StudyGroupForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,7 +25,7 @@ public class StudyGroupController {
     private final StudyGroupService studyGroupService;
     private final GameContentRepository gameContentRepository;
     private final MemberRepository memberRepository;
-
+    private final GroupRepository groupRepository;
 
     //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
     @GetMapping("/gameList")
@@ -51,7 +47,7 @@ public class StudyGroupController {
 
     //학습 그룹 등록 처리
     @PostMapping("/add/{game_content_no}")
-    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,@PathVariable("game_content_no") int game_content_no,Model model){
+    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,@PathVariable("game_content_no") int game_content_no){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
             return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
         }
@@ -60,7 +56,6 @@ public class StudyGroupController {
 
         GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
         Member member = memberRepository.findById(memberNo).orElse(null);
-        //model.addAttribute("game_content_no", game_content_no);
         if (gameContents == null || member == null) {
             // 에러 처리 (올바른 게임 콘텐츠 번호와 회원 번호를 받아야 함)
         } else {
@@ -139,16 +134,29 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
-    @GetMapping("/joinList")
-    public String join(Model model){
+    @GetMapping("/groupJoinList")
+    public String joinList(Model model){
         List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList();
         model.addAttribute("groupJoinList",groupJoinList);
         System.out.println("groupJoinList="+groupJoinList);
         return "studyGroup/studyGroup_joinList";
     }
 
-    //학습 그룹 가입 확인(학생)
+    //학습 그룹 가입 신청 처리
+    @PostMapping("/join/{group_no}")
+    public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no,@RequestParam(defaultValue="3") int member_no){
+        Member member = memberRepository.findById(member_no).orElse(null);
 
+        StudyGroups studyGroups = groupRepository.findById(group_no).orElse(null);
+        studyGroupService.groupJoin(studyGroups,member,groupJoinDTO.getApplication_date(),groupJoinDTO.getIs_approved(),groupJoinDTO.getApproved_date());
+        return "redirect:/studygroup/groupJoinList";
+    }
+
+    //학습 그룹 가입 확인(학생)
+    @GetMapping("/joinConfirm")
+    public String joinConfirm(){
+        return "studyGroup/joinConfirm";
+    }
 
 
 }
