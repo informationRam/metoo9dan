@@ -4,10 +4,7 @@ import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.GroupStudents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
+import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import com.idukbaduk.metoo9dan.studyGroup.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -88,6 +85,7 @@ public class StudyGroupService {
         return studyGroupRepository.getGroupJoinList();
     }
 
+    //학습그룹 신청
     public void groupJoin(StudyGroups studyGroups, Member member, LocalDateTime application_date, Boolean is_approved,LocalDateTime approved_date){
         GroupStudents groupStudents = new GroupStudents();
         groupStudents.setStudyGroups(studyGroups);
@@ -96,5 +94,10 @@ public class StudyGroupService {
         groupStudents.setIsApproved(Boolean.FALSE);
         groupStudents.setApprovedDate(approved_date);
         groupStudentsRepository.save(groupStudents);
+    }
+
+    //학습그룹 신청 리스트
+    public List<ApproveListDTO> getApproveList(int member_no) {
+        return studyGroupRepository.getApproveList(member_no);
     }
 }

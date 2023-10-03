@@ -27,6 +27,7 @@ public class StudyGroupController {
     private final MemberRepository memberRepository;
     private final GroupRepository groupRepository;
 
+
     //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
     @GetMapping("/gameList")
     public String gamelist(Model model,@RequestParam(defaultValue="1") int member_no){
@@ -131,6 +132,20 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 승인(교육자)
+    //학습 그룹 가입 신청 리스트 가져오기
+    @GetMapping("/approveList")
+    public String approveList(Model model,@RequestParam(defaultValue="1") int member_no){
+        List<ApproveListDTO> approveList = studyGroupService.getApproveList(member_no);
+        model.addAttribute("approveList",approveList);
+        System.out.println("approveList="+approveList);
+        return "studyGroup/studyGroup_approveList";
+    }
+
+    //학습 그룹 가입 승인 처리
+    @PostMapping("/approve")
+    public String approve(){
+        return "redirect:/studygroup/approveList";
+    }
 
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
@@ -142,6 +157,7 @@ public class StudyGroupController {
         return "studyGroup/studyGroup_joinList";
     }
 
+
     //학습 그룹 가입 신청 처리
     @PostMapping("/join/{group_no}")
     public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no,@RequestParam(defaultValue="3") int member_no){
@@ -152,11 +168,14 @@ public class StudyGroupController {
         return "redirect:/studygroup/groupJoinList";
     }
 
+
     //학습 그룹 가입 확인(학생)
     @GetMapping("/joinConfirm")
     public String joinConfirm(){
         return "studyGroup/joinConfirm";
     }
+
+    //학습 그룹 취소(학생)
 
 
 }
