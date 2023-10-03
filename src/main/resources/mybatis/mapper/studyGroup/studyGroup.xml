@@ -75,7 +75,7 @@
     </select>
 
     <!--학습그룹 가입(학습그룹 전체리스트)-->
-    <select id="GroupJoinList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+    <select id="GroupJoinList" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
         <![CDATA[
         SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
                  (SELECT COUNT(member_no)
@@ -87,6 +87,17 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
+		]]>
+    </select>
+
+    <!--학습그룹 신청 리스트-->
+    <select id="ApproveList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.ApproveListDTO">
+        <![CDATA[
+        SELECT g.group_students_no,s.group_name,m.name,m.tel,g.application_date,g.is_approved
+        FROM baduk.group_students g
+        JOIN baduk.study_groups s ON s.group_no=g.group_no
+        JOIN baduk.members m ON g.member_no=m.member_no
+        WHERE s.member_no=#{member_no}
 		]]>
     </select>
 

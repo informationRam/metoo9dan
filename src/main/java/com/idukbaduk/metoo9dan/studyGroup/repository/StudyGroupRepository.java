@@ -1,9 +1,6 @@
 package com.idukbaduk.metoo9dan.studyGroup.repository;
 
-import com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO;
-import com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO;
+import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.data.domain.Page;
@@ -38,6 +35,12 @@ public class StudyGroupRepository {
 
     //학습 그룹 가입(학습그룹 리스트 전체)
     public List<GroupJoinListDTO> getGroupJoinList() {
+
         return sqlSession.selectList("StudyGroup.GroupJoinList");
+    }
+
+    //학습 그룹 신청 리스트
+    public List<ApproveListDTO> getApproveList(int member_no) {
+        return sqlSession.selectList("StudyGroup.ApproveList",member_no);
     }
 }
