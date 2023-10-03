@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class StudyGroupService {
     public List<GroupsDetailListDTO> getDetailList(int group_no) {
         return studyGroupRepository.getGroupDetailList(group_no);
     }
+
     public List<GroupsDetailListDTO> getGroupInfo(int group_no) {
         return studyGroupRepository.getGroupInfo(group_no);
     }
@@ -57,4 +59,14 @@ public class StudyGroupService {
     public List<GameContentsListDTO> getGameList(int member_no) {
         return studyGroupRepository.getGameList(member_no);
     }
+
+    public void delete(StudyGroups studyGroups) {
+        groupMakeRepository.delete(studyGroups);
+    }
+
+    public StudyGroups getGruop(int group_no) {
+        Optional<StudyGroups> studyGroups = groupMakeRepository.findById(group_no);
+        return studyGroups.get();
+    }
+
 }

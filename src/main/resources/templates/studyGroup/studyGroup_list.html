@@ -9,6 +9,11 @@
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <p/>[학습 그룹 리스트]
             <div>
+                <select></select>
+                <button>조회하기</button>
+                <button>변경하기</button>
+                <button id="deleteButton" class="deleteButton">삭제하기</button>
+                <p/>
                 <table class="table">
                     <thead class="table-dark">
                     <tr>
@@ -23,7 +28,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr  th:each="studyGroup, loop : ${studyGroup}">
+                    <tr th:each="studyGroup, loop : ${studyGroup}">
                         <td>
                             <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${studyGroup.group_no}" />
                         </td>
@@ -33,7 +38,7 @@
                         <!--<td th:text="${studyGroup.subscription_duration}"></td>-->
                         <td th:text="${#dates.format(studyGroup.group_start_date,'yyyy-MM-dd')}"></td>
                         <td th:text="${#dates.format(studyGroup.group_finish_date,'yyyy-MM-dd')}"></td>
-                        <td th:text="${studyGroup.aproved_num}"></td>
+                        <td th:text="${studyGroup.approved_num}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -43,6 +48,11 @@
         </div>
     </div>
 </div>
+<!-- Thymeleaf 템플릿 내부 -->
+<!--<script th:inline="javascript">
+    var approvedNum = /*[[${studyGroup.approved_num}]]*/ 0; // studyGroup.approved_num 값을 JavaScript 변수 approvedNum에 할당
+</script>-->
+
 </html>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -67,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+
     // 체크박스 클릭 시 다른 체크박스의 선택을 해제
     var checkboxes = document.querySelectorAll(".groupCheckbox");
     checkboxes.forEach(function (checkbox) {
@@ -83,5 +94,57 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+    document.addEventListener("DOMContentLoaded", function () {
+ // 삭제 버튼 클릭 시
+    document.getElementById("deleteButton").addEventListener("click", function () {
+        var selectedGroupNo = null;
+
+        // 선택된 체크박스 찾기
+        var checkboxes = document.querySelectorAll(".groupCheckbox");
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedGroupNo = checkbox.value;
+                return; // 첫 번째 선택된 체크박스만 처리
+            }
+        });
+
+         if (selectedGroupNo !== null) {
+            // 사용자에게 삭제 여부 확인
+            var selectedGroupCheckbox = document.querySelector("input[name='selectedGroup'][value='" + selectedGroupNo + "']");
+            var approvedNum = parseInt(selectedGroupCheckbox.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent);
+            console.log("approvedNum:", approvedNum);
+            //var approvedNum = parseInt(document.querySelector("input[name='selectedGroup'][value='" + selectedGroupNo + "']").parentNode.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent);
+            if (approvedNum !== 0) {
+                            alert("그룹에 등록된 학생이 있어 삭제할 수 없습니다.");
+            }else{
+                if (confirm("정말로 이 그룹을 삭제하시겠습니까?")) {
+                    // 선택된 그룹 번호를 사용하여 링크로 이동
+                    window.location.href = "/studygroup/delete/" + selectedGroupNo;
+                }
+            }
+        } else {
+            alert("그룹을 선택하세요.");
+        }
+    });
+
+     // 체크박스 클릭 시 다른 체크박스의 선택을 해제
+    var checkboxes = document.querySelectorAll(".groupCheckbox");
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener("click", function () {
+            if (this.checked) {
+                // 다른 체크박스 선택 해제
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }
+        });
+    });
+
+});
+
+
 </script>
 

@@ -14,7 +14,7 @@ public class GroupsDetailListDTO {
     private String group_name;//학습그룹명
     private String game_name;//게임콘텐츠명
     private int group_size;//그룹 제한 인원
-    private int aproved_num; //그룹가입인원
+    private int approved_num; //그룹가입인원
     private String name; //그룹가입학생
     private String tel; //그룹가입학생 번호
     private String email; //그룹가입학생 이메일
