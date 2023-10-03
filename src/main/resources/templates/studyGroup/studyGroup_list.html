@@ -1,8 +1,6 @@
-<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
     <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
@@ -11,7 +9,7 @@
             <div>
                 <select></select>
                 <button>조회하기</button>
-                <button>변경하기</button>
+                <button id="modifyButton">변경하기</button>
                 <button id="deleteButton" class="deleteButton">삭제하기</button>
                 <p/>
                 <table class="table">
@@ -145,6 +143,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+    document.addEventListener("DOMContentLoaded", function () {
+    // 수정 버튼 클릭 시
+    document.getElementById("modifyButton").addEventListener("click", function () {
+        var selectedGroupNo = null;
+
+        // 선택된 체크박스 찾기
+        var checkboxes = document.querySelectorAll(".groupCheckbox");
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedGroupNo = checkbox.value;
+                return; // 첫 번째 선택된 체크박스만 처리
+            }
+        });
+
+        if (selectedGroupNo !== null) {
+            // 선택된 그룹 번호를 사용하여 링크로 이동
+            window.location.href = "/studygroup/modify/" + selectedGroupNo;
+        } else {
+            alert("그룹을 선택하세요.");
+        }
+    });
+
+
+    // 체크박스 클릭 시 다른 체크박스의 선택을 해제
+    var checkboxes = document.querySelectorAll(".groupCheckbox");
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener("click", function () {
+            if (this.checked) {
+                // 다른 체크박스 선택 해제
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }
+        });
+    });
+
+});
 
 </script>
 

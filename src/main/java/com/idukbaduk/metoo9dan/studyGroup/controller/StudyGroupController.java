@@ -30,7 +30,7 @@ public class StudyGroupController {
     private final MemberRepository memberRepository;
 
 
-    //학습 그룹 등록(교육자), 게임콘텐츠 조회
+    //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
     @GetMapping("/gameList")
     public String gamelist(Model model,@RequestParam(defaultValue="1") int member_no){
         List<GameContentsListDTO> gameContents = studyGroupService.getGameList(member_no);
@@ -41,7 +41,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 등록 상세(교육자)
-    //학습 그룹 폼
+    //학습 그룹 등록 폼
     @GetMapping("/add/{game_content_no}")
     public String add(StudyGroupForm studyGroupForm){
 
@@ -95,6 +95,34 @@ public class StudyGroupController {
 
 
     //학습 그룹 수정(교육자)
+    //학습 그룹 수정 폼
+    @GetMapping("/modify/{group_no}")
+    public String modify(StudyGroupForm studyGroupForm,@PathVariable("group_no") int group_no,@RequestParam(defaultValue="1") int member_no){
+        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
+        studyGroupForm.setGroupName(studyGroups.getGroupName());
+        studyGroupForm.setGroupSize(studyGroups.getGroupSize());
+        studyGroupForm.setGroupStartDate(studyGroups.getGroupStartDate());
+        studyGroupForm.setGroupFinishDate(studyGroups.getGroupFinishDate());
+        studyGroupForm.setGroupIntroduce(studyGroups.getGroupIntroduce());
+        studyGroupForm.setMemberNo(member_no);
+        return "studygroup/studyGroup_modifyForm";
+    }
+
+    //학습 그룹 수정 처리
+    @PostMapping("/modify/{group_no}")
+    public String studygroupmodify(@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
+                                  ,@PathVariable("group_no") int group_no,Model model){
+        if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
+            return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
+        }
+        Integer memberNo = studyGroupForm.getMemberNo();
+
+        model.addAttribute("group_no",group_no);
+        Member member = memberRepository.findById(memberNo).orElse(null);
+        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
+        studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member);
+        return "redirect:/studygroup/list";
+    }
 
 
     //학습 그룹 삭제(교육자)
@@ -104,6 +132,7 @@ public class StudyGroupController {
         studyGroupService.delete(studyGroups);
         return "redirect:/studygroup/list";
     }
+
 
     //학습 그룹 가입 승인(교육자)
 

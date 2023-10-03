@@ -5,7 +5,7 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <p>[학습 그룹 등록 폼]</p>
+            <p>[학습 그룹 수정 폼]</p>
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
                 <div th:replace="~{form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
@@ -29,18 +29,52 @@
                     <textarea type="text" th:field="*{groupIntroduce}" class="form-control"/>
                 </div>
                 <div class="mb-3">
-                    <!--<label for="game_content_no" class="form-label">게임콘텐츠no</label>-->
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
-                    <!--<input type="hidden" th:field="*{gameContentNo}" class="form-control" th:value="${game_content_no}"/>-->
                 </div>
                 <div class="mb-3">
                     <label for="member_no" class="form-label">회원번호</label>
                     <input type="number" th:field="*{memberNo}" class="form-control"/>
                 </div>
-                <input type="submit" value="등록" class="btn btn-primary my-2"/>
+                <input type="submit" value="수정하기" class="btn btn-primary my-2"/>
             </form>
-
+            <script th:inline="javascript">
+                var groupNo = /*[[${group_no}]]*/ null; // 컨트롤러에서 전달받은 group_no 값을 JavaScript 변수에 할당
+            </script>
         </div>
     </div>
 </div>
+
+
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+     document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
+         event.preventDefault(); // 폼의 기본 동작 방지
+
+         // 폼 데이터를 생성
+         var formData = new FormData(this);
+
+         // formData에 groupNo를 추가
+         formData.append("groupNo", groupNo);
+
+         // 폼 데이터를 서버로 전송
+         fetch("/studygroup/modify/" + groupNo, {
+             method: "POST",
+             body: formData,
+         })
+         .then(function (response) {
+             if (response.status === 200) {
+                 alert("수정이 완료되었습니다.");
+                 window.location.href ="/studygroup/list";
+             } else {
+                 alert("수정에 실패했습니다. 다시 시도하세요.");
+             }
+         })
+         .catch(function (error) {
+             alert("오류가 발생했습니다. 다시 시도하세요.");
+         });
+     });
+ });
+
+</script>

@@ -36,10 +36,10 @@ public class StudyGroupForm {
     @Valid
     private String groupIntroduce; //그룹 소개
 
-    @NotNull
+ /*   @NotNull
     @Min(value = 1)
     private Integer gameContentNo;
-
+*/
     @NotNull
     @Min(value = 1)
     private Integer memberNo;
