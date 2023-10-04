@@ -1,0 +1,174 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h2>회원가입</h2>
+            <p>가입을 통해 더 다양한 서비스를 만나보세요 </p>
+            <!-- //로딩화면 -->
+            <form   th:action="@{/member/signup}"
+                    th:object="${userCreateForm}" method="post">
+
+
+              <div class="sub_cont">
+                    <div class="join">
+                        <div>
+                            <span class="noti">(<em>*</em>) 표시 필수 입력</span>
+                            <div>
+                                <table class="tbl_input_join">
+                                    <caption>기본정보입력</caption>
+                                    <colgroup>
+                                        <col width="140" />
+                                        <col width="1000" />
+                                    </colgroup>
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row">아이디<em>*</em></th>
+                                        <td>
+                                            <input type="text" id="member_id" name="member_id" title="아이디" placeholder="영문 또는 영문+숫자조합으로 6~13자리까지 사용 가능" onblur="this.placeholder='영문 또는 영문+숫자조합으로 6~13자리까지 사용 가능'" style="width:368px" maxlength='13' />
+                                            <span class="noti" id="noti_UserID" style="display:none">아이디를 입력해주세요.</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">비밀번호<em>*</em></th>
+                                        <td>
+                                            <input type="password" title="아이디" id="PassWord1" name="PassWord1" maxlength="20" placeholder="비밀번호 (영문 숫자 특수문자 2가지 이상 10~20자)" onfocus="this.value=''" style="width:368px" />
+                                            <span class="noti" id="noti_PassWord1" style="display:none">비밀번호를 입력해주세요.</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">비밀번호 확인<em>*</em></th>
+                                        <td>
+                                            <input type="password" id="PassWord2" name="PassWord2" maxlength="20" title="아이디" value="" style="width:368px" />
+                                            <span class="noti" id="noti_PassWord2" style="display:none">비밀번호 확인을 입력해주세요 .</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">생년월일<em>*</em></th>
+                                        <td>
+                                            <p class="birth">
+                                                <select id="ddl_Birthy" name="ddl_Birthy"><option value="">태어난 연도</option>
+                                                    <option value="">년도선택</option>
+                                                    <option value="2000">2000</option>
+                                                    <option value="2001">2001</option>
+                                                    <option value="2002">2002</option>
+                                                    <option value="2003">2003</option>
+                                                    <option value="2004">2004</option>
+                                                    <option value="2005">2005</option>
+                                                    <option value="2006">2006</option>
+                                                    <option value="2007">2007</option>
+                                                    <option value="2008">2008</option>
+                                                    <option value="2009">2009</option>
+                                                    <option value="2010">2010</option>
+                                                    <option value="2011">2011</option>
+                                                    <option value="2012">2012</option>
+                                                    <option value="2013">2013</option>
+                                                    <option value="2014">2014</option>
+                                                    <option value="2015">2015</option>
+                                                    <option value="2016">2016</option>
+                                                    <option value="2017">2017</option>
+                                                    <option value="2018">2018</option>
+                                                    <option value="2019">2019</option>
+                                                    <option value="2020">2020</option>
+                                                    <option value="2021">2021</option>
+                                                    <option value="2022">2022</option>
+                                                    <option value="2023">2023</option>
+                                                </select>
+                                                <select id="ddl_Birthm" name="ddl_Birthm"><option value="">태어난 월</option>
+                                                    <option value="">월선택</option>
+                                                    <option value="01">1</option>
+                                                    <option value="02">2</option>
+                                                    <option value="03">3</option>
+                                                    <option value="04">4</option>
+                                                    <option value="05">5</option>
+                                                    <option value="06">6</option>
+                                                    <option value="07">7</option>
+                                                    <option value="08">8</option>
+                                                    <option value="09">9</option>
+                                                    <option value="10">10</option>
+                                                    <option value="11">11</option>
+                                                    <option value="12">12</option>
+                                                </select>
+                                                <select id="ddl_Birthd" name="ddl_Birthd"><option value="">태어난 일</option>
+                                                    <option value="">일선택</option>
+                                                    <option value="01">1</option>
+                                                    <option value="02">2</option>
+                                                    <option value="03">3</option>
+                                                    <option value="04">4</option>
+                                                    <option value="05">5</option>
+                                                    <option value="06">6</option>
+                                                    <option value="07">7</option>
+                                                    <option value="08">8</option>
+                                                    <option value="09">9</option>
+                                                    <option value="10">10</option>
+                                                    <option value="11">11</option>
+                                                    <option value="12">12</option>
+                                                    <option value="13">13</option>
+                                                    <option value="14">14</option>
+                                                    <option value="15">15</option>
+                                                    <option value="16">16</option>
+                                                    <option value="17">17</option>
+                                                    <option value="18">18</option>
+                                                    <option value="19">19</option>
+                                                    <option value="20">20</option>
+                                                    <option value="21">21</option>
+                                                    <option value="22">22</option>
+                                                    <option value="23">23</option>
+                                                    <option value="24">24</option>
+                                                    <option value="25">25</option>
+                                                    <option value="26">26</option>
+                                                    <option value="27">27</option>
+                                                    <option value="28">28</option>
+                                                    <option value="29">29</option>
+                                                    <option value="30">30</option>
+                                                    <option value="31">31</option>
+                                                </select>
+                                            </p>
+                                            <span class="noti" id="noti_Birth" style="display:none">생년월일을 선택해주세요.</span>
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <th scope="row">성별</th>
+                                        <td>
+                                            <p class="gender">
+                                                <span><input type="radio" name="rd_gender" id="male" value="M" /><label for="male">남</label></span>
+                                                <span><input type="radio" name="rd_gender" id="female" value="F" /><label for="female">여</label></span>
+                                            </p>
+                                            <script type="text/javascript">
+                                                $(".gender").find("input").click(function () {
+                                                    $(".gender").find("span").removeClass("on");
+                                                    $(".gender input:checked").parent("span").addClass("on");
+                                                });
+                                            </script>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">이메일</th>
+                                        <td>
+                                            <input type="text" id="txt_Email1" name="txt_Email1" style='width:368px;' />&nbsp;&nbsp;@&nbsp;&nbsp;<select id="ddl_Email2" name="ddl_Email2" onchange="email_change(this);"><option value="">선택</option>
+                                            <option value="01">daum.net</option>
+                                            <option value="02">gmail.com</option>
+                                            <option value="03">hanmail.net</option>
+                                            <option value="04">hotmail.com</option>
+                                            <option value="05">nate.com</option>
+                                            <option value="06">naver.com</option>
+                                            <option value="07">icloud.com</option>
+                                            <option value="08">outlook.com</option>
+                                            <option value="09">kakao.com</option>
+                                            <option value="99">직접입력</option>
+                                        </select>
+                                            <input type="text" id="txt_Email3" name="txt_Email3" style="display: none" />
+                                            <span class="noti" style="display:none;">이메일 주소를 정확히 입력해주세요.</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+</div>
+    </div>
+</div>
+</html>

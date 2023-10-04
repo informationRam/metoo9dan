@@ -18,15 +18,34 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 
-@RequestMapping("/join")
+@RequestMapping("/member")
 @RequiredArgsConstructor
 @Controller
 
-public class userController {
+public class memberController {
 
     private final SmsService smsService;
 
-    //SMS 발송 뷰페이지 반환
+
+    //로그인 폼을 보여주기
+    @GetMapping("/login")
+    public String login(){
+        return "/member/loginPage";
+    }
+
+    //회원가입 폼을 보여줘
+    @GetMapping("/signup2")
+    public String signUp2(){
+        return "/member/signupForm2";
+    }
+
+    //회원가입 폼을 보여줘
+    @GetMapping("/signup")
+    public String signUp(){
+        return "/member/signupForm";
+    }
+
+    //SMS 발송 뷰페이지
     @GetMapping("/sms")
     public String getSmsPage() {
         return "/member/sendSms";
