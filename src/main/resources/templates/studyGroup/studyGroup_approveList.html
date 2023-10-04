@@ -11,7 +11,7 @@
                 <table class="table">
                     <thead class="table-dark">
                     <tr>
-                        <!--<th>선택</th>-->
+                        <th>NO</th>
                         <th>학습 그룹명</th>
                         <th>학생 이름</th>
                         <th>학생 연락처</th>
@@ -20,15 +20,15 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="approveList, loop : ${approveList}">
-                        <!--<td>
-                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${approveList.group_students_no}" />
-                        </td>-->
+                    <tr th:if="${#lists.size(approveList) != 0}" th:each="approveList, idx :${approveList}">
+                        <td th:text="(${idx.index + 1})"></td>
                         <td th:text="${approveList.group_name}"></td>
                         <td th:text="${approveList.name}"></td>
                         <td th:text="${approveList.tel}"></td>
                         <td th:text="${#dates.format(approveList.application_date,'yyyy-MM-dd')}"></td>
-                        <td th:text="${approveList.is_approved}"></td>
+                        <td>
+                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${approveList.is_approved}" th:checked="${approveList.is_approved}"/>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
