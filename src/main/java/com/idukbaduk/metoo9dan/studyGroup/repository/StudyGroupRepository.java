@@ -43,4 +43,10 @@ public class StudyGroupRepository {
     public List<ApproveListDTO> getApproveList(int member_no) {
         return sqlSession.selectList("StudyGroup.ApproveList",member_no);
     }
+
+    //학습 그룹 승인 처리
+    public int updateApproval(List<Integer> groupStudentsNoList){
+        return sqlSession.update("StudyGroup.updateApproval",groupStudentsNoList); //수정 성공시 1반환
+    }
+
 }

@@ -100,4 +100,10 @@ public class StudyGroupService {
     public List<ApproveListDTO> getApproveList(int member_no) {
         return studyGroupRepository.getApproveList(member_no);
     }
+
+    //학습그룹 승인 신청
+    public int updateApproval(List<Integer> groupStudentsNoList){
+        return studyGroupRepository.updateApproval(groupStudentsNoList);
+    }
+
 }

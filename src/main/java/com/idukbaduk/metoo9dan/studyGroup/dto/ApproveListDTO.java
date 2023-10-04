@@ -17,4 +17,5 @@ public class ApproveListDTO {
     private String tel; //학생 번호
     private Date application_date; //신청일
     private Boolean is_approved; //승인여부
+    private Date approved_date; //승인 일자
 }
