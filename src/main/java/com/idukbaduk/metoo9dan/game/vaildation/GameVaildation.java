@@ -1,0 +1,44 @@
+package com.idukbaduk.metoo9dan.game.vaildation;
+
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+public class GameVaildation {
+
+    @NotEmpty(message = "게임콘텐츠명은 필수 입니다.")
+    private String game_name;             //'게임 콘텐츠명'
+
+    @NotEmpty(message = "게임콘텐츠명은 필수 입니다.")
+    private String difficulty;             //'난이도'
+
+    @Min(value = 1, message = "최소값은 1 이상이어야 합니다.")
+    private Integer subscription_duration;  //'구독기간'
+
+    @Min(value = 1, message = "최소값은 1 이상이어야 합니다.")
+    private Integer max_subscribers;        //'구독 인원'
+
+    @NotNull(message = "정가는 필수 입니다.")
+    private Double original_price;         //'정가'
+
+    private Double discount_rate;          //'할인율'
+
+    private Double sale_price;             //'판매가'
+
+    @NotEmpty(message = "게임콘텐츠명은 필수 입니다.")
+    private String package_details;        //'패키지 내용'
+
+    private LocalDateTime creation_date;  // '등록일'
+
+    private String status;                //'게시글 상태'
+
+    private List<MultipartFile> origin_file_name;  //'원본파일명'
+}

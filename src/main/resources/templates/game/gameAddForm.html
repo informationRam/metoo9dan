@@ -1,0 +1,139 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <form id="gameadd" class="my-2" th:object="${gameVaildation}" th:action="@{/game/add}" method="post" enctype="multipart/form-data">
+            <div>
+                <!-- 게임콘텐츠명 -->
+                <div class="mb-3 row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">게임콘텐츠명</label>
+                    <div class="col-sm-10">
+                        <input type="text" th:field="*{game_name}">
+                    </div>
+                </div>
+            <!-- 학습난이도 -->
+                <div class="mb-3 row">
+                    <label for="game_name" class="col-sm-2 col-form-label">학습난이도</label>
+                    <div class="col-sm-10">
+                        <select th:field="*{difficulty}" class="form-select">
+                            <option value="beginner">초급</option>
+                            <option value="intermediate">중급</option>
+                            <option value="advanced">고급</option>
+                        </select>
+                    </div>
+                </div>
+            <!-- 구독기간 -->
+                    <div class="mb-3 row">
+                        <label for="subscription_duration" class="col-sm-2 col-form-label">구독기간</label>
+                        <div class="col-sm-10">
+                            <input type="text" th:field="*{subscription_duration}" class="form-control">
+                        </div>
+                    </div>
+            <!-- 구독가능인원 -->
+                    <div class="mb-3 row">
+                        <label for="max_subscribers" class="col-sm-2 col-form-label">구독가능인원</label>
+                        <div class="col-sm-10">
+                            <input type="number" th:field="*{max_subscribers}" class="form-control">
+                        </div>
+                    </div>
+                <!-- 정가 -->
+                <div class="mb-3 row">
+                    <label for="original_price" class="col-sm-2 col-form-label">정가</label>
+                    <div class="col-sm-10">
+                        <input type="text" th:field="*{original_price}" class="form-control" id="original_price">
+                    </div>
+                </div>
+                <!-- 할인율 -->
+                <div class="mb-3 row">
+                    <label for="discount_rate" class="col-sm-2 col-form-label">할인율</label>
+                    <div class="col-sm-10">
+                        <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
+                    </div>
+                </div>
+                <!-- 판매가 -->
+                <div class="mb-3 row">
+                    <label for="sale_price" class="col-sm-2 col-form-label">판매가</label>
+                    <div class="col-sm-10">
+                        <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price">
+                    </div>
+                </div>
+                <!-- 패키지내용 -->
+                <div class="mb-3 row">
+                    <label for="package_details" class="col-sm-2 col-form-label">패키지내용</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" th:field="*{package_details}" rows="8" placeholder="내용을 입력해주세요."></textarea>
+                    </div>
+                </div>
+             파일업로드
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">Default file input example</label>
+                    <input class="form-control" type="file" th:field="*{origin_file_name}" multiple>
+                </div>
+           </div>
+                <button type="submit">등록하기</button>
+        </form>
+        </div>
+    </div>
+</div>
+<!--<script>
+    // Function to calculate and update the sale price
+    function calculateSalePrice() {
+        // Get the values of original_price and discount_rate
+        var originalPrice = parseFloat(document.getElementById('original_price').value);
+        var discountRate = parseFloat(document.getElementById('discount_rate').value);
+
+        // Check if the values are valid numbers
+        if (!isNaN(originalPrice) && !isNaN(discountRate)) {
+            // Calculate the sale price
+            var salePrice = originalPrice * (1 - discountRate / 100);
+
+            // Update the sale_price input field
+            document.getElementById('sale_price').value = salePrice.toFixed(2); // Format to 2 decimal places
+        }
+    }
+
+    // Add event listeners to original_price and discount_rate fields
+    document.getElementById('original_price').addEventListener('input', calculateSalePrice);
+    document.getElementById('discount_rate').addEventListener('input', calculateSalePrice);
+</script>-->
+
+<!--<script>
+  var button = document.getElementById('button');
+
+  function loadText() {
+      var discount_rate = discount_rate.value;
+      var original_price = original_price.value;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/game/calculator', true);
+
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+      // email 값을 전송
+      var params1 = 'discount_rate=' + emailValue;
+      var params2 = 'original_price=' + emailValue;
+
+      varoriginal_price
+      xhr.onload = function () {
+          console.log("3: ", this.status);
+          if (this.status == 200) {
+              console.log("4");
+              // JSON 응답 파싱
+              var responseJson = JSON.parse(this.responseText);
+
+              // user.userid 값을 가져와서 모달 내용에 출력
+              var userid = responseJson.userid;
+              console.log("userid:", userid);
+
+              sale_price.innerText = modalText;
+          }
+      };
+
+      xhr.send(params);
+  }
+</script>-->
+
+
+</html>
