@@ -4,6 +4,7 @@ import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
+import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,18 +39,21 @@ public class NoticeController {
     // 상세조회 (+댓글 목록조회 및 작성 폼)
     @GetMapping("/detail/{noticeNo}")
     public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo,
+                                  NoticeReplyForm noticeReplyForm,
                                   Model model){
         Notice notice = noticeService.getNotice(noticeNo);
         if(notice!=null){
             noticeService.readCntUp(noticeNo);
         }
         List<NoticeReply> noticeReply = noticeService.getNoticeReply(notice);
-        model.addAttribute("notice", notice);
-        model.addAttribute("noticeReply", noticeReply);
+        model.addAttribute("notice", notice); //공지상세 내용
+        model.addAttribute("noticeReply", noticeReply); //공지 댓글 목록
         return "notice/noticeDetail";
     }
 
-    //작성폼 보여줘 요청
+
+
+    //공지 작성폼 보여줘 요청
     @GetMapping("/add")
     public String noticeAddForm(NoticeForm noticeForm){
 
@@ -61,13 +65,13 @@ public class NoticeController {
     public String add(@Valid NoticeForm noticeForm,
                       BindingResult bindingResult
                       ){
-        if(!bindingResult.hasErrors()){
+        if(bindingResult.hasErrors()){
+            return "/notice/noticeForm"; //에러가 있으면, noticeForm.html로 이동.
+
+        } else { //에러가 없으면, 공지사항 등록 진행
             noticeService.add(noticeForm.getTitle(),
                               noticeForm.getContent());
-
-        } else {
-            return "/notice/noticeForm"; //에러가 있으면, noticeForm.html로 이동.
+            return "redirect:/notice/list"; //질문목록조회 요청
         }
-        return "redirect:/notice/list"; //질문목록조회 요청
     }
 }

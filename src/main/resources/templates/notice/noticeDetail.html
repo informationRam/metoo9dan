@@ -30,18 +30,15 @@
                     </div>
                 </div>
                 <hr/>
-                <!--댓글 등록 폼
-                <form id="replyForm" action="">
-                    유효성 검사시 에러 출력 영역
+                <form id="replyForm" th:object="${noticeReplyForm}" th:action="@{|/reply/add/${notice.noticeNo}|}" method="post">
                     <div th:replace="~{form_errors::formErrorsFragment}"></div>
-                    <hr/>
                     <textarea th:field="*{content}" rows="6"></textarea>
                     <input type="submit" value="댓글 등록" class="btn btn-primary">
-                </form>-->
+                </form>
                 <!--댓글개수 출력-->
-                <h6 th:text="|${noticeReply.size}개의 댓글|"></h6>
+                <h6 th:text="|${#lists.size(notice.noticeReplies)}개의 댓글|"></h6>
                 <!--댓글목록 시작-->
-                <div class="card" th:each="reply : ${noticeReply}">
+                <div class="card" th:each="reply : ${notice.noticeReplies}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <span class="badge bg-primary p-2 text-start" th:text="${reply.member.memberId}">작성자</span>
@@ -56,10 +53,14 @@
                 </div>
             </div>
 
-
-
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->
-
+<div layout:fragment="script">
+    <script>
+        if('[[${msg}]]'!==''){
+            alert('[[${msg}]]');
+        }
+    </script>
+</div>
 </html>
