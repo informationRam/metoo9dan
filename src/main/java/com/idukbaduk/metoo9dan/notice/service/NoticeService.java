@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-//NoticeController의 비즈니스 로직을 처리하는 클래스
+//NoticeController의 비즈니스 로직을 처리하는 서비스 클래스
 @RequiredArgsConstructor
 @Service
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
-    private final NoticeReplyRepository noticeReplyRepository;
+    private final NoticeReplyRepository replyRepository;
 
     //목록조회
     public Page<Notice> getList(int pageNo, int listSize) {
@@ -78,7 +78,7 @@ public class NoticeService {
 
     //댓글 목록조회
     public List<NoticeReply> getNoticeReply(Notice notice) {
-        List<NoticeReply> noticeReply = noticeReplyRepository.findByNotice(notice);
+        List<NoticeReply> noticeReply = replyRepository.findByNotice(notice);
         return noticeReply;
     }
 
