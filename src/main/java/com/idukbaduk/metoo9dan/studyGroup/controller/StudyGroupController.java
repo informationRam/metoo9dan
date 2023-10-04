@@ -11,12 +11,17 @@ import com.idukbaduk.metoo9dan.studyGroup.service.StudyGroupService;
 import com.idukbaduk.metoo9dan.studyGroup.validation.StudyGroupForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/studygroup")
 @Controller
@@ -142,10 +147,40 @@ public class StudyGroupController {
     }
 
     //학습 그룹 가입 승인 처리
-    @PostMapping("/approve")
-    public String approve(){
-        return "redirect:/studygroup/approveList";
+    @PostMapping("/updateApprove")
+    public String approve(@ModelAttribute("approvalForm") ApprovalForm approvalForm){
+        List<Integer> selectedMembers = approvalForm.getSelectedMembers();
+        if(selectedMembers==null){
+            return "redirect:/studygroup/approveList";
+        }
+        System.out.println("selectedMembers="+selectedMembers);
+        int result = studyGroupService.updateApproval(selectedMembers);
+
+        if(result==1){ //수정성공시
+           return "redirect:/studygroup/approveList";
+        } else {
+            return "redirect:/studygroup/approveList";
+        }
     }
+ /*   @PostMapping("/updateApprove")
+    @ResponseBody
+    public Map<String, String> approve(@ModelAttribute("approvalForm") ApprovalForm approvalForm){
+        Map<String, String> response = new HashMap<>();
+        List<Integer> selectedMembers = approvalForm.getSelectedMembers();
+        if(selectedMembers==null){
+            response.put("result", "/studygroup/approveList");
+        } else {
+            int result = studyGroupService.updateApproval(selectedMembers);
+            if(result==1){ //수정성공시
+                response.put("result", "/studygroup/approveList");
+            } else {
+                response.put("result", "Failure");
+            }
+        }
+        return response;
+    }*/
+
+
 
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
@@ -158,7 +193,7 @@ public class StudyGroupController {
     }
 
 
-    //학습 그룹 가입 신청 처리
+    //학습 그룹 가입 신청 처리(학생)
     @PostMapping("/join/{group_no}")
     public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no,@RequestParam(defaultValue="3") int member_no){
         Member member = memberRepository.findById(member_no).orElse(null);

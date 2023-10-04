@@ -93,13 +93,33 @@
     <!--학습그룹 신청 리스트-->
     <select id="ApproveList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.ApproveListDTO">
         <![CDATA[
-        SELECT g.group_students_no,s.group_name,m.name,m.tel,g.application_date,g.is_approved
+        SELECT g.group_students_no,s.group_name,m.name,m.tel,g.application_date,g.is_approved,g.approved_date
         FROM baduk.group_students g
         JOIN baduk.study_groups s ON s.group_no=g.group_no
         JOIN baduk.members m ON g.member_no=m.member_no
         WHERE s.member_no=#{member_no}
 		]]>
     </select>
+
+    <!--학습그룹 승인 처리-->
+    <update id="updateApproval" parameterType="java.util.List">
+        UPDATE group_students
+            SET is_approved = CASE
+            WHEN is_approved = 1 THEN 0
+            WHEN is_approved = 0 THEN 1
+            ELSE is_approved
+            END,
+        approved_date = CASE
+            WHEN is_approved = 1 THEN NOW()
+            WHEN is_approved = 0 THEN null
+            ELSE approved_date
+            END
+        WHERE group_students_no IN
+            <foreach collection="list" item="group_students_no" open="(" separator="," close=")">
+                #{group_students_no}
+            </foreach>
+    </update>
+
 
 
 </mapper>

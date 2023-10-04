@@ -1,5 +1,6 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
@@ -8,31 +9,35 @@
             <p/>[학습 그룹 신청 리스트]
             <div>
                 <p/>
-                <table class="table">
-                    <thead class="table-dark">
-                    <tr>
-                        <th>NO</th>
-                        <th>학습 그룹명</th>
-                        <th>학생 이름</th>
-                        <th>학생 연락처</th>
-                        <th>승인 요청 일자</th>
-                        <th>승인 여부</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:if="${#lists.size(approveList) != 0}" th:each="approveList, idx :${approveList}">
-                        <td th:text="(${idx.index + 1})"></td>
-                        <td th:text="${approveList.group_name}"></td>
-                        <td th:text="${approveList.name}"></td>
-                        <td th:text="${approveList.tel}"></td>
-                        <td th:text="${#dates.format(approveList.application_date,'yyyy-MM-dd')}"></td>
-                        <td>
-                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${approveList.is_approved}" th:checked="${approveList.is_approved}"/>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                <button id="viewButton">저장 하기</button>
+                <form th:object="${approvalForm}" method="post" action="/studygroup/updateApprove">
+                    <table class="table">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>NO</th>
+                            <th>학습 그룹명</th>
+                            <th>학생 이름</th>
+                            <th>학생 연락처</th>
+                            <th>승인 요청 일자</th>
+                            <th>승인 일자</th>
+                            <th>승인 여부</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.size(approveList) != 0}" th:each="approveList, idx :${approveList}">
+                            <td th:text="(${idx.index + 1})"></td>
+                            <td th:text="${approveList.group_name}"></td>
+                            <td th:text="${approveList.name}"></td>
+                            <td th:text="${approveList.tel}"></td>
+                            <td th:text="${#dates.format(approveList.application_date,'yyyy-MM-dd')}"></td>
+                            <td th:text="${#dates.format(approveList.approved_date,'yyyy-MM-dd')}"></td>
+                            <td>
+                                <input type="checkbox" class="groupCheckbox" name="selectedMembers" th:value="${approveList.group_students_no}" th:checked="${approveList.is_approved}"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button id="viewButton" type="submit">저장 하기</button>
+                </form>
             </div>
             <p/>
         </div>
@@ -40,48 +45,70 @@
 </div>
 
 </html>
-<script>
-    /*
-document.addEventListener("DOMContentLoaded", function () {
-    // 조회 버튼 클릭 시
-    document.getElementById("viewButton").addEventListener("click", function () {
-        var selectedGroupNo = null;
-
-        // 선택된 체크박스 찾기
-        var checkboxes = document.querySelectorAll(".groupCheckbox");
-        checkboxes.forEach(function (checkbox) {
-            if (checkbox.checked) {
-                selectedGroupNo = checkbox.value;
-                return; // 첫 번째 선택된 체크박스만 처리
-            }
+<script type="text/javascript">
+  /*  $(document).ready(function () {
+        $('.groupCheckbox').change(function () {
+            $('#approvalForm').submit(); // 폼 제출
         });
 
-        if (selectedGroupNo !== null) {
-            // 선택된 그룹 번호를 사용하여 링크로 이동
-            window.location.href = "/studygroup/detail/" + selectedGroupNo;
-        } else {
-            alert("그룹을 선택하세요.");
-        }
+        $('#viewButton').click(function () {
+            $('#approvalForm').submit(); // 저장 버튼 클릭 시 폼 제출
+        });
+    });*/
+
+ /*   var checkedCheckboxes = {}; // 변경된 체크박스 값들을 저장할 객체
+
+    $(document).ready(function () {
+        $('.groupCheckbox').change(function () {
+            var checkbox = $(this);
+            var group_students_no = checkbox.val();
+            var is_approved = checkbox.is(":checked");
+
+            // 변경된 체크박스 값을 객체에 저장
+            checkedCheckboxes[group_students_no] = is_approved;
+        });
+
+        $('#viewButton').click(function () {
+            // 변경된 체크박스 값을 폼에 추가
+            for (var group_students_no in checkedCheckboxes) {
+                if (checkedCheckboxes.hasOwnProperty(group_students_no)) {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'selectedMembers',
+                        value: group_students_no
+                    }).appendTo('#approvalForm');
+                }
+            }
+
+            // 폼 제출
+            $('#approvalForm').submit();
+        });
+    });*/
+
+    var initialCheckboxState = {}; // 초기 체크박스 상태를 저장할 객체
+
+    $(document).ready(function () {
+        // 초기 체크박스 상태를 저장
+        $('.groupCheckbox').each(function () {
+            var checkbox = $(this);
+            var group_students_no = checkbox.val();
+            var is_approved = checkbox.is(":checked");
+            initialCheckboxState[group_students_no] = is_approved;
+        });
+
+        // 체크박스가 변경될 때마다 확인
+        $('.groupCheckbox').change(function () {
+            var checkbox = $(this);
+            var group_students_no = checkbox.val();
+            var is_approved = checkbox.is(":checked");
+
+            // 이전 상태와 다른 경우에만 폼 제출
+            if (is_approved !== initialCheckboxState[group_students_no]) {
+                $('#approvalForm').submit();
+            }
+        });
     });
 
 
-    // 체크박스 클릭 시 다른 체크박스의 선택을 해제
-    var checkboxes = document.querySelectorAll(".groupCheckbox");
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener("click", function () {
-            if (this.checked) {
-                // 다른 체크박스 선택 해제
-                checkboxes.forEach(function (otherCheckbox) {
-                    if (otherCheckbox !== checkbox) {
-                        otherCheckbox.checked = false;
-                    }
-                });
-            }
-        });
-    });
-
-});
-*/
 
 </script>
-
