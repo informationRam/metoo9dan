@@ -17,4 +17,7 @@ public class GameContentsListDTO {
     private Date subscription_end_date; //구독종료일
     private int max_subscribers; //구독인원(학습가능인원)
     private int appointed_group_num;//그룹 지정된 인원(그룹인원 합)
+    
+    //학습그룹 등록시 필요
+    private String name; //교육자명
 }

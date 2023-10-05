@@ -63,6 +63,11 @@ public class StudyGroupRepository {
         return sqlSession.selectList("StudyGroup.GroupNameList",member_no);
     }
 
+    //게임콘텐츠 정보 가져오기(학습그룹 등록 폼)
+    public GameContentsListDTO getGameInfo(Map<String, Integer> map) {
+        return sqlSession.selectOne("StudyGroup.GameContentInfo",map);
+    }
+
 
 
 }
