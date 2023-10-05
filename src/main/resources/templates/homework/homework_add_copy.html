@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/homework/homework_add.css">
+</head>
+<body>
+<link rel="stylesheet" href="/css/homework/homework_add.css">
+<h2>숙제 생성</h2>
+<form th:action="@{/homework/add}" th:object="${homeworksForm}" method="post">
+    <div>
+        <label>숙제 제목:</label>
+        <input type="text" th:field="*{homeworkTitle}">
+        <span th:if="${#fields.hasErrors('homeworkTitle')}" th:errors="*{homeworkTitle}">Invalid Title</span>
+    </div>
+    <div>
+        <label>숙제 내용:</label>
+        <textarea th:field="*{homeworkContent}"></textarea>
+        <span th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}">Invalid Content</span>
+    </div>
+    <div>
+        <label>숙제 진도:</label>
+        <input type="text" th:field="*{progress}">
+        <span th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}">Invalid Progress</span>
+    </div>
+    <div>
+        <label>제출 기한:</label>
+        <input type="date" th:field="*{dueDate}">
+        <span th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">Invalid Date</span>
+    </div>
+    <div>
+        <label>숙제 메모:</label>
+        <textarea th:field="*{homeworkMemo}"></textarea>
+        <span th:if="${#fields.hasErrors('homeworkMemo')}" th:errors="*{homeworkMemo}">Invalid Memo</span>
+    </div>
+    <div>
+        <button type="submit">숙제 등록</button>
+    </div>
+</form>
+<div>
+<input type="text" id="searchInput" onkeyup="searchTable()" placeholder="검색어를 입력하세요">
+<table id="homeworkTable">
+    <tr>
+        <th onclick="sortTable(0)">No</th><!-- 지피티야 왜 이걸 눌러서 정렬을 하면 이상하게 될까 -->
+        <th onclick="sortTable(1)">숙제 제목</th>
+        <th onclick="sortTable(2)">숙제 내용</th>
+        <th onclick="sortTable(3)">숙제 진도</th>
+        <th onclick="sortTable(4)">제출 기한</th>
+        <th onclick="sortTable(5)">전송 여부</th>
+    </tr>
+    <tr th:each="hw, stat : ${homeworkList}" th:data-hw-id="${hw.homeworkNo}">
+        <td th:text="${homeworkList.size() - stat.count + 1}"></td>
+        <td th:text="${hw.homeworkTitle}"></td>
+        <td th:text="${hw.homeworkContentPreview}"></td>
+        <td th:text="${hw.progress}"></td>
+        <td th:text="${#dates.format(hw.dueDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${hw.isSent ? '전송완료' : '전송안함'}"></td>
+    </tr>
+    <!-- 목록이 없을 때의 메시지를 추가합니다. -->
+    <tr th:if="${homeworkList == null or homeworkList.size() == 0}">
+        <td colspan="6">등록된 숙제가 없습니다.</td>
+    </tr>
+</table>
+    <div id="hw-pagination">
+        <button id="prevBtn">&laquo;</button>
+        <div id="pageNumbers"></div>
+        <button id="nextBtn">&raquo;</button>
+    </div>
+</div>
+<!-- 숙제 상세 모달 -->
+<div id="hw-homeworkDetailModal">
+    <h2 id="modalTitle"></h2>
+    내용<p id="modalContent"></p>
+    진도<p id="modalProgress"></p>
+    메모<p id="modalMemo"></p>
+    기한<p id="modalDueDate"></p>
+    생성일<p id="modalCreateDate"></p>
+    <h3>전송 내역</h3>
+    <div id="modalSendDetails"></div>
+</div>
+<div id="hw-backdrop"></div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let sortOrder = true; // 기본값: true = 오름차순, false = 내림차순
+
+    function getTotalRowCount() {
+        return $("#homeworkTable tr:not(.filtered-out)").length - 1; // excluding header
+    }
+
+    function getVisibleRowCount() {
+        return $("#homeworkTable tr:visible").length - 1; // excluding header
+    }
+    function updatePagination() {
+        totalRows = getTotalRowCount();
+        currentPage = 1; // reset to first page after search/sort
+        updateTableDisplay();
+    }
+
+function searchTable() {
+    var input, filter, table, tr, td, i, j, found;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("homeworkTable");
+    tr = table.getElementsByTagName("tr");
+    let foundCount = 0;  // 검색 결과 카운터 추가
+
+    // 검색 결과가 없는 경우 메시지 삭제
+    $("#noSearchResult").remove();
+
+    // 모든 행을 대상으로 검색
+    for (i = 1; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        found = false;
+        for (j = 0; j < td.length; j++) {  // 각 행의 모든 셀을 검색
+            if (td[j]) {
+                if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    found = true;  // 현재 행에서 일치하는 항목이 발견되면 플래그를 설정
+                    break;
+                }
+            }
+        }
+        if (found) {
+            $(tr[i]).removeClass("filtered-out");
+            foundCount++;
+        } else {
+            $(tr[i]).addClass("filtered-out");
+        }
+    }
+
+    // 검색 결과가 없는 경우 메시지 표시
+    if (foundCount == 0) {
+        $("#homeworkTable").hide(); // 테이블 전체를 숨김
+        $("#hw-pagination").hide(); // 페이지네이션 숨김
+        $("#homeworkTable").after('<p id="noSearchResult">검색 결과가 없습니다</p>'); // 테이블 바로 아래 메시지 추가
+    } else {
+        $("#homeworkTable").show(); // 테이블 표시
+        $("#hw-pagination").show(); // 페이지네이션 표시
+    }
+
+    // 검색 후 첫 번째 페이지로 돌아감
+    currentPage = 1;
+    updatePagination();
+}
+
+    function sortTable(columnIndex) {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("homeworkTable");
+        switching = true;
+        if (columnIndex === 0) { // 'No' 열일 경우 숫자로 비교
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = parseInt(rows[i].getElementsByTagName("TD")[columnIndex].innerText);
+                y = parseInt(rows[i + 1].getElementsByTagName("TD")[columnIndex].innerText);
+
+                if (sortOrder ? x > y : x < y) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    } else {
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+
+                    if (sortOrder ? x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() : x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+        sortOrder = !sortOrder; // 정렬 순서를 토글합니다.
+        searchTable(); // 정렬 후 검색 함수를 다시 호출하여 검색된 결과를 유지합니다.
+    }
+    function formatDate(inputDate) {
+        const parts = inputDate.split("T")[0].split("-");
+        return parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일";
+    }
+    $(document).ready(function(){
+        $("#homeworkTable tr").dblclick(function(){
+            var homeworkId = $(this).data('hw-id');
+
+            // API를 호출하여 숙제 상세 정보 및 전송 내역을 불러옵니다.
+            $.get("/homework/detail/" + homeworkId, function(data){
+                // 모달에 데이터 세팅
+                $("#modalTitle").text(data.homeworkTitle);
+                $("#modalContent").text(data.homeworkContent);
+                $("#modalProgress").text(data.progress);
+                $("#modalMemo").text(data.homeworkMemo);
+                $("#modalDueDate").text(formatDate(data.dueDate));
+                $("#modalCreateDate").text(formatDate(data.creationDate));
+                // 숙제 전송 내역 확인 및 세팅
+                if(data.homeworkSendList !== null && data.homeworkSendList.length > 0) {
+                    // 중복되지 않는 sendDate만 추출
+                    let uniqueSendDates = [...new Set(data.homeworkSendList.map(item => item.sendDate))];
+                    // 추출한 날짜들을 화면에 표시
+                    $("#modalSendDetails").html(formatDate(uniqueSendDates).join('<br>'));
+                } else {
+                    $("#modalSendDetails").text("전송 내역 없음");
+                }
+
+                // 모달 및 오버레이 표시
+                $("#hw-homeworkDetailModal, #hw-backdrop").show();
+            });
+        });
+
+        // 모달 및 오버레이 외의 영역 클릭 시 모달 및 오버레이 숨김
+        $(document).on("click", function(e) {
+            if ($(e.target).closest("#hw-homeworkDetailModal").length === 0 && $(e.target).closest("#homeworkTable").length === 0) {
+                $("#hw-homeworkDetailModal, #hw-backdrop").hide();
+            }
+        });
+    });
+
+    let currentPage = 1;
+    const rowsPerPage = 15; // 한 페이지에 보일 행의 수를 15로 변경
+    let totalRows = 0;
+
+    function renderPagination() {
+        let totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        // 현재 페이지를 중심으로 페이지네이션에 5개의 페이지 번호만 보이게 설정
+        let startPage = currentPage - 2;
+        let endPage = currentPage + 2;
+
+        // 시작 페이지와 마지막 페이지가 유효한 범위를 벗어나지 않도록 조정
+        if (startPage < 1) {
+            endPage -= (startPage - 1);
+            startPage = 1;
+        }
+        if (endPage > totalPages) {
+            startPage -= (endPage - totalPages);
+            endPage = totalPages;
+        }
+        startPage = Math.max(1, startPage);
+
+        let paginationHtml = '';
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHtml += `<span class="hw-page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
+        }
+
+        $("#pageNumbers").html(paginationHtml);
+        $("#prevBtn").prop('disabled', currentPage === 1);
+        $("#nextBtn").prop('disabled', currentPage === totalPages);
+    }
+
+    function updateTableDisplay() {
+        let startRow = (currentPage - 1) * rowsPerPage + 1;
+        let endRow = startRow + rowsPerPage;
+
+        $("#homeworkTable tr").each(function(index, row) {
+            if (index === 0) { // Always show the header
+                $(row).show();
+            } else if ($(row).hasClass("filtered-out")) { // Always hide the rows filtered out by search
+                $(row).hide();
+            } else if (index >= startRow && index < endRow) {
+                $(row).show();
+            } else {
+                $(row).hide();
+            }
+        });
+
+        renderPagination();
+    }
+
+
+    $(document).ready(function() {
+        totalRows = $("#homeworkTable tr").length - 1; // 헤더 제외
+
+        $("#hw-pagination").on("click", ".hw-page-number", function() {
+            currentPage = $(this).data('page');
+            updateTableDisplay();
+        });
+
+        $("#prevBtn").click(function() {
+            if (currentPage > 1) {
+                currentPage--;
+                updateTableDisplay();
+            }
+        });
+
+        $("#nextBtn").click(function() {
+            if (currentPage < Math.ceil(totalRows / rowsPerPage)) {
+                currentPage++;
+                updateTableDisplay();
+            }
+        });
+
+        updateTableDisplay();
+    });
+
+</script>
+
+</body>
+</html>

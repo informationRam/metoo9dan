@@ -1,0 +1,307 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <form action="/homework/send" method="post">
+                <h3>Homeworks</h3>
+                <select id="homeworkDropdown" onchange="filterHomeworks()">
+                    <option value="All">All</option>
+                    <option th:each="title : ${distinctHomeworkTitles}" th:value="${title}" th:text="${title}"></option>
+                </select>
+
+                <div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Homework Title</th>
+                        <th>Homework Content Preview</th>
+                        <th>Progress</th>
+                        <th>Due Date</th>
+                    </tr>
+                    </thead>
+                    <tbody id="homeworkTableBody">
+                        <tr th:each="hw : ${homeworks}">
+                            <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
+                            <td th:text="${hw.homeworkTitle}"></td>
+                            <td th:text="${hw.homeworkContentPreview}"></td>
+                            <td th:text="${hw.progress} + '레벨'"></td>
+                            <td th:text="${hw.dueDate}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="paginationContainer">
+                    <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
+                </div>
+                </div>
+
+                <!-- Group Students -->
+                <h3>Study Groups</h3>
+                <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()">
+                    <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
+                    <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
+                </select>
+
+                <div id="groupMessage"></div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Tel</th>
+                        <th>Current Level</th>
+                        <!-- 두 번째 학생의 정보를 위한 헤더 추가 -->
+                        <th></th>
+                        <th>Name</th>
+                        <th>Tel</th>
+                        <th>Current Level</th>
+                    </tr>
+                    </thead>
+                    <tbody id="studyGroupMembersBody">
+                    <!-- Ajax로 가져온 데이터로 테이블 로우 생성 -->
+                    </tbody>
+                </table>
+                <!-- <button onclick="postSelected()">Submit</button> -->
+                <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
+                <input type="hidden" id="hiddenSelectedMembers" name="selectedMembers" value="">
+                <button id="submitButton" type="button" onclick="validateAndSubmitForm()">숙제 전송</button>
+            </form>
+            <script>
+                let currentPage = 1;
+                const rowsPerPage = 5;
+                const maxPageNumbersToShow = 3;
+
+                //페이지네이션
+                function paginate() {
+                    const rows = document.querySelectorAll('#homeworkTableBody tr');
+                    const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+                    // 모든 행을 초기에 숨깁니다.
+                    rows.forEach(row => row.style.display = 'none');
+
+                    // 현재 페이지에 맞는 행만 보여줍니다.
+                    for (let i = (currentPage - 1) * rowsPerPage; i < currentPage * rowsPerPage && i < rows.length; i++) {
+                        rows[i].style.display = '';
+                    }
+
+                    // 페이지네이션 버튼을 그립니다.
+                    drawPaginationButtons(totalPages);
+                }
+
+                function drawPaginationButtons(totalPages) {
+                    const container = document.getElementById('paginationContainer');
+                    container.innerHTML = ''; // 기존 버튼들을 지웁니다.
+
+                    // 이전 버튼
+                    const prevBtn = document.createElement('button');
+                    prevBtn.innerText = '이전';
+                    prevBtn.onclick = function() {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            paginate();
+                        }
+                    };
+                    // 현재 페이지가 1이면 이전 버튼을 비활성화합니다.
+                    if (currentPage === 1) prevBtn.setAttribute('disabled', true);
+                    container.appendChild(prevBtn);
+
+                    // 페이지 번호 계산: 현재 페이지를 중심으로 maxPageNumbersToShow 만큼의 버튼을 표시합니다.
+                    let startPage = Math.max(1, currentPage - Math.floor(maxPageNumbersToShow / 2));
+                    let endPage = Math.min(totalPages, startPage + maxPageNumbersToShow - 1);
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        const btn = document.createElement('button');
+                        btn.innerText = i;
+                        btn.onclick = function() {
+                            currentPage = i;
+                            paginate();
+                        };
+
+                        // 현재 페이지 버튼 스타일
+                        if (i === currentPage) btn.classList.add('active');
+
+                        container.appendChild(btn);
+                    }
+
+                    // 다음 버튼
+                    const nextBtn = document.createElement('button');
+                    nextBtn.innerText = '다음';
+                    nextBtn.onclick = function() {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            paginate();
+                        }
+                    };
+                    // 현재 페이지가 마지막 페이지면 다음 버튼을 비활성화합니다.
+                    if (currentPage === totalPages) nextBtn.setAttribute('disabled', true);
+                    container.appendChild(nextBtn);
+                }
+
+                // 초기 페이지네이션 적용
+                paginate();
+                window.onload = function() {
+                    fetchStudentsByGroup();
+                };
+
+                function filterHomeworks() {
+                    const selectedHomeworkTitle = document.getElementById('homeworkDropdown').value;
+                    const rows = document.querySelectorAll('#homeworkTableBody tr');
+                    const checkboxes = document.querySelectorAll('#homeworkTableBody input[type="checkbox"]');
+
+                    checkboxes.forEach(checkbox => checkbox.checked = false); // 체크박스 모두 해제
+
+                    rows.forEach(row => {
+                        const titleCell = row.querySelector('td:nth-child(2)');
+                        if (selectedHomeworkTitle === 'All' || titleCell.innerText === selectedHomeworkTitle) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    paginate();
+                }
+
+
+                //스터디 그룹 학생 불러오기
+                function fetchStudentsByGroup() {
+                    const groupId = document.getElementById('StudyGroupDropdown').value;
+                    const tableBody = document.getElementById('studyGroupMembersBody');
+
+                    if (groupId === "none") {
+                        tableBody.innerHTML = ''; // 테이블을 비운다.
+                        document.getElementById('studyGroupMembersBody').previousElementSibling.innerText = "학습그룹을 선택해주세요"; // 메시지 표시
+                    } else {
+                        fetch(`/homework/group-students?studyGroupNo=${groupId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                document.getElementById('studyGroupMembersBody').previousElementSibling.innerText = "학습그룹을 선택해주세요"; // 메시지 표시
+                            } else {
+                                document.getElementById('studyGroupMembersBody').previousElementSibling.innerText = ""; // 메시지 숨김
+                                populateTable(data); // 테이블로 표시
+                            }
+                        });
+                    }
+                }
+                function fetchStudentsByGroup() {
+                    const groupId = document.getElementById('StudyGroupDropdown').value;
+                    const tableBody = document.getElementById('studyGroupMembersBody');
+                    const table = tableBody.closest('table');
+                    const messageDiv = document.getElementById('groupMessage');
+
+                    if (groupId === "none") {
+                        table.style.display = 'none'; // 테이블을 숨깁니다.
+                        messageDiv.innerText = "학습 그룹을 선택해서 학생을 조회하세요."; // 메시지 표시
+                    } else {
+                        fetch(`/homework/group-students?studyGroupNo=${groupId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                table.style.display = 'none'; // 테이블을 숨깁니다.
+                                messageDiv.innerText = "승인된 학생이 없습니다."; // 메시지 표시
+                            } else {
+                                table.style.display = ''; // 테이블을 보여줍니다.
+                                messageDiv.innerText = ""; // 메시지 숨김
+                                populateTable(data); // 테이블로 표시
+                            }
+                        });
+                    }
+                }
+
+                function populateTable(data) {
+                    const tableBody = document.getElementById('studyGroupMembersBody');
+                    tableBody.innerHTML = '';
+
+                    for (let i = 0; i < data.length; i += 2) {
+                        const row = document.createElement('tr');
+
+                        // 첫 번째 학생 정보
+                        const checkboxCell1 = document.createElement('td');
+                        const checkbox1 = document.createElement('input');
+                        checkbox1.type = 'checkbox';
+                        checkbox1.value = data[i].memberNo;
+                        checkboxCell1.appendChild(checkbox1);
+                        row.appendChild(checkboxCell1);
+
+                        const nameCell1 = document.createElement('td');
+                        nameCell1.innerText = data[i].name;
+                        row.appendChild(nameCell1);
+
+                        const telCell1 = document.createElement('td');
+                        telCell1.innerText = data[i].tel;
+                        row.appendChild(telCell1);
+
+                        const levelCell1 = document.createElement('td');
+                        levelCell1.innerText = data[i].currentLevel;
+                        row.appendChild(levelCell1);
+
+                        // 이 빈 td를 제거합니다.
+                        // const emptyCell1 = document.createElement('td');
+                        // row.appendChild(emptyCell1);
+
+                        if (i + 1 < data.length) {
+                            // 두 번째 학생 정보
+                            const checkboxCell2 = document.createElement('td');
+                            const checkbox2 = document.createElement('input');
+                            checkbox2.type = 'checkbox';
+                            checkbox2.value = data[i + 1].memberNo;
+                            checkboxCell2.appendChild(checkbox2);
+                            row.appendChild(checkboxCell2);
+
+                            const nameCell2 = document.createElement('td');
+                            nameCell2.innerText = data[i + 1].name;
+                            row.appendChild(nameCell2);
+
+                            const telCell2 = document.createElement('td');
+                            telCell2.innerText = data[i + 1].tel;
+                            row.appendChild(telCell2);
+
+                            const levelCell2 = document.createElement('td');
+                            levelCell2.innerText = data[i + 1].currentLevel;
+                            row.appendChild(levelCell2);
+                        } else {
+                            // 두 번째 학생이 없는 경우 해당 열을 비워두기 위해 빈 칸 추가
+                            for (let j = 0; j < 4; j++) {
+                                const emptyCell = document.createElement('td');
+                                row.appendChild(emptyCell);
+                            }
+                        }
+                        tableBody.appendChild(row);
+                    }
+                }
+
+                function validateAndSubmitForm() {
+                    const submitButton = document.getElementById('submitButton');
+
+                    // 버튼을 비활성화
+                    submitButton.disabled = true;
+
+                    const selectedHomeworks = Array.from(document.querySelectorAll('#homeworkTableBody input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+                    const selectedMembers = Array.from(document.querySelectorAll('#studyGroupMembersBody input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+
+                    if (selectedHomeworks.length > 0 && selectedMembers.length > 0) {
+                        // 선택된 값을 숨겨진 필드에 설정
+                        document.getElementById('hiddenSelectedHomeworks').value = selectedHomeworks.join(',');
+                        document.getElementById('hiddenSelectedMembers').value = selectedMembers.join(',');
+
+                        // 조건이 충족되면 폼 제출
+                        document.querySelector('form').submit();
+                    } else {
+                        // 조건을 충족하지 않으면 경고 메시지 표시 및 버튼 다시 활성화
+                        alert("숙제 중에 하나 이상 선택되어야 하며, 학생 중에도 한명 이상 선택되어야 합니다.");
+                        submitButton.disabled = false;
+                    }
+                }
+
+            </script>
+
+
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+</html>
