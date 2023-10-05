@@ -10,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +24,11 @@ public class StudyGroupService {
     //학습그룹 목록 조회
     public List<StudyGroupsListDTO> getList(int member_no) {
         return studyGroupRepository.getGroupList(member_no);
+    }
+
+    //학습그룹 리스트 조회 버튼
+    public List<StudyGroupsListDTO> selectGroup(Map<String, Integer> map){
+        return studyGroupRepository.selectGroup(map);
     }
 
     //학습그룹 상세 조회
@@ -105,5 +108,11 @@ public class StudyGroupService {
     public int updateApproval(List<Integer> groupStudentsNoList){
         return studyGroupRepository.updateApproval(groupStudentsNoList);
     }
+
+    //학습그룹명 가져오기
+    public List<HashMap<String, Object>> getGroupName(int member_no){
+        return studyGroupRepository.getGroupName(member_no);
+    }
+
 
 }
