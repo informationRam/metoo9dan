@@ -34,7 +34,7 @@
         FROM baduk.members m
         JOIN baduk.group_students gs
         ON m.member_no=gs.member_no
-        WHERE gs.group_no=#{group_no}
+        WHERE gs.is_approved='1' AND gs.group_no=#{group_no}
 		]]>
     </select>
 
