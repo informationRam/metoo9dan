@@ -25,4 +25,6 @@ public class ResourcesFiles {
     @JoinColumn(name = "resource_no", referencedColumnName = "resource_no") // 외래 키 설정
     private EducationalResources educationalResources;
 
+
+
 }

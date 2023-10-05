@@ -1,12 +1,14 @@
 package com.idukbaduk.metoo9dan.education.vaildation;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class EducationVaildation {
@@ -26,7 +28,9 @@ public class EducationVaildation {
 
     private String description;      //'자료내용'
 
-    private MultipartFile boardFile;
+    private List<MultipartFile> boardFile;  //  파일저장시 필요
+
+    private List<ResourcesFiles> boardFileList; // 이미 업로드된 이미지 파일 목록
 
     private String origin_file_name;  //'원본파일명'
 

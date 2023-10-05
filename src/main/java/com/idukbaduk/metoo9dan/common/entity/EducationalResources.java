@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 //교육자료테이블 - PRIMARY KEY (resource_no)
 @Entity
@@ -40,4 +42,7 @@ public class EducationalResources {
     @ManyToOne(fetch = FetchType.LAZY) // 게임콘텐츠-다대일 관계
     @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no", insertable = false, updatable = false) // 외래 키 설정
     private GameContents gameContents;
+
+    @OneToMany(mappedBy = "educationalResources", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ResourcesFiles> resourcesFilesList = new ArrayList<>();
 }

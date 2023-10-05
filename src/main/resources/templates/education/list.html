@@ -64,6 +64,21 @@
                            sec:authorize="isAuthenticated()"
                            th:text="삭제"></a>
                     </td>
+                    <td class="education files">
+                        <ul>
+                            <li th:each="file : ${education.resourcesFilesList}">
+                                <a th:href="@{|/education/downloadFile/${file.fileNo}|}" th:text="${file.originFileName}"></a>
+                            </li>
+                        </ul>
+                    </td>
+                    <!-- 이미지 -->
+                    <td class="education image">
+                        <ul>
+                            <li th:each="file : ${education.resourcesFilesList}">
+                                <img th:src="@{|/upload/${file.copyFileName}|}" alt="">
+                            </li>
+                        </ul>
+                    </td>
                 </tr><!-- 1페이지당 출력할 게시물수만큼 반복끝 -->
                 </tbody>
             </table>
