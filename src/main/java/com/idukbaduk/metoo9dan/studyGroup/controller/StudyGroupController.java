@@ -46,9 +46,23 @@ public class StudyGroupController {
 
 
     //학습 그룹 등록 상세(교육자)
+
+    //학습 그룹 등록 폼
+ /* @GetMapping("/add/{game_content_no}")
+    public String add(StudyGroupForm studyGroupForm){
+
+        return "studyGroup/studyGroup_form";
+    }*/
     //학습 그룹 등록 폼
     @GetMapping("/add/{game_content_no}")
-    public String add(StudyGroupForm studyGroupForm){
+    public String add(StudyGroupForm studyGroupForm,Model model,@RequestParam(defaultValue="1") int member_no,@PathVariable("game_content_no") int game_content_no, @RequestParam Map<String, Integer> map){
+
+        //int game_content_no=1;
+        map.put("member_no", member_no); // map에 member_no 추가
+        map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+        GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
+        model.addAttribute("gameInfo",gameInfo);
+        System.out.println("gameInfo="+gameInfo);
 
         return "studyGroup/studyGroup_form";
     }
@@ -74,7 +88,7 @@ public class StudyGroupController {
         return "redirect:/studygroup/list";
     }
 
-    
+
     //학습 그룹 목록 조회(교육자)
     @GetMapping(value = "/list")
     public String studygroupList(Model model,@RequestParam(defaultValue="1") int member_no){

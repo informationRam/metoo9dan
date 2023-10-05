@@ -114,5 +114,9 @@ public class StudyGroupService {
         return studyGroupRepository.getGroupName(member_no);
     }
 
+    //게임콘텐츠 리스트
+    public GameContentsListDTO getGameInfo(Map<String, Integer> map) {
+        return studyGroupRepository.getGameInfo(map);
+    }
 
 }
