@@ -27,6 +27,30 @@
 		]]>
     </select>
 
+    <!--학습그룹 리스트 조회 버튼-->
+    <select id="GroupSelect" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO">
+        <![CDATA[
+        SELECT
+            s.group_no,
+            s.group_name,
+            g.game_name,
+            s.group_start_date,
+            s.group_finish_date,
+            (SELECT COUNT(member_no)
+             FROM baduk.group_students gs
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
+            s.group_size - (SELECT COUNT(member_no)
+                            FROM baduk.group_students gs
+                            WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_TO
+        FROM
+            baduk.study_groups s
+        JOIN
+            baduk.game_contents g ON s.game_content_no=g.game_content_no
+        WHERE
+            s.member_no=#{member_no} AND s.group_no=#{group_no}
+		]]>
+    </select>
+
     <!--학습그룹 등록 학생 리스트-->
     <select id="GroupMemberList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
         <![CDATA[
@@ -119,6 +143,16 @@
                 #{group_students_no}
             </foreach>
     </update>
+
+    <!--학습그룹명 리스트-->
+    <select id="GroupNameList" parameterType="int" resultType="hashmap">
+        <![CDATA[
+        SELECT group_no,group_name
+        FROM baduk.study_groups
+        WHERE member_no=#{member_no}
+		]]>
+    </select>
+
 
 
 

@@ -12,6 +12,7 @@ import com.idukbaduk.metoo9dan.studyGroup.validation.StudyGroupForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +34,6 @@ public class StudyGroupController {
     private final GameContentRepository gameContentRepository;
     private final MemberRepository memberRepository;
     private final GroupRepository groupRepository;
-    private List<Integer> selectedMembers;
 
     //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
     @GetMapping("/gameList")
@@ -74,14 +74,39 @@ public class StudyGroupController {
         return "redirect:/studygroup/list";
     }
 
-
+    
     //학습 그룹 목록 조회(교육자)
-    @GetMapping("/list")
+    @GetMapping(value = "/list")
     public String studygroupList(Model model,@RequestParam(defaultValue="1") int member_no){
         List<StudyGroupsListDTO> studyGroup = studyGroupService.getList(member_no);
         model.addAttribute("studyGroup",studyGroup);
         System.out.println("studyGroup="+studyGroup);
+
+        List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
+        model.addAttribute("groupNameList",groupNameList);
+        System.out.println("groupNameList="+groupNameList);
+
         return "studyGroup/studyGroup_list";
+    }
+
+
+    //학습 그룹 리스트 조회 버튼 엔드포인트
+    @GetMapping(value = "/listEndpoint", produces = "application/json")
+    @ResponseBody
+    public List<StudyGroupsListDTO> studygroupList(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
+
+            String groupNoString = String.valueOf(map.get("group_no")); // 문자열로 추출
+            int selectedGroupNo = Integer.parseInt(groupNoString); // 문자열을 정수로 변환
+            System.out.println("selectedGroupNo="+selectedGroupNo);
+
+            map.put("member_no", member_no); // map에 member_no 추가
+            map.put("selectedGroupNo", selectedGroupNo); // map에 selectedGroupNo 추가
+
+            List<StudyGroupsListDTO> selectGroup = studyGroupService.selectGroup(map);
+            System.out.println("selectGroup="+selectGroup);
+
+            System.out.println("엔드포인트selectGroup="+selectGroup);
+            return selectGroup;
     }
 
 
@@ -197,6 +222,7 @@ public class StudyGroupController {
     }
 
     //학습 그룹 취소(학생)
+
 
 
 }
