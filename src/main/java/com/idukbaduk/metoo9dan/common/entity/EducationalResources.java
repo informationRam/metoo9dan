@@ -29,7 +29,7 @@ public class EducationalResources {
     private String fileUrl;         //text  NOT NULL    COMMENT '자료url',
 
     @Column(name="service_type")
-    private String serviceType;     //enum('paid', 'free')    NOT NULL    COMMENT '서비스 구분',
+    private String serviceType;     // NOT NULL    COMMENT '서비스 구분',
 
     @Column
     private String description;      //text NOT NULL    COMMENT '자료내용',
