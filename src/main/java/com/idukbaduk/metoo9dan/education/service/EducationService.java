@@ -1,14 +1,15 @@
 package com.idukbaduk.metoo9dan.education.service;
 
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
-import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.reprository.EducationRepository;
 import com.idukbaduk.metoo9dan.education.reprository.ResourcesFilesReprository;
 import com.idukbaduk.metoo9dan.education.vaildation.EducationVaildation;
-import com.idukbaduk.metoo9dan.game.vaildation.GameVaildation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,10 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EducationalService {
+public class EducationService {
 
     private final EducationRepository educationalRepository;
     private final ResourcesFilesReprository resourcesFilesReprository;
@@ -69,6 +72,14 @@ public class EducationalService {
             //교육자료파일 저장
             educationalRepository.save(educationalResources);
         }
+    }
+    //게임목록조회 (페이징처리)
+    public Page<EducationalResources> getList(int page) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return educationalRepository.findAll(pageable);
     }
 
 }

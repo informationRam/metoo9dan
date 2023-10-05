@@ -1,0 +1,113 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">교육자료명</th>
+                    <th scope="col">자료구분</th>
+                    <th scope="col">자료유형</th>
+                    <th scope="col">서비스구분</th>
+                    <th scope="col">패키지상태</th>
+                    <th scope="col">등록일</th>
+                    <th scope="col" colspan="2">등록일</th>
+                </tr>
+                </thead>
+                <tbody class="table-light">
+                <tr th:each="education, loop : ${educationPage}">
+                    <!-- 페이지 번호 -->
+                    <td class="education no"
+                        th:text="${educationPage.getTotalElements() - (educationPage.getNumber() * educationPage.getSize()) - loop.index}"></td>
+                    <!-- 교육자료 제목 -->
+                    <td class="education title">
+                        <a th:href="@{|/education/detail/${education.resourceNo}|}" th:text="${education.resourceName}"></a>
+                    </td>
+                    <!-- 자료구분 -->
+                    <td class="education resourceCate">
+                        <span th:switch="${education.resourceCate}">
+                            <span th:case="tutorial">튜토리얼</span>
+                            <span th:case="lecture">교육영상</span>
+                        </span>
+                    </td>
+                    <!-- 자료유형 -->
+                    <td class="education fileType">
+                       <span th:switch="${education.fileType}">
+                            <span th:case="'image'">이미지</span>
+                            <span th:case="'video'">동영상</span>
+                            <span th:case="'image/video'">이미지/동영상</span>
+                            <span th:case="'ect'">기타</span>
+                        </span>
+                    </td>
+                    <!-- 서비스구분 -->
+                    <td class="education serviceType">
+                         <span th:switch="${education.serviceType}">
+                            <span th:case="full">유료</span>
+                            <span th:case=="short">무료</span>
+                        </span>
+                    </td>
+                    <!-- 패키지유형 -->
+                    <td class="education gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : '-'}"></td>
+                    <!-- 등록일 (수정하면 날짜 변경) -->
+                    <td class="education date">
+                        <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd')}">
+                    </td>
+                    <!-- 액션 -->
+                    <td class="education actions">
+                        <a th:href="@{|/education/modify/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1">수정</a>
+                        <a href="javascript:void(0);" th:data-uri="@{|/education/delete/${education.resourceNo}|}"
+                           class="delete btn btn-sm btn-outline-secondary"
+                           sec:authorize="isAuthenticated()"
+                           th:text="삭제"></a>
+                    </td>
+                </tr><!-- 1페이지당 출력할 게시물수만큼 반복끝 -->
+                </tbody>
+            </table>
+            <!--  등록하기 -->
+            <div sec:authorize="hasRole('ROLE_ADMIN')" class="text-end ms-auto">
+                <a th:href="@{/education/addForm}" class="btn btn-outline-danger">작성하기</a>
+            </div>
+            <!-- Pagination 부분 영역 시작 -->
+            <div th:if="${educationPage != null && !educationPage.isEmpty()}">
+                <!-- <ul class="pagination justify-content-center"> --><!-- 여기에 bg-danger 클래스 추가 -->
+                <ul class="pagination justify-content-center">
+                    <ul class="qna-pagination">
+                        <!-- 이전 버튼 -->
+                        <li class="qna-page-item" th:classappend="${!educationPage.hasPrevious()} ? 'disabled'">
+                            <a class="qna-page-link" th:href="@{|?page=${educationPage.getNumber() - 1}|}"><span>이전</span></a>
+                        </li>
+                        <!-- 페이지 번호: 반복 + 연결 + bootstrap [0] [1] [2] [3~] [4] [5] [6] [7]~~[9] [10] [11] -->
+                        <li class="qna-page-item" th:each="page : ${#numbers.sequence(0, educationPage.getTotalPages() - 1)}"
+                            th:if="${page >= educationPage.getNumber() - 3 and page <= educationPage.getNumber() + 3}"
+                            th:classappend="${page == educationPage.getNumber()} ? 'active'">
+                            <a class="qna-page-link" th:href="@{|?page=${page}|}" th:text="${page + 1}"></a>
+                        </li>
+                        <!-- 다음 버튼 -->
+                        <li class="qna-page-item" th:classappend="${!educationPage.hasNext()} ? 'disabled'">
+                            <a class="qna-page-link" th:href="@{|?page=${educationPage.getNumber() + 1}|}"><span>다음</span></a>
+                        </li>
+                    </ul>
+                </ul>
+            </div><!-- Pagination 부분 영역 끝 -->
+        </div>
+    </div>
+    <script layout:fragment="script">
+        //삭제 버튼 클릭시 호출
+        const delElements = document.getElementsByClassName("delete");
+        Array.from(delElements).forEach(function(element){
+
+            element.addEventListener("click",function(){
+                if(confirm("삭제하시겠습니까?")){   //확인버튼을 클릭하면
+
+                    location.href=this.dataset.uri;
+
+                };
+            });
+        });
+    </script>
+</div>
+</html>

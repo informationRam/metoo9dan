@@ -1,10 +1,11 @@
 package com.idukbaduk.metoo9dan.education.controller;
 
-import com.idukbaduk.metoo9dan.education.service.EducationalService;
+import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
+import com.idukbaduk.metoo9dan.education.service.EducationService;
 import com.idukbaduk.metoo9dan.education.vaildation.EducationVaildation;
-import com.idukbaduk.metoo9dan.game.vaildation.GameVaildation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,7 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class EducationController {
 
-    private final EducationalService educationalService;
+    private final EducationService educationService;
 
     //교육자료 등록 폼
     @GetMapping("/addForm")
@@ -42,8 +43,19 @@ public class EducationController {
         if (bindingResult.hasErrors()) {
             return "education/addForm";
         } else{
-            educationalService.save(educationVaildation);
-            return "redirect:/game/list";
+            educationService.save(educationVaildation);
+            return "redirect:/education/list";
         }
+    }
+
+    //교육자료 목록조회
+    @GetMapping("/list")
+    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, EducationalResources educationalResources) {
+        Page<EducationalResources> educationPage = this.educationService.getList(page);
+
+        //3.Model
+        model.addAttribute("educationalResources", educationalResources);
+        model.addAttribute("educationPage", educationPage);
+        return "education/list";
     }
 }
