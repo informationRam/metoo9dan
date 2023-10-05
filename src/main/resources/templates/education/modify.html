@@ -65,6 +65,7 @@
                     <ul>
                         <li th:each="file : ${educationVaildation.boardFileList}">
                             <a th:href="@{|/education/downloadFile/${file.fileNo}|}" th:text="${file.originFileName}">다운로드</a>
+                            <a th:href="@{|/education/deleteFile/${file.fileNo}|}" class="btn btn-sm btn-danger">삭제</a>
                         </li>
                     </ul>
                 </td>

@@ -30,6 +30,11 @@ public class ResourcesFilesService {
         return resourcesFiles;
 
     }
+
+    public void deleteFile(Integer fileNo) {
+        ResourcesFiles resourcesFiles = resourcesFilesRepository.findById(fileNo).get();
+        resourcesFilesRepository.delete(resourcesFiles);
+    }
 }
 
 

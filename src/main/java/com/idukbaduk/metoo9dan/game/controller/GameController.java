@@ -86,8 +86,6 @@ public class GameController {
     }
 
 
-
-
     //  삭제하기
    /* @GetMapping("/delete/{gameContentNo}")
     public String gameDelete(@PathVariable("gameContentNo") Integer gameContentNo) {

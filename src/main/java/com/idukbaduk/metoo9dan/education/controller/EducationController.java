@@ -138,6 +138,26 @@ public class EducationController {
         }
 }
 
+    // 파일 삭제 핸들러
+    @GetMapping("/deleteFile/{fileNo}")
+    public String deleteFile(@PathVariable Integer fileNo) {
+        // 파일을 서버에서 삭제하는 로직을 구현
+        ResourcesFiles resourcesFile = resourcesFilesService.getFileByFileNo(fileNo);
+        if (resourcesFile != null) {
+            // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
+            String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFile.getCopyFileName();
+            File file = new File(filePath);
+            if (file.exists() && file.isFile()) {
+                file.delete(); // 파일을 삭제
+            }
+
+            // 데이터베이스에서 파일 정보를 삭제
+            resourcesFilesService.deleteFile(fileNo);
+        }
+
+        return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
+    }
+
     // 정보수정 실행
  /*   @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{user_id}")
