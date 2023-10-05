@@ -11,7 +11,7 @@
             <h2>공지사항</h2>
             <div class="py-2">
                 <div>
-                    <div> <!--글상세 헤더정보-->
+                    <div id="noticeHeader"> <!--글상세 헤더정보-->
                         <!--<a th:text="${notice.noticeType}">분류</a>-->
                         <a th:if="${notice.noticeType.equals('noti')}" th:text="공지"></a>
                         <a th:if="${!notice.noticeType.equals('noti')}" th:text="자주묻는질문"></a>
@@ -21,6 +21,7 @@
                         <a th:text="|작성일: ${#temporals.format(notice.writeDate, 'yyy-MM-dd HH:mm')}|">작성일</a><!--운영관리자한테만-->
                         <a th:text="|게시일: ${#temporals.format(notice.postDate, 'yyy-MM-dd HH:mm')}|">게시일</a>
                         <a th:text="|조회수: ${notice.readCnt}|">조회수</a>
+                        <input type="hidden" th:value="${notice.noticeNo}">
                     </div>
                     <div th:text="${notice.noticeContent}">내용</div>
                     <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
@@ -32,14 +33,16 @@
                 <hr/>
                 <form id="replyForm" th:object="${noticeReplyForm}" th:action="@{|/reply/add/${notice.noticeNo}|}" method="post">
                     <div th:replace="~{form_errors::formErrorsFragment}"></div>
-                    <textarea th:field="*{content}" rows="6"></textarea>
-                    <input type="submit" value="댓글 등록" class="btn btn-primary">
+                    <div class="d-flex justify-content-around">
+                        <textarea th:field="*{content}" rows="2" class="form-control"></textarea>
+                        <input type="submit" value="댓글 등록" class="btn btn-primary">
+                    </div>
                 </form>
                 <!--댓글개수 출력-->
                 <h6 th:text="|${#lists.size(notice.noticeReplies)}개의 댓글|"></h6>
                 <!--댓글목록 시작-->
-                <div class="card" th:each="reply : ${notice.noticeReplies}">
-                    <div class="card-body">
+                <div class="card" th:each="reply : ${notice.noticeReplies}" th:id="|replyWrapNo${reply.noticeReplyNo}|">
+                    <div class="card-body" th:id="|replyNo${reply.noticeReplyNo}|">
                         <div class="d-flex justify-content-between">
                             <span class="badge bg-primary p-2 text-start" th:text="${reply.member.memberId}">작성자</span>
                             <span class="badge bg-light text-dark p-2 text-start" th:text="${#temporals.format(reply.writeDate, 'yyyy-MM-dd HH:mm')}">작성일</span>
@@ -57,22 +60,37 @@
     </div><!--row-->
 </div><!--container-->
 <div layout:fragment="script">
-<script th:inline="javascript">
+    <!-- jQuery 추가 -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
+
+    <script th:inline="javascript">
     /*댓글등록성공시 메시지 alert*/
     if([[${msg}]]!=null){
         alert([[${msg}]]);
     }
-    /*댓글 수정 버튼 클릭시 댓글 수정 폼 보이게
-    function showReplyModifyForm(){
+    var $ = jQuery;
 
+    function transferData(replyId, content, noticeNo){
+        // Ajax 요청 보내기
+        $.ajax({
+            type: 'PUT',
+            url: '/reply/modify/' + replyId,
+            contentType: 'application/json',
+            data: JSON.stringify({ content: content }),
+            success: function(response) {
+                $("#replyWrapNo"+replyId).load("/notice/detail/"+noticeNo+" #replyNo"+replyId);
+                alert('댓글을 수정하였습니다.');
+            },
+            error: function(error) {
+                console.error('댓글 수정 실패:', error);
+                alert('댓글 수정에 실패했습니다.');
+            }
+        });
     }
-    document.querySelector('#replyModify${notice.noticeReplies}').addEventListener('click', function(event) {
-        // 클릭 이벤트 발생 시 기본 동작인 링크 이동을 막음
-        event.preventDefault();
+    function replyRollback(replyId, noticeNo){
+        $("#replyWrapNo"+replyId).load("/notice/detail/"+noticeNo+" #replyNo"+replyId);
+    }
 
-        // 추가로 원하는 로직을 수행
-        console.log('링크 클릭, 기본 동작 막음');
-    });*/
     document.addEventListener('DOMContentLoaded', function() {
         // 모든 수정 버튼을 선택
         var modifyButtons = document.querySelectorAll('[id^="replyModify"]');
@@ -85,8 +103,39 @@
                 // 해당 버튼의 id를 가져와서 사용
                 var replyId = this.id.replace('replyModify', '');
 
-                // 원하는 로직 수행
-                console.log('수정 버튼 클릭, 댓글 번호:', replyId);
+                var replyNo = 'reply'+replyId;
+
+                //기존 노드를 js 변수화
+                var cardTextNode = document.querySelector('#replyNo'+replyId+' .card-text');
+                var btnGroup = document.querySelector('#replyNo'+replyId+' .justify-content-end');
+
+                //해당 노드들을 삭제 후 문자열로 된 html 태그 추가
+                cardTextNode.remove();
+                btnGroup.remove();
+
+                var modifyFormHtml = '<form id="replyModifyForm" method="put">'+
+                                          '<div class="d-flex justify-content-around">'+
+                                            '<textarea rows="2" class="form-control" autofocus="autofocus"></textarea>'+
+                                            '<input type="button" value="댓글 수정" class="btn btn-sm btn-primary" onclick="transferData(' + replyId + ', document.querySelector(\'#replyNo' + replyId + ' textarea\').value, document.querySelector(\'#noticeHeader input\').value);">'+
+                                            '<input type="button" value="수정 취소" class="btn btn-sm btn-secondary" onclick="replyRollback(' + replyId + ', document.querySelector(\'#noticeHeader input\').value);">'+
+                                          '</div>'+
+                                      '</form>';
+
+                document.querySelector('#replyNo'+replyId).insertAdjacentHTML('beforeend', modifyFormHtml);
+
+                $.ajax({
+                    url : '/reply/get/'+replyId,
+                    type : 'get',
+                    dataType : 'json',
+                    async : false,
+                    success : function (response) {
+                        document.querySelector('#replyNo'+replyId+' textarea').value = response.content;
+                    },
+                    error : function (request, status, error) {
+                        console.log(error)
+                    }
+                });
+
             });
         });
     });

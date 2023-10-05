@@ -2,12 +2,15 @@ package com.idukbaduk.metoo9dan.notice.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
+import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.service.NoticeReplyService;
 import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,16 +58,34 @@ public class NoticeReplyController {
         // 4.뷰
     }
 
-    // 댓글 수정 폼 보여줘 요청
+    // 댓글 수정처리 해줘 요청
     //권한 있는지 확인하는 어노테이션 추가해야함. @PreAuthorize("isAuthenticated()")
-    @PatchMapping ("/modify/{replyNo}")
-    public String replyModifyForm(NoticeReplyForm noticeReplyForm,
-                                  @PathVariable Integer replyNo){
+    @PutMapping ("/modify/{replyNo}")
+    @ResponseBody
+    public String replyModify(@RequestBody NoticeReplyForm noticeReplyForm,
+                              @PathVariable Integer replyNo,
+                              RedirectAttributes redirectAttributes){
         //1. 파라미터받기
         //2. 비즈니스로직수행
+        replyService.updateReply(replyNo, noticeReplyForm.getContent());
+        Integer noticeNo = replyService.getReply(replyNo).getNotice().getNoticeNo();
         //3. 모델
         //4. 뷰
-        return "notice/noticeDetail";
+        redirectAttributes.addFlashAttribute("msg", "댓글이 수정되었습니다.");
+        return String.format("redirect:/notice/detail/%d", noticeNo);
+    }
+
+    //써놓은 댓글 보여줘 요청
+    @GetMapping("/get/{replyNo}")
+    @ResponseBody
+    public ResponseEntity<String> getReply(@PathVariable Integer replyNo){
+        try {
+            NoticeReply reply = replyService.getReply(replyNo);
+            String content = reply.getContent();
+            return ResponseEntity.ok().body("{\"content\": \"" + content + "\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Internal Server Error\"}");
+        }
     }
 
     // 댓글 수정 처리해줘 요청
