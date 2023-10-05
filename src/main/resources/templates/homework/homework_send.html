@@ -166,28 +166,6 @@
                     paginate();
                 }
 
-
-                //스터디 그룹 학생 불러오기
-                function fetchStudentsByGroup() {
-                    const groupId = document.getElementById('StudyGroupDropdown').value;
-                    const tableBody = document.getElementById('studyGroupMembersBody');
-
-                    if (groupId === "none") {
-                        tableBody.innerHTML = ''; // 테이블을 비운다.
-                        document.getElementById('studyGroupMembersBody').previousElementSibling.innerText = "학습그룹을 선택해주세요"; // 메시지 표시
-                    } else {
-                        fetch(`/homework/group-students?studyGroupNo=${groupId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.length === 0) {
-                                document.getElementById('studyGroupMembersBody').previousElementSibling.innerText = "학습그룹을 선택해주세요"; // 메시지 표시
-                            } else {
-                                document.getElementById('studyGroupMembersBody').previousElementSibling.innerText = ""; // 메시지 숨김
-                                populateTable(data); // 테이블로 표시
-                            }
-                        });
-                    }
-                }
                 function fetchStudentsByGroup() {
                     const groupId = document.getElementById('StudyGroupDropdown').value;
                     const tableBody = document.getElementById('studyGroupMembersBody');
