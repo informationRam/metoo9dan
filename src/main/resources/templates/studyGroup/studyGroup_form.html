@@ -31,7 +31,7 @@
                 </table>
             </div>
 
-            <p>그룹 상세 정보</p><!--교육자명 이쪽으로 옮기기-->
+            <p>[그룹 상세 정보]</p><!--교육자명 이쪽으로 옮기기-->
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
                 <div th:replace="~{form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
@@ -40,7 +40,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="group_size" class="form-label">그룹인원</label>
-                    <input type="number" th:field="*{groupSize}" class="form-control"/>
+                    <input type="number" th:field="*{groupSize}" class="form-control"
+                           th:min="1" th:max="${gameInfo.max_subscribers - gameInfo.appointed_group_num}"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_start_date" class="form-label">그룹 시작일</label>
