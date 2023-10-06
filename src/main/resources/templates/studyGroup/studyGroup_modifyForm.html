@@ -28,13 +28,13 @@
                     <label for="group_introduce" class="form-label">그룹 소개글</label>
                     <textarea type="text" th:field="*{groupIntroduce}" class="form-control"/>
                 </div>
-                <div class="mb-3">
+                <!--<div class="mb-3">-->
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
-                </div>
+                <!--</div>
                 <div class="mb-3">
-                    <label for="member_no" class="form-label">회원번호</label>
-                    <input type="number" th:field="*{memberNo}" class="form-control"/>
-                </div>
+                    <label for="member_no" class="form-label">회원번호</label>-->
+                    <input type="hidden" th:value="${member_no}" class="form-control"/>
+                <!--</div>-->
                 <input type="submit" value="수정하기" class="btn btn-primary my-2"/>
             </form>
             <script th:inline="javascript">
@@ -72,6 +72,7 @@
              }
          })
          .catch(function (error) {
+             window.location.href ="/studygroup/modify/" + groupNo;
              alert("오류가 발생했습니다. 다시 시도하세요.");
          });
      });

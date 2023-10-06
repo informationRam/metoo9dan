@@ -46,13 +46,6 @@ public class StudyGroupController {
 
 
     //학습 그룹 등록 상세(교육자)
-
-    //학습 그룹 등록 폼
- /* @GetMapping("/add/{game_content_no}")
-    public String add(StudyGroupForm studyGroupForm){
-
-        return "studyGroup/studyGroup_form";
-    }*/
     //학습 그룹 등록 폼
     @GetMapping("/add/{game_content_no}")
     public String add(StudyGroupForm studyGroupForm,Model model,@RequestParam(defaultValue="1") int member_no,@PathVariable("game_content_no") int game_content_no, @RequestParam Map<String, Integer> map){
@@ -69,22 +62,66 @@ public class StudyGroupController {
 
     //학습 그룹 등록 처리
     @PostMapping("/add/{game_content_no}")
-    public String studygroupAdd(@Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,@PathVariable("game_content_no") int game_content_no){
+    public String studygroupAdd(Model model, @Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,
+                                @PathVariable("game_content_no") int game_content_no,@RequestParam Map<String, Integer> map){
+        if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
+            //유효성 검사시 게임콘텐츠정보 넘기기
+            int member_no=1;
+            map.put("member_no", member_no); // map에 member_no 추가
+            map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+            map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+            GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
+            model.addAttribute("gameInfo",gameInfo);
+
+            return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
+        }
+        int member_no=1;
+        GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
+        Member member = memberRepository.findById(member_no).orElse(null);
+
+        studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member);
+
+        return "redirect:/studygroup/list";
+    }
+
+
+    //학습 그룹 수정(교육자)
+    //학습 그룹 수정 폼
+    @GetMapping("/modify/{group_no}")
+    public String modify(StudyGroupForm studyGroupForm,@PathVariable("group_no") int group_no,@RequestParam(defaultValue="1") int member_no){
+        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
+        studyGroupForm.setGroupName(studyGroups.getGroupName());
+        studyGroupForm.setGroupSize(studyGroups.getGroupSize());
+        studyGroupForm.setGroupStartDate(studyGroups.getGroupStartDate());
+        studyGroupForm.setGroupFinishDate(studyGroups.getGroupFinishDate());
+        studyGroupForm.setGroupIntroduce(studyGroups.getGroupIntroduce());
+        //studyGroupForm.setMemberNo(member_no);
+        return "studygroup/studyGroup_modifyForm";
+    }
+
+    //학습 그룹 수정 처리
+    @PostMapping("/modify/{group_no}")
+    public String studygroupmodify(@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
+            ,@PathVariable("group_no") int group_no,Model model){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
             return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
         }
-        //Integer gameContentNo = studyGroupForm.getGameContentNo();
-        Integer memberNo = studyGroupForm.getMemberNo();
+        //Integer memberNo = studyGroupForm.getMemberNo();
+        int member_no=1;
 
-        GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
-        Member member = memberRepository.findById(memberNo).orElse(null);
-        if (gameContents == null || member == null) {
-            // 에러 처리 (올바른 게임 콘텐츠 번호와 회원 번호를 받아야 함)
-        } else {
+        model.addAttribute("group_no",group_no);
+        Member member = memberRepository.findById(member_no).orElse(null);
+        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
+        studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member);
+        return "redirect:/studygroup/list";
+    }
 
-            studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member);
-        }
 
+    //학습 그룹 삭제(교육자)
+    @GetMapping("/delete/{group_no}")
+    public String delete(@PathVariable("group_no") int group_no){
+        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
+        studyGroupService.delete(studyGroups);
         return "redirect:/studygroup/list";
     }
 
@@ -104,7 +141,7 @@ public class StudyGroupController {
     }
 
 
-    //학습 그룹 리스트 조회 버튼 엔드포인트
+    //학습 그룹 목록 조회 버튼 엔드포인트
     @GetMapping(value = "/listEndpoint", produces = "application/json")
     @ResponseBody
     public List<StudyGroupsListDTO> studygroupList(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
@@ -134,46 +171,6 @@ public class StudyGroupController {
         System.out.println("GroupDetail="+GroupDetail);
         System.out.println("GroupInfo="+GroupInfo);
         return "studyGroup/studyGroup_detail";
-    }
-
-
-    //학습 그룹 수정(교육자)
-    //학습 그룹 수정 폼
-    @GetMapping("/modify/{group_no}")
-    public String modify(StudyGroupForm studyGroupForm,@PathVariable("group_no") int group_no,@RequestParam(defaultValue="1") int member_no){
-        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
-        studyGroupForm.setGroupName(studyGroups.getGroupName());
-        studyGroupForm.setGroupSize(studyGroups.getGroupSize());
-        studyGroupForm.setGroupStartDate(studyGroups.getGroupStartDate());
-        studyGroupForm.setGroupFinishDate(studyGroups.getGroupFinishDate());
-        studyGroupForm.setGroupIntroduce(studyGroups.getGroupIntroduce());
-        studyGroupForm.setMemberNo(member_no);
-        return "studygroup/studyGroup_modifyForm";
-    }
-
-    //학습 그룹 수정 처리
-    @PostMapping("/modify/{group_no}")
-    public String studygroupmodify(@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
-                                  ,@PathVariable("group_no") int group_no,Model model){
-        if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
-            return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
-        }
-        Integer memberNo = studyGroupForm.getMemberNo();
-
-        model.addAttribute("group_no",group_no);
-        Member member = memberRepository.findById(memberNo).orElse(null);
-        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
-        studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member);
-        return "redirect:/studygroup/list";
-    }
-
-
-    //학습 그룹 삭제(교육자)
-    @GetMapping("/delete/{group_no}")
-    public String delete(@PathVariable("group_no") int group_no){
-        StudyGroups studyGroups = studyGroupService.getGruop(group_no);
-        studyGroupService.delete(studyGroups);
-        return "redirect:/studygroup/list";
     }
 
 

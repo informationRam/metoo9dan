@@ -5,6 +5,7 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <p>[학습 그룹 등록 폼]</p>
             <div>
                 <table class="table">
                     <thead class="table-dark">
@@ -18,7 +19,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr  th:each="gameInfo, loop : ${gameInfo}">
+                    <tr th:each="gameInfo, loop : ${gameInfo}">
                         <td th:text="${gameInfo.game_name}"></td>
                         <td th:text="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"></td>
                         <td th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></td>
@@ -30,7 +31,7 @@
                 </table>
             </div>
 
-            <p>[학습 그룹 등록 폼]</p>
+            <p>그룹 상세 정보</p><!--교육자명 이쪽으로 옮기기-->
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
                 <div th:replace="~{form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
@@ -43,25 +44,22 @@
                 </div>
                 <div class="mb-3">
                     <label for="group_start_date" class="form-label">그룹 시작일</label>
-                    <input type="date" th:field="*{groupStartDate}" class="form-control"/>
+                    <input type="date" id="groupStartDate" name="groupStartDate" th:field="*{groupStartDate}" class="form-control"
+                           th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
+                           th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_finish_date" class="form-label">그룹 종료일</label>
-                    <input type="date" th:field="*{groupFinishDate}" class="form-control"/>
+                    <input type="date"  id="groupFinishDate" name="groupFinishDate" th:field="*{groupFinishDate}" class="form-control"
+                           th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
+                           th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_introduce" class="form-label">그룹 소개글</label>
                     <textarea type="text" th:field="*{groupIntroduce}" class="form-control"/>
                 </div>
-                <div class="mb-3">
-                    <!--<label for="game_content_no" class="form-label">게임콘텐츠no</label>-->
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
-                    <!--<input type="hidden" th:field="*{gameContentNo}" class="form-control" th:value="${game_content_no}"/>-->
-                </div>
-                <div class="mb-3">
-                    <label for="member_no" class="form-label">회원번호</label>
-                    <input type="number" th:field="*{memberNo}" class="form-control"/>
-                </div>
+                    <input type="hidden" th:value="${member_no}" class="form-control"/>
                 <input type="submit" value="등록" class="btn btn-primary my-2"/>
             </form>
 
@@ -69,3 +67,26 @@
     </div>
 </div>
 </html>
+
+<script>
+    // 그룹 시작일과 종료일 필드를 가져오기
+    var groupStartDateInput = document.getElementById("groupStartDate");
+    var groupFinishDateInput = document.getElementById("groupFinishDate");
+
+    // 폼 제출 시 이벤트 핸들러 추가
+    document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
+        // 그룹 시작일과 종료일 값을 가져오기
+        var groupStartDateValue = groupStartDateInput.value;
+        var groupFinishDateValue = groupFinishDateInput.value;
+
+        // Date 객체로 변환
+        var startDate = new Date(groupStartDateValue);
+        var finishDate = new Date(groupFinishDateValue);
+
+        // 그룹 시작일이 그룹 종료일보다 크다면 유효성 검사 실패
+        if (startDate > finishDate) {
+            alert("그룹 종료일은 그룹 시작일보다 같거나 뒤에 있어야 합니다.");
+            event.preventDefault(); // 폼 제출 방지
+        }
+    });
+</script>
