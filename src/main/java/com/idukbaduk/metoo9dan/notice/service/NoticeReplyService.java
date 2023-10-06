@@ -46,4 +46,9 @@ public class NoticeReplyService {
         noticeReply.setContent(content);
         noticeReply.setWriteDate(LocalDateTime.now());
     }
+
+    //댓글 삭제처리
+    public void delete(NoticeReply noticeReply) {
+        replyRepository.delete(noticeReply);
+    }
 }

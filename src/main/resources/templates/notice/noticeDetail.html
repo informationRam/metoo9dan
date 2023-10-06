@@ -50,7 +50,13 @@
                         <div class="card-text" th:text="${reply.content}">댓글내용</div>
                         <div class="d-flex justify-content-end">
                             <a th:id="|replyModify${reply.noticeReplyNo}|" class="btn btn-sm btn-secondary">수정</a>
-                            <a href="#" th:href="@{#}" class="btn btn-sm btn-danger">삭제</a>
+                            <a href="javascript:void(0);" th:data-uri="@{|/reply/delete/${reply.noticeReplyNo}|}"
+                               class="delete btn btn-sm btn-outline-danger"
+                               th:text="삭제">
+                               <!--댓글작성자와 로그인한사람이 동일할때만 보여져야함-->
+                               <!--sec:authorize="isAuthenticated()"
+                               th:if="${ answer.writer!=null and #authentication.getPrincipal().getUsername()==answer.writer.username }"-->
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -137,6 +143,19 @@
                 });
 
             });
+        });
+    });
+    /** 삭제 버튼 클릭시 호출*/
+    const delElements = document.getElementsByClassName("delete");
+    //배열객체로 바꿔주자. form태그 안에 delElements가 있을테니 걔를 찾아라. 각각의 요소마다 동작 구현을 해줄거임.
+    Array.from(delElements).forEach( function(element){ //익명함수, 당장 실행할거임
+        element.addEventListener( "click", function(){
+            if(confirm("정말 삭제하시겠습니까?")){ //확인 클릭시,
+                location.href=this.dataset.uri;
+                /*click이벤트가 발생하는 요소(this=a)의 속성(data-uri)에 접근하여 location객체의 href속성값으로 적용해라.
+                  왜냐, 현재 브라우저의 url를 바꿔야하기 때문에.
+                  (.dataset-uri)==(location.href="/question/delete/${question.id}";)*/
+            };
         });
     });
 </script>
