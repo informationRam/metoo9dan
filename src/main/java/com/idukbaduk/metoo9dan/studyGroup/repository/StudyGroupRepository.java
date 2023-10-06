@@ -42,6 +42,11 @@ public class StudyGroupRepository {
         return sqlSession.selectList("StudyGroup.GameContentList",member_no);
     }
 
+    //학습그룹 등록(게임리스트) 조회 버튼
+    public List<GameContentsListDTO> selectGame(Map<String, Integer> map) {
+        return sqlSession.selectList("StudyGroup.SelectGameList",map);
+    }
+
     //학습 그룹 가입(학습그룹 리스트 전체)
     public List<GroupJoinListDTO> getGroupJoinList() {
 
@@ -58,16 +63,21 @@ public class StudyGroupRepository {
         return sqlSession.update("StudyGroup.updateApproval",groupStudentsNoList); //수정 성공시 1반환
     }
 
+
+    //게임콘텐츠 정보 리스트 가져오기(학습그룹 등록 폼)
+    public GameContentsListDTO getGameInfo(Map<String, Integer> map) {
+        return sqlSession.selectOne("StudyGroup.GameContentInfo",map);
+    }
+
     //학습그룹명 리스트 가져오기
     public List<HashMap<String, Object>> getGroupName(int member_no){
         return sqlSession.selectList("StudyGroup.GroupNameList",member_no);
     }
 
-    //게임콘텐츠 정보 가져오기(학습그룹 등록 폼)
-    public GameContentsListDTO getGameInfo(Map<String, Integer> map) {
-        return sqlSession.selectOne("StudyGroup.GameContentInfo",map);
+    //게임콘텐츠명 리스트 가져오기
+    public List<HashMap<String, Object>> getGameName(int member_no){
+        return sqlSession.selectList("StudyGroup.GameNameList",member_no);
     }
-
 
 
 }

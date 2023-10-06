@@ -5,17 +5,24 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <p/>[학습 그룹 등록]
+            <p/>[학습 그룹 등록]<p/>
+
+            <label for="selectGameContent" class="form-label">게임콘텐츠</label>
+            <select name="selectGameContent" id="selectGameContent" class="form-select">
+                <option value="">전체</option>
+                <option th:each="gameNameList : ${gameNameList}" th:value="${gameNameList.game_content_no}" th:text="${gameNameList.game_name}"></option>
+            </select>
+            <button id="searchButton">조회하기</button>
             <div>
-                <table class="table">
+                <table class="table" id="selectGameResult">
                     <thead class="table-dark">
                     <tr>
                         <th>선택</th>
                         <th>게임콘텐츠명</th>
                         <th>학습시작일</th>
                         <th>학습종료일</th>
-                        <th>학습가능인원</th>
-                        <th>그룹지정된 인원</th>
+                        <th>학습 가능 인원</th>
+                        <th>그룹 지정된 인원</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -39,49 +46,147 @@
 </div>
 </html>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // 조회 버튼 클릭 시
-        document.getElementById("viewButton").addEventListener("click", function () {
-            var selectedGameContentNo = null;
+//----학습 그룹 상세 입력----
+document.addEventListener("DOMContentLoaded", function () {
+    // 조회 버튼 클릭 시
+    document.getElementById("viewButton").addEventListener("click", function () {
+        var selectedGameContentNo = null;
 
-            // 선택된 체크박스 찾기
-            var checkboxes = document.querySelectorAll(".groupCheckbox");
-            checkboxes.forEach(function (checkbox) {
-                if (checkbox.checked) {
-                    selectedGameContentNo = checkbox.value;
-                    return; // 첫 번째 선택된 체크박스만 처리
-                }
-            });
-
-            if (selectedGameContentNo !== null) {
-                // 선택된 게임콘텐츠 번호를 사용하여 링크로 이동
-                window.location.href = "/studygroup/add/" + selectedGameContentNo;
-                // 선택된 게임콘텐츠 번호를 폼 필드에 설정
-                //document.getElementById("gameContentNo").value = selectedGameContentNo;
-
-                // 폼 제출
-                //document.getElementById("studyGroupForm").submit();
-
-            } else {
-                alert("그룹을 선택하세요.");
+        // 선택된 체크박스 찾기
+        var checkboxes = document.querySelectorAll(".groupCheckbox");
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedGameContentNo = checkbox.value;
+                return; // 첫 번째 선택된 체크박스만 처리
             }
         });
 
-        // 체크박스 클릭 시 다른 체크박스의 선택을 해제
-        var checkboxes = document.querySelectorAll(".groupCheckbox");
-        checkboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                if (this.checked) {
-                    // 다른 체크박스 선택 해제
-                    checkboxes.forEach(function (otherCheckbox) {
-                        if (otherCheckbox !== checkbox) {
-                            otherCheckbox.checked = false;
-                        }
-                    });
-                }
-            });
-        });
+        if (selectedGameContentNo !== null) {
+            // 선택된 게임콘텐츠 번호를 사용하여 링크로 이동
+            window.location.href = "/studygroup/add/" + selectedGameContentNo;
+            // 선택된 게임콘텐츠 번호를 폼 필드에 설정
+            //document.getElementById("gameContentNo").value = selectedGameContentNo;
 
+            // 폼 제출
+            //document.getElementById("studyGroupForm").submit();
+
+        } else {
+            alert("그룹을 선택하세요.");
+        }
     });
+
+    // 체크박스 클릭 시 다른 체크박스의 선택을 해제
+    var checkboxes = document.querySelectorAll(".groupCheckbox");
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener("click", function () {
+            if (this.checked) {
+                // 다른 체크박스 선택 해제
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }
+        });
+    });
+
+});
+
+
+
+//-----게임콘텐츠 조회 버튼-------
+document.addEventListener("DOMContentLoaded", function () {
+    // 조회하기 버튼 찾기
+    var searchButton = document.getElementById("searchButton");
+
+    // 결과를 표시할 엘리먼트 찾기
+    var selectGroupResult = document.getElementById("selectGameResult");
+
+    // 조회하기 버튼 클릭 시
+    searchButton.addEventListener("click", function () {
+        var selectedGameContentNo = document.getElementById("selectGameContent").value;
+
+        if (selectedGameContentNo !== "") {
+            // 새로운 XMLHttpRequest 객체 생성
+            var xhr = new XMLHttpRequest();
+
+            // GET 요청 설정
+            xhr.open('GET', '/studygroup/gameListEndpoint?game_content_no=' + selectedGameContentNo, true);
+
+            // 요청 완료 시 실행할 함수 설정
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                     try {
+                        //console.log(xhr.responseText);
+                        var responseData = JSON.parse(xhr.responseText);
+                        // 이제 responseData 변수에 JSON 데이터가 들어 있습니다.
+
+                        // 처리할 작업을 수행합니다.
+                        console.log(responseData);
+
+                        // 표시할 데이터를 가져와서 HTML에 적용
+                      var resultHTML = "";
+                      if (responseData && responseData.length > 0) {
+                            resultHTML = "<table class='table' id='selectGroupResult'>";
+                            resultHTML += "<thead class='table-dark'>";
+                            resultHTML += "<tr>";
+                            resultHTML += "<th>선택</th>";
+                            resultHTML += "<th>게임콘텐츠명</th>";
+                            resultHTML += "<th>학습 시작일</th>";
+                            resultHTML += "<th>학습 종료일</th>";
+                            resultHTML += "<th>학습 가능 인원</th>";
+                            resultHTML += "<th>그룹 지정된 인원</th>";
+                            // 다른 헤더 열 추가
+                            resultHTML += "</tr>";
+                            resultHTML += "</thead>";
+                            resultHTML += "<tbody>";
+
+                            responseData.forEach(function (gameContents) {
+                            resultHTML += "<tr>";
+                            resultHTML += "<td>";
+                            resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + gameContents.game_content_no + "' />";
+                            resultHTML += "</td>";
+                            resultHTML += "<td>" + gameContents.game_name + "</td>";
+
+                            var originalDate = new Date(gameContents.payment_date);
+                            var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
+                            resultHTML += "<td>" + formattedDate + "</td>";
+
+                            var originalDate = new Date(gameContents.subscription_end_date);
+                            var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
+                            resultHTML += "<td>" + formattedDate + "</td>";
+
+                            resultHTML += "<td>" + gameContents.max_subscribers + "</td>";
+                            resultHTML += "<td>" + gameContents.appointed_group_num + "</td>";
+                                // 다른 열 추가
+                                resultHTML += "</tr>";
+                            });
+
+                            resultHTML += "</tbody>";
+                            resultHTML += "</table>";
+                        } else {
+                            resultHTML = "<p>선택한 게임콘텐츠의 정보가 없습니다.</p>";
+                        }
+
+                        // 결과 엘리먼트에 HTML 추가
+                        selectGroupResult.innerHTML = resultHTML;
+                    } catch (e) {
+                        console.error('JSON 파싱 오류:', e);
+                    }
+                } else {
+                    // 요청이 실패한 경우 오류 처리
+                    console.error('Ajax 요청 오류: ' + xhr.status);
+                }
+            };
+
+            // 요청 보내기
+            xhr.send();
+        } else {
+             window.location.href = "/studygroup/gameList";
+            //alert("게임콘텐츠를 선택하세요.");
+        }
+    });
+});
+
 </script>
 

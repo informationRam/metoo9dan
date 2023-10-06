@@ -61,6 +61,11 @@ public class StudyGroupService {
         return studyGroupRepository.getGameList(member_no);
     }
 
+    //게임콘텐츠 리스트 조회 버튼
+    public List<GameContentsListDTO> selectGame(Map<String, Integer> map) {
+        return studyGroupRepository.selectGame(map);
+    }
+
     //학습그룹 삭제
     public void delete(StudyGroups studyGroups) {
         groupRepository.delete(studyGroups);
@@ -109,14 +114,20 @@ public class StudyGroupService {
         return studyGroupRepository.updateApproval(groupStudentsNoList);
     }
 
-    //학습그룹명 가져오기
+    //게임콘텐츠 정보 리스트
+    public GameContentsListDTO getGameInfo(Map<String, Integer> map) {
+        return studyGroupRepository.getGameInfo(map);
+    }
+
+    //학습그룹명 리스트 가져오기
     public List<HashMap<String, Object>> getGroupName(int member_no){
         return studyGroupRepository.getGroupName(member_no);
     }
 
-    //게임콘텐츠 리스트
-    public GameContentsListDTO getGameInfo(Map<String, Integer> map) {
-        return studyGroupRepository.getGameInfo(map);
+    //게임콘텐츠명 리스트 가져오기
+    public List<HashMap<String, Object>> getGameName(int member_no){
+        return studyGroupRepository.getGameName(member_no);
     }
+
 
 }
