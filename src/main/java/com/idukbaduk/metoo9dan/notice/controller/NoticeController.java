@@ -1,7 +1,9 @@
 package com.idukbaduk.metoo9dan.notice.controller;
 
+import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
+import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
@@ -75,16 +77,43 @@ public class NoticeController {
     }
 
     //공지사항 등록 처리해줘 요청 (임시)
-    @PostMapping("/add")
+    @PostMapping("/add") //관리자만 작성 가능해야 함.
     public String add(@Valid NoticeForm noticeForm,
                       BindingResult bindingResult
                       ){
-        if(bindingResult.hasErrors()){
-            return "/notice/noticeForm"; //에러가 있으면, noticeForm.html로 이동.
+
+        if(bindingResult.hasErrors()){ //에러가 있으면,
+            return "/notice/noticeForm"; //noticeForm.html로 이동.
 
         } else { //에러가 없으면, 공지사항 등록 진행
-            noticeService.add(noticeForm.getTitle(),
-                              noticeForm.getContent());
+
+            //1. 파라미터 받기
+            //로그인한 사람이 관리자인지 확인하는 코드 필요.
+            //임시로 작성자 memberNo1로 설정
+            Member member = new Member();
+            member.setMemberNo(1);
+
+            NoticeDTO noticeDTO = new NoticeDTO();
+            noticeDTO.setNoticeType(noticeForm.getNoticeType());
+            noticeDTO.setNoticeTitle(noticeForm.getTitle());
+            noticeDTO.setNoticeContent(noticeForm.getContent());
+            noticeDTO.setMemberNo(member.getMemberNo()); //로그인한 유저 정보(수정 요)
+            noticeDTO.setStatus(noticeForm.getStatus());
+            noticeDTO.setImp(noticeForm.getIsImp());
+            System.out.println("noticeForm.getNoticeType():"+noticeForm.getNoticeType());
+            System.out.println("noticeForm.getTitle():"+noticeForm.getTitle());
+            System.out.println("noticeForm.getContent():"+noticeForm.getContent());
+            System.out.println("noticeForm.getStatus():"+noticeForm.getStatus());
+            System.out.println("noticeForm.isImp():"+noticeForm.getIsImp());
+
+
+            //2. 비즈니스로직 수행
+            //noticeService.add(noticeForm.getTitle(),
+            //                  noticeForm.getContent());
+
+            //3. 모델
+
+            //4. 뷰
             return "redirect:/notice/list"; //질문목록조회 요청
         }
     }
