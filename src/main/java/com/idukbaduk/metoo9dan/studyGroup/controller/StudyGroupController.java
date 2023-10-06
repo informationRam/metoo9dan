@@ -106,6 +106,10 @@ public class StudyGroupController {
         GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
         model.addAttribute("gameInfo",gameInfo);
 
+        //수정 가능 그룹인원(학습가능인원-(그룹지정된 인원-현재 그룹인원))
+        int calculatedValue = gameInfo.getMax_subscribers() - (gameInfo.getAppointed_group_num() - studyGroupForm.getGroupSize());
+        model.addAttribute("calculatedValue", calculatedValue);
+
         return "studygroup/studyGroup_modifyForm";
     }
 

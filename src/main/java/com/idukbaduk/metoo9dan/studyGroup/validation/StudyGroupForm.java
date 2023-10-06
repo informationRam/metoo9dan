@@ -1,7 +1,5 @@
 package com.idukbaduk.metoo9dan.studyGroup.validation;
 
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
-import com.idukbaduk.metoo9dan.common.entity.Member;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -20,7 +18,7 @@ public class StudyGroupForm {
     private String groupName; //그룹명
 
     @NotNull(message = "그룹인원은 필수 입력 입니다.")
-    @Digits(integer = 10, fraction = 0, message = "숫자를 입력하세요.")
+    @Min(value = 1, message = "1 이상의 숫자를 입력하세요.")
     private Integer groupSize; //그룹인원
 
     @NotNull(message = "그룹 시작일은 필수 입력 입니다.")
