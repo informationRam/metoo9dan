@@ -27,7 +27,13 @@
                     <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
                     <div>
                         <a href="#" th:href="@{#}" class="btn btn-secondary">수정</a>
-                        <a href="#" th:href="@{#}" class="btn btn-danger">삭제</a>
+                        <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.noticeNo}|}"
+                           class="delete btn btn-outline-danger"
+                           th:text="삭제">
+                            <!--댓글작성자와 로그인한사람이 동일할때만 보여져야함-->
+                            <!--sec:authorize="isAuthenticated()"
+                            th:if="${ answer.writer!=null and #authentication.getPrincipal().getUsername()==answer.writer.username }"-->
+                        </a>
                     </div>
                 </div>
                 <hr/>
@@ -77,21 +83,30 @@
     var $ = jQuery;
 
     function transferData(replyId, content, noticeNo){
-        // Ajax 요청 보내기
-        $.ajax({
-            type: 'PUT',
-            url: '/reply/modify/' + replyId,
-            contentType: 'application/json',
-            data: JSON.stringify({ content: content }),
-            success: function(response) {
-                $("#replyWrapNo"+replyId).load("/notice/detail/"+noticeNo+" #replyNo"+replyId);
-                alert('댓글을 수정하였습니다.');
-            },
-            error: function(error) {
-                console.error('댓글 수정 실패:', error);
-                alert('댓글 수정에 실패했습니다.');
-            }
-        });
+
+        if(content.trim()!==''){
+            // Ajax 요청 보내기
+            $.ajax({
+                type: 'PUT',
+                url: '/reply/modify/' + replyId,
+                contentType: 'application/json',
+                data: JSON.stringify({ content: content }),
+                success: function(response) {
+                    //$("#replyWrapNo"+replyId).load("/notice/detail/"+noticeNo+" #replyNo"+replyId);
+                    //alert('댓글을 수정하였습니다.');
+                    location.reload();
+                },
+                error: function(error) {
+                    console.error('댓글 수정 실패:', error);
+                    alert('댓글 수정에 실패했습니다.');
+                }
+            });
+        } else {
+            alert('수정할 댓글을 입력하세요.');
+            setTimeout(function(){
+                document.querySelector("#replyNo"+replyId+" textarea").focus();
+            });
+        }
     }
     function replyRollback(replyId, noticeNo){
         $("#replyWrapNo"+replyId).load("/notice/detail/"+noticeNo+" #replyNo"+replyId);

@@ -51,12 +51,26 @@ public class NoticeController {
         return "notice/noticeDetail";
     }
 
+    //공지사항 삭제해줘 요청
+    @GetMapping("/delete/{noticeNo}")
+    public String delete(@PathVariable Integer noticeNo){
+        // 1. 파라미터 받기
+        // 2. 비즈니스 로직 처리
+        //우선 삭제할 글이 존재하는지 조회하여 확인
+        Notice notice = noticeService.getNotice(noticeNo);
+        //댓글 작성자와 로그인한 유저가 같지 않는 경우 BAD_REQUEST 응답처리하는 코드 추가해야함
+        /*if(member.~~~.equals(principal.getName())){
 
+        }*/
+        noticeService.delete(notice);
+        // 3. 모델
+        // 4. 뷰
+        return "redirect:/notice/list";
+    }
 
     //공지 작성폼 보여줘 요청
     @GetMapping("/add")
     public String noticeAddForm(NoticeForm noticeForm){
-
         return "notice/noticeForm";
     }
 
@@ -74,4 +88,6 @@ public class NoticeController {
             return "redirect:/notice/list"; //질문목록조회 요청
         }
     }
+
+
 }
