@@ -94,9 +94,8 @@ public class GameController {
 
 
     //  삭제하기
-   /* @GetMapping("/delete/{gameContentNo}")
+    @GetMapping("/delete/{gameContentNo}")
     public String gameDelete(@PathVariable("gameContentNo") Integer gameContentNo) {
-*/
         // 현재 사용자의 인증 정보를 가져옴
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -105,26 +104,10 @@ public class GameController {
 //                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"권한이 없습니다.");
 //        }
-      /*  GameContents gameContents = gameService.getGameContents(gameContentNo);
-        gameService.delete(gameContents);*/
-      /*  return "redirect:/game/list";    //목록으로이동
-    }*/
+        GameContents gameContents = gameService.getGameContents(gameContentNo);
+        gameService.delete(gameContents);
+        return "redirect:/game/list";    //목록으로이동
+    }
 
-
-    // 계산 Ajax
-  /*  @ResponseBody
-    @PostMapping("/calculator")
-    public Map<String, String> calculator(@RequestParam("email") String email) {
-        Map<String, String> user = new HashMap<>();
-        String userid = userService.searchId(email);
-        //회원정보에 사용자가 입력한 이메일이 있는지 확인
-        if (!userService.checkEmailDuplication(email) || userid == null) {
-            user.put("userid", "회원정보를 찾을 수 없습니다.");
-            return user;
-        } else {
-            user.put("userid", userid);
-            return user;
-        }
-    }*/
 
 }//class

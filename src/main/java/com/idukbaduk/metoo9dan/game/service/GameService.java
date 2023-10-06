@@ -111,7 +111,6 @@ public class GameService {
 
 
 
-
   /*  //gameNo값을 주면 ContentsFile 값 전체 조회
     public GameContents getGameContentsFile(int gameContentNo){
         GameContentFiles gameContentFiles = gameContentsFileRepository.findAllById(gameContentNo).get();
@@ -119,14 +118,8 @@ public class GameService {
     }*/
 
     //게임 컨텐츠 삭제
-   /* public void delete(GameContents gameContents) {
+    public void delete(GameContents gameContents) {
         gameContents.setStatus("N");
         gameRepository.save(gameContents);  //게시글상태를 'N'으로 변경한다.
-
-        GameContentFiles gameContentFiles = new GameContentFiles();
-        gameContentsFileRepository.findByGameContentNo(gameContents.getGameContentNo()).get();
-
-        gameContentsFileRepository.delete();
-
-    }*/
+    }
 }

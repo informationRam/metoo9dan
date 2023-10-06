@@ -1,5 +1,6 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/game/list.css" />
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
@@ -21,18 +22,16 @@
                 </tr>
                 </thead>
                 <tbody class="table-light">
-                <tr th:each="game, loop : ${gamePage}">
+                <tr th:each="game, loop : ${gamePage}" th:if="${game.status == 'Y'}">
                     <!-- 페이지 번호 -->
                     <td class="game no"
                         th:text="${gamePage.getTotalElements() - (gamePage.getNumber() * gamePage.getSize()) - loop.index}"></td>
-                    <!-- 이미지 -->
+                    <!-- 이미지 (only the first image if available) -->
                     <td class="gameContents image">
-                        <ul>
-                            <li th:each="file : ${game.gameContentFilesList}">
-                                <img th:src="@{|/upload/game/${file.copyFileName}|}" alt="" width="100" height="100">
-                            </li>
-                        </ul>
+                        <img th:if="${game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                             th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" alt="" width="100" height="100">
                     </td>
+
                     <!-- 게임 제목 -->
                     <td class="game title">
                         <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a>
@@ -67,7 +66,7 @@
                     </td>
                     <!-- 게임 등록일 -> 수정하면 날짜 변경. -->
                     <td class="game date">
-                        <span th:text="${#temporals.format(game.creationDate,'yyyy-MM-dd')}">
+                        <span th:text="${#temporals.format(game.creationDate,'yyyy-MM-dd HH:mm')}">
                     </td>
                     <!-- 액션 -->
                     <td class="game actions">
@@ -86,26 +85,30 @@
             </div>
             <!-- Pagination 부분 영역 시작 -->
             <div th:if="${gamePage != null && !gamePage.isEmpty()}">
-                <!-- <ul class="pagination justify-content-center"> --><!-- 여기에 bg-danger 클래스 추가 -->
-                <ul class="pagination justify-content-center">
-                    <ul class="qna-pagination">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination custom-pagination justify-content-center">
                         <!-- 이전 버튼 -->
-                        <li class="qna-page-item" th:classappend="${!gamePage.hasPrevious()} ? 'disabled'">
-                            <a class="qna-page-link" th:href="@{|?page=${gamePage.getNumber() - 1}|}"><span>이전</span></a>
+                        <li class="page-item" th:classappend="${!gamePage.hasPrevious()} ? 'disabled'">
+                            <a class="page-link" th:href="@{|?page=${gamePage.getNumber() - 1}|}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
                         </li>
-                        <!-- 페이지 번호: 반복 + 연결 + bootstrap [0] [1] [2] [3~] [4] [5] [6] [7]~~[9] [10] [11] -->
-                        <li class="qna-page-item" th:each="page : ${#numbers.sequence(0, gamePage.getTotalPages() - 1)}"
+                        <!-- 페이지 번호: 반복 + 연결 -->
+                        <li th:each="page : ${#numbers.sequence(0, gamePage.getTotalPages() - 1)}"
                             th:if="${page >= gamePage.getNumber() - 3 and page <= gamePage.getNumber() + 3}"
                             th:classappend="${page == gamePage.getNumber()} ? 'active'">
-                            <a class="qna-page-link" th:href="@{|?page=${page}|}" th:text="${page + 1}"></a>
+                            <a class="page-link" th:href="@{|?page=${page}|}" th:text="${page + 1}"></a>
                         </li>
                         <!-- 다음 버튼 -->
-                        <li class="qna-page-item" th:classappend="${!gamePage.hasNext()} ? 'disabled'">
-                            <a class="qna-page-link" th:href="@{|?page=${gamePage.getNumber() + 1}|}"><span>다음</span></a>
+                        <li class="page-item" th:classappend="${!gamePage.hasNext()} ? 'disabled'">
+                            <a class="page-link" th:href="@{|?page=${gamePage.getNumber() + 1}|}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
                         </li>
                     </ul>
-                </ul>
+                </nav>
             </div><!-- Pagination 부분 영역 끝 -->
+
         </div>
     </div>
     <script layout:fragment="script">
