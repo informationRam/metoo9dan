@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.education.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
+import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.service.EducationService;
 import com.idukbaduk.metoo9dan.education.service.ResourcesFilesService;
@@ -20,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,39 +96,8 @@ public class EducationController {
         return "education/modify";
 
     }
-/*
 
-    // 수정 실행
-    @PostMapping("/modify/{resource_no}")
-    public String modifyResource(@PathVariable Integer resource_no, @Valid EducationVaildation educationVaildation,@RequestParam("boardFile") MultipartFile file,
-                             BindingResult bindingResult, Model model) throws IOException {
-
-        System.out.println("boardFile?" + educationVaildation.getBoardFile().get(0));
-        educationService.getEducation(resource_no);
-
-        // 업로드된 파일의 확장자 확인
-        MultipartFile fileName = educationVaildation.getBoardFile().get(0);
-
-        if (fileName == null || fileName.isEmpty()) {
-            educationVaildation.setBoardFile(null);
-        }
-
-        model.addAttribute("educationVaildation", educationVaildation);
-
-        if (bindingResult.hasErrors()) {
-            return "education/modify";
-        } else {
-            // 기존 교육 자료를 조회하여 수정
-            EducationalResources educationalResources = educationService.getEducation(resource_no);
-            educationService.modify(educationalResources, educationVaildation);
-            return "redirect:/education/list";
-        }
-
-    }
-*/
-
-
-
+    //수정처리
     @PostMapping("/modify/{resourceNo}")
     public String modifyResource(@PathVariable Integer resourceNo, @ModelAttribute("educationVaildation") EducationVaildation educationVaildation, @RequestParam(name = "deletedFiles", required = false) List<Integer> deletedFiles, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
         // 1. 삭제된 파일 처리
@@ -158,6 +129,18 @@ public class EducationController {
         return "redirect:/education/list";
     }
 
+    //삭제처리
+    @GetMapping("/delete/{resourceNo}")
+    public String delete(@PathVariable("resourceNo") Integer resourceNo, Principal principal) {
+        EducationalResources education = educationService.getEducation(resourceNo);
+        Integer gameContentNo = education.getGameContents().getGameContentNo();
+        if (gameContentNo > 0){
+            educationService.delete(education);
+            return "redirect:/education/list";    // 공지사항 목록으로 이동
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
+        }
+    }
 
     // 파일 다운로드 요청 처리
     @GetMapping("/downloadFile/{fileNo}")
@@ -177,7 +160,6 @@ public class EducationController {
             // 파일을 바이트 배열로 읽기
             byte[] fileData = Files.readAllBytes(new File(filePath).toPath());
 
-            // 파일 다운로드를 위한 HTTP 헤더 설정
             // 파일 다운로드를 위한 HTTP 헤더 설정
             HttpHeaders headers = new HttpHeaders();
 
@@ -204,7 +186,7 @@ public class EducationController {
         }
 }
 
-    /*// 파일 삭제 핸들러
+   /* // 파일 삭제 핸들러
     @GetMapping("/deleteFile/{fileNo}")
     public String deleteFile(@PathVariable Integer fileNo) {
         // 파일을 서버에서 삭제하는 로직을 구현
@@ -222,8 +204,6 @@ public class EducationController {
         }
 
         return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
-    }
-*/
-
+    }*/
 
 }

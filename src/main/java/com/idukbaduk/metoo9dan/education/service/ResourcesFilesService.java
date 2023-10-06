@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.education.service;
 
+import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.reprository.ResourcesFilesReprository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.List;
 
 @Service
@@ -33,6 +35,14 @@ public class ResourcesFilesService {
 
     public void deleteFile(Integer fileNo) {
         ResourcesFiles resourcesFiles = resourcesFilesRepository.findById(fileNo).get();
+        // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
+
+        String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFiles.getCopyFileName();
+        File file = new File(filePath);
+        if (file.exists() && file.isFile()) {
+            file.delete(); // 파일을 삭제
+        }
+        // 데이터베이스에서 파일 정보를 삭제
         resourcesFilesRepository.delete(resourcesFiles);
     }
 }

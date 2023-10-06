@@ -12,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -167,7 +169,41 @@ public class EducationService {
         return educationVaildation;
     }
 
+// 삭제 처리
+    public void delete(EducationalResources education) {
+        List<ResourcesFiles> byEducationalResourcesResourceNo = resourcesFilesReprository.findByEducationalResources_ResourceNo(education.getResourceNo());
+        educationalRepository.delete(education);
+
+        //EducationalResources와 연관된 파일이 있다면 삭제.
+        if(byEducationalResourcesResourceNo != null && !byEducationalResourcesResourceNo.isEmpty()) {
+            for (ResourcesFiles resourcesFiles : byEducationalResourcesResourceNo) {
+                resourcesFilesService.deleteFile(resourcesFiles.getFileNo());
+                //resourcesFilesReprository.delete(resourcesFiles);
+            }
+        }
+
+    }
 
 
-}
+    // 파일 삭제 핸들러
+    @GetMapping("/deleteFile/{fileNo}")
+    public String deleteFile(@PathVariable Integer fileNo) {
+        // 파일을 서버에서 삭제하는 로직을 구현
+        ResourcesFiles resourcesFile = resourcesFilesService.getFileByFileNo(fileNo);
+        if (resourcesFile != null) {
+            // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
+            String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFile.getCopyFileName();
+            File file = new File(filePath);
+            if (file.exists() && file.isFile()) {
+                file.delete(); // 파일을 삭제
+            }
+
+            // 데이터베이스에서 파일 정보를 삭제
+            resourcesFilesService.deleteFile(fileNo);
+        }
+
+        return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
+    }
+
+}//class
 
