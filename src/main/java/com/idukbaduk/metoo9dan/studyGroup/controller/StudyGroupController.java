@@ -41,7 +41,32 @@ public class StudyGroupController {
         List<GameContentsListDTO> gameContents = studyGroupService.getGameList(member_no);
         model.addAttribute("gameContents",gameContents);
         System.out.println("gameContents="+gameContents);
+
+        //게임콘텐츠명 리스트 가져오기
+        List<HashMap<String, Object>> gameNameList = studyGroupService.getGameName(member_no);
+        model.addAttribute("gameNameList",gameNameList);
+        System.out.println("gameNameList="+gameNameList);
+
         return "studyGroup/gameContents_list";
+    }
+
+    //게임콘텐츠 조회하기 버튼 엔드포인트
+    @GetMapping(value = "/gameListEndpoint", produces = "application/json")
+    @ResponseBody
+    public List<GameContentsListDTO> gamecontentsList(Model model,@RequestParam(defaultValue="1") int member_no,@RequestParam int game_content_no, @RequestParam Map<String, Integer> map) {
+
+      /*  String gameContentNoString = String.valueOf("game_content_no"); // 문자열로 추출
+        int selectedGameContentNo = Integer.parseInt(gameContentNoString); // 문자열을 정수로 변환
+        System.out.println("selectedGameContentNo="+selectedGameContentNo);*/
+
+        //System.out.println("selectedGameContentNo=" + game_content_no);
+        map.put("member_no", member_no); // map에 member_no 추가
+        map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
+
+        List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
+        model.addAttribute("gameContents",gameContents);
+        System.out.println("엔드포인트gameContents="+gameContents);
+        return gameContents;
     }
 
 
@@ -156,6 +181,7 @@ public class StudyGroupController {
         model.addAttribute("studyGroup",studyGroup);
         System.out.println("studyGroup="+studyGroup);
 
+        //학습그룹명 리스트 가져오기
         List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
         model.addAttribute("groupNameList",groupNameList);
         System.out.println("groupNameList="+groupNameList);
@@ -176,6 +202,7 @@ public class StudyGroupController {
             map.put("member_no", member_no); // map에 member_no 추가
             map.put("selectedGroupNo", selectedGroupNo); // map에 selectedGroupNo 추가
 
+            //학습 그룹 정보 가져오기
             List<StudyGroupsListDTO> selectGroup = studyGroupService.selectGroup(map);
             System.out.println("selectGroup="+selectGroup);
 
