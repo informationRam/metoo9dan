@@ -5,70 +5,77 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div class="col-10" style="border: 1px solid black; padding:0px;"> <!--class에서 col-10은 빼면 안됨-->
             <form action="/homework/send" method="post">
-                <h3>Homeworks</h3>
-                <select id="homeworkDropdown" onchange="filterHomeworks()">
-                    <option value="All">All</option>
-                    <option th:each="title : ${distinctHomeworkTitles}" th:value="${title}" th:text="${title}"></option>
-                </select>
+                <div class="upperSection">
+                    <div class="px-3 py-3">
+                    <h3>Homeworks</h3>
+                    <select id="homeworkDropdown" onchange="filterHomeworks()">
+                        <option value="All">All</option>
+                        <option th:each="title : ${distinctHomeworkTitles}" th:value="${title}" th:text="${title}"></option>
+                    </select>
 
-                <div>
-                <table>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Homework Title</th>
-                        <th>Homework Content Preview</th>
-                        <th>Progress</th>
-                        <th>Due Date</th>
-                    </tr>
-                    </thead>
-                    <tbody id="homeworkTableBody">
-                        <tr th:each="hw : ${homeworks}">
-                            <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
-                            <td th:text="${hw.homeworkTitle}"></td>
-                            <td th:text="${hw.homeworkContentPreview}"></td>
-                            <td th:text="${hw.progress} + '레벨'"></td>
-                            <td th:text="${hw.dueDate}"></td>
+                    <div>
+                    <table class="sendhwTable">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Homework Title</th>
+                            <th>Homework Content Preview</th>
+                            <th>Progress</th>
+                            <th>Due Date</th>
                         </tr>
-                    </tbody>
-                </table>
-                <div id="paginationContainer">
-                    <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
+                        </thead>
+                        <tbody id="homeworkTableBody">
+                            <tr th:each="hw : ${homeworks}">
+                                <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
+                                <td th:text="${hw.homeworkTitle}"></td>
+                                <td th:text="${hw.homeworkContentPreview}"></td>
+                                <td th:text="${hw.progress} + '레벨'"></td>
+                                <td th:text="${hw.dueDate}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="paginationContainer">
+                        <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
+                    </div>
+                    </div>
+                    <div class="curveEffect"></div>
+                    </div>
                 </div>
-                </div>
-
+<!-- 여기를 기준으로 위아래 색이 달라졌으면 좋겠어 위는 편안한 연두색 아래는 편안한 아이보리색으로. 그리고 색이 달라지는 선 가운데에 원이 겹치게 존재해서 차리 선이 곡선인 것처럼 보였으면 좋겠어 -->
+                <div class="lowerSection">
                 <!-- Group Students -->
-                <h3>Study Groups</h3>
-                <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()">
-                    <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
-                    <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
-                </select>
+                    <h3>Study Groups</h3>
+                    <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()">
+                        <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
+                        <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
+                    </select>
 
-                <div id="groupMessage"></div>
-                <table>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Name</th>
-                        <th>Tel</th>
-                        <th>Current Level</th>
-                        <!-- 두 번째 학생의 정보를 위한 헤더 추가 -->
-                        <th></th>
-                        <th>Name</th>
-                        <th>Tel</th>
-                        <th>Current Level</th>
-                    </tr>
-                    </thead>
-                    <tbody id="studyGroupMembersBody">
-                    <!-- Ajax로 가져온 데이터로 테이블 로우 생성 -->
-                    </tbody>
-                </table>
-                <!-- <button onclick="postSelected()">Submit</button> -->
-                <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
-                <input type="hidden" id="hiddenSelectedMembers" name="selectedMembers" value="">
-                <button id="submitButton" type="button" onclick="validateAndSubmitForm()">숙제 전송</button>
+                    <div id="groupMessage"></div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Tel</th>
+                            <th>Current Level</th>
+                            <!-- 두 번째 학생의 정보를 위한 헤더 추가 -->
+                            <th></th>
+                            <th>Name</th>
+                            <th>Tel</th>
+                            <th>Current Level</th>
+                        </tr>
+                        </thead>
+                        <tbody id="studyGroupMembersBody">
+                        <!-- Ajax로 가져온 데이터로 테이블 로우 생성 -->
+                        </tbody>
+                    </table>
+                    <!-- <button onclick="postSelected()">Submit</button> -->
+                    <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
+                    <input type="hidden" id="hiddenSelectedMembers" name="selectedMembers" value="">
+                    <button id="submitButton" type="button" onclick="validateAndSubmitForm()">숙제 전송</button>
+                </div>
             </form>
             <script>
                 let currentPage = 1;
