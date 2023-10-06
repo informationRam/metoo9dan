@@ -51,7 +51,10 @@
                         </span>
                     </td>
                     <!-- 패키지유형 -->
-                    <td class="education gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : '-'}" data-game-contents="${education.gameContents != null ? education.gameContents.gameName : '-'}" th:parameterName="${education.gameContents}"></td>
+                    <td class="education-gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : '-'}" data-game-contents="${education.gameContents != null ? education.gameContents.gameName : '-'}"></td>
+                    <!-- 버튼 추가 -->
+                    <button id="getGameContentsButton" class="btn btn-primary">게임 컨텐츠 가져오기</button>
+
                     <!-- 등록일 (수정하면 날짜 변경) -->
                     <td class="education date">
                         <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd')}">
@@ -63,16 +66,17 @@
                             <span th:case=="short">무료</span>
                         </span>
                     </td>
-                    <!-- 액션 -->
-                    <td class="education actions">
+                     <!-- 액션 -->
+                    <td class="education-actions">
                         <a th:href="@{|/education/modify/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1">수정</a>
                         <a href="javascript:void(0);"
                            th:data-uri="@{|/education/delete/${education.resourceNo}|}"
                            class="delete btn btn-sm btn-outline-secondary"
                            sec:authorize="isAuthenticated()"
                            th:text="삭제"
-                           th:onclick="deleteItem(event,this.getAttribute('parameterName'))"></a>
+                           th:onclick="deleteItem(this)"></a>
                     </td>
+
                     <td class="education files">
                         <ul>
                             <li th:each="file : ${education.resourcesFilesList}">
@@ -84,7 +88,7 @@
                     <td class="education image">
                         <ul>
                             <li th:each="file : ${education.resourcesFilesList}">
-                                <img th:src="@{|/upload/${file.copyFileName}|}" alt="">
+                                <img th:src="@{|/upload/${file.copyFileName}|}" alt="" width="100" height="100">
                             </li>
                         </ul>
                     </td>
@@ -120,20 +124,39 @@
         </div>
     </div>
     <!-- 스크립트 추가 -->
-    <script layout:fragment="script">
-        function deleteItem(event, gameContents) {
-        console.log("gameContents:", gameContents);
-         const gameContentsElement = gameContents !== null ? gameContents.gameName : '-';
-         console.log("gameContentsElement:", gameContentsElement);
+    <script th:inline="javascript">
+        // 버튼 클릭 시 실행할 함수
+  function getGameContents() {
+      // education-gameContents 요소 선택
+      var educationGameContentsElement = document.querySelector('.education-gameContents');
 
-     if (gameContentsElement !== '-') {
-         alert("패키지에 포함되어 있어 삭제가 불가능합니다.");
-     } else {
-         if (confirm("삭제하시겠습니까?")) {
-             location.href = event.target.getAttribute("data-uri");
-         }
-     }
- }
+      // education-gameContents 요소의 텍스트 값을 가져와서 출력
+      var gameContentsValue = educationGameContentsElement.textContent;
+      console.log("gameContents:", gameContentsValue);
+  }
+
+  // 버튼에 클릭 이벤트 연결
+  var getGameContentsButton = document.getElementById('getGameContentsButton');
+  getGameContentsButton.addEventListener('click', getGameContents);
+
+
+  function deleteItem(button) {
+          //var gameContents = button.parentElement.previousElementSibling.getAttribute("data-game-contents");
+          //console.log("gameContents:", gameContents);
+
+            var educationGameContentsElement = document.querySelector('.education-gameContents');
+          var gameContentsValue = educationGameContentsElement.textContent;
+          console.log("gameContents:", gameContentsValue);
+
+
+          if (gameContents !== '-') {
+              alert("패키지에 포함되어 있어 삭제가 불가능합니다.");
+          } else {
+              if (confirm("삭제하시겠습니까?")) {
+                  location.href = button.getAttribute("data-uri");
+              }
+          }
+      }
     </script>
 
 </div>

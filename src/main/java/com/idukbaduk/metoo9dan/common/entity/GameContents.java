@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 // 게임콘텐츠 - PRIMARY KEY (game_content_no)
 @Entity
@@ -50,6 +52,7 @@ public class GameContents {
     @Column(name="content_type")
     private String contentType;           //enum('package','individual') NOT NULL    COMMENT '콘텐츠 타입',
 
-
+    @OneToMany(mappedBy = "gameContents", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<GameContentFiles> gameContentFilesList = new ArrayList<>();
 
 }
