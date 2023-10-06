@@ -88,9 +88,21 @@ public class NoticeReplyController {
         }
     }
 
-    // 댓글 수정 처리해줘 요청
-    /*/reply/modify/${reply.noticeReplyNo}
-    public String replyModify(){
+    // 댓글 삭제 요청
+    @GetMapping("/delete/{replyNo}")
+    public String delete(@PathVariable Integer replyNo){
+        // 1. 파라미터 받기
+        // 2. 비즈니스 로직 처리
+            //우선 삭제할 댓글이 존재하는지 조회하여 확인
+        NoticeReply noticeReply = replyService.getReply(replyNo);
+        Integer noticeNo =replyService.getReply(replyNo).getNotice().getNoticeNo();
+        //댓글 작성자와 로그인한 유저가 같지 않는 경우 BAD_REQUEST 응답처리하는 코드 추가해야함
+        /*if(member.~~~.equals(principal.getName())){
 
-    }*/
+        }*/
+        replyService.delete(noticeReply);
+        // 3. 모델
+        // 4. 뷰
+        return String.format("redirect:/notice/detail/%d", noticeNo);
+    }
 }
