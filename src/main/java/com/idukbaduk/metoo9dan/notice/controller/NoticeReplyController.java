@@ -63,15 +63,13 @@ public class NoticeReplyController {
     @PutMapping ("/modify/{replyNo}")
     @ResponseBody
     public String replyModify(@RequestBody NoticeReplyForm noticeReplyForm,
-                              @PathVariable Integer replyNo,
-                              RedirectAttributes redirectAttributes){
+                              @PathVariable Integer replyNo){
         //1. 파라미터받기
         //2. 비즈니스로직수행
         replyService.updateReply(replyNo, noticeReplyForm.getContent());
         Integer noticeNo = replyService.getReply(replyNo).getNotice().getNoticeNo();
         //3. 모델
         //4. 뷰
-        redirectAttributes.addFlashAttribute("msg", "댓글이 수정되었습니다.");
         return String.format("redirect:/notice/detail/%d", noticeNo);
     }
 

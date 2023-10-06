@@ -95,4 +95,9 @@ public class NoticeService {
         //notice.setPostDate();
         noticeRepository.save(notice);
     }
+
+    //공지사항 삭제처리
+    public void delete(Notice notice) {
+        noticeRepository.delete(notice);
+    }
 }
