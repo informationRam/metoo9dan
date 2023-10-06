@@ -48,7 +48,8 @@ public class StudyGroupController {
     //학습 그룹 등록 상세(교육자)
     //학습 그룹 등록 폼
     @GetMapping("/add/{game_content_no}")
-    public String add(StudyGroupForm studyGroupForm,Model model,@RequestParam(defaultValue="1") int member_no,@PathVariable("game_content_no") int game_content_no, @RequestParam Map<String, Integer> map){
+    public String add(Model model,StudyGroupForm studyGroupForm,
+                      @RequestParam(defaultValue="1") int member_no,@PathVariable("game_content_no") int game_content_no,Map<String, Integer> map){
 
         //int game_content_no=1;
         map.put("member_no", member_no); // map에 member_no 추가
@@ -63,12 +64,11 @@ public class StudyGroupController {
     //학습 그룹 등록 처리
     @PostMapping("/add/{game_content_no}")
     public String studygroupAdd(Model model, @Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,
-                                @PathVariable("game_content_no") int game_content_no,@RequestParam Map<String, Integer> map){
+                                @PathVariable("game_content_no") int game_content_no,Map<String, Integer> map){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
             //유효성 검사시 게임콘텐츠정보 넘기기
             int member_no=1;
             map.put("member_no", member_no); // map에 member_no 추가
-            map.put("game_content_no", game_content_no); // map에 game_content_no 추가
             map.put("game_content_no", game_content_no); // map에 game_content_no 추가
             GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
             model.addAttribute("gameInfo",gameInfo);
@@ -88,25 +88,44 @@ public class StudyGroupController {
     //학습 그룹 수정(교육자)
     //학습 그룹 수정 폼
     @GetMapping("/modify/{group_no}")
-    public String modify(StudyGroupForm studyGroupForm,@PathVariable("group_no") int group_no,@RequestParam(defaultValue="1") int member_no){
+    public String modify(Model model,StudyGroupForm studyGroupForm,
+                         @PathVariable("group_no") int group_no,Map<String, Integer> map){
+
         StudyGroups studyGroups = studyGroupService.getGruop(group_no);
         studyGroupForm.setGroupName(studyGroups.getGroupName());
         studyGroupForm.setGroupSize(studyGroups.getGroupSize());
         studyGroupForm.setGroupStartDate(studyGroups.getGroupStartDate());
         studyGroupForm.setGroupFinishDate(studyGroups.getGroupFinishDate());
         studyGroupForm.setGroupIntroduce(studyGroups.getGroupIntroduce());
-        //studyGroupForm.setMemberNo(member_no);
+
+        //studyGroups 엔티티에서 game_content_no,member_no값 추출
+        int game_content_no = studyGroups.getGameContents().getGameContentNo();
+        int member_no= studyGroups.getMember().getMemberNo();
+        map.put("member_no", member_no); // map에 member_no 추가
+        map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+        GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
+        model.addAttribute("gameInfo",gameInfo);
+
         return "studygroup/studyGroup_modifyForm";
     }
 
     //학습 그룹 수정 처리
     @PostMapping("/modify/{group_no}")
-    public String studygroupmodify(@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
-            ,@PathVariable("group_no") int group_no,Model model){
+    public String studygroupModify(Model model,@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
+                                 ,@PathVariable("group_no") int group_no,Map<String, Integer> map){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
-            return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
+            //유효성 검사시 게임콘텐츠정보 넘기기
+            StudyGroups studyGroups = studyGroupService.getGruop(group_no);
+            int game_content_no = studyGroups.getGameContents().getGameContentNo();
+            int member_no= studyGroups.getMember().getMemberNo();
+
+            map.put("member_no", member_no); // map에 member_no 추가
+            map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+            GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
+            model.addAttribute("gameInfo",gameInfo);
+
+            return "studyGroup/studyGroup_modifyForm";
         }
-        //Integer memberNo = studyGroupForm.getMemberNo();
         int member_no=1;
 
         model.addAttribute("group_no",group_no);
