@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan.game.service;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.game.reprository.GameContentsFileRepository;
 import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
 import com.idukbaduk.metoo9dan.game.vaildation.GameContentFilesVaildation;
@@ -32,35 +33,51 @@ public class GameService {
     public void save(GameVaildation gameVaildation) throws IOException {
        GameContents gameContents = new GameContents();
 
-        gameContents.setGameName(gameVaildation.getGame_name());
-        gameContents.setDifficulty(gameVaildation.getDifficulty());
-        gameContents.setSubscriptionDuration(gameVaildation.getSubscription_duration());
-        gameContents.setMaxSubscribers(gameVaildation.getMax_subscribers());
-        gameContents.setOriginalPrice(gameVaildation.getOriginal_price());
-        gameContents.setDiscountRate(gameVaildation.getDiscount_rate());
-        gameContents.setSalePrice(gameVaildation.getSale_price());
-        gameContents.setPackageDetails(gameVaildation.getPackage_details());
-        gameContents.setCreationDate(LocalDateTime.now());
-        gameContents.setStatus("Y");    //게시글상태
-        gameContents.setContentType("package");
-        gameRepository.save(gameContents);
+        //파일이 있다면
+        if(gameVaildation.getBoardFile() != null) {
 
-        GameContentFiles gameContentFiles = new GameContentFiles();
-        gameContentFiles.setGameContents(gameContents);
+            gameContents.setGameName(gameVaildation.getGame_name());
+            gameContents.setDifficulty(gameVaildation.getDifficulty());
+            gameContents.setSubscriptionDuration(gameVaildation.getSubscription_duration());
+            gameContents.setMaxSubscribers(gameVaildation.getMax_subscribers());
+            gameContents.setOriginalPrice(gameVaildation.getOriginal_price());
+            gameContents.setDiscountRate(gameVaildation.getDiscount_rate());
+            gameContents.setSalePrice(gameVaildation.getSale_price());
+            gameContents.setPackageDetails(gameVaildation.getPackage_details());
+            gameContents.setCreationDate(LocalDateTime.now());
+            gameContents.setStatus("Y");    //게시글상태
+            gameContents.setContentType("package");
+            gameRepository.save(gameContents);
 
-        //파일을 첨부하면 'yyyyMMddHHmmss+원본파일명'으로 저장된다.
-        if(gameVaildation.getBoardFile() != null){
+            //파일 저장
 
-            MultipartFile boardfile = gameVaildation.getBoardFile();
-            String originalFileName1 = boardfile.getOriginalFilename(); //파일이름을 가져옴
-            String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            String copyFileName = todayDate + "_" + originalFileName1;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
-            String savePath = "/Users/ryuahn/Desktop/baduk/"+copyFileName; //mac 파일 지정 C:/baduk
-            boardfile.transferTo(new File(savePath));   //파일저장 처리
+            for (MultipartFile boardFile : gameVaildation.getBoardFile()) {
+                GameContentFiles gameContentFiles = new GameContentFiles();
+                gameContentFiles.setGameContents(gameContents);
+                String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
+                String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                String copyFileName = todayDate + "_" + originalFileName;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
+                String savePath = "/Users/ryuahn/Desktop/baduk/game/" + copyFileName; //mac 파일 지정 C:/baduk
+                boardFile.transferTo(new File(savePath));   //파일저장 처리
 
-            gameContentFiles.setOriginFileName(originalFileName1);
-            gameContentFiles.setCopyFileName(copyFileName);
-            gameContentsFileRepository.save(gameContentFiles);
+                gameContentFiles.setOriginFileName(originalFileName);
+                gameContentFiles.setCopyFileName(copyFileName);
+                gameContentsFileRepository.save(gameContentFiles);
+            }
+        }else {
+
+            gameContents.setGameName(gameVaildation.getGame_name());
+            gameContents.setDifficulty(gameVaildation.getDifficulty());
+            gameContents.setSubscriptionDuration(gameVaildation.getSubscription_duration());
+            gameContents.setMaxSubscribers(gameVaildation.getMax_subscribers());
+            gameContents.setOriginalPrice(gameVaildation.getOriginal_price());
+            gameContents.setDiscountRate(gameVaildation.getDiscount_rate());
+            gameContents.setSalePrice(gameVaildation.getSale_price());
+            gameContents.setPackageDetails(gameVaildation.getPackage_details());
+            gameContents.setCreationDate(LocalDateTime.now());
+            gameContents.setStatus("Y");    //게시글상태
+            gameContents.setContentType("package");
+            gameRepository.save(gameContents);
         }
     }
     //게임목록조회 (페이징처리)
@@ -89,6 +106,11 @@ public class GameService {
         gameVaildation.setSale_price(gameContents.getSalePrice());
         return gameVaildation;
     }
+
+
+
+
+
 
   /*  //gameNo값을 주면 ContentsFile 값 전체 조회
     public GameContents getGameContentsFile(int gameContentNo){

@@ -4,7 +4,7 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <form id="educationadd" class="my-2" th:object="${educationVaildation}" th:action="@{/education/modify}" method="post" enctype="multipart/form-data">
+            <form id="educationadd" class="my-2" th:object="${educationVaildation}" th:action="@{|/education/modify/${resourceNo}|}" method="post" enctype="multipart/form-data">
             <div>
                 <!-- 교육자료명 -->
                 <div class="mb-3 row">
@@ -57,7 +57,7 @@
                 <div class="mb-5 row">
                     <label for="boardFile" class="col-sm-2 col-form-label">썸네일</label>
                     <div class="col-sm-5">
-                    <input class="form-control" type="file" th:field="*{boardFile}" multiple>
+                        <input class="form-control" type="file" th:field="*{boardFile}" multiple>
                     </div>
                 </div>
                 <!-- 기존에 업로드된 파일-->
@@ -65,16 +65,40 @@
                     <ul>
                         <li th:each="file : ${educationVaildation.boardFileList}">
                             <a th:href="@{|/education/downloadFile/${file.fileNo}|}" th:text="${file.originFileName}">다운로드</a>
-                            <a th:href="@{|/education/deleteFile/${file.fileNo}|}" class="btn btn-sm btn-danger">삭제</a>
+                            <!-- 파일 삭제 버튼 -->
+                            <a class="btn btn-sm btn-danger" th:attr="data-fileNo=${file.fileNo}" onclick="deleteFile(event, this.getAttribute('data-fileNo'))">삭제</a>
+                            <!-- 컨텐츠 삭제를 위한 hidden input -->
+                            <input type="hidden" th:each="fileNo : ${educationVaildation.deletedFiles}" th:name="'deletedFiles[' + ${fileNo} + ']'" th:value="${fileNo}">
                         </li>
                     </ul>
                 </td>
+                <!-- 수정된 컨텐츠 내용을 전달하기 위한 hidden input -->
                 <div class="mb-3 text-center">
-                    <button type="submit" class="btn btn-primary">등록하기</button>
+                    <button type="submit" class="btn btn-primary">수정하기</button>
                 </div>
             </div>
             </form>
         </div>
     </div>
+    <script type="text/javascript">
+        function deleteFile(event, fileNo) {
+     // Find the parent <li> element containing the file
+     var listItem = event.target.parentElement;
+     console.log('fileNo?',fileNo)
+
+     // Hide the parent <li> element
+     if (listItem) {
+         listItem.style.display = 'none';
+     }
+
+     // Create a hidden input element to track deleted files
+     var hiddenInput = document.createElement('input');
+     hiddenInput.type = 'hidden';
+     hiddenInput.name = 'deletedFiles'; // 삭제된 파일 목록을 서버에 전달할 때 사용합니다.
+     hiddenInput.value = fileNo; // Use the fileNo directly
+     document.getElementById('educationadd').appendChild(hiddenInput);
+ }
+    </script>
+
 </div>
 </html>

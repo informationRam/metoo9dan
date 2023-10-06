@@ -35,12 +35,11 @@ public class GameController {
     //게임 컨텐츠 등록 처리
     @PostMapping("/add")
     public String gameAdd(@ModelAttribute("gameVaildation") @Valid GameVaildation gameVaildation, @RequestParam("boardFile") MultipartFile file, BindingResult bindingResult, Model model) throws IOException {
-        System.out.println("boardFile?"+gameVaildation.getBoardFile().getOriginalFilename());
         System.out.println("정가 : "+gameVaildation.getOriginal_price());
         System.out.println("판매가 : "+gameVaildation.getSale_price());
 
         // 업로드된 파일의 확장자 확인
-        String fileName = gameVaildation.getBoardFile().getOriginalFilename();
+        MultipartFile fileName = gameVaildation.getBoardFile().get(0);
 
         if (fileName == null || fileName.isEmpty()) {
                 gameVaildation.setBoardFile(null);

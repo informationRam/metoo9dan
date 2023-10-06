@@ -27,6 +27,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +84,7 @@ public class EducationController {
         return "education/list";
     }
 
-    //수정하기
+    //수정하기 폼
     @GetMapping("/modify/{resourceNo}")
     public String userUpdateForm(@PathVariable Integer resourceNo, Model model) {
         EducationalResources education = educationService.getEducation(resourceNo);
@@ -92,6 +94,70 @@ public class EducationController {
         return "education/modify";
 
     }
+/*
+
+    // 수정 실행
+    @PostMapping("/modify/{resource_no}")
+    public String modifyResource(@PathVariable Integer resource_no, @Valid EducationVaildation educationVaildation,@RequestParam("boardFile") MultipartFile file,
+                             BindingResult bindingResult, Model model) throws IOException {
+
+        System.out.println("boardFile?" + educationVaildation.getBoardFile().get(0));
+        educationService.getEducation(resource_no);
+
+        // 업로드된 파일의 확장자 확인
+        MultipartFile fileName = educationVaildation.getBoardFile().get(0);
+
+        if (fileName == null || fileName.isEmpty()) {
+            educationVaildation.setBoardFile(null);
+        }
+
+        model.addAttribute("educationVaildation", educationVaildation);
+
+        if (bindingResult.hasErrors()) {
+            return "education/modify";
+        } else {
+            // 기존 교육 자료를 조회하여 수정
+            EducationalResources educationalResources = educationService.getEducation(resource_no);
+            educationService.modify(educationalResources, educationVaildation);
+            return "redirect:/education/list";
+        }
+
+    }
+*/
+
+
+
+    @PostMapping("/modify/{resourceNo}")
+    public String modifyResource(@PathVariable Integer resourceNo, @ModelAttribute("educationVaildation") EducationVaildation educationVaildation, @RequestParam(name = "deletedFiles", required = false) List<Integer> deletedFiles, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
+        // 1. 삭제된 파일 처리
+        if (deletedFiles != null && !deletedFiles.isEmpty()) {
+            System.out.println("deletedFiles?: "+ deletedFiles);
+            for (Integer fileNo : deletedFiles) {
+                if(fileNo != null && !deletedFiles.isEmpty()){
+                    System.out.println("fileNo?: "+ fileNo);
+                    // 파일을 서버에서 삭제하는 로직을 구현
+                    ResourcesFiles resourcesFile = resourcesFilesService.getFileByFileNo(fileNo);
+                    // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
+                    String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFile.getCopyFileName();
+                    File file = new File(filePath);
+                    if (file.exists() && file.isFile()) {
+                        file.delete(); // 파일을 삭제
+                    }
+                    // 데이터베이스에서 파일 정보를 삭제
+                    resourcesFilesService.deleteFile(fileNo);
+                }
+            }
+        }
+        // 2. 수정된 컨텐츠 내용 처리
+            EducationalResources educationalResources = educationService.getEducation(resourceNo);
+            if (educationalResources != null) {
+                educationService.modify(educationalResources, educationVaildation);
+                return "redirect:/education/list";
+            }
+
+        return "redirect:/education/list";
+    }
+
 
     // 파일 다운로드 요청 처리
     @GetMapping("/downloadFile/{fileNo}")
@@ -138,7 +204,7 @@ public class EducationController {
         }
 }
 
-    // 파일 삭제 핸들러
+    /*// 파일 삭제 핸들러
     @GetMapping("/deleteFile/{fileNo}")
     public String deleteFile(@PathVariable Integer fileNo) {
         // 파일을 서버에서 삭제하는 로직을 구현
@@ -157,40 +223,7 @@ public class EducationController {
 
         return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
     }
-
-    // 정보수정 실행
- /*   @PreAuthorize("isAuthenticated()")
-    @PostMapping("/modify/{user_id}")
-    public String userUpdate(Model model, @Valid UserModifyForm userModifyForm,
-                             BindingResult bindingResult, Principal principal) {
-
-        User user = userService.getUser(principal.getName());
-        model.addAttribute("userModifyForm", userModifyForm);
-
-        if (bindingResult.hasErrors()) {
-            return "user/userModifyForm";
-        }
-        //이메일 중복여부체크
-        if (userService.checkEmailDuplication(user, userModifyForm)) {
-            bindingResult.rejectValue("email", "EmailInCorrect", "이미 사용중인 이메일 입니다.");
-            return "user/userModifyForm";
-        }
-        //비밀번호, 비밀번호 확인 동일 체크
-        if (!userModifyForm.getPwd1().equals(userModifyForm.getPwd2())) {
-            bindingResult.rejectValue("pwd2", "pwdInCorrect", "비밀번호와 비밀번호확인이 불일치합니다.");
-            return "user/userModifyForm";
-        }
-        try {
-            userService.userModify(user, userModifyForm);
-        } catch (DataIntegrityViolationException e) {
-            e.printStackTrace();
-            bindingResult.reject("modifyFailed", "정보를 확인해주세요.");
-            return "user/userModifyForm";
-        }
-        return "redirect:/";
-    }
 */
-
 
 
 }

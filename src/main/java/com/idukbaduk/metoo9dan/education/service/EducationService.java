@@ -1,11 +1,11 @@
 package com.idukbaduk.metoo9dan.education.service;
 
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.reprository.EducationRepository;
 import com.idukbaduk.metoo9dan.education.reprository.ResourcesFilesReprository;
 import com.idukbaduk.metoo9dan.education.vaildation.EducationVaildation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +37,7 @@ public class EducationService {
         if(educationVaildation.getBoardFile() != null){
 
             //교육자료 내용 저장
+            educationalResources.setResourceNo(educationVaildation.getResource_no());
             educationalResources.setResourceName(educationVaildation.getResource_name());
             educationalResources.setResourceCate(educationVaildation.getResource_cate());
             educationalResources.setFileType(educationVaildation.getFile_type());
@@ -72,7 +73,7 @@ public class EducationService {
             educationalResources.setDescription(educationVaildation.getDescription());
             educationalResources.setCreationDate(LocalDateTime.now());
 
-            //교육자료파일 저장
+            //교육자료 저장
             educationalRepository.save(educationalResources);
         }
     }
@@ -85,7 +86,43 @@ public class EducationService {
         return educationalRepository.findAll(pageable);
     }
 
- //resourceNo 주면 Contents값 전체 조회
+    //교육자료수정
+    public void modify(EducationalResources educationalResources,EducationVaildation educationVaildation) throws IOException {
+
+        // 필요한 필드를 업데이트
+        educationalResources.setResourceName(educationVaildation.getResource_name());
+        educationalResources.setResourceCate(educationVaildation.getResource_cate());
+        educationalResources.setFileType(educationVaildation.getFile_type());
+        educationalResources.setServiceType(educationVaildation.getService_type());
+        educationalResources.setDescription(educationVaildation.getDescription());
+        educationalResources.setCreationDate(LocalDateTime.now());
+
+        // 수정된 교육 자료 저장
+        educationalRepository.save(educationalResources);
+
+        List<MultipartFile> boardFile1 = educationVaildation.getBoardFile();
+        System.out.println("boardFile1 " + boardFile1);
+        if (boardFile1 != null && !boardFile1.isEmpty()) {
+            for (MultipartFile boardFile : boardFile1) {
+                if (boardFile != null && !boardFile.isEmpty()) { // 파일이 비어있지 않은 경우에만 저장 로직 실행
+                    System.out.println("boardFile?" + boardFile.getOriginalFilename());
+                    // 나머지 저장 로직은 그대로 유지
+                    ResourcesFiles resourcesFiles = new ResourcesFiles();
+                    resourcesFiles.setEducationalResources(educationalResources);
+                    String originalFileName = boardFile.getOriginalFilename();
+                    String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                    String copyFileName = todayDate + "_" + originalFileName;
+                    String savePath = "/Users/ryuahn/Desktop/baduk/education/" + copyFileName;
+                    boardFile.transferTo(new File(savePath));
+                    resourcesFiles.setOriginFileName(originalFileName);
+                    resourcesFiles.setCopyFileName(copyFileName);
+                    resourcesFilesReprository.save(resourcesFiles);
+                }
+            }
+        }
+    }
+
+    //resourceNo 주면 Contents값 전체 조회
     public EducationalResources getEducation(int resourceNo){
         EducationalResources educationalResources = educationalRepository.findById(resourceNo).orElse(null);
         if (educationalResources != null) {
@@ -97,6 +134,7 @@ public class EducationService {
     //EducationalResources -> EducationVaildation으로 변경
     public EducationVaildation toEducationVaildation(EducationalResources education) {
         EducationVaildation educationVaildation = new EducationVaildation();
+        educationVaildation.setResource_no(education.getResourceNo());
         educationVaildation.setResource_name(education.getResourceName());
         educationVaildation.setResource_cate(education.getResourceCate());
         educationVaildation.setFile_type(education.getFileType());
@@ -109,4 +147,27 @@ public class EducationService {
 
         return educationVaildation;
     }
+
+    //  EducationVaildation -> EducationalResources 변경
+    public EducationVaildation toEducationalResources(EducationVaildation educationVaildation) {
+        EducationalResources educationalResources = new EducationalResources();
+
+        educationalResources.setResourceName(educationVaildation.getResource_name());
+        educationalResources.setResourceCate(educationVaildation.getResource_cate());
+        educationalResources.setFileType(educationVaildation.getFile_type());
+        educationalResources.setFileUrl(null);
+        educationalResources.setServiceType(educationVaildation.getService_type());
+        educationalResources.setDescription(educationVaildation.getDescription());
+        educationalResources.setCreationDate(LocalDateTime.now());
+
+        // 이미 업로드된 이미지 파일 목록을 가져와서 EducationVaildation에 설정
+        List<ResourcesFiles> resourcesFilesList = resourcesFilesService.getResourcesFilesByResourceNo(educationVaildation.getResource_no());
+        educationVaildation.setBoardFileList(resourcesFilesList);
+
+        return educationVaildation;
+    }
+
+
+
 }
+

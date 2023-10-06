@@ -36,7 +36,9 @@ public class GameVaildation {
 
     private String status;                //'게시글 상태'
 
-    private MultipartFile boardFile;
+    private List<MultipartFile> boardFile;  //  파일저장시 필요
+
+    private List<MultipartFile> boardFileList;  // 이미 업로드된 이미지 파일 목록
 
     private String origin_file_name;  //'원본파일명'
 }

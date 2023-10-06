@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 public class EducationVaildation {
 
+    private Integer resource_no;
+
     @NotEmpty(message = "교육자료명을 입력해주세요.")
     private String resource_name;    //'교육자료명',
 
@@ -31,6 +33,8 @@ public class EducationVaildation {
     private List<MultipartFile> boardFile;  //  파일저장시 필요
 
     private List<ResourcesFiles> boardFileList; // 이미 업로드된 이미지 파일 목록
+
+    private List<Integer> deletedFiles;   // 삭제된 파일 목록
 
     private String origin_file_name;  //'원본파일명'
 
