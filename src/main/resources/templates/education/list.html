@@ -51,8 +51,6 @@
                     </td>
                     <!-- 패키지유형 -->
                     <td class="education-gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : '-'}" data-game-contents="${education.gameContents != null ? education.gameContents.gameName : '-'}"></td>
-                    <!-- 버튼 추가 -->
-                    <button id="getGameContentsButton" class="btn btn-primary">게임 컨텐츠 가져오기</button>
                     <!-- 등록일 (수정하면 날짜 변경) -->
                     <td class="education date">
                         <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}">

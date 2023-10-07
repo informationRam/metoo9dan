@@ -57,7 +57,8 @@ public class GameService {
                 String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
                 String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
                 String copyFileName = todayDate + "_" + originalFileName;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
-                String savePath = "/Users/ryuahn/Desktop/baduk/game/" + copyFileName; //mac 파일 지정 C:/baduk
+                String uploadDirectory = "static/files/game/";
+                String savePath = uploadDirectory + copyFileName; //mac 파일 지정 C:/baduk
                 boardFile.transferTo(new File(savePath));   //파일저장 처리
 
                 gameContentFiles.setOriginFileName(originalFileName);
