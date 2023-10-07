@@ -4,6 +4,7 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <div>
             <form id="gameadd" class="my-2" th:object="${gameVaildation}" th:action="@{/game/add}" method="post" enctype="multipart/form-data" onsubmit="prepareForm()">
             <div>
                 <!-- 게임콘텐츠명 -->
@@ -11,7 +12,7 @@
                     <label for="game_name" class="col-sm-2 col-form-label">게임콘텐츠명</label>
                     <div class="col-sm-5">
                         <input type="text" th:field="*{game_name}" class="form-control">
-                        <span th:if="${#fields.hasErrors('game_name')}" th:errors="*{game_name}" class="error-message text-danger"></span>
+                        <span th:if="${#fields.hasErrors('game_name')}" th:errors="*{game_name}" class="error-message text-danger small"></span>
                     </div>
                 </div>
                 <!-- 학습난이도 -->
@@ -23,6 +24,7 @@
                             <option value="intermediate">중급</option>
                             <option value="advanced">고급</option>
                         </select>
+                        <span th:if="${#fields.hasErrors('difficulty')}" th:errors="*{difficulty}" class="error-message text-danger small"></span>
                     </div>
                 </div>
             <!-- 구독기간 -->
@@ -30,6 +32,7 @@
                         <label for="subscription_duration" class="col-sm-2 col-form-label">구독기간</label>
                         <div class="col-sm-3">
                             <input type="number" th:field="*{subscription_duration}" class="form-control" placeholder="일 단위로 입력해주세요.">
+                            <span th:if="${#fields.hasErrors('subscription_duration')}" th:errors="*{subscription_duration}" class="error-message text-danger small"></span>
                         </div>
                     </div>
             <!-- 구독가능인원 -->
@@ -37,6 +40,7 @@
                         <label for="max_subscribers" class="col-sm-2 col-form-label">구독가능인원</label>
                         <div class="col-sm-3">
                             <input type="number" th:field="*{max_subscribers}" class="form-control">
+                            <span th:if="${#fields.hasErrors('max_subscribers')}" th:errors="*{max_subscribers}" class="error-message text-danger small"></span>
                         </div>
                     </div>
                 <!-- 정가 -->
@@ -44,6 +48,7 @@
                     <label for="original_price" class="col-sm-2 col-form-label">정가</label>
                     <div class="col-sm-3">
                         <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
+                        <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
                     </div>
                 </div>
                 <!-- 할인율 -->
@@ -54,7 +59,8 @@
                             <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
                             <span class="input-group-text">%</span> <!-- Input 그룹의 추가 텍스트로 % 기호를 추가 -->
                         </div>
-                        <small class="text-muted ms-1">적용 버튼을 눌러 판매가를 적용하세요.</small>
+                        <small class="text-muted ms-1">적용 버튼을 눌러 판매가를 적용하세요.</small><br>
+                        <span th:if="${#fields.hasErrors('discount_rate')}" th:errors="*{discount_rate}" class="error-message text-danger small"></span>
                     </div>
                     <div class="col-sm-1">
                         <button type="button" class="btn btn-primary" onclick="calculateSalePrice()">적용</button>
@@ -64,7 +70,8 @@
                 <div class="mb-3 row">
                     <label for="sale_price" class="col-sm-2 col-form-label">판매가</label>
                     <div class="col-sm-3">
-                        <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price" readonly oninput="addCommas(this)">
+                        <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price" readonly oninput="addCommas(this)" placeholder="할인율 적용시 자동 적용">
+                        <span th:if="${#fields.hasErrors('sale_price')}" th:errors="*{sale_price}" class="error-message text-danger small"></span>
                     </div>
                 </div>
                 <!-- 패키지내용 -->
@@ -90,7 +97,9 @@
                     <button type="submit" class="btn btn-primary">등록하기</button>
                 </div>
             </div>
+
             </form>
+            </div>
         </div>
     </div>
     <script>

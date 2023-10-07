@@ -17,18 +17,24 @@
                 </thead>
                 <tbody class="table-light">
                 <tr th:each="game, loop : ${gamePage}">
+                    <td class="gameContents image">
                     <!-- 이미지 -->
+                    <div class="card" style="width: 18rem;">
+                        <img th:if="${game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                             th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <!-- 게임제목 -->
+                            <p class="card-text"> <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a></p>
+                        </div>
+                    </div>
+<!--                  모든 사진을 반복적으로 가져옴
                     <td class="gameContents image">
                         <ul>
                             <li th:each="file : ${game.gameContentFilesList}">
                                 <img th:src="@{|/upload/game/${file.copyFileName}|}" alt="" width="100" height="100">
                             </li>
                         </ul>
-                    </td>
-                    <!-- 게임 제목 -->
-                    <td class="game title">
-                        <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a>
-                    </td>
+                    </td>-->
                     <!-- 난이도 -->
                     <td class="game difficulty">
                         <span th:switch="${game.difficulty}">

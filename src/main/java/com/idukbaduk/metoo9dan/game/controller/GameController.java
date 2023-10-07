@@ -35,20 +35,31 @@ public class GameController {
 
     //게임 컨텐츠 등록 처리
     @PostMapping("/add")
-    public String gameAdd(@ModelAttribute("gameVaildation") @Valid GameVaildation gameVaildation, @RequestParam("boardFile") MultipartFile file, BindingResult bindingResult, Model model) throws IOException {
+    public String gameAdd(@ModelAttribute("gameVaildation") @Valid GameVaildation gameVaildation, BindingResult bindingResult,@RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
         System.out.println("정가 : "+gameVaildation.getOriginal_price());
         System.out.println("판매가 : "+gameVaildation.getSale_price());
 
         // 업로드된 파일의 확장자 확인
         MultipartFile fileName = gameVaildation.getBoardFile().get(0);
-
+        // 파일이 비어있음 null처리
         if (fileName == null || fileName.isEmpty()) {
                 gameVaildation.setBoardFile(null);
         }
 
         if (bindingResult.hasErrors()) {
             return "game/addForm";
-        } else{
+        }
+        //정가, 할인율, 판매가가 null이면 보여주는 에러
+        if(gameVaildation.getOriginal_price() == null) {
+                bindingResult.rejectValue("original_price", "original_priceInCorrect", "값을 확인해주세요.");
+                return "game/addForm";
+        }else if(gameVaildation.getDiscount_rate() == null){
+            bindingResult.rejectValue("discount_rate", "discount_rateInCorrect", "값을 확인해주세요.");
+            return "game/addForm";
+        } else if(gameVaildation.getSale_price() == null) {
+            bindingResult.rejectValue("sale_price", "sale_priceInCorrect", "값을 확인해주세요.");
+            return "game/addForm";
+        }else {
             gameService.save(gameVaildation);
             return "redirect:/game/list";
         }

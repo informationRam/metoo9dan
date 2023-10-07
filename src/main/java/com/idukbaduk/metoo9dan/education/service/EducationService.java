@@ -171,19 +171,17 @@ public class EducationService {
 
 // 삭제 처리
     public void delete(EducationalResources education) {
-        List<ResourcesFiles> byEducationalResourcesResourceNo = resourcesFilesReprository.findByEducationalResources_ResourceNo(education.getResourceNo());
         educationalRepository.delete(education);
 
-        //EducationalResources와 연관된 파일이 있다면 삭제.
-        if(byEducationalResourcesResourceNo != null && !byEducationalResourcesResourceNo.isEmpty()) {
+        List<ResourcesFiles> byEducationalResourcesResourceNo = resourcesFilesReprository.findByEducationalResources_ResourceNo(education.getResourceNo());
+        System.out.println("byEducationalResourcesResourceNo?:" + byEducationalResourcesResourceNo);
+
+        if (byEducationalResourcesResourceNo != null && !byEducationalResourcesResourceNo.isEmpty()) {
             for (ResourcesFiles resourcesFiles : byEducationalResourcesResourceNo) {
                 resourcesFilesService.deleteFile(resourcesFiles.getFileNo());
-                //resourcesFilesReprository.delete(resourcesFiles);
             }
         }
-
     }
-
 
     // 파일 삭제 핸들러
     @GetMapping("/deleteFile/{fileNo}")

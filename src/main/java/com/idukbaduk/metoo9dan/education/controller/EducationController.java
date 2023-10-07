@@ -51,7 +51,7 @@ public class EducationController {
 
     //교육자료 등록 처리
     @PostMapping("/add")
-    public String educationAdd(@ModelAttribute("educationVaildation") @Valid EducationVaildation educationVaildation, @RequestParam("boardFile") MultipartFile file, BindingResult bindingResult, Model model) throws IOException {
+    public String educationAdd(@ModelAttribute("educationVaildation") @Valid EducationVaildation educationVaildation,BindingResult bindingResult,@RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
         System.out.println("boardFile?"+educationVaildation.getBoardFile().get(0));
 
         // 업로드된 파일의 확장자 확인
@@ -133,11 +133,13 @@ public class EducationController {
     @GetMapping("/delete/{resourceNo}")
     public String delete(@PathVariable("resourceNo") Integer resourceNo, Principal principal) {
         EducationalResources education = educationService.getEducation(resourceNo);
-        Integer gameContentNo = education.getGameContents().getGameContentNo();
-        if (gameContentNo > 0){
+
+//        게임콘텐츠가 널이거나 비어있으면 삭제
+        if (education.getGameContents() == null || education.getGameContents().equals("")){
             educationService.delete(education);
             return "redirect:/education/list";    // 공지사항 목록으로 이동
         } else {
+
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
         }
     }
