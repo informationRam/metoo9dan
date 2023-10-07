@@ -8,6 +8,7 @@ import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
 import com.idukbaduk.metoo9dan.game.vaildation.GameContentFilesVaildation;
 import com.idukbaduk.metoo9dan.game.vaildation.GameVaildation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GameService {
+
+    private String uploadDir;
 
     private final GameRepository gameRepository;
     private final GameContentsFileRepository gameContentsFileRepository;
@@ -57,8 +60,9 @@ public class GameService {
                 String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
                 String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
                 String copyFileName = todayDate + "_" + originalFileName;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
-                String uploadDirectory = "static/files/game/";
+                String uploadDirectory = "/Users/ryuahn/Desktop/baduk/";
                 String savePath = uploadDirectory + copyFileName; //mac 파일 지정 C:/baduk
+                System.out.println("uploadDirectory?:" + uploadDirectory);
                 boardFile.transferTo(new File(savePath));   //파일저장 처리
 
                 gameContentFiles.setOriginFileName(originalFileName);
