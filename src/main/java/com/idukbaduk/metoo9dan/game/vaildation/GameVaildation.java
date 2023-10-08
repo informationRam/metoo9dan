@@ -1,7 +1,9 @@
 package com.idukbaduk.metoo9dan.game.vaildation;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.hibernate.sql.Insert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,9 @@ import java.util.List;
 
 @Data
 public class GameVaildation {
+
+
+    private Insert game_no;
 
     @NotBlank(message = "게임콘텐츠명은 필수 입니다.")
     private String game_name;             //'게임 콘텐츠명'
@@ -41,9 +46,13 @@ public class GameVaildation {
 
     private String status;                //'게시글 상태'
 
+    private String content_type;
+
     private List<MultipartFile> boardFile;  //  파일저장시 필요
 
     private List<MultipartFile> boardFileList;  // 이미 업로드된 이미지 파일 목록
 
     private String origin_file_name;  //'원본파일명'
+
+    private int[] selectedResourceNos;  //선택된 ResourceNo 값들
 }

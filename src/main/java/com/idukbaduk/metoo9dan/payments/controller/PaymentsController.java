@@ -24,7 +24,7 @@ public class PaymentsController {
     //게임컨텐츠 목록조회
     @GetMapping("/list")
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
-        Page<GameContents> gamePage = this.gameService.getList(page);
+/*        Page<GameContents> gamePage = this.gameService.getList(page);
 
         // 게임컨텐츠에 대한 파일 정보를 가져와서 모델에 추가
         for (GameContents gamecon : gamePage.getContent()) {
@@ -34,7 +34,7 @@ public class PaymentsController {
 
         //3.Model
         model.addAttribute("gameContents", gameContents);
-        model.addAttribute("gamePage", gamePage);
+        model.addAttribute("gamePage", gamePage);*/
         return "payments/gameList";
     }
 

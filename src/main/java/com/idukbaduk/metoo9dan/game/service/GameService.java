@@ -48,8 +48,7 @@ public class GameService {
             gameContents.setSalePrice(gameVaildation.getSale_price());
             gameContents.setPackageDetails(gameVaildation.getPackage_details());
             gameContents.setCreationDate(LocalDateTime.now());
-            gameContents.setStatus("Y");    //게시글상태
-            gameContents.setContentType("package");
+            gameContents.setStatus(gameVaildation.getStatus());    //게시글상태
             gameRepository.save(gameContents);
 
             //파일 저장
@@ -94,6 +93,11 @@ public class GameService {
         return gameRepository.findAll(pageable);
     }
 
+    // 페이지네이션을 사용하지 않고 모든 게임콘텐츠 조회
+    public List<GameContents> getAllGameContents() {
+        return gameRepository.findAll(); // 페이지네이션 없이 모든 게임콘텐츠를 가져옵니다.
+    }
+
     //gameNo값을 주면 GameContents값 전체 조회
     public GameContents getGameContents(int gameContentNo){
         GameContents gameContents = gameRepository.findById(gameContentNo).get();
@@ -110,6 +114,12 @@ public class GameService {
         gameVaildation.setDiscount_rate(gameContents.getDiscountRate());
         gameVaildation.setSale_price(gameContents.getSalePrice());
         return gameVaildation;
+    }
+
+    public GameContents toGameContents(GameVaildation gameVaildation) {
+        GameContents gameContents = new GameContents();
+        gameContents.setGameContentNo(gameContents.getGameContentNo());
+        return gameContents;
     }
 
 

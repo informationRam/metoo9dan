@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.common.entity;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name="educational_resources")
+//@JsonIdentityInfo(generator = ObjectㅍIdGenerators.PropertyGenerator.class, property = "userCode")
 public class EducationalResources {
 
     @Id

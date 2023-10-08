@@ -1,107 +1,206 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-<div layout:fragment="content" class="container my-3">
-    <div class="row">
+<div layout:fragment="content" class="sb-nav-fixed">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <div>
-            <form id="gameadd" class="my-2" th:object="${gameVaildation}" th:action="@{/game/add}" method="post" enctype="multipart/form-data" onsubmit="prepareForm()">
-            <div>
-                <!-- 게임콘텐츠명 -->
-                <div class="mb-3 row">
-                    <label for="game_name" class="col-sm-2 col-form-label">게임콘텐츠명</label>
-                    <div class="col-sm-5">
-                        <input type="text" th:field="*{game_name}" class="form-control">
-                        <span th:if="${#fields.hasErrors('game_name')}" th:errors="*{game_name}" class="error-message text-danger small"></span>
-                    </div>
-                </div>
-                <!-- 학습난이도 -->
-                <div class="mb-3 row">
-                    <label for="difficulty" class="col-sm-2 col-form-label">학습난이도</label>
-                    <div class="col-sm-3">
-                        <select th:field="*{difficulty}" class="form-select">
-                            <option value="beginner">초급</option>
-                            <option value="intermediate">중급</option>
-                            <option value="advanced">고급</option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('difficulty')}" th:errors="*{difficulty}" class="error-message text-danger small"></span>
-                    </div>
-                </div>
-            <!-- 구독기간 -->
-                    <div class="mb-3 row">
-                        <label for="subscription_duration" class="col-sm-2 col-form-label">구독기간</label>
-                        <div class="col-sm-3">
-                            <input type="number" th:field="*{subscription_duration}" class="form-control" placeholder="일 단위로 입력해주세요.">
-                            <span th:if="${#fields.hasErrors('subscription_duration')}" th:errors="*{subscription_duration}" class="error-message text-danger small"></span>
+    <div id="layoutSidenav"s>
+    <div th:replace="~{/game/gameSidebar::sidebar}"></div>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js"></script>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+                    <h1 class="mt-4">게임콘텐츠 등록</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item"><a href="index.html">운영마당</a></li>
+                        <li class="breadcrumb-item active">게임콘텐츠 등록</li>
+                    </ol>
+                    <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+                    <form id="gameadd" class="my-3" th:object="${gameVaildation}" th:action="@{/game/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data" onsubmit="prepareForm()">
+                        <div class="row">
+                            <!-- Left-side content -->
+                            <div class="col-md-6">
+                                <!-- 게임콘텐츠명 -->
+                                <div class="mb-3 row">
+                                    <label for="game_name" class="col-sm-3 col-form-label">게임콘텐츠명</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" th:field="*{game_name}" class="form-control">
+                                        <span th:if="${#fields.hasErrors('game_name')}" th:errors="*{game_name}" class="error-message text-danger small"></span>
+                                    </div>
+                                </div>
+                                <!-- 학습난이도 -->
+                                <div class="mb-3 row">
+                                    <label for="difficulty" class="col-sm-3 col-form-label">학습난이도</label>
+                                    <div class="col-sm-4">
+                                        <select th:field="*{difficulty}" class="form-select">
+                                            <option value="beginner">초급</option>
+                                            <option value="intermediate">중급</option>
+                                            <option value="advanced">고급</option>
+                                        </select>
+                                        <span th:if="${#fields.hasErrors('difficulty')}" th:errors="*{difficulty}" class="error-message text-danger small"></span>
+                                    </div>
+                                </div>
+                                <!-- 구독기간 -->
+                                <div class="mb-3 row">
+                                    <label for="subscription_duration" class="col-sm-3 col-form-label">구독기간</label>
+                                    <div class="col-sm-6">
+                                        <input type="number" th:field="*{subscription_duration}" class="form-control" placeholder="일 단위로 입력해주세요.">
+                                        <span th:if="${#fields.hasErrors('subscription_duration')}" th:errors="*{subscription_duration}" class="error-message text-danger small"></span>
+                                    </div>
+                                </div>
+                                <!-- 구독가능인원 -->
+                                <div class="mb-3 row">
+                                    <label for="max_subscribers" class="col-sm-3 col-form-label">구독가능인원</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" th:field="*{max_subscribers}" class="form-control">
+                                        <span th:if="${#fields.hasErrors('max_subscribers')}" th:errors="*{max_subscribers}" class="error-message text-danger small"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label for="openEducationButton" class="col-sm-3 col-form-label">패키지</label>
+                                    <div class="col-sm-6">
+                                        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#educationModal" id="openEducationButton">
+                                            패키지생성
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-6"> <!-- 오른쪽 컨텐츠 -->
+                                <!-- 정가 -->
+                                <div class="mb-3 row">
+                                    <label for="original_price" class="col-sm-2 col-form-label">정가</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
+                                        <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
+                                    </div>
+                                </div>
+                                <!-- 할인율 -->
+                                <div class="mb-3 row">
+                                    <label for="discount_rate" class="col-sm-2 col-form-label">할인율</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group"> <!-- Input 그룹을 사용하여 입력 필드와 % 기호를 함께 표시 -->
+                                            <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
+                                            <span class="input-group-text">%</span> <!-- Input 그룹의 추가 텍스트로 % 기호를 추가 -->
+                                        </div>
+                                        <small class="text-muted ms-2">적용 버튼을 눌러 판매가를 적용하세요.</small><br>
+                                        <span th:if="${#fields.hasErrors('discount_rate')}" th:errors="*{discount_rate}" class="error-message text-danger small"></span>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <button type="button" class="btn btn-primary" onclick="calculateSalePrice()">적용</button>
+                                    </div>
+                                </div>
+                                <!-- 판매가 -->
+                                <div class="mb-3 row">
+                                    <label for="sale_price" class="col-sm-2 col-form-label">판매가</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price" readonly oninput="addCommas(this)" placeholder="할인율 적용시 자동 적용">
+                                        <span th:if="${#fields.hasErrors('sale_price')}" th:errors="*{sale_price}" class="error-message text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <!-- 패키지내용 -->
+                                <div class="mb-3 row">
+                                    <label for="package_details" class="col-sm-2 col-form-label">패키지내용</label>
+                                    <div class="col-sm-10" style="padding-left: 0px">
+                                        <textarea class="form-control" th:field="*{package_details}" rows="8" placeholder="내용을 입력해주세요."></textarea>
+                                    </div>
+                                </div>
+                                <!-- 파일 업로드 -->
+                                <div class="mb-5 row">
+                                    <label for="boardFile" class="col-sm-2 col-form-label">썸네일</label>
+                                    <!--   <input class="form-control" type="file" th:field="*{origin_file_name}">-->
+                                    <div class="col-sm-5" style="padding-left: 0px">
+                                        <input class="form-control" type="file" th:field="*{boardFile}" multiple>
+                                    </div>
+                                </div>
+                        <!-- Modal 교육자료리스트 선택-->
+                                <div class="modal fade" id="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <!-- 모달 헤더 -->
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="educationModalLabel">교육자료목록</h5>
+                                                <!-- 검색 상자 추가 -->
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control" placeholder="교육자료명 검색" id="searchInput">
+                                                    <button class="btn btn-outline-secondary" type="button" id="searchButton">검색</button>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>선택</th>
+                                                        <th scope="col">교육자료명</th>
+                                                        <th scope="col">자료구분</th>
+                                                        <th scope="col">자료유형</th>
+                                                        <th scope="col">서비스구분</th>
+                                                        <th scope="col">패키지상태</th>
+                                                        <th scope="col" colspan="2">등록일</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-light" id="educationlist">
+                                                    <tr th:each="education : ${allEducation}">
+                                                        <!-- 선택하기 -->
+                                                        <td class="custom-checkbox-label">
+                                                            <input type="checkbox" class="form-check-input" th:field="*{selectedResourceNos}" value="${education.resourceNo}">
+                                                            <span class="custom-checkbox-indicator"></span>
+                                                            <!-- 교육자료 제목 -->
+                                                        <td class="education title" th:text="${education.resourceName}"></td>
+                                                        <!-- 자료구분 -->
+                                                        <td class="education resourceCate">
+                                                    <span th:switch="${education.resourceCate}">
+                                                        <span th:case="tutorial">튜토리얼</span>
+                                                        <span th:case="lecture">교육영상</span>
+                                                    </span>
+                                                        </td>
+                                                        <!-- 자료유형 -->
+                                                        <td class="education fileType">
+                                                   <span th:switch="${education.fileType}">
+                                                        <span th:case="'image'">이미지</span>
+                                                        <span th:case="'video'">동영상</span>
+                                                        <span th:case="'image/video'">이미지/동영상</span>
+                                                        <span th:case="'ect'">기타</span>
+                                                    </span>
+                                                        </td>
+                                                        <!-- 서비스구분 -->
+                                                        <td class="education serviceType">
+                                                     <span th:switch="${education.serviceType}">
+                                                        <span th:case="full">유료</span>
+                                                        <span th:case=="short">무료</span>
+                                                    </span>
+                                                        </td>
+                                                        <!-- 패키지유형 -->
+                                                        <td class="education-gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : '-'}" data-game-contents="${education.gameContents != null ? education.gameContents.gameName : '-'}"></td>
+                                                        <!-- 등록일 (수정하면 날짜 변경) -->
+                                                        <td class="education date">
+                                                            <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
+                                                        </td>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 text-center">
+                                        <button type="button" class="btn btn-primary" onclick="submitSelected()">선택하기</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                        <input type="hidden" id="selectedValues" name="selectedValues" th:value="${selectedValues}">
+                        <div class="mb-3 text-center">
+                        <button type="submit" class="btn btn-primary" id="insert">전체 등록하기</button>
                     </div>
-            <!-- 구독가능인원 -->
-                    <div class="mb-3 row">
-                        <label for="max_subscribers" class="col-sm-2 col-form-label">구독가능인원</label>
-                        <div class="col-sm-3">
-                            <input type="number" th:field="*{max_subscribers}" class="form-control">
-                            <span th:if="${#fields.hasErrors('max_subscribers')}" th:errors="*{max_subscribers}" class="error-message text-danger small"></span>
-                        </div>
-                    </div>
-                <!-- 정가 -->
-                <div class="mb-3 row">
-                    <label for="original_price" class="col-sm-2 col-form-label">정가</label>
-                    <div class="col-sm-3">
-                        <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
-                        <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
+                    </form>
                     </div>
                 </div>
-                <!-- 할인율 -->
-                <div class="mb-3 row">
-                    <label for="discount_rate" class="col-sm-2 col-form-label">할인율</label>
-                    <div class="col-sm-3">
-                        <div class="input-group"> <!-- Input 그룹을 사용하여 입력 필드와 % 기호를 함께 표시 -->
-                            <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
-                            <span class="input-group-text">%</span> <!-- Input 그룹의 추가 텍스트로 % 기호를 추가 -->
-                        </div>
-                        <small class="text-muted ms-1">적용 버튼을 눌러 판매가를 적용하세요.</small><br>
-                        <span th:if="${#fields.hasErrors('discount_rate')}" th:errors="*{discount_rate}" class="error-message text-danger small"></span>
-                    </div>
-                    <div class="col-sm-1">
-                        <button type="button" class="btn btn-primary" onclick="calculateSalePrice()">적용</button>
-                    </div>
-                </div>
-                <!-- 판매가 -->
-                <div class="mb-3 row">
-                    <label for="sale_price" class="col-sm-2 col-form-label">판매가</label>
-                    <div class="col-sm-3">
-                        <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price" readonly oninput="addCommas(this)" placeholder="할인율 적용시 자동 적용">
-                        <span th:if="${#fields.hasErrors('sale_price')}" th:errors="*{sale_price}" class="error-message text-danger small"></span>
-                    </div>
-                </div>
-                <!-- 패키지내용 -->
-                <div class="mb-3 row">
-                    <label for="package_details" class="col-sm-2 col-form-label">패키지내용</label>
-                    <div class="col-sm-10">
-                        <textarea class="form-control" th:field="*{package_details}" rows="8" placeholder="내용을 입력해주세요."></textarea>
-                    </div>
-                </div>
-                <!-- 파일 업로드 -->
-                <div class="mb-5 row">
-                    <label for="boardFile" class="col-sm-2 col-form-label">썸네일</label>
-                 <!--   <input class="form-control" type="file" th:field="*{origin_file_name}">-->
-                    <div class="col-sm-5">
-                    <input class="form-control" type="file" th:field="*{boardFile}" multiple>
-                    </div>
-                </div>
-                <!-- 학습자료 조회 -->
-
-
-
-                <div class="mb-3 text-center">
-                    <button type="submit" class="btn btn-primary">등록하기</button>
-                </div>
-            </div>
-
-            </form>
-            </div>
+            </main>
         </div>
     </div>
+
     <script>
         function addCommas(inputElement) {
             // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.
@@ -136,6 +235,113 @@
          var originalpriceInput = document.getElementById('original_price');
         originalpriceInput.value = originalpriceInput.value.replace(/,/g, ''); // 정가 필드에서 콤마 제거
     }
+
+    // 모달 js
+    document.getElementById('openEducationButton').addEventListener('click', function () {
+        // 검색어 입력란에서 검색어 값을 가져오기 위한 전역 변수
+        var searchInput = '';
+        var myModal = new bootstrap.Modal(document.getElementById('educationModal'));
+        myModal.show();
+    });
+
+ // 검색 버튼 이벤트 처리
+        document.getElementById('searchButton').addEventListener('click', function () {
+         // 검색어 값을 가져오기
+         searchInput = document.getElementById('searchInput').value.trim(); // 검색어 값 가져오고 양 끝 공백 제거
+        // 검색어가 비어있거나 null인 경우 null 값으로 설정
+        if (searchInput === '') {
+            searchInput = 'all';
+        }
+            var modalTextElement = document.getElementById('educationlist');
+            console.log("검색어: ", searchInput);
+
+            loadText();
+        });
+
+function loadText() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/game/search', true);
+
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    // searchKeyword 값을 전송
+    var params = 'searchKeyword=' + searchInput;
+
+    xhr.onload = function () {
+        console.log("3: ", this.status);
+        if (this.status == 200) {
+            console.log(this.responseText);
+            // JSON 응답 파싱
+            var responseJson = JSON.parse(this.responseText);
+            console.log("responseJson? : ", responseJson);
+            var modalTextElement = document.getElementById('educationlist');
+            console.log("educationlist? : ", document.getElementById('educationlist'));
+
+            modalTextElement.innerHTML = '';
+
+            responseJson.forEach(function (education) {
+                var newRow = modalTextElement.insertRow();
+                var cell1 = newRow.insertCell(0);
+                var cell2 = newRow.insertCell(1);
+                var cell3 = newRow.insertCell(2);
+                var cell4 = newRow.insertCell(3);
+                var cell5 = newRow.insertCell(4);
+                var cell6 = newRow.insertCell(5);
+                var cell7 = newRow.insertCell(6);
+
+                cell1.innerHTML = '<input type="checkbox" class="form-check-input" value="' + education.resourceNo + '">';
+                cell2.innerText = education.resourceName;
+                cell3.innerText = education.resourceCate;
+                cell4.innerText = education.fileType;
+                cell5.innerText = education.serviceType;
+                cell6.innerText = (education.gameContents != null) ? education.gameContents.gameName : '-';
+                cell7.innerText = new Date(education.creationDate).toLocaleString();
+            });
+    } else {
+        // 오류 처리
+        console.error('서버에서 오류가 발생했습니다.');
+    }
+};
+
+// 요청을 전송합니다.
+xhr.send(params);
+}
+
+  // Array to store selected values
+var selectedValues = [];
+
+// Function to toggle selection and update the hidden input field
+function toggleSelection(resourceNo) {
+  var index = selectedValues.indexOf(resourceNo);
+  if (index === -1) {
+    // Add to selected values if not already present
+    selectedValues.push(resourceNo);
+  } else {
+    // Remove from selected values if already present
+    selectedValues.splice(index, 1);
+  }
+
+  // Update the hidden input field value
+  document.getElementById('selectedValues').value = selectedValues.join(',');
+}
+
+// Function to handle the "선택하기" (Select) button click in the modal
+function submitSelected() {
+  // You can do something with the selectedValues array here if needed
+  // For example, you can display the selected values to the user
+
+  // Close the modal
+  var educationModal = new bootstrap.Modal(document.getElementById('educationModal'));
+  educationModal.hide();
+}
+
+// Attach event listener to checkboxes in the modal to toggle selection
+document.querySelectorAll('.form-check-input').forEach(function (checkbox) {
+  checkbox.addEventListener('change', function () {
+    var resourceNo = this.value;
+    toggleSelection(resourceNo);
+  });
+});
     </script>
 </div>
 </html>

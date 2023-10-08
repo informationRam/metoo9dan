@@ -7,10 +7,10 @@
     <link rel="stylesheet" type="text/css"
           href="/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
 </head>
-<body>
+<body class="sb-nav-fixed">
     <!-- navigation부분 -->
+<!--    <nav th:replace="~{navbar::navbarFragment}"></nav>-->
     <nav th:replace="~{navbar::navbarFragment}"></nav>
-
     <!--  baseTemplate안에 포함될 내용 시작  -->
     <th:block layout:fragment="content"></th:block>
     <!-- baseTemplate안에 포함될 내용 끝 -->

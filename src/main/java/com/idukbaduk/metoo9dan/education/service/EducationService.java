@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.education.service;
 
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
+import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.reprository.EducationRepository;
 import com.idukbaduk.metoo9dan.education.reprository.ResourcesFilesReprository;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +91,11 @@ public class EducationService {
         return educationalRepository.findAll(pageable);
     }
 
+    //교육자료목록조회
+    public List<EducationalResources> getAllEducation() {
+        return educationalRepository.findAll(); // 페이지네이션 없이 모든 EducationalResources을 가져옵니다.
+    }
+
     //교육자료수정
     public void modify(EducationalResources educationalResources,EducationVaildation educationVaildation) throws IOException {
 
@@ -123,6 +131,18 @@ public class EducationService {
             }
         }
     }
+
+    // 교육자료명으로 교육자료 찾기
+    public List<EducationalResources> search(String searchKeyword) {
+        List<EducationalResources> resources = educationalRepository.findByResourceNameContains(searchKeyword);
+        // 값이 있을 경우
+        if (!resources.isEmpty()) {
+            return resources;
+        } else {
+            return null;
+        }
+    }
+
 
     //resourceNo 주면 Contents값 전체 조회
     public EducationalResources getEducation(int resourceNo){
@@ -203,5 +223,10 @@ public class EducationService {
         return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
     }
 
+    //게임콘텐츠에서 패키지로 추가처리함
+    public void pgInsert(EducationalResources educationalResources,GameContents gameContents) {
+        educationalResources.setGameContents(gameContents);
+        educationalRepository.save(educationalResources);
+    }
 }//class
 

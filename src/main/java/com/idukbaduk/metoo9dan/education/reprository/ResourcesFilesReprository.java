@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ResourcesFilesReprository extends JpaRepository<ResourcesFiles, Integer> {
     List<ResourcesFiles> findByEducationalResources_ResourceNo(Integer resourceNo);
+
 }
