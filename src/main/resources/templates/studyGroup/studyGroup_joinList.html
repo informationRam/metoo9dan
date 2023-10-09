@@ -7,6 +7,20 @@
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h3>[학습 그룹 리스트(학생)]</h3>
             <div>
+                <div style="display: flex; align-items: center;">
+                    <label for="selectSudyGroup" class="form-label" style="margin-right: 10px;">학습그룹:</label>
+                    <select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
+                        <option value="">전체</option>
+                        <option th:each="groupNameALL : ${groupNameALL}" th:value="${groupNameALL.group_no}" th:text="${groupNameALL.group_name}"></option>
+                    </select>
+                    <label for="selectEducatorName" class="form-label" style="margin-right: 10px;">교육자명:</label>
+                    <select name="selectEducatorName" id="selectEducatorName" class="form-select" style="width: 200px; margin-right: 10px;">
+                        <option value="">전체</option>
+                        <option th:each="educatorName : ${educatorName}" th:value="${educatorName.member_no}" th:text="${educatorName.name}"></option>
+                    </select>
+                    <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
+                </div>
+                <p/>
                 <table class="table">
                     <thead class="table-dark">
                     <tr>
@@ -34,7 +48,7 @@
                     </tbody>
                 </table>
                 <div style="display: flex; justify-content: right; align-items: center;">
-                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 신청하기</button>
+                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 가입 신청하기</button>
                 </div>
             </div>
             <p/>
@@ -44,6 +58,7 @@
 
 </html>
 <script>
+//-------학습그룹 가입신청하기----------
 document.addEventListener("DOMContentLoaded", function () {
     // 신청 버튼 클릭 시
     document.getElementById("viewButton").addEventListener("click", function () {
@@ -96,6 +111,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+//-------조회하기 버튼----------
+// 페이지가 로드될 때
+document.addEventListener("DOMContentLoaded", function () {
+    var selectSudyGroup = document.getElementById("selectSudyGroup"); // 학습그룹 select 요소 가져오기
+    var selectEducatorName = document.getElementById("selectEducatorName"); // 교육자명 select 요소 가져오기
+    var searchButton = document.getElementById("searchButton"); // 조회하기 버튼 가져오기
+
+    // 조회하기 버튼 클릭 시
+    searchButton.addEventListener("click", function () {
+        var selectedGroupNo = selectSudyGroup.value; // 선택된 학습그룹의 값 가져오기
+        var selectedMemberNo = selectEducatorName.value; // 선택된 교육자명의 값 가져오기
+        var currentURL = window.location.href; // 현재 URL 가져오기
+
+        // URL에 파라미터 추가
+        var separator = currentURL.includes("?") ? "&" : "?"; // 기존 URL에 파라미터가 있는지 확인
+        var newURL = currentURL + separator;
+
+        if (selectedGroupNo) {
+            var newURL = "/studygroup/groupJoinListGroupEnd?group_no=" + selectedGroupNo;
+            window.location.href = newURL;
+        }
+
+        if (selectedMemberNo) {
+            var newURL = "/studygroup/groupJoinListNameEnd?member_no=" + selectedMemberNo;
+            window.location.href = newURL;
+        }
+
+     /*   if (selectedMemberNo) {
+            if (selectedGroupNo) {
+                newURL += "&";
+            }
+            newURL += "member_no=" + selectedMemberNo;
+        }
+      */
+        // 새 URL로 리다이렉트
+        window.location.href = newURL;
+    });
+});
+
 
 
 </script>

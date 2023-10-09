@@ -294,10 +294,56 @@ public class StudyGroupController {
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
     @GetMapping("/groupJoinList")
     public String joinList(Model model){
+        //학습그룹명 리스트(전체) 가져오기
+        List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
+        model.addAttribute("groupNameALL",groupNameALL);
+        //교육자명 리스트(전체) 가져오기
+        List<HashMap<String, Object>> educatorName = studyGroupService.getEducatorName();
+        model.addAttribute("educatorName",educatorName);
+
         List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList();
         model.addAttribute("groupJoinList",groupJoinList);
         System.out.println("groupJoinList="+groupJoinList);
         return "studyGroup/studyGroup_joinList";
+    }
+
+    //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
+    //학습그룹명 조건 조회
+    @GetMapping(value = "/groupJoinListGroupEnd", produces = "application/json")
+    @ResponseBody
+    public List<GroupJoinListDTO> joinLisGrouptEndpoint(@RequestParam int group_no){
+        //학습그룹명 리스트(전체) 가져오기
+    /*    List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
+        model.addAttribute("groupNameALL",groupNameALL);
+        //교육자명 리스트(전체) 가져오기
+        List<HashMap<String, Object>> educatorName = studyGroupService.getEducatorName();
+        model.addAttribute("educatorName",educatorName);
+    */
+        //학습그룹명 조건 조회(학습 그룹 신청 리스트)
+        List<GroupJoinListDTO> selectNameList = studyGroupService.selectNameList(group_no);
+        System.out.println("selectNameList="+selectNameList);
+        return selectNameList;
+        
+    }
+
+    //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
+    //교육자명 조건 조회
+    @GetMapping(value = "/groupJoinListNameEnd", produces = "application/json")
+    @ResponseBody
+    public List<GroupJoinListDTO> joinListNameEndpoint(@RequestParam int member_no){
+        //학습그룹명 리스트(전체) 가져오기
+    /*    List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
+        model.addAttribute("groupNameALL",groupNameALL);
+        //교육자명 리스트(전체) 가져오기
+        List<HashMap<String, Object>> educatorName = studyGroupService.getEducatorName();
+        model.addAttribute("educatorName",educatorName);
+    */
+
+        //교육자명 조건 조회(학습 그룹 신청 리스트)
+        List<GroupJoinListDTO> selectEducatorNameList = studyGroupService.SelectEducatorNameList(member_no);
+        System.out.println("selectEducatorNameList="+selectEducatorNameList);
+        return selectEducatorNameList;
+
     }
 
 

@@ -10,8 +10,14 @@
             <div>
                 <div style="display: flex; align-items: center;">
                     <label for="selectSudyGroup" class="form-label" style="margin-right: 10px;">학습그룹:</label>
-                    <select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
+                    <!--<select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
                         <option th:each="groupNameList : ${groupNameList}" th:value="${groupNameList.group_no}" th:text="${groupNameList.group_name}"></option>
+                    </select>-->
+                    <select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
+                        <option th:each="groupNameList, iterStat : ${groupNameList}"
+                                th:value="${groupNameList.group_no}"
+                                th:text="${groupNameList.group_name}"
+                                th:selected="${iterStat.index == 0}"></option>
                     </select>
                     <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
                 </div>
@@ -345,6 +351,24 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+/*
+// 페이지가 로드될 때
+document.addEventListener("DOMContentLoaded", function () {
+    var selectSudyGroup = document.getElementById("selectSudyGroup"); // select 요소 가져오기
 
+    // 현재 선택된 값을 가져와서 URL을 구성
+    var selectedGroupNo = selectSudyGroup.value;
+    var currentURL = window.location.href;
+
+    // URL에 파라미터 추가
+    if (selectedGroupNo) {
+        var separator = currentURL.includes("?") ? "&" : "?"; // 기존 URL에 파라미터가 있는지 확인
+        var newURL = currentURL + separator + "selectedGroupNo=" + selectedGroupNo;
+
+        // 새 URL로 리다이렉트
+        //window.location.href = newURL;
+    }
+    }, {once: true});  // 이벤트 핸들러가 한 번만 실행되도록 설정
+*/
 
 </script>
