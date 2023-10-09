@@ -62,11 +62,11 @@
 		]]>
     </select>
 
-    <!--학습그룹 정보-->
+    <!--학습그룹 정보(학습 그룹 리스트 상세)-->
     <select id="GroupInfo" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
         <![CDATA[
         SELECT
-             s.group_no,
+            s.group_no,
             s.group_name,
             g.game_name,
             s.group_size,
@@ -151,13 +151,13 @@
     </select>
 
     <!--학습그룹 신청 리스트-->
-    <select id="ApproveList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.ApproveListDTO">
+    <select id="ApproveList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.ApproveListDTO">
         <![CDATA[
         SELECT g.group_students_no,s.group_name,m.name,m.tel,g.application_date,g.is_approved,g.approved_date
         FROM baduk.group_students g
         JOIN baduk.study_groups s ON s.group_no=g.group_no
         JOIN baduk.members m ON g.member_no=m.member_no
-        WHERE s.member_no=#{member_no}
+        WHERE s.member_no=#{member_no} AND s.group_no=#{group_no}
 		]]>
     </select>
 

@@ -54,8 +54,8 @@ public class StudyGroupRepository {
     }
 
     //학습 그룹 신청 리스트
-    public List<ApproveListDTO> getApproveList(int member_no) {
-        return sqlSession.selectList("StudyGroup.ApproveList",member_no);
+    public List<ApproveListDTO> getApproveList(Map<String, Integer> map) {
+        return sqlSession.selectList("StudyGroup.ApproveList",map);
     }
 
     //학습 그룹 승인 처리

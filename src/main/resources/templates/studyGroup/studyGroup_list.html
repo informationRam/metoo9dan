@@ -5,16 +5,18 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <p/>[학습 그룹 리스트]
+            <h3>[학습 그룹 리스트]</h3>
             <div>
-                <label for="selectSudyGroup" class="form-label">학습그룹</label>
-                <select name="selectSudyGroup" id="selectSudyGroup" class="form-select">
-                    <option value="">전체</option>
-                    <option th:each="groupNameList : ${groupNameList}" th:value="${groupNameList.group_no}" th:text="${groupNameList.group_name}"></option>
-                </select>
-                <button id="searchButton">조회하기</button>
-                <button id="modifyButton">변경하기</button>
-                <button id="deleteButton" class="deleteButton">삭제하기</button>
+                <div style="display: flex; align-items: center;">
+                    <label for="selectSudyGroup" class="form-label" style="margin-right: 10px;">학습그룹:</label>
+                    <select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
+                        <option value="">전체</option>
+                        <option th:each="groupNameList : ${groupNameList}" th:value="${groupNameList.group_no}" th:text="${groupNameList.group_name}"></option>
+                    </select>
+                    <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
+                    <button id="modifyButton" class="btn btn-outline-warning" style="margin-left: auto; margin-right: 10px;">변경하기</button>
+                    <button id="deleteButton" class="btn btn-outline-danger" style="margin-right: 10px;">삭제하기</button>
+                </div>
                 <p/>
                 <table class="table" id="selectGroupResult">
                     <thead class="table-dark">
@@ -44,9 +46,9 @@
                     </tr>
                     </tbody>
                 </table>
-
-                <button id="viewButton">학습 그룹 상세 조회 하기</button>
-
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 상세 조회 하기</button>
+                </div>
             </div>
             <p/>
         </div>
@@ -222,50 +224,48 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.log(responseData);
 
                         // 표시할 데이터를 가져와서 HTML에 적용
-                      var resultHTML = "";
-                      if (responseData && responseData.length > 0) {
-                            resultHTML = "<table class='table' id='selectGroupResult'>";
-                            resultHTML += "<thead class='table-dark'>";
-                            resultHTML += "<tr>";
-                            resultHTML += "<th>선택</th>";
-                            resultHTML += "<th>학습그룹명</th>";
-                            resultHTML += "<th>게임콘텐츠명</th>";
-                            resultHTML += "<th>그룹T/O</th>";
-                            resultHTML += "<th>그룹 시작일</th>";
-                            resultHTML += "<th>그룹 종료일</th>";
-                            resultHTML += "<th>등록 학생수</th>";
-                            // 다른 헤더 열 추가
-                            resultHTML += "</tr>";
-                            resultHTML += "</thead>";
-                            resultHTML += "<tbody>";
-
-                            responseData.forEach(function (group) {
-                            resultHTML += "<tr>";
-                            resultHTML += "<td>";
-                            resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + group.group_no + "' />";
-                            resultHTML += "</td>";
-                            resultHTML += "<td>" + group.group_name + "</td>";
-                            resultHTML += "<td>" + group.game_name + "</td>";
-                            resultHTML += "<td>" + group.group_TO + "</td>";
-                            //resultHTML += "<td>" + ${#dates.format(group.group_start_date,'yyyy-MM-dd')} + "</td>";
-                            var originalDate = new Date(group.group_start_date);
-                            var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
-
-                            resultHTML += "<td>" + formattedDate + "</td>";
-
-                            //resultHTML += "<td>" + group.group_finish_date + "</td>";
-                             var originalDate = new Date(group.group_finish_date);
-                            var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
-
-                            resultHTML += "<td>" + formattedDate + "</td>";
-
-                            resultHTML += "<td>" + group.approved_num + "</td>";
-                                // 다른 열 추가
+                          var resultHTML = "";
+                          if (responseData && responseData.length > 0) {
+                                resultHTML = "<table class='table' id='selectGroupResult'>";
+                                resultHTML += "<thead class='table-dark'>";
+                                resultHTML += "<tr>";
+                                resultHTML += "<th>선택</th>";
+                                resultHTML += "<th>학습그룹명</th>";
+                                resultHTML += "<th>게임콘텐츠명</th>";
+                                resultHTML += "<th>그룹T/O</th>";
+                                resultHTML += "<th>그룹 시작일</th>";
+                                resultHTML += "<th>그룹 종료일</th>";
+                                resultHTML += "<th>등록 학생수</th>";
+                                // 다른 헤더 열 추가
                                 resultHTML += "</tr>";
-                            });
+                                resultHTML += "</thead>";
+                                resultHTML += "<tbody>";
 
-                            resultHTML += "</tbody>";
-                            resultHTML += "</table>";
+                                responseData.forEach(function (group) {
+                                resultHTML += "<tr>";
+                                resultHTML += "<td>";
+                                resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + group.group_no + "' />";
+                                resultHTML += "</td>";
+                                resultHTML += "<td>" + group.group_name + "</td>";
+                                resultHTML += "<td>" + group.game_name + "</td>";
+                                resultHTML += "<td>" + group.group_TO + "</td>";
+                                //resultHTML += "<td>" + ${#dates.format(group.group_start_date,'yyyy-MM-dd')} + "</td>";
+                                var originalDate = new Date(group.group_start_date);
+                                var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
+                                resultHTML += "<td>" + formattedDate + "</td>";
+
+                                //resultHTML += "<td>" + group.group_finish_date + "</td>";
+                                var originalDate = new Date(group.group_finish_date);
+                                var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
+                                resultHTML += "<td>" + formattedDate + "</td>";
+
+                                resultHTML += "<td>" + group.approved_num + "</td>";
+                                    // 다른 열 추가
+                                    resultHTML += "</tr>";
+                                });
+
+                                resultHTML += "</tbody>";
+                                resultHTML += "</table>";
                         } else {
                             resultHTML = "<p>선택한 그룹의 정보가 없습니다.</p>";
                         }

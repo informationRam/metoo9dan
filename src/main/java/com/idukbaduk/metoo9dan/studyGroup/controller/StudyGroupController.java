@@ -204,8 +204,6 @@ public class StudyGroupController {
 
             //학습 그룹 정보 가져오기
             List<StudyGroupsListDTO> selectGroup = studyGroupService.selectGroup(map);
-            System.out.println("selectGroup="+selectGroup);
-
             System.out.println("엔드포인트selectGroup="+selectGroup);
             return selectGroup;
     }
@@ -214,7 +212,9 @@ public class StudyGroupController {
     //학습 그룹 상세 조회(교육자)
     @GetMapping("/detail/{group_no}")
     public String groupDetail(Model model, @PathVariable("group_no") int group_no){
+        //학습 그룹 멤버 정보
         List<GroupsDetailListDTO> GroupDetail = studyGroupService.getDetailList(group_no);
+        //학습 그룹 정보
         List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(group_no);
         model.addAttribute("GroupDetail",GroupDetail);
         model.addAttribute("GroupInfo",GroupInfo);
@@ -227,12 +227,48 @@ public class StudyGroupController {
     //학습 그룹 가입 승인(교육자)
     //학습 그룹 가입 신청 리스트 가져오기
     @GetMapping("/approveList")
-    public String approveList(Model model,@RequestParam(defaultValue="1") int member_no){
-        List<ApproveListDTO> approveList = studyGroupService.getApproveList(member_no);
+    public String approveList(Model model,@RequestParam(defaultValue="1") int member_no,@RequestParam(defaultValue="1") int selectedGroupNo,@RequestParam Map<String, Integer> map){
+        //학습그룹명 리스트 가져오기
+        List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
+        model.addAttribute("groupNameList",groupNameList);
+        System.out.println("groupNameList="+groupNameList);
+
+        //학습 그룹 정보
+        List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
+        model.addAttribute("GroupInfo",GroupInfo);
+
+        map.put("member_no", member_no); // map에 member_no 추가
+        map.put("group_no", selectedGroupNo); // map에 selectedGroupNo 추가
+
+        //학습 그룹 가입 신청 학생 리스트
+        List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
         model.addAttribute("approveList",approveList);
         System.out.println("approveList="+approveList);
         return "studyGroup/studyGroup_approveList";
     }
+
+
+    //학습 그룹 가입 신청 리스트 엔드포인트
+    @GetMapping(value = "/approveListEndpoint", produces = "application/json")
+    @ResponseBody
+    public List<ApproveListDTO> approveListEndPoint(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
+
+        String groupNoString = String.valueOf(map.get("group_no")); // 문자열로 추출
+        int selectedGroupNo = Integer.parseInt(groupNoString); // 문자열을 정수로 변환
+        System.out.println("selectedGroupNo="+selectedGroupNo);
+
+        //학습 그룹 정보
+        //List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
+
+        map.put("member_no", member_no); // map에 member_no 추가
+        map.put("selectedGroupNo", selectedGroupNo); // map에 selectedGroupNo 추가
+
+        //학습 그룹 가입 신청 학생 리스트
+        List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
+        System.out.println("approveList="+approveList);
+        return approveList;
+    }
+
 
     //학습 그룹 가입 승인 처리(교육자)
     @PostMapping("/updateApprove")
