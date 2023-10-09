@@ -31,12 +31,12 @@ public class StudyGroupService {
         return studyGroupRepository.selectGroup(map);
     }
 
-    //학습그룹 상세 조회
+    //학습그룹 상세조회(그룹 멤버)
     public List<GroupsDetailListDTO> getDetailList(int group_no) {
         return studyGroupRepository.getGroupDetailList(group_no);
     }
 
-    //학습그룹인원 정보 가져오기
+    //학습그룹 상세조회(그룹 정보)
     public List<GroupsDetailListDTO> getGroupInfo(int group_no) {
         return studyGroupRepository.getGroupInfo(group_no);
     }
@@ -105,8 +105,8 @@ public class StudyGroupService {
     }
 
     //학습그룹 신청 리스트
-    public List<ApproveListDTO> getApproveList(int member_no) {
-        return studyGroupRepository.getApproveList(member_no);
+    public List<ApproveListDTO> getApproveList(Map<String, Integer> map) {
+        return studyGroupRepository.getApproveList(map);
     }
 
     //학습그룹 승인 신청

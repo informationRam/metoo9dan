@@ -5,14 +5,16 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <p/>[학습 그룹 등록]<p/>
-
-            <label for="selectGameContent" class="form-label">게임콘텐츠</label>
-            <select name="selectGameContent" id="selectGameContent" class="form-select">
-                <option value="">전체</option>
-                <option th:each="gameNameList : ${gameNameList}" th:value="${gameNameList.game_content_no}" th:text="${gameNameList.game_name}"></option>
-            </select>
-            <button id="searchButton">조회하기</button>
+            <h3>[학습 그룹 등록]</h3>
+            <div style="display: flex; align-items: center;">
+                <label for="selectGameContent" class="form-label" style="margin-right: 10px;">게임콘텐츠</label>
+                <select name="selectGameContent" id="selectGameContent" class="form-select"  style="width: 200px; margin-right: 10px;">
+                    <option value="">전체</option>
+                    <option th:each="gameNameList : ${gameNameList}" th:value="${gameNameList.game_content_no}" th:text="${gameNameList.game_name}"></option>
+                </select>
+                <button id="searchButton" class="btn btn-outline-primary">조회하기</button>
+            </div>
+            <p/>
             <div>
                 <table class="table" id="selectGameResult">
                     <thead class="table-dark">
@@ -38,7 +40,9 @@
                     </tr>
                     </tbody>
                 </table>
-                <button id="viewButton">학습 그룹 상세 입력</button>
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 상세 입력</button>
+                </div>
             </div>
             <p/>
         </div>
