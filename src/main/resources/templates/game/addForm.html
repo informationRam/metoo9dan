@@ -15,6 +15,7 @@
                     </ol>
                     <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
                     <form id="gameadd" class="my-3" th:object="${gameVaildation}" th:action="@{/game/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data" onsubmit="prepareForm()">
+
                         <div class="row">
                             <!-- Left-side content -->
                             <div class="col-md-6">
@@ -114,9 +115,9 @@
                                     </div>
                                 </div>
                         <!-- Modal 교육자료리스트 선택-->
-                                <div class="modal fade" id="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="educationModal" name="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true" style="display:hidden;">
                                     <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
+                                        <div class="modal-content" id="modal-content">
                                             <!-- 모달 헤더 -->
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="educationModalLabel">교육자료목록</h5>
@@ -143,7 +144,7 @@
                                                     <tr th:each="education : ${allEducation}">
                                                         <!-- 선택하기 -->
                                                         <td class="custom-checkbox-label">
-                                                            <input type="checkbox" class="form-check-input" th:field="*{selectedResourceNos}" value="${education.resourceNo}">
+                                                            <input type="checkbox" class="form-check-input" name="selectedValues" th:value="${education.resourceNo}">
                                                             <span class="custom-checkbox-indicator"></span>
                                                             <!-- 교육자료 제목 -->
                                                         <td class="education title" th:text="${education.resourceName}"></td>
@@ -180,7 +181,7 @@
                                                 </table>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-secondary" id="close-area">닫기</button>
                                             </div>
                                         </div>
                                     </div>
@@ -190,7 +191,9 @@
                                 </div>
                             </div>
                         </div>
-                        <input type="hidden" id="selectedValues" name="selectedValues" th:value="${selectedValues}">
+                        <input type="hidden" id="selectedValues" name="selectedValues" value="">
+
+                        <!--<input type="hidden" id="selectedValues" name="selectedValues" th:value="${selectedValues}" th:if="${selectedValues != null and !selectedValues.isEmpty()}">-->
                         <div class="mb-3 text-center">
                         <button type="submit" class="btn btn-primary" id="insert">전체 등록하기</button>
                     </div>
@@ -200,7 +203,6 @@
             </main>
         </div>
     </div>
-
     <script>
         function addCommas(inputElement) {
             // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.
@@ -307,41 +309,58 @@ function loadText() {
 xhr.send(params);
 }
 
-  // Array to store selected values
-var selectedValues = [];
-
-// Function to toggle selection and update the hidden input field
-function toggleSelection(resourceNo) {
-  var index = selectedValues.indexOf(resourceNo);
-  if (index === -1) {
-    // Add to selected values if not already present
-    selectedValues.push(resourceNo);
-  } else {
-    // Remove from selected values if already present
-    selectedValues.splice(index, 1);
-  }
-
-  // Update the hidden input field value
-  document.getElementById('selectedValues').value = selectedValues.join(',');
-}
-
-// Function to handle the "선택하기" (Select) button click in the modal
-function submitSelected() {
-  // You can do something with the selectedValues array here if needed
-  // For example, you can display the selected values to the user
-
-  // Close the modal
-  var educationModal = new bootstrap.Modal(document.getElementById('educationModal'));
-  educationModal.hide();
-}
-
-// Attach event listener to checkboxes in the modal to toggle selection
-document.querySelectorAll('.form-check-input').forEach(function (checkbox) {
-  checkbox.addEventListener('change', function () {
-    var resourceNo = this.value;
-    toggleSelection(resourceNo);
-  });
+//닫기버튼
+    document.getElementById('close-area').addEventListener('click', function() {
+    console.log("area",document.getElementById('close-area'))
+    var educationModal = new bootstrap.Modal(document.getElementById('educationModal'));
+    console.log("educationModal",educationModal)
+    educationModal.hide();
 });
+
+    </script>
+    <script th:inline="javascript">
+        // JavaScript 코드
+
+     // 선택한 교육 자료 번호를 저장할 배열
+     var selectedResourceNos = [];
+
+     // 체크박스 변경 이벤트에 대한 핸들러를 등록
+     document.querySelectorAll('.form-check-input').forEach(function (checkbox) {
+         checkbox.addEventListener('change', function () {
+             var resourceNo = this.value;
+
+                console.log("resourceNo",resourceNo)
+             if (this.checked) {
+                 // 체크된 경우 배열에 추가
+                 selectedResourceNos.push(resourceNo);
+             } else {
+                 // 체크가 해제된 경우 배열에서 제거
+                 var index = selectedResourceNos.indexOf(resourceNo);
+                 if (index !== -1) {
+                     selectedResourceNos.splice(index, 1);
+                 }
+             }
+
+             // 선택한 자료 번호 배열을 문자열로 변환하여 숨겨진 필드에 할당
+             var selectedValuesInput = document.getElementById('selectedValues');
+             selectedValuesInput.value = selectedResourceNos.join(',');
+         });
+     });
+
+     // 선택한 자료 번호 배열을 서버로 보내는 예시 함수
+     function submitSelected() {
+         var selectedValuesInput = document.getElementById('selectedValues');
+         var selectedResourceNos = selectedValuesInput.value;
+
+         // 여기서는 콘솔에 출력하는 예시
+         console.log("Selected Resource Nos:", selectedResourceNos);
+         //모달을 닫음
+         var educationModal = new bootstrap.Modal(document.getElementById('educationModal'));
+
+        // 모달 창을 닫습니다.
+        educationModal.hide();
+     }
+
     </script>
 </div>
 </html>

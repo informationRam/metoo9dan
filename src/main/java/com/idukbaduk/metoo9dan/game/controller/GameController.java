@@ -70,7 +70,8 @@ public class GameController {
 
     //게임 컨텐츠 등록 처리
     @PostMapping("/add")
-    public String gameAdd(@ModelAttribute("gameVaildation") @Valid GameVaildation gameVaildation, BindingResult bindingResult,@RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
+    public String gameAdd(@ModelAttribute("gameVaildation") @Valid GameVaildation gameVaildation, BindingResult bindingResult,
+                          @RequestParam("boardFile") MultipartFile file, @RequestParam(name = "selectedValues", required = false) String selectedValues, Model model) throws IOException {
         System.out.println("정가 : "+gameVaildation.getOriginal_price());
         System.out.println("판매가 : "+gameVaildation.getSale_price());
 
@@ -96,17 +97,31 @@ public class GameController {
             return "game/addForm";
         }
 
+        System.out.println("selectedValues?:"+selectedValues);
         //교육자료번호가 있으면 저장 한다.
-        if(교육자료번호 != null ){
-            EducationalResources education = educationService.getEducation(int값넣기);
-            Integer gameContentNo = gameService.toGameContents(gameVaildation).getGameContentNo();
-            GameContents gameContents = gameService.getGameContents(gameContentNo);
+            String[] selectedResourceNos = {};
 
-            gameVaildation.setContent_type("package");
-            gameService.save(gameVaildation);
+            if (selectedValues != null && !selectedValues.isEmpty()) {
+                // 선택한 값들을 ','를 기준으로 분할하여 배열로 만듭니다.
+                selectedResourceNos = selectedValues.split(",");
 
-            educationService.pgInsert(education,gameContents);
-            return "redirect:/game/list";
+            // 선택한 각 resourceNo에 대해 Education 객체를 조회하고 처리합니다.
+            for (String resourceNoStr : selectedResourceNos) {
+
+                int resourceNo = Integer.parseInt(resourceNoStr);
+                System.out.println("resourceNo?:"+resourceNo);
+
+                EducationalResources education = educationService.getEducation(resourceNo);
+                Integer gameContentNo = gameService.toGameContents(gameVaildation).getGameContentNo();
+                System.out.println("gameContentNo?:"+gameContentNo);
+                GameContents gameContents = gameService.getGameContents(gameContentNo);
+
+                gameVaildation.setContent_type("package");
+                gameService.save(gameVaildation);
+
+                educationService.pgInsert(education, gameContents);
+                return "redirect:/game/list";
+            }
         }
 
         gameVaildation.setContent_type("individual");
