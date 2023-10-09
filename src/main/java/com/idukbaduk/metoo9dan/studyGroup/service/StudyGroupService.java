@@ -93,6 +93,18 @@ public class StudyGroupService {
         return studyGroupRepository.getGroupJoinList();
     }
 
+
+    //학습그룹명 조건 조회(학습 그룹 신청 리스트)
+    public List<GroupJoinListDTO> selectNameList(int group_no) {
+        return studyGroupRepository.selectNameList(group_no);
+    }
+
+    //교육자명 조건 조회(학습 그룹 신청 리스트)
+    public List<GroupJoinListDTO> SelectEducatorNameList(int member_no) {
+        return studyGroupRepository.SelectEducatorNameList(member_no);
+    }
+
+
     //학습그룹 신청
     public void groupJoin(StudyGroups studyGroups, Member member, LocalDateTime application_date, Boolean is_approved,LocalDateTime approved_date){
         GroupStudents groupStudents = new GroupStudents();
@@ -127,6 +139,17 @@ public class StudyGroupService {
     //게임콘텐츠명 리스트 가져오기
     public List<HashMap<String, Object>> getGameName(int member_no){
         return studyGroupRepository.getGameName(member_no);
+    }
+
+
+    //학습그룹명 리스트(전체) 가져오기
+    public List<HashMap<String, Object>> getGroupNameALL(){
+        return studyGroupRepository.getGroupNameALL();
+    }
+
+    //교육자명 리스트(전체) 가져오기
+    public List<HashMap<String, Object>> getEducatorName(){
+        return studyGroupRepository.getEducatorName();
     }
 
 

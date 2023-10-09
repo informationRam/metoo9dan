@@ -199,5 +199,54 @@
 		]]>
     </select>
 
+    <!--학습그룹명 리스트(전체)-->
+    <select id="GroupNameAllList" resultType="hashmap">
+        <![CDATA[
+        SELECT group_no,group_name
+        FROM baduk.study_groups
+		]]>
+    </select>
+
+    <!--학습그룹명 조건 조회(학습 그룹 신청 리스트)-->
+    <select id="SelectNameList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+    SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+    (SELECT COUNT(member_no)
+    FROM baduk.group_students gs
+    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+    s.group_size - (SELECT COUNT(member_no)
+    FROM baduk.group_students gs
+    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+    FROM baduk.study_groups s
+    JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+    JOIN baduk.members m ON s.member_no=m.member_no
+    WHERE s.group_no=#{group_no}
+    </select>
+
+    <!--교육자명 리스트(전체)-->
+    <select id="EducatorNameList" resultType="hashmap">
+        <![CDATA[
+        SELECT member_no,name
+        FROM baduk.members
+        WHERE ROLE='educator'
+		]]>
+    </select>
+
+    <!--교육자명 조건 조회(학습 그룹 신청 리스트)-->
+    <select id="SelectEducatorNameList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+        <![CDATA[
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+                 (SELECT COUNT(member_no)
+                     FROM baduk.group_students gs
+                     WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+                    s.group_size - (SELECT COUNT(member_no)
+                                    FROM baduk.group_students gs
+                                    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE m.member_no=#{member_no}
+		]]>
+    </select>
+
 
 </mapper>

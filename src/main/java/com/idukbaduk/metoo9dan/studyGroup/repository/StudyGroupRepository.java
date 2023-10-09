@@ -49,8 +49,17 @@ public class StudyGroupRepository {
 
     //학습 그룹 가입(학습그룹 리스트 전체)
     public List<GroupJoinListDTO> getGroupJoinList() {
-
         return sqlSession.selectList("StudyGroup.GroupJoinList");
+    }
+
+    //학습그룹명 조건 조회(학습 그룹 신청 리스트)
+    public List<GroupJoinListDTO> selectNameList(int group_no) {
+        return sqlSession.selectList("StudyGroup.SelectNameList",group_no);
+    }
+
+    //교육자명 조건 조회(학습 그룹 신청 리스트)
+    public List<GroupJoinListDTO> SelectEducatorNameList(int member_no) {
+        return sqlSession.selectList("StudyGroup.SelectEducatorNameList",member_no);
     }
 
     //학습 그룹 신청 리스트
@@ -77,6 +86,16 @@ public class StudyGroupRepository {
     //게임콘텐츠명 리스트 가져오기
     public List<HashMap<String, Object>> getGameName(int member_no){
         return sqlSession.selectList("StudyGroup.GameNameList",member_no);
+    }
+
+    //학습그룹명 리스트(전체) 가져오기
+    public List<HashMap<String, Object>> getGroupNameALL(){
+        return sqlSession.selectList("StudyGroup.GroupNameAllList");
+    }
+
+    //교육자명 리스트(전체) 가져오기
+    public List<HashMap<String, Object>> getEducatorName(){
+        return sqlSession.selectList("StudyGroup.EducatorNameList");
     }
 
 
