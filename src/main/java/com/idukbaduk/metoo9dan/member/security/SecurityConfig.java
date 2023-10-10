@@ -6,14 +6,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -31,17 +41,45 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity  // 모든 요청 url이 스프링 시큐리티의 제어를 받도록 만든다.
 public class SecurityConfig {
 
-    @Autowired
-    UserDetailsService userDetailsService;
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/resources/**");
+    }
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        UserDetails normal = User.builder()
+                .username("normal").password(passwordEncoder().encode("password") ).roles("normal").build();
+        UserDetails student = User.builder()
+                .username("student").password(passwordEncoder().encode("password")).roles("STUDENT").build();
+        UserDetails educator = User.builder()
+                .username("educator").password(passwordEncoder().encode("password")).roles("EDUCATOR").build();
+        UserDetails admin = User.builder()
+                .username("admin").password(passwordEncoder().encode("password")).roles("ADMIN").build();
+        return new InMemoryUserDetailsManager(normal, student, educator, admin);
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests()
-                .anyRequest().authenticated()
-        .and()
-                .formLogin();
-//                .loginPage("/member/loginPage");       // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
-//                .defaultSuccessUrl("/")                         // 로그인 성공 후 이동 페이지
+            .csrf().disable()
+            .authorizeHttpRequests()
+                //.requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers( new AntPathRequestMatcher("/member/mypage")).hasAnyRole("NORMAL","STUDENT")
+                .requestMatchers( new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                .requestMatchers( new AntPathRequestMatcher("/edu/**")).hasRole("EDUCATOR")
+                .requestMatchers(new AntPathRequestMatcher("/member/join#pills-register")).denyAll() //로그인 후 회원가입접근불가
+                //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
+                .anyRequest().permitAll();
+
+        http
+             .formLogin()
+//                .loginPage("/member/login");       // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
+                   .defaultSuccessUrl("/");                    // 로그인 성공 후 이동 페이지
 //                .failureUrl("/member/login")        // 로그인 실패 후 이동 페이지
 //                .usernameParameter("user_id")                   // 아이디 파라미터명 설정
 //                .passwordParameter("pwd")                       // 패스워드 파라미터명 설정
@@ -65,21 +103,21 @@ public class SecurityConfig {
 
         http
                 .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .addLogoutHandler(new LogoutHandler() {
-                    @Override
-                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-                        HttpSession session = request.getSession();
-                        session.invalidate();
-                    }
-                })
-        // RememberMe
-        .and()
-                .rememberMe()
-                .rememberMeParameter("remember")
-                .tokenValiditySeconds(3600) //1시간
-                .userDetailsService(userDetailsService); //Autowired
+                .logoutUrl("/logout");
+//                .logoutSuccessUrl("/")
+//                .addLogoutHandler(new LogoutHandler() {
+//                    @Override
+//                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+//                        HttpSession session = request.getSession();
+//                        session.invalidate();
+//                    }
+//                })
+//        // RememberMe
+//        .and()
+//                .rememberMe()
+//                .rememberMeParameter("remember")
+//                .tokenValiditySeconds(3600) //1시간
+//                .userDetailsService(userDetailsService); //Autowired
 
 //        //d예외처리
 //        http.exceptionHandling()
@@ -96,9 +134,6 @@ public class SecurityConfig {
 //                    }
 //                });
 
-    // 인증실패 시 처리
-
-        
         return http.build();
 
     }
