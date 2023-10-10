@@ -5,7 +5,7 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <p>[학습 그룹 등록 폼]</p>
+            <h3>[학습 그룹 등록 폼]</h3>
             <div>
                 <table class="table">
                     <thead class="table-dark">
@@ -15,7 +15,7 @@
                         <th>학습종료일</th>
                         <th>학습가능인원</th>
                         <th>그룹지정된 인원</th>
-                        <th>교육자명</th>
+                        <!--<th>교육자명</th>-->
                     </tr>
                     </thead>
                     <tbody>
@@ -25,13 +25,14 @@
                         <td th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></td>
                         <td th:text="${gameInfo.max_subscribers}"></td>
                         <td th:text="${gameInfo.appointed_group_num}"></td>
-                        <td th:text="${gameInfo.name}"></td>
+                        <!--<td th:text="${gameInfo.name}"></td>-->
                     </tr>
                     </tbody>
                 </table>
             </div>
 
-            <p>[그룹 상세 정보]</p><!--교육자명 이쪽으로 옮기기-->
+            <p>[그룹 상세 정보]</p>
+            <p>교육자명 :  <strong><span th:text="${gameInfo.name}"></span></strong></p>
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
                 <div th:replace="~{form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
@@ -57,11 +58,13 @@
                 </div>
                 <div class="mb-3">
                     <label for="group_introduce" class="form-label">그룹 소개글</label>
-                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control"/>
+                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요."/>
                 </div>
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
                     <input type="hidden" th:value="${member_no}" class="form-control"/>
-                <input type="submit" value="등록" class="btn btn-primary my-2"/>
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <input type="submit" value="학습 그룹 등록 하기" class="btn btn-primary my-2"/>
+                </div>
             </form>
 
         </div>
