@@ -1,0 +1,51 @@
+<div class="row mb-3">
+  <label for="openEducationButton" class="col-sm-3 col-form-label">패키지</label>
+  <div class="col-sm-6">
+    <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#educationModal" id="openEducationButton">
+      패키지생성
+    </button>
+  </div>
+</div>
+
+</div>
+<div class="col-md-6"> <!-- 오른쪽 컨텐츠 -->
+  <!-- 정가 -->
+  <div class="mb-3 row">
+    <label for="original_price" class="col-sm-2 col-form-label">정가</label>
+    <div class="col-sm-7">
+      <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
+      <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
+    </div>
+  </div>
+  <!-- 할인율 -->
+  <div class="mb-3 row">
+    <label for="discount_rate" class="col-sm-2 col-form-label">할인율</label>
+    <div class="col-sm-7">
+      <div class="input-group"> <!-- Input 그룹을 사용하여 입력 필드와 % 기호를 함께 표시 -->
+        <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
+        <span class="input-group-text">%</span> <!-- Input 그룹의 추가 텍스트로 % 기호를 추가 -->
+      </div>
+      <small class="text-muted ms-2">적용 버튼을 눌러 판매가를 적용하세요.</small><br>
+      <span th:if="${#fields.hasErrors('discount_rate')}" th:errors="*{discount_rate}" class="error-message text-danger small"></span>
+    </div>
+    <div class="col-sm-3">
+      <button type="button" class="btn btn-primary" onclick="calculateSalePrice()">적용</button>
+    </div>
+  </div>
+  <!-- 판매가 -->
+  <div class="mb-3 row">
+    <label for="sale_price" class="col-sm-2 col-form-label">판매가</label>
+    <div class="col-sm-7">
+      <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price" readonly oninput="addCommas(this)" placeholder="할인율 적용시 자동 적용">
+      <span th:if="${#fields.hasErrors('sale_price')}" th:errors="*{sale_price}" class="error-message text-danger small"></span>
+    </div>
+  </div>
+</div>
+<div class="col-md-10">
+  <!-- 패키지내용 -->
+  <div class="mb-3 row">
+    <label for="package_details" class="col-sm-2 col-form-label">패키지내용</label>
+    <div class="col-sm-10" style="padding-left: 0px">
+      <textarea class="form-control" th:field="*{package_details}" rows="8" placeholder="내용을 입력해주세요."></textarea>
+    </div>
+  </div>

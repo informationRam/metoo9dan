@@ -42,7 +42,7 @@ public class EducationalResources {
     private LocalDateTime creationDate;    //datetime  NOT NULL    COMMENT '등록일',
 
     @ManyToOne(fetch = FetchType.LAZY) // 게임콘텐츠-다대일 관계
-    @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no", insertable = false) // 외래 키 설정
+    @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no") // 외래 키 설정
     private GameContents gameContents;
 
     @OneToMany(mappedBy = "educationalResources", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

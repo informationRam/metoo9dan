@@ -94,21 +94,7 @@ public class EducationController {
         // 1. 삭제된 파일 처리
         if (deletedFiles != null && !deletedFiles.isEmpty()) {
             System.out.println("deletedFiles?: "+ deletedFiles);
-            for (Integer fileNo : deletedFiles) {
-                if(fileNo != null && !deletedFiles.isEmpty()){
-                    System.out.println("fileNo?: "+ fileNo);
-                    // 파일을 서버에서 삭제하는 로직을 구현
-                    ResourcesFiles resourcesFile = resourcesFilesService.getFileByFileNo(fileNo);
-                    // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
-                    String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFile.getCopyFileName();
-                    File file = new File(filePath);
-                    if (file.exists() && file.isFile()) {
-                        file.delete(); // 파일을 삭제
-                    }
-                    // 데이터베이스에서 파일 정보를 삭제
-                    resourcesFilesService.deleteFile(fileNo);
-                }
-            }
+            resourcesFilesService.deleteFile(deletedFiles);
         }
         // 2. 수정된 컨텐츠 내용 처리
             EducationalResources educationalResources = educationService.getEducation(resourceNo);
@@ -130,7 +116,6 @@ public class EducationController {
             educationService.delete(education);
             return "redirect:/education/list";    // 공지사항 목록으로 이동
         } else {
-
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
         }
     }

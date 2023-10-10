@@ -92,22 +92,16 @@ public class EducationService {
         // 수정된 교육 자료 저장
         educationalRepository.save(educationalResources);
 
-        List<MultipartFile> boardFile1 = educationValidation.getBoardFile();
-        System.out.println("boardFile1 " + boardFile1);
-        if (boardFile1 != null && !boardFile1.isEmpty()) {
-            for (MultipartFile boardFile : boardFile1) {
+        // 파일저장 - 추가된 파일이 있는 경우 실행
+        List<MultipartFile> boardFileList = educationValidation.getBoardFile();
+        System.out.println("boardFile1 " + boardFileList);
+        if (boardFileList != null && !boardFileList.isEmpty()) {
+            for (MultipartFile boardFile : boardFileList) {
                 if (boardFile != null && !boardFile.isEmpty()) { // 파일이 비어있지 않은 경우에만 저장 로직 실행
-                    // 나머지 저장 로직은 그대로 유지
-                    ResourcesFiles resourcesFiles = new ResourcesFiles();
-                    resourcesFiles.setEducationalResources(educationalResources);
-                    String originalFileName = boardFile.getOriginalFilename();
-                    String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-                    String copyFileName = todayDate + "_" + originalFileName;
-                    String savePath = "/Users/ryuahn/Desktop/baduk/education/" + copyFileName;
-                    boardFile.transferTo(new File(savePath));
-                    resourcesFiles.setOriginFileName(originalFileName);
-                    resourcesFiles.setCopyFileName(copyFileName);
-                    resourcesFilesReprository.save(resourcesFiles);
+                    String fileUrl = "/Users/ryuahn/Desktop/baduk/education/";     //mac 파일 지정 C:/baduk
+                    educationalResources.setFileUrl(fileUrl);
+                    EducationalResources geteducationalResources = educationalRepository.save(educationalResources);   //교육자료를 저장
+                    resourcesFilesService.save(geteducationalResources, educationValidation, fileUrl);
                 }
             }
         }
@@ -174,13 +168,15 @@ public class EducationService {
         System.out.println("byEducationalResourcesResourceNo?:" + byEducationalResourcesResourceNo);
 
         if (byEducationalResourcesResourceNo != null && !byEducationalResourcesResourceNo.isEmpty()) {
-            for (ResourcesFiles resourcesFiles : byEducationalResourcesResourceNo) {
-                resourcesFilesService.deleteFile(resourcesFiles.getFileNo());
+            List<Integer> deletedFiles = new ArrayList<>(); // 리스트를 초기화하고 선언
+            for (ResourcesFiles deletedFileList : byEducationalResourcesResourceNo) {
+                deletedFiles.add(deletedFileList.getFileNo()); // 파일 번호를 리스트에 추가
             }
+            resourcesFilesService.deleteFile(deletedFiles); // 삭제 서비스로 전달
         }
     }
 
-    // 파일 삭제 핸들러
+   /* // 파일 삭제 핸들러
     @GetMapping("/deleteFile/{fileNo}")
     public String deleteFile(@PathVariable Integer fileNo) {
         // 파일을 서버에서 삭제하는 로직을 구현
@@ -196,7 +192,7 @@ public class EducationService {
             resourcesFilesService.deleteFile(fileNo);
         }
         return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
-    }
+    }*/
 
     //게임콘텐츠에서 패키지로 추가처리함
     public void pgInsert(EducationalResources educationalResources,GameContents gameContents) {

@@ -28,6 +28,7 @@ public class GameController {
     private final GameService gameService;
     private final GameFilesService gameFilesService;
     private final EducationService educationService;
+    private GameContents getgameContents;
 
     //게임컨텐츠 등록 폼 (교육자료 함께 저장시 교육자료가 update 및 생성된다.)
     @GetMapping("/addForm")
@@ -69,7 +70,7 @@ public class GameController {
     public String gameAdd(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult,
                           @RequestParam("boardFile") MultipartFile file, @RequestParam(name = "selectedValues", required = false) String selectedValues, Model model) throws IOException {
 
-        GameContents gameContents = null;
+
         if (bindingResult.hasErrors()) {
             return "game/addForm";
         }
@@ -94,7 +95,7 @@ public class GameController {
             //게임을 Pakage로 저장한다.
             GameValidation savedGameValidation = gameService.savePakage(gameValidation);
 
-            gameContents = gameService.getGameContents(savedGameValidation.getGame_no());
+            GameContents gameContents = gameService.getGameContents(savedGameValidation.getGame_no());
 
                 // 선택한 각 resourceNo에 대해 Education 객체를 조회하고 처리합니다.
                 for (String resourceNoStr : selectedResourceNos) {
@@ -105,7 +106,7 @@ public class GameController {
                     EducationalResources education = educationService.getEducation(resourceNo);
 
                     //저장한 gameContentNo(pk)를 가져온다. 가져온 gameContentNo값을 가지고 gameContents를 가져온다.
-                    GameContents getgameContents = gameService.getGameContents(savedGameValidation.getGame_no());
+                    getgameContents = gameService.getGameContents(savedGameValidation.getGame_no());
 
                     System.out.println("education.getGameContents()? : "+education.getGameContents());
 
@@ -125,7 +126,7 @@ public class GameController {
         MultipartFile fileName = gameValidation.getBoardFile().get(0);
         //파일여부확인
         if (fileName != null && !file.isEmpty()) {
-            gameFilesService.save(gameContents, gameValidation);
+            gameFilesService.save(getgameContents, gameValidation);
         }
         return "redirect:/game/list";
     }

@@ -62,17 +62,24 @@ public class ResourcesFilesService {
         }
     }
 
-    public void deleteFile(Integer fileNo) {
-        ResourcesFiles resourcesFiles = resourcesFilesRepository.findById(fileNo).get();
-        // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
-
-        String filePath = fileUrl + resourcesFiles.getCopyFileName();
-        File file = new File(filePath);
-        if (file.exists() && file.isFile()) {
-            file.delete(); // 파일을 삭제
+    // 삭제된 파일 처리
+    public void deleteFile(List<Integer> deletedFiles) {
+        for (Integer fileNo : deletedFiles) {
+            if (fileNo != null && !deletedFiles.isEmpty()) {
+                System.out.println("fileNo?: " + fileNo);
+                // 파일을 서버에서 삭제하는 로직을 구현
+                ResourcesFiles resourcesFile = getFileByFileNo(fileNo);
+                // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
+                String filePath = fileUrl + resourcesFile.getCopyFileName();
+                File file = new File(filePath);
+                if (file.exists() && file.isFile()) {
+                    file.delete(); // 파일을 삭제
+                }
+                // 데이터베이스에서 파일 정보를 삭제
+                ResourcesFiles resourcesFiles = resourcesFilesRepository.findById(fileNo).get();
+                resourcesFilesRepository.delete(resourcesFiles);
+            }
         }
-        // 데이터베이스에서 파일 정보를 삭제
-        resourcesFilesRepository.delete(resourcesFiles);
     }
 
     //파일 다운로드 하기
