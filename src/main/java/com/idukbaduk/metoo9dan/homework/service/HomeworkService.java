@@ -3,12 +3,15 @@ package com.idukbaduk.metoo9dan.homework.service;
 import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
+import com.idukbaduk.metoo9dan.homework.domain.HomeworkDetailDTO;
+import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDTO;
 import com.idukbaduk.metoo9dan.homework.repository.*;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +34,9 @@ public class HomeworkService {
     private GroupStudentsRepository groupStudentsRepository;
     @Autowired
     private StudyGroupsRepository studyGroupsRepository;
+
+    @Autowired
+    private HomeworkSubmitRepository homeworkSubmitRepository;
 
     public List<GroupStudentDTO> getGroupStudentsWithLatestProgress(Integer groupNo) {
         List<GroupStudents> groupStudents = groupStudentsRepository.findByIsApprovedAndStudyGroupsGroupNo(true,groupNo);
@@ -87,14 +93,16 @@ public class HomeworkService {
         // Convert homeworks list into HomeworkDTO list and check if it has been sent
         return homeworks.stream().map(hw -> {
             HomeworkDTO dto = new HomeworkDTO(hw);
-            dto.setSent(homeworkSendRepository.findByHomeworks(hw).isPresent());
+            List<HomeworkSend> sentHomeworks = homeworkSendRepository.findByHomeworks(hw);
+            dto.setSent(!sentHomeworks.isEmpty());
             return dto;
         }).collect(Collectors.toList());
     }
     public List<HomeworkDTO> toHomeworkDTOList(List<Homeworks> homeworks){
         return homeworks.stream().map(hw -> {
             HomeworkDTO dto = new HomeworkDTO(hw);
-            dto.setSent(homeworkSendRepository.findByHomeworks(hw).isPresent());
+            List<HomeworkSend> sentHomeworks = homeworkSendRepository.findByHomeworks(hw);
+            dto.setSent(!sentHomeworks.isEmpty());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -108,5 +116,78 @@ public class HomeworkService {
 
     public List<HomeworkSend> getHomeworkSendListByhomework(Integer homeworkId) {
         return homeworkSendRepository.findByHomeworks_HomeworkNo(homeworkId);
+    }
+
+    public List<String> saveHomeworksForMembers(List<String> homeworks, List<String> members) {
+        List<String> skippedEntries = new ArrayList<>(); // 건너뛴 학생과 숙제의 조합을 저장하기 위한 리스트
+
+        for (String homework : homeworks) {
+            for (String member : members) {
+                Optional<Homeworks> hw = homeworkRepository.findById(Integer.parseInt(homework));
+                Optional<Member> mem = memberRepository.findById(Integer.parseInt(member));
+
+                if (hw.isPresent() && mem.isPresent()) {
+                    // 이미 존재하는 조합인지 확인
+                    boolean exists = homeworkSendRepository.existsByHomeworksAndMember(hw.get(), mem.get());
+
+                    if (!exists) {
+                        HomeworkSend homeworkSend = new HomeworkSend();
+                        homeworkSend.setHomeworks(hw.get());
+                        homeworkSend.setMember(mem.get());
+                        homeworkSend.setCurrentLevel(hw.get().getProgress());
+                        homeworkSend.setSendDate(LocalDateTime.now());
+                        homeworkSend.setIsSubmit("N");
+                        homeworkSendRepository.save(homeworkSend);
+                    } else {
+                        skippedEntries.add("Member ID: " + member + " - Homework ID: " + homework); // 건너뛴 조합 저장
+                    }
+                }
+            }
+        }
+        return skippedEntries; // 건너뛴 학생과 숙제의 조합 리스트 반환
+    }
+
+    public List<HomeworkSend> findHomeworkSendByMemberId(String memberId) {
+        //제출기한 안끝난 숙제만 가져오기
+        return homeworkSendRepository.findByMemberIdAndDueDateAfterCurrentDate(memberId);
+
+    }
+
+    public HomeworkDetailDTO getDetail(Integer sendNo) {
+        /*
+    -private Integer homeworkNo;
+    -private Integer sendNo;
+
+    -private String homeworkTitle;
+    -private String homeworkContent;
+    -private String memberName;//교육자명
+    -private Integer progress;
+    -private Date dueDate;
+    -private String content;
+    -private String additionalQuestion;
+         */
+        HomeworkDetailDTO dto = new HomeworkDetailDTO();
+        dto.setSendNo(sendNo);
+
+        Optional<HomeworkSend> optionalHomeworkSend =homeworkSendRepository.findById(sendNo);
+        if(optionalHomeworkSend.isPresent()){
+            Homeworks homeworks = optionalHomeworkSend.get().getHomeworks();
+            dto.setHomeworkNo(homeworks.getHomeworkNo());
+            dto.setHomeworkTitle(homeworks.getHomeworkTitle());
+            dto.setHomeworkContent(homeworks.getHomeworkContent());
+            dto.setMemberName(homeworks.getMember().getName());
+            dto.setProgress(homeworks.getProgress());
+            dto.setDueDate(homeworks.getDueDate());
+        }
+        Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend_SendNo(sendNo);
+        if(optionalHomeworkSubmit.isPresent()){
+            HomeworkSubmit homeworkSubmit =optionalHomeworkSubmit.get();
+            dto.setContent(homeworkSubmit.getHomeworkContent());
+            dto.setAdditionalQuestion(homeworkSubmit.getAdditionalQuestions());
+        }
+        return dto;
+    }
+
+    public void addHomework(HomeworkSubmitDTO homeworkSubmitDto) {
     }
 }

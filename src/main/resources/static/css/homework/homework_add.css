@@ -1,35 +1,154 @@
-        #hw-homeworkDetailModal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-        }
-        #hw-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 900;
-            background-color: rgba(128,128,128,0.5);
-        }
-        #hw-pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
+/* 공통 스타일 */
+body {
+    font-family: Arial, sans-serif;
+}
 
-        .hw-page-number {
-            margin: 0 5px;
-            cursor: pointer;
-        }
+.container {
+    width: 90%;
+    margin: auto;
+    background-color: #f6f6f6;
+    padding: 20px;
+    border-radius: 10px;
+}
 
-        .hw-page-number.active {
-            font-weight: bold;
-        }
+.row {
+    margin: 0;
+}
+
+/* 폼 스타일 */
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form div {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+textarea:focus {
+    border-color: #007bff;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+span {
+    color: red;
+    font-size: 12px;
+}
+
+/* 테이블 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #007bff;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 페이지네이션 스타일 */
+#hw-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#prevBtn, #nextBtn, .hw-page-number {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid #007bff;
+    color: #007bff;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#prevBtn:hover, #nextBtn:hover, .hw-page-number:hover {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.hw-page-number.active {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+/* 모달 스타일 */
+#hw-homeworkDetailModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 600px;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    display: none;
+    z-index: 1000;
+}
+
+#hw-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 999;
+}
+
+#modalTitle {
+    font-size: 24px;
+    margin-bottom: 20px;
+}

@@ -1,20 +1,24 @@
 package com.idukbaduk.metoo9dan.homework.controller;
 
-import com.idukbaduk.metoo9dan.common.entity.Homeworks;
-import com.idukbaduk.metoo9dan.common.entity.Member;
-import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
+import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
+import com.idukbaduk.metoo9dan.homework.domain.HomeworkDetailDTO;
+import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDTO;
 import com.idukbaduk.metoo9dan.homework.service.HomeworkService;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,19 +39,6 @@ public class HomeworkController {
         return "homework/homework_add";
     }
 
-    @PostMapping("/add")
-    public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
-            model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus("baduk"));
-            return "homework/homework_add";
-        }
-        //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
-        Member member = homeworkService.findMemberByMemberId("baduk");
-        homeworkService.saveHomework(homeworksForm,member);
-        return "redirect:/homework/add";
-    }
-
     @GetMapping("/detail/{homeworkId}")
     public ResponseEntity<HomeworkDTO> getHomeworkDetail(@PathVariable Integer homeworkId) {
         Homeworks homework=homeworkService.findById(homeworkId);
@@ -64,6 +55,18 @@ public class HomeworkController {
 
         System.out.println(detail.toString());
         return ResponseEntity.ok(detail);
+    }
+    @PostMapping("/add")
+    public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
+            model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus("baduk"));
+            return "homework/homework_add";
+        }
+        //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
+        Member member = homeworkService.findMemberByMemberId("baduk");
+        homeworkService.saveHomework(homeworksForm,member);
+        return "redirect:/homework/add";
     }
 
     @GetMapping("/send")
@@ -91,10 +94,44 @@ public class HomeworkController {
     }
 
     @PostMapping("/send")
-    public String sendHomework(@RequestParam List<String> selectedHomeworks, @RequestParam List<String> selectedMembers) {
-        System.out.println(selectedHomeworks);
-        System.out.println(selectedMembers);
-        return "redirect:/homework/send"; // 처리 후 리디렉트하거나 다른 뷰를 반환하세요.
+    public String sendHomework(@RequestParam List<String> selectedHomeworks,
+                               @RequestParam List<String> selectedMembers,
+                               RedirectAttributes redirectAttributes) {
+        List<String> skipped = homeworkService.saveHomeworksForMembers(selectedHomeworks, selectedMembers);
+        redirectAttributes.addFlashAttribute("skippedEntries", skipped); // 건너뛴 학생과 숙제의 조합 정보를 리디렉션 후에 사용할 수 있게 저장
+        return "redirect:/homework/send";
     }
 
+    //숙제 제출 화면
+    @GetMapping("/submit")
+    public String getHomeworkList(Model model) {
+        //아이디로 전송된 숙제 찾기
+        List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
+        model.addAttribute("homeworkSend", homeworkSendList);
+        return "homework/homework_submit";
+    }
+
+    //숙제 더블클릭 시, 전송할 객체
+    @GetMapping("/submit/detail/{sendNo}")
+    public ResponseEntity<HomeworkDetailDTO> getHomeworkSubmitDetail(@PathVariable Integer sendNo) {
+        HomeworkDetailDTO dto = homeworkService.getDetail(sendNo);
+        return ResponseEntity.ok(dto);
+    }
+    //숙제 제출 post
+    //@PostMapping("/submit/add")
+    //public ResponseEntity<?> homeworkAdd(@RequestBody HomeworkSubmitDTO homeworkSubmitDto){
+    //}
+
+
+    //숙제 수정 post
+    //@PostMapping("/submit/edit")
+    //숙제 삭제 post
+
+    //숙제 평가 보기
+
+    //평가하기 페이지
+
+    //평가 저장 페이지
+
+    //평가 저장 post
 }

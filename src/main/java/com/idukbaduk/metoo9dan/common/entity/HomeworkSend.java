@@ -30,4 +30,6 @@ public class HomeworkSend {
     @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정
     private Member member;
 
+    @Column(name="is_submit")
+    private String isSubmit;
 }

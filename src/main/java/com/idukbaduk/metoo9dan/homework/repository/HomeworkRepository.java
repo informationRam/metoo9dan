@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.homework.repository;
 
+import com.idukbaduk.metoo9dan.common.entity.HomeworkSend;
 import com.idukbaduk.metoo9dan.common.entity.Homeworks;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
