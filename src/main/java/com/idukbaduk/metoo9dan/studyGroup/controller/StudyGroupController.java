@@ -367,7 +367,7 @@ public class StudyGroupController {
         return "studyGroup/joinConfirm";
     }
 
-    //학습 그룹 취소(학생)
+    //학습 그룹 가입 취소(학생)
 
 
 
