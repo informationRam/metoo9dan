@@ -46,11 +46,6 @@ public class SmsService {
     @Value("${naver-cloud-sms.senderPhone}")
     private String phone;
 
-    //secureRandom으로 보안성 강화 인증번호 생성
-    private final SecureRandom secureRandom = new SecureRandom();
-    private final String numericCharacters = "0123456789";
-
-
     public String makeSignature(Long time) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
         String space = " ";					// one space
         String newLine = "\n";					// new line
@@ -80,7 +75,7 @@ public class SmsService {
         return encodeBase64String;
     }
 
-    public SmsResponseDTO sendSms(String to) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public SmsResponseDTO sendSms(String to, String verificationCode) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         Long time = System.currentTimeMillis();
 
         HttpHeaders headers = new HttpHeaders();
@@ -94,10 +89,8 @@ public class SmsService {
         messageDto.setTo(to);
 
         // 2. messageDto의 content 영역에 6자리 난수를 생성해 저장
-        String randomContent = generateRandomContent();
-
         // SMS 내용을 직접 설정: 텍스트와 난수 합치기
-        String smsContent = "[나도9단] 인증번호 [" + randomContent  + "]를 입력해주세요";
+        String smsContent = "[나도9단] 인증번호 [" + verificationCode  + "]를 입력해주세요";
 
 //        // 여럿에 동일한 sms 내용 보낼때 사용
 //        List<MessageDTO> messages = new ArrayList<>();
@@ -123,19 +116,5 @@ public class SmsService {
 
         return response;
     }
-    private String generateRandomContent() {
-        // 난수 생성 로직 구현
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            int randomIndex = secureRandom.nextInt(numericCharacters.length());
-            sb.append(numericCharacters.charAt(randomIndex));
-        }
-        return sb.toString();
-    }
-
-   /*     // 예를 들어, 6자리 난수 생성
-        Random random = new Random();
-        int randomValue = 100000 + random.nextInt(900000); // 100000부터 999999까지의 난수 생성
-        return String.valueOf(randomValue);
-    }*/
+    
 }
