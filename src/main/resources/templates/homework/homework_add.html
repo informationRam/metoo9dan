@@ -83,32 +83,32 @@
             <!-- 숙제 수정 모달 -->
             <div id="hw-editModal">
                 <h2>숙제 수정</h2>
-                <form id="editForm" th:action="@{/homework/edit}" th:object="${homeworksForm}" method="post">
-                        <input type="hidden" th:field="*{homeworkNo}">
+                <form id="editForm" th:action="@{/homework/edit}" th:object="${homeworksEditForm}" method="post">
+                        <input type="hidden" th:field="*{hwNo}" th:id="'editNo'">
                     <div>
                         <label>숙제 제목:</label>
-                        <input type="text" th:field="*{homeworkTitle}" th:id="'editTitle'"></input>
-                        <span th:if="${#fields.hasErrors('homeworkTitle')}" th:errors="*{homeworkTitle}">Invalid Title</span>
+                        <input type="text" th:field="*{hwTitle}" th:id="'editTitle'"></input>
+                        <span id="editTitleError" class="error-message"></span>
                     </div>
                     <div>
                         <label>숙제 내용:</label>
-                        <textarea th:field="*{homeworkContent}" th:id="'editContent'"></textarea>
-                        <span th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}">Invalid Content</span>
+                        <textarea th:field="*{hwContent}" th:id="'editContent'"></textarea>
+                        <span id="editContentError" class="error-message"></span>
                     </div>
                     <div>
                         <label>숙제 진도:</label>
-                        <input type="number" th:field="*{progress}" th:id="'editProgress'">레벨
-                        <span th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}">Invalid Progress</span>
+                        <input type="number" th:field="*{hwProgress}" th:id="'editProgress'"></input>
+                        <span id="editProgressError" class="error-message"></span>
                     </div>
                     <div>
                         <label>제출 기한:</label>
-                        <input type="date" th:field="*{dueDate}" th:id="'editDudate'">
-                        <span th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">Invalid Date</span>
+                        <input type="date" th:field="*{hwDueDate}" th:id="'editDueDate'"></input>
+                        <span id="editDueDateError" class="error-message"></span>
                     </div>
                     <div>
                         <label>숙제 메모:</label>
-                        <textarea th:field="*{homeworkMemo}" th:id="'editMemo'"></textarea>
-                        <span th:if="${#fields.hasErrors('homeworkMemo')}" th:errors="*{homeworkMemo}">Invalid Memo</span>
+                        <textarea th:field="*{hwMemo}" th:id="'editMemo'"></textarea>
+                        <span id="editMemoError" class="error-message"></span>
                     </div>
                     <button type="submit">수정 제출</button>
                     <button type="button" id="deleteBtn">삭제</button>
@@ -346,7 +346,7 @@
                         // API를 호출하여 숙제 상세 정보 및 전송 내역을 불러옵니다.
                         $.get("/homework/detail/" + homeworkId, function(data){
                             // 모달에 데이터 세팅
-                            $("#editNo").val(data.homeworkNo);
+                            $("#editNo").val(homeworkId);
                             $("#editTitle").val(data.homeworkTitle);
                             $("#editContent").text(data.homeworkContent);
                             $("#editProgress").val(data.progress);
@@ -365,6 +365,44 @@
                         }
                     });
                 });
+
+                $("#editForm").submit(function(e) {
+                    e.preventDefault();
+
+                    $(".error-message").text("");  // 초기화
+
+                    $.ajax({
+                        url: $(this).attr("action"),
+                        type: "POST",
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            alert("성공적으로 수정되었습니다.");
+                            $("#hw-editModal").hide();
+                            location.reload();
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON;
+
+                            // 각 필드별 에러 메시지 출력
+                            if (errors.hwTitle) {
+                                $("#editTitleError").text(errors.hwTitle);
+                            }
+                            if (errors.hwContent) {
+                                $("#editContentError").text(errors.hwContent);
+                            }
+                            if (errors.hwProgress) {
+                                $("#editProgressError").text(errors.hwProgress);
+                            }
+                            if (errors.hwDueDate) {
+                                $("#editDueDateError").text(errors.hwDueDate);
+                            }
+                            if (errors.hwMemo) {
+                                $("#editMemoError").text(errors.hwMemo);
+                            }
+                        }
+                    });
+                });
+
 
 
             </script>

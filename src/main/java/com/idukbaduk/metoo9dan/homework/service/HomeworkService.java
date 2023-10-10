@@ -6,6 +6,7 @@ import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDTO;
 import com.idukbaduk.metoo9dan.homework.repository.*;
+import com.idukbaduk.metoo9dan.homework.validation.HomeworksEditForm;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,17 @@ public class HomeworkService {
         hw.setProgress(homework.getProgress());
         hw.setCreationDate(LocalDateTime.now()); //현재시간으로 설정
         homeworkRepository.save(hw);
+    }
+
+    public void updateHomework(@Valid HomeworksEditForm homeworksEditForm, Homeworks homeworks) {
+        homeworks.setHomeworkTitle(homeworksEditForm.getHwTitle());
+        homeworks.setHomeworkContent(homeworksEditForm.getHwContent());
+        homeworks.setHomeworkMemo(homeworksEditForm.getHwMemo());
+        homeworks.setDueDate(homeworksEditForm.getHwDueDate());
+        homeworks.setProgress(homeworksEditForm.getHwProgress());
+        //homeworks.getCreationDate(new LocalDateTime.now());
+
+        homeworkRepository.save(homeworks);
     }
     public List<HomeworkDTO> findAllHomeworkWithSendStatus(String memberId) {
         List<Homeworks> homeworks = homeworkRepository.findByMember_MemberIdOrderByCreationDateDesc(memberId);

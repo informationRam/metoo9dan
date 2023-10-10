@@ -5,9 +5,11 @@ import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
 import com.idukbaduk.metoo9dan.homework.service.HomeworkService;
+import com.idukbaduk.metoo9dan.homework.validation.HomeworksEditForm;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +17,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -28,7 +32,7 @@ public class HomeworkController {
 
     //숙제 생성 페이지 ****모달창에서 수정/삭제 추가해야함****
     @GetMapping("/add")
-    public String showCreateForm(Model model, HomeworksForm homeworksForm) {
+    public String showCreateForm(Model model, HomeworksForm homeworksForm, HomeworksEditForm homeworksEditForm) {
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
         List<HomeworkDTO> homework =homeworkService.findAllHomeworkWithSendStatus("baduk");
         model.addAttribute("homeworkList",homework);
@@ -53,16 +57,37 @@ public class HomeworkController {
         return ResponseEntity.ok(detail);
     }
     @PostMapping("/add")
-    public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model) {
+    public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model, HomeworksEditForm homeworksEditForm) {
         if (result.hasErrors()) {
-            //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
             model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus("baduk"));
+            model.addAttribute("homeworksEditForm", homeworksEditForm);
             return "homework/homework_add";
         }
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
         Member member = homeworkService.findMemberByMemberId("baduk");
         homeworkService.saveHomework(homeworksForm,member);
         return "redirect:/homework/add";
+    }
+
+    @PostMapping("/edit")
+    public ResponseEntity<?> editHomework(@Valid HomeworksEditForm homeworksEditForm, BindingResult result, Model model, HomeworksForm homeworksForm) {
+        if (result.hasErrors()) {
+            // 에러 메시지를 담을 Map 생성
+            Map<String, String> errors = new HashMap<>();
+
+            result.getFieldErrors().forEach(error -> {
+                String fieldName = error.getField();
+                String errorMessage = error.getDefaultMessage();
+                errors.put(fieldName, errorMessage);
+            });
+                System.out.println(errors);
+            // 400 상태 코드와 함께 에러 메시지를 JSON 형태로 반환
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+        homeworkService.updateHomework(homeworksEditForm,homeworkService.getHomeworkById(homeworksEditForm.getHwNo()).get());
+
+        // 성공 응답 (HTTP 상태 코드 200 OK와 함께 메시지 반환)
+        return ResponseEntity.ok("Homework edited successfully");
     }
 
     @GetMapping("/send")
