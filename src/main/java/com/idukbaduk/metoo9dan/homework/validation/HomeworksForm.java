@@ -14,6 +14,9 @@ import java.util.Date;
 @Valid
 @Data
 public class HomeworksForm {
+    @Column(name="homework_no")
+    private Integer homeworkNo;
+
     @Column(name="homework_title")
     @NotBlank(message = "숙제 제목을 입력해주세요")
     @Size(max=100, message = "숙제 제목은 100자 이내로 입력 가능합니다")

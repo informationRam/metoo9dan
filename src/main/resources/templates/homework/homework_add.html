@@ -49,6 +49,7 @@
                     <th onclick="sortTable(3)">숙제 진도</th>
                     <th onclick="sortTable(4)">제출 기한</th>
                     <th onclick="sortTable(5)">전송 여부</th>
+                    <th>수정</th>
                 </tr>
                 <tr th:each="hw, stat : ${homeworkList}" th:data-hw-id="${hw.homeworkNo}">
                     <td th:text="${homeworkList.size() - stat.count + 1}"></td>
@@ -57,6 +58,7 @@
                     <td th:text="${hw.progress}"></td>
                     <td th:text="${#dates.format(hw.dueDate, 'yyyy-MM-dd')}"></td>
                     <td th:text="${hw.isSent ? '전송 기록 있음' : '전송 기록 없음'}"></td>
+                    <td><button class="edit-btn" th:data-hw-id="${hw.homeworkNo}" th:disabled="${hw.isSent}">수정</button></td>
                 </tr>
                 <!-- 목록이 없을 때의 메시지를 추가합니다. -->
                 <tr th:if="${homeworkList == null or homeworkList.size() == 0}">
@@ -78,6 +80,41 @@
                 기한<p id="modalDueDate"></p>
                 생성일<p id="modalCreateDate"></p>
             </div>
+            <!-- 숙제 수정 모달 -->
+            <div id="hw-editModal">
+                <h2>숙제 수정</h2>
+                <form id="editForm" th:action="@{/homework/edit}" th:object="${homeworksForm}" method="post">
+                        <input type="hidden" th:field="*{homeworkNo}">
+                    <div>
+                        <label>숙제 제목:</label>
+                        <input type="text" th:field="*{homeworkTitle}" th:id="'editTitle'"></input>
+                        <span th:if="${#fields.hasErrors('homeworkTitle')}" th:errors="*{homeworkTitle}">Invalid Title</span>
+                    </div>
+                    <div>
+                        <label>숙제 내용:</label>
+                        <textarea th:field="*{homeworkContent}" th:id="'editContent'"></textarea>
+                        <span th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}">Invalid Content</span>
+                    </div>
+                    <div>
+                        <label>숙제 진도:</label>
+                        <input type="number" th:field="*{progress}" th:id="'editProgress'">레벨
+                        <span th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}">Invalid Progress</span>
+                    </div>
+                    <div>
+                        <label>제출 기한:</label>
+                        <input type="date" th:field="*{dueDate}" th:id="'editDudate'">
+                        <span th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">Invalid Date</span>
+                    </div>
+                    <div>
+                        <label>숙제 메모:</label>
+                        <textarea th:field="*{homeworkMemo}" th:id="'editMemo'"></textarea>
+                        <span th:if="${#fields.hasErrors('homeworkMemo')}" th:errors="*{homeworkMemo}">Invalid Memo</span>
+                    </div>
+                    <button type="submit">수정 제출</button>
+                    <button type="button" id="deleteBtn">삭제</button>
+                </form>
+            </div>
+
             <div id="hw-backdrop"></div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
@@ -213,10 +250,13 @@
 
                     // 모달 및 오버레이 외의 영역 클릭 시 모달 및 오버레이 숨김
                     $(document).on("click", function(e) {
-                        if ($(e.target).closest("#hw-homeworkDetailModal").length === 0 && $(e.target).closest("#homeworkTable").length === 0) {
-                            $("#hw-homeworkDetailModal, #hw-backdrop").hide();
+                        if ($(e.target).closest("#hw-homeworkDetailModal").length === 0 &&
+                            $(e.target).closest("#hw-editModal").length === 0 &&
+                            $(e.target).closest("#homeworkTable").length === 0) {
+                            $("#hw-homeworkDetailModal, #hw-backdrop, #hw-editModal").hide();
                         }
                     });
+
                 });
 
                 let currentPage = 1;
@@ -295,6 +335,37 @@
 
                     updateTableDisplay();
                 });
+
+                $(document).ready(function(){
+                    // 수정 버튼 클릭 이벤트
+                    $(".edit-btn").click(function(){
+                        let homeworkId = $(this).data('hw-id');
+
+                        // 해당 숙제의 데이터를 API에서 가져오거나
+                        // 현재 페이지의 테이블에서 가져와서 모달의 폼에 채워 넣는 코드를 여기에 추가합니다.
+                        // API를 호출하여 숙제 상세 정보 및 전송 내역을 불러옵니다.
+                        $.get("/homework/detail/" + homeworkId, function(data){
+                            // 모달에 데이터 세팅
+                            $("#editNo").val(data.homeworkNo);
+                            $("#editTitle").val(data.homeworkTitle);
+                            $("#editContent").text(data.homeworkContent);
+                            $("#editProgress").val(data.progress);
+                            $("#editMemo").val(data.homeworkMemo);
+                            $("#editDueDate").val(formatDate(data.dueDate.split("T")[0]));
+
+                            // 모달 및 오버레이 표시
+                            $("#hw-editModal, #hw-backdrop").show();
+                        });
+                    });
+
+                    // 삭제 버튼 클릭 이벤트
+                    $("#deleteBtn").click(function(){
+                        if(confirm("숙제를 삭제하시겠습니까?")) {
+                            // 삭제 API를 호출하는 코드를 여기에 추가합니다.
+                        }
+                    });
+                });
+
 
             </script>
 
