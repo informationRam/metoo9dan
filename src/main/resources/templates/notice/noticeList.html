@@ -15,7 +15,7 @@
                 <form action="/notice/list">
                     <input type="hidden" id="pageNo" name="pageNo" value="">
                     <label for="listSize">표기:
-                        <select id="listSize" name="listSize" onchange="changeUrl(this.value)">
+                        <select id="listSize" name="listSize" onchange="changeUrl(this)">
                             <!--list?pageNo=&listSize=30&noticeType=noti&status=post&searchCategory=titleAndContent&searchKeyword=-->
                             <option value="10">10</option>
                             <option value="20">20</option>
@@ -118,7 +118,11 @@
     </div><!--row-->
 </div><!--container-->
 <div layout:fragment="script">
-    <script>
+    <script th:inline="javascript">
+        /*댓글등록성공시 메시지 alert*/
+        if([[${msg}]]!=null){
+            alert([[${msg}]]);
+        }
         function changeUrl(url) {
             location.href = url
         }

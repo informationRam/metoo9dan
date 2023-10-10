@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 //공지사항 등록 폼의 입력 값에 대한 유효성 검사
 @Getter
@@ -22,7 +24,6 @@ public class NoticeForm {
     @NotEmpty
     private String content; //내용
 
-    //private LocalDateTime writeDate; //작성일
     private String postDate; //게시일
 
     @NotEmpty
@@ -30,4 +31,6 @@ public class NoticeForm {
 
     @NotNull
     private Boolean isImp = false;      //중요게시글 여부 -기본값 false
+
+    private List<MultipartFile> originFiles; //원본파일명
 }

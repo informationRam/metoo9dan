@@ -83,7 +83,7 @@ public class NoticeService {
     }
 
     //공지사항 등록처리
-    public void add(NoticeDTO noticeDTO) {
+    public int add(NoticeDTO noticeDTO) {
         Notice notice = new Notice();
         notice.setNoticeType(noticeDTO.getNoticeType());
         notice.setNoticeTitle(noticeDTO.getNoticeTitle());
@@ -94,7 +94,7 @@ public class NoticeService {
         notice.setStatus(noticeDTO.getStatus());
         notice.setIsImp(noticeDTO.isImp());
         notice.setReadCnt(0);
-        noticeRepository.save(notice);
+        return noticeRepository.save(notice).getNoticeNo();
     }
 
     //공지사항 삭제처리
