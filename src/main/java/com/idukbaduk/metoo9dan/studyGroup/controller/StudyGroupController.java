@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequestMapping("/studygroup")
 @Controller
@@ -307,18 +304,12 @@ public class StudyGroupController {
         return "studyGroup/studyGroup_joinList";
     }
 
-    //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
+ /*   //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
     //학습그룹명 조건 조회
     @GetMapping(value = "/groupJoinListGroupEnd", produces = "application/json")
     @ResponseBody
     public List<GroupJoinListDTO> joinLisGrouptEndpoint(@RequestParam int group_no){
-        //학습그룹명 리스트(전체) 가져오기
-     /*   List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
-        model.addAttribute("groupNameALL",groupNameALL);
-        //교육자명 리스트(전체) 가져오기
-        List<HashMap<String, Object>> educatorName = studyGroupService.getEducatorName();
-        model.addAttribute("educatorName",educatorName);
-    */
+
         //학습그룹명 조건 조회(학습 그룹 신청 리스트)
         System.out.println("group_no="+group_no);
         List<GroupJoinListDTO> groupJoinList = studyGroupService.selectNameList(group_no);
@@ -333,20 +324,69 @@ public class StudyGroupController {
     @GetMapping(value = "/groupJoinListNameEnd", produces = "application/json")
     @ResponseBody
     public List<GroupJoinListDTO> joinListNameEndpoint(@RequestParam int member_no){
-        //학습그룹명 리스트(전체) 가져오기
-    /*    List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
-        model.addAttribute("groupNameALL",groupNameALL);
-        //교육자명 리스트(전체) 가져오기
-        List<HashMap<String, Object>> educatorName = studyGroupService.getEducatorName();
-        model.addAttribute("educatorName",educatorName);
-    */
 
+        System.out.println("member_no="+member_no);
         //교육자명 조건 조회(학습 그룹 신청 리스트)
-        List<GroupJoinListDTO> selectEducatorNameList = studyGroupService.SelectEducatorNameList(member_no);
-        System.out.println("selectEducatorNameList="+selectEducatorNameList);
-        return selectEducatorNameList;
+        List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectEducatorNameList(member_no);
+        System.out.println("groupJoinList="+groupJoinList);
+        return groupJoinList;
 
+    }*/
+
+    @GetMapping(value = "/groupJoinListEndpoint", produces = "application/json")
+    @ResponseBody
+    public List<GroupJoinListDTO> groupJoinListEndpoint(@RequestParam(required = false) Integer group_no, @RequestParam(required = false) Integer member_no){
+      /*  if (group_no != null) {
+            // group_no를 이용한 처리
+            List<GroupJoinListDTO> groupJoinListByGroup = studyGroupService.selectNameList(group_no);
+            System.out.println("group_no="+group_no);
+            return groupJoinListByGroup;
+        } else if (member_no != null) {
+            // member_no를 이용한 처리
+            List<GroupJoinListDTO> groupJoinListByMember = studyGroupService.SelectEducatorNameList(member_no);
+            System.out.println("member_no="+member_no);
+            return groupJoinListByMember;
+        }else if(group_no != null && member_no != null){
+            System.out.println("같이");
+            System.out.println("group_no="+group_no);
+            System.out.println("member_no="+member_no);
+            map.put("group_no", group_no); // map에 member_no 추가
+            map.put("member_no", member_no); // map에 selectedGroupNo 추가
+            List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectGroupJoinList(map);
+            return groupJoinList;
+
+        } else {
+            // 두 파라미터 중 하나도 전달되지 않은 경우 처리
+            return Collections.emptyList();
+        }*/
+        if (group_no != null && member_no != null) {
+            // 두 파라미터가 동시에 전달될 경우 처리
+            System.out.println("같이");
+            System.out.println("group_no=" + group_no);
+            System.out.println("member_no=" + member_no);
+
+            Map<String, Integer> map = new HashMap<>();
+            map.put("group_no", group_no);
+            map.put("member_no", member_no);
+
+            List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectGroupJoinList(map);
+            return groupJoinList;
+        } else if (group_no != null) {
+            // group_no를 이용한 처리
+            List<GroupJoinListDTO> groupJoinListByGroup = studyGroupService.selectNameList(group_no);
+            System.out.println("group_no=" + group_no);
+            return groupJoinListByGroup;
+        } else if (member_no != null) {
+            // member_no를 이용한 처리
+            List<GroupJoinListDTO> groupJoinListByMember = studyGroupService.SelectEducatorNameList(member_no);
+            System.out.println("member_no=" + member_no);
+            return groupJoinListByMember;
+        } else {
+            // 두 파라미터 중 하나도 전달되지 않은 경우 처리
+            return Collections.emptyList();
+        }
     }
+
 
 
     //학습 그룹 가입 신청 처리(학생)

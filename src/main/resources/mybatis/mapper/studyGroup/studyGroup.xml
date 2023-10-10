@@ -86,7 +86,7 @@
     <select id="GameContentList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         <![CDATA[
         SELECT distinct g.game_content_no,g.game_name, g.max_subscribers, p.payment_date,
-               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration MONTH) AS subscription_end_date, s.appointed_group_num
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num
         FROM baduk.game_contents g
         JOIN baduk.payments p ON g.game_content_no = p.game_content_no
         LEFT JOIN (
@@ -103,7 +103,7 @@
     <select id="SelectGameList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         <![CDATA[
         SELECT distinct g.game_content_no,g.game_name, g.max_subscribers, p.payment_date,
-               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration MONTH) AS subscription_end_date, s.appointed_group_num
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num
         FROM baduk.game_contents g
         JOIN baduk.payments p ON g.game_content_no = p.game_content_no
         LEFT JOIN (
@@ -120,7 +120,7 @@
     <select id="GameContentInfo" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         <![CDATA[
         SELECT distinct g.game_content_no,g.game_name, g.max_subscribers, p.payment_date,
-               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration MONTH) AS subscription_end_date, s.appointed_group_num,m.name
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num,m.name
         FROM baduk.game_contents g
         JOIN baduk.payments p ON g.game_content_no = p.game_content_no
         LEFT JOIN (
@@ -247,6 +247,24 @@
         WHERE m.member_no=#{member_no}
 		]]>
     </select>
+
+    <!--학습그룹명&그룹명으로 조회(학습 그룹 신청 리스트)-->
+    <select id="SelectGroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+        <![CDATA[
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+                 (SELECT COUNT(member_no)
+                     FROM baduk.group_students gs
+                     WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+                    s.group_size - (SELECT COUNT(member_no)
+                                    FROM baduk.group_students gs
+                                    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE s.group_no=#{group_no} and m.member_no=#{member_no}
+		]]>
+    </select>
+
 
 
 </mapper>
