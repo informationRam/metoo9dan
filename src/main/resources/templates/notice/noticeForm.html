@@ -10,14 +10,13 @@
             <h2>공지사항 게시글 등록</h2>
 <!--            <div th:replace="~{form_errors::formErrorsFragment}"></div>-->
             <form id="noticeForm" th:object="${noticeForm}" th:action="@{|/notice/add|}" method="post">
-                <input type="hidden" th:field="*{writeDate}">
                 <input type="hidden" th:field="*{postDate}">
                 <select th:field="*{noticeType}">
                     <option value="">분류를 선택하세요</option>
                     <option value="noti">공지사항</option>
                     <option value="faq">자주묻는질문</option>
                 </select>
-                <label for="isImp"><input type="checkbox" th:field="*{isImp}"> 중요글로 상단 노출</label>
+                <label for="isImp1"><input type="checkbox" th:field="*{isImp}"> 중요글로 상단 노출</label>
                 <hr/>
                 제목
                 <input type="text" th:field="*{title}" placeholder="제목을 입력하세요"><br/>
@@ -27,7 +26,7 @@
                 </label>
                 <label for="status2">
                     <input type="radio" value="SCHEDULED" th:field="*{status}" onclick="enableDateInput()">게시 일자
-                    <input type="date" id="postDate" name="postDate" disabled>
+                    <input type="date" id="selectDate" name="selectDate">
                 </label>
                 <br/>
                 내용
@@ -44,22 +43,24 @@
 <div layout:fragment="script">
 <script th:inline="javascript">
     // 게시일자 라디오를 선택하면 날짜 선택 부분이 활성화
-    function setTodayValue() {
-        var today = /*[[${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}]]*/ '';
-        document.getElementById('status2').value = today;
-    }
-
     function disableDateInput() {
-        document.getElementById('postDate').disabled = true;
+        document.getElementById('selectDate').disabled = true;
     }
 
     function enableDateInput() {
-        document.getElementById('postDate').disabled = false;
+        document.getElementById('selectDate').disabled = false;
     }
 
     function saveForm() {
-        if(checkForm()){
-            document.getElementById("noticeForm").submit();
+        if(checkForm()){ //유효성검사 마쳤으면,
+            if(document.getElementById("status1").checked){ //등록즉시 게시 선택시
+                var today = /*[[${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}]]*/ '';
+                document.getElementById("postDate").value = today;
+                document.getElementById("noticeForm").submit(); // 폼 제출
+            } else if(document.getElementById("status2").checked){ //예약게시 선택시
+                document.getElementById("postDate").value = document.getElementById("selectDate").value;
+                document.getElementById("noticeForm").submit(); // 폼 제출
+            }
         }
     }
 
@@ -97,20 +98,13 @@
 
         // 게시일자 선택 여부 확인
         if (notPostChecked) {
-            var postDate = document.getElementById("postDate").value;
-            if (postDate.trim() === "") {
+            var selectDate = document.getElementById("selectDate").value;
+            var postDate = new Date(selectDate);
+            if(isNaN(postDate.getTime())){
                 alert("게시 일자를 선택하세요.");
                 return false;
             }
         }
-
-        // 중요글로 상단 노출 체크 여부 확인
-        /*var isImpChecked = document.getElementById("isImp").checked;
-
-        if (isImpChecked) {
-            // 중요글로 상단 노출이 체크된 경우 추가 유효성 검사 수행
-            // (추가로 필요한 경우 여기에 코드를 추가하세요)
-        }*/
 
         // 모든 유효성 검사 통과 시 true 반환
         console.log('유효성검사 끝');

@@ -22,8 +22,8 @@ public class NoticeForm {
     @NotEmpty
     private String content; //내용
 
-    private LocalDateTime writeDate; //작성일
-    private LocalDateTime postDate; //게시일
+    //private LocalDateTime writeDate; //작성일
+    private String postDate; //게시일
 
     @NotEmpty
     private String status;              //상태(게시, 예약)
