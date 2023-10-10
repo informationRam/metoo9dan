@@ -6,7 +6,6 @@ import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.reprository.EducationRepository;
 import com.idukbaduk.metoo9dan.education.reprository.ResourcesFilesReprository;
 import com.idukbaduk.metoo9dan.education.vaildation.EducationValidation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -194,40 +192,35 @@ public class EducationService {
             if (file.exists() && file.isFile()) {
                 file.delete(); // 파일을 삭제
             }
-
             // 데이터베이스에서 파일 정보를 삭제
             resourcesFilesService.deleteFile(fileNo);
         }
-
         return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
     }
 
     //게임콘텐츠에서 패키지로 추가처리함
     public void pgInsert(EducationalResources educationalResources,GameContents gameContents) {
-        System.out.println("EducationalResources 서비스의 pgInsert-gameContents?: " + gameContents);
-        System.out.println("EducationalResources 서비스의 pgInsert-educationalResources?: "+ educationalResources);
         educationalResources.setGameContents(gameContents);
         educationalRepository.save(educationalResources);
     }
 
     // 기존에 게임 콘텐츠를 가지고 있다면 기존내용을 복사해 새로 저장함.
-    public void copysave(EducationalResources education, GameContents gameContents) {
-        EducationalResources ori_education = getEducation(education.getResourceNo());
+    public void copysave(EducationValidation ori_education, GameContents gameContents) {
+        System.out.println("값이 존재함..!gameContents? : " + gameContents);
+        EducationalResources copy_education = new EducationalResources();   //복사할 객체 생성
 
-        EducationalResources copy_education = new EducationalResources();
-        copy_education.setResourceNo(ori_education.getResourceNo());
-        copy_education.setResourceName(ori_education.getResourceName());
-        copy_education.setResourceCate(ori_education.getResourceCate());
-        copy_education.setFileType(ori_education.getFileType());
-        copy_education.setServiceType(ori_education.getServiceType());
+        copy_education.setResourceName(ori_education.getResource_name());
+        copy_education.setResourceCate(ori_education.getResource_cate());
+        copy_education.setFileType(ori_education.getFile_type());
+        copy_education.setFileUrl(ori_education.getFile_url());
+        copy_education.setServiceType(ori_education.getService_type());
         copy_education.setDescription(ori_education.getDescription());
         copy_education.setCreationDate(LocalDateTime.now());
         copy_education.setGameContents(gameContents);
-        copy_education.setFileUrl(ori_education.getFileUrl());
         educationalRepository.save(copy_education);   //교육자료를 저장
 
         EducationalResources educationalResources1 = educationalRepository.findById(copy_education.getResourceNo()).get();
-        List<ResourcesFiles> ori_resourcesfiles = resourcesFilesService.getResourcesFilesByResourceNo(ori_education.getResourceNo());
+        List<ResourcesFiles> ori_resourcesfiles = resourcesFilesService.getResourcesFilesByResourceNo(ori_education.getResource_no());
         //파일이 있다면 (DB에 파일 정보만 저장처리한다.)
         if(!ori_resourcesfiles.equals(null) || !ori_resourcesfiles.isEmpty()){
             for(ResourcesFiles resourcesFiles : ori_resourcesfiles){

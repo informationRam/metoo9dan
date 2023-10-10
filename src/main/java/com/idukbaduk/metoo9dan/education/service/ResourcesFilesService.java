@@ -26,7 +26,7 @@ import java.util.List;
 @Transactional  //부모entity에 접근할때 필요함
 public class ResourcesFilesService {
 
-    private String FileLocation = "/Users/ryuahn/Desktop/baduk/education/";
+    private String fileUrl = "/Users/ryuahn/Desktop/baduk/education/";
 
     @Autowired
     private final ResourcesFilesReprository resourcesFilesRepository;
@@ -46,13 +46,13 @@ public class ResourcesFilesService {
     }
 
     //저장처리 (파일도 저장함)
-    public void save(EducationalResources educationalResources, EducationValidation educationValidation,String fileUrl) throws IOException {
+    public void save(EducationalResources educationalResources, EducationValidation educationValidation,String getfileUrl) throws IOException {
         for (MultipartFile boardFile : educationValidation.getBoardFile()) {
             ResourcesFiles resourcesFiles = new ResourcesFiles(); // 이미지 저장을 위한 객체 생성
             String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
             String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
             String copyFileName = todayDate + "_" + originalFileName;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
-            String savePath = fileUrl + copyFileName;   //mac 파일 지정 C:/baduk
+            String savePath = getfileUrl + copyFileName;   //mac 파일 지정 C:/baduk
             boardFile.transferTo(new File(savePath));   //파일저장 처리
 
             resourcesFiles.setEducationalResources(educationalResources);
@@ -66,7 +66,7 @@ public class ResourcesFilesService {
         ResourcesFiles resourcesFiles = resourcesFilesRepository.findById(fileNo).get();
         // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
 
-        String filePath = FileLocation + resourcesFiles.getCopyFileName();
+        String filePath = fileUrl + resourcesFiles.getCopyFileName();
         File file = new File(filePath);
         if (file.exists() && file.isFile()) {
             file.delete(); // 파일을 삭제
@@ -79,7 +79,7 @@ public class ResourcesFilesService {
     public ResponseEntity<Resource> downloadFile(ResourcesFiles resourcesFile) throws IOException {
 
         // 파일 경로 가져오기
-        String filePath = FileLocation + resourcesFile.getCopyFileName(); // 파일이 저장된 경로
+        String filePath = fileUrl + resourcesFile.getCopyFileName(); // 파일이 저장된 경로
 
         // 파일을 바이트 배열로 읽기
         byte[] fileData = Files.readAllBytes(new File(filePath).toPath());
