@@ -28,7 +28,7 @@ public class GameController {
     private final GameFilesService gameFilesService;
     private final EducationService educationService;
 
-    //게임컨텐츠 등록 폼
+    //게임컨텐츠 등록 폼 (교육자료 함께 저장시 교육자료가 update 및 생성된다.)
     @GetMapping("/addForm")
     public String gameAddForm(GameValidation gameValidation, Model model) {
         model.addAttribute("gameValidation", gameValidation);
@@ -122,7 +122,11 @@ public class GameController {
                 GameContents gameContents = gameService.getGameContents(gameContentNo);
 
                 //교육자료의 setGameContents의 값을 update한다.
-                educationService.pgInsert(education, gameContents);
+                if(education.getGameContents() != null){
+                    educationService.pgInsert(education, gameContents);
+                }else {
+                    educationService.copysave(education,gameContents);
+                }
             }
         }else {
                 gameValidation.setContent_type("individual");

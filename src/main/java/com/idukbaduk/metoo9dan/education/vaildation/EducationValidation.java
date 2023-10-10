@@ -1,17 +1,14 @@
 package com.idukbaduk.metoo9dan.education.vaildation;
 
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class EducationVaildation {
+public class EducationValidation {
 
     private Integer resource_no;
 

@@ -4,13 +4,13 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <form id="educationadd" class="my-2" th:object="${educationVaildation}" th:action="@{|/education/modify/${resourceNo}|}" method="post" enctype="multipart/form-data">
+            <form id="educationadd" class="my-2" th:object="${educationValidation}" th:action="@{|/education/modify/${resourceNo}|}" method="post" enctype="multipart/form-data">
             <div>
                 <!-- 교육자료명 -->
                 <div class="mb-3 row">
                     <label for="resource_name" class="col-sm-2 col-form-label">교육자료명</label>
                     <div class="col-sm-5">
-                        <input type="text" th:field="*{resource_name}" class="form-control" value="${educationVaildation.resource_name}">
+                        <input type="text" th:field="*{resource_name}" class="form-control" value="${educationValidation.resource_name}">
                         <span th:if="${#fields.hasErrors('resource_name')}" th:errors="*{resource_name}" class="error-message text-danger"></span>
                     </div>
                 </div>
@@ -18,7 +18,7 @@
                 <div class="mb-3 row">
                     <label for="difficulty" class="col-sm-2 col-form-label">자료구분</label>
                     <div class="col-sm-3">
-                        <select th:field="*{resource_cate}" class="form-select" value="${educationVaildation.resource_cate}">
+                        <select th:field="*{resource_cate}" class="form-select" value="${educationValidation.resource_cate}">
                             <option value="tutorial">튜토리얼</option>
                             <option value="lecture">교육영상</option>
                         </select>
@@ -28,7 +28,7 @@
                     <div class="mb-3 row">
                         <label for="file_type" class="col-sm-2 col-form-label">자료유형</label>
                         <div class="col-sm-3">
-                            <select th:field="*{file_type}" class="form-select" value="${educationVaildation.file_type}">
+                            <select th:field="*{file_type}" class="form-select" value="${educationValidation.file_type}">
                                 <option value="image">이미지</option>
                                 <option value="video">동영상</option>
                                 <option value="image/video">이미지/동영상</option>
@@ -40,7 +40,7 @@
                     <div class="mb-3 row">
                         <label for="max_subscribers" class="col-sm-2 col-form-label">구독가능인원</label>
                         <div class="col-sm-3">
-                            <select th:field="*{service_type}" class="form-select" value="${educationVaildation.service_type}">
+                            <select th:field="*{service_type}" class="form-select" value="${educationValidation.service_type}">
                                 <option value="full">유료</option>
                                 <option value="short">무료</option>
                             </select>
@@ -50,7 +50,7 @@
                 <div class="mb-3 row">
                     <label for="description" class="col-sm-2 col-form-label">패키지내용</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요." value="${educationVaildation.description}"></textarea>
+                        <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요." value="${educationValidation.description}"></textarea>
                     </div>
                 </div>
                 <!-- 파일 업로드 -->
@@ -63,12 +63,12 @@
                 <!-- 기존에 업로드된 파일-->
                 <td class="education files">
                     <ul>
-                        <li th:each="file : ${educationVaildation.boardFileList}">
+                        <li th:each="file : ${educationValidation.boardFileList}">
                             <a th:href="@{|/education/downloadFile/${file.fileNo}|}" th:text="${file.originFileName}">다운로드</a>
                             <!-- 파일 삭제 버튼 -->
                             <a class="btn btn-sm btn-danger" th:attr="data-fileNo=${file.fileNo}" onclick="deleteFile(event, this.getAttribute('data-fileNo'))">삭제</a>
                             <!-- 컨텐츠 삭제를 위한 hidden input -->
-                            <input type="hidden" th:each="fileNo : ${educationVaildation.deletedFiles}" th:name="'deletedFiles[' + ${fileNo} + ']'" th:value="${fileNo}">
+                            <input type="hidden" th:each="fileNo : ${educationValidation.deletedFiles}" th:name="'deletedFiles[' + ${fileNo} + ']'" th:value="${fileNo}">
                         </li>
                     </ul>
                 </td>

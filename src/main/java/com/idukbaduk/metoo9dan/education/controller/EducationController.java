@@ -1,20 +1,15 @@
 package com.idukbaduk.metoo9dan.education.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.service.EducationService;
 import com.idukbaduk.metoo9dan.education.service.ResourcesFilesService;
-import com.idukbaduk.metoo9dan.education.vaildation.EducationVaildation;
+import com.idukbaduk.metoo9dan.education.vaildation.EducationValidation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,16 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/education")
@@ -46,29 +33,31 @@ public class EducationController {
 
     //교육자료 등록 폼
     @GetMapping("/addForm")
-    public String educationAddForm(EducationVaildation educationVaildation, Model model) {
+    public String educationAddForm(EducationValidation educationVaildation, Model model) {
         model.addAttribute("educationVaildation", educationVaildation);
         return "education/addForm";
     }
 
     //교육자료 등록 처리
     @PostMapping("/add")
-    public String educationAdd(@ModelAttribute("educationVaildation") @Valid EducationVaildation educationVaildation,BindingResult bindingResult,@RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
-        System.out.println("boardFile?"+educationVaildation.getBoardFile().get(0));
+    public String educationAdd(@ModelAttribute("educationVaildation") @Valid EducationValidation educationValidation, BindingResult bindingResult, @RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
+        System.out.println("boardFile?"+educationValidation.getBoardFile().get(0));
 
-        // 업로드된 파일의 확장자 확인
-        MultipartFile fileName = educationVaildation.getBoardFile().get(0);
-
-        if (fileName == null || fileName.isEmpty()) {
-            educationVaildation.setBoardFile(null);
-        }
-
+        // hasErrors 확인
         if (bindingResult.hasErrors()) {
+            model.addAttribute("educationValidation", educationValidation);
             return "education/addForm";
-        } else{
-            educationService.save(educationVaildation);
-            return "redirect:/education/list";
         }
+        // 업로드된 파일의 확장자 확인
+        MultipartFile fileName = educationValidation.getBoardFile().get(0);
+
+        //파일이 있으면
+        if (fileName != null && !file.isEmpty()) {
+            educationService.saveWithFile(educationValidation);
+        }else {
+            educationService.saveWithoutFile(educationValidation);
+        }
+        return "redirect:/education/list";
     }
 
     //교육자료 목록조회
@@ -92,16 +81,16 @@ public class EducationController {
     @GetMapping("/modify/{resourceNo}")
     public String userUpdateForm(@PathVariable Integer resourceNo, Model model) {
         EducationalResources education = educationService.getEducation(resourceNo);
-        EducationVaildation educationVaildation = educationService.toEducationVaildation(education);// 인증을위한 userModifyForm값으로 변경
+        EducationValidation educationValidation = educationService.toEducationValidation(education);// 인증을위한 userModifyForm값으로 변경
 
-        model.addAttribute("educationVaildation", educationVaildation);
+        model.addAttribute("educationValidation", educationValidation);
         return "education/modify";
 
     }
 
     //수정처리
     @PostMapping("/modify/{resourceNo}")
-    public String modifyResource(@PathVariable Integer resourceNo, @ModelAttribute("educationVaildation") EducationVaildation educationVaildation, @RequestParam(name = "deletedFiles", required = false) List<Integer> deletedFiles, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
+    public String modifyResource(@PathVariable Integer resourceNo, @ModelAttribute("educationValidation") EducationValidation educationValidation, @RequestParam(name = "deletedFiles", required = false) List<Integer> deletedFiles, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
         // 1. 삭제된 파일 처리
         if (deletedFiles != null && !deletedFiles.isEmpty()) {
             System.out.println("deletedFiles?: "+ deletedFiles);
@@ -124,7 +113,7 @@ public class EducationController {
         // 2. 수정된 컨텐츠 내용 처리
             EducationalResources educationalResources = educationService.getEducation(resourceNo);
             if (educationalResources != null) {
-                educationService.modify(educationalResources, educationVaildation);
+                educationService.modify(educationalResources, educationValidation);
                 return "redirect:/education/list";
             }
 
@@ -151,44 +140,18 @@ public class EducationController {
     public ResponseEntity<Resource> downloadFile(@PathVariable Integer fileNo) {
         // 파일을 서버에서 가져오는 로직을 구현하고 Resource 객체를 생성
         ResourcesFiles resourcesFile = resourcesFilesService.getFileByFileNo(fileNo);
-        if (resourcesFile == null) {
-            // 파일이 존재하지 않으면 에러 응답을 보낼 수 있습니다.
-            return ResponseEntity.notFound().build();
-        }
-
-        // 파일 경로 가져오기
-        String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFile.getCopyFileName(); // 파일이 저장된 경로
-
-        System.out.println("resourcesFile.getCopyFileName()?: "+resourcesFile.getCopyFileName());
         try {
-            // 파일을 바이트 배열로 읽기
-            byte[] fileData = Files.readAllBytes(new File(filePath).toPath());
-
-            // 파일 다운로드를 위한 HTTP 헤더 설정
-            HttpHeaders headers = new HttpHeaders();
-
-            // 파일 이름을 UTF-8로 인코딩하여 설정
-            String fileName = resourcesFile.getCopyFileName();
-            String encodedFileName = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
-            System.out.println("encodedFileName?: " +encodedFileName);
-            headers.setContentDispositionFormData("attachment", encodedFileName);
-
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-
-            // 파일 데이터를 ByteArrayResource로 래핑하여 응답으로 보냅니다.
-            ByteArrayResource resource = new ByteArrayResource(fileData);
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentLength(fileData.length)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(resource);
+            if (resourcesFile != null) {
+                return resourcesFilesService.downloadFile(resourcesFile);
+            }else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (IOException e) {
             // 파일을 읽을 수 없는 경우 에러 응답을 보냅니다.
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-}
+    }
 
    /* // 파일 삭제 핸들러
     @GetMapping("/deleteFile/{fileNo}")

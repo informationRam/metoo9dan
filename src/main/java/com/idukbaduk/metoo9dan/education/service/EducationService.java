@@ -5,7 +5,7 @@ import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.reprository.EducationRepository;
 import com.idukbaduk.metoo9dan.education.reprository.ResourcesFilesReprository;
-import com.idukbaduk.metoo9dan.education.vaildation.EducationVaildation;
+import com.idukbaduk.metoo9dan.education.vaildation.EducationValidation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,54 +34,38 @@ public class EducationService {
     private final ResourcesFilesReprository resourcesFilesReprository;
     private final ResourcesFilesService resourcesFilesService;
 
-    //교육자료등록 (파일같이저장)
-    public void save(EducationVaildation educationVaildation) throws IOException {
-        EducationalResources educationalResources = new EducationalResources();
-
-        //파일이 있다면
-        if(educationVaildation.getBoardFile() != null){
-
-            //교육자료 내용 저장
-            educationalResources.setResourceNo(educationVaildation.getResource_no());
-            educationalResources.setResourceName(educationVaildation.getResource_name());
-            educationalResources.setResourceCate(educationVaildation.getResource_cate());
-            educationalResources.setFileType(educationVaildation.getFile_type());
-            educationalResources.setServiceType(educationVaildation.getService_type());
-            educationalResources.setDescription(educationVaildation.getDescription());
-            educationalResources.setCreationDate(LocalDateTime.now());
-            educationalResources.setGameContents(null);
-            educationalResources.setFileUrl(null);
-            educationalRepository.save(educationalResources);   //교육자료를 저장
-
-            EducationalResources educationalResources1 = educationalRepository.findById(educationalResources.getResourceNo()).get();
-            for(MultipartFile boardFile:educationVaildation.getBoardFile()){
-                ResourcesFiles resourcesFiles = new ResourcesFiles(); // 이미지 저장을 위한 객체 생성
-                resourcesFiles.setEducationalResources(educationalResources);
-                String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
-                String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-                String copyFileName = todayDate + "_" + originalFileName;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
-                String savePath = "/Users/ryuahn/Desktop/baduk/education/"+copyFileName; //mac 파일 지정 C:/baduk
-                boardFile.transferTo(new File(savePath));   //파일저장 처리
-
-                resourcesFiles.setOriginFileName(originalFileName);
-                resourcesFiles.setCopyFileName(copyFileName);
-                resourcesFilesReprository.save(resourcesFiles);
+    @Transactional
+    public void saveWithFile(EducationValidation educationValidation) throws IOException {
+        // 파일이 있는 경우의 처리
+        // 파일을 저장하고, 교육 자료를 저장하는 로직을 포함
+        EducationalResources educationalResources = toEducationalResources(educationValidation);
+        try {
+            if(educationValidation.getBoardFile() !=null){
+                String fileUrl = "/Users/ryuahn/Desktop/baduk/education/";     //mac 파일 지정 C:/baduk
+                educationalResources.setFileUrl(fileUrl);
+                EducationalResources educationalResources1 = educationalRepository.save(educationalResources);   //교육자료를 저장
+                resourcesFilesService.save(educationalResources1,educationValidation,fileUrl);
             }
-
-        }else {
-            //교육자료 내용 저장
-            educationalResources.setResourceName(educationVaildation.getResource_name());
-            educationalResources.setResourceCate(educationVaildation.getResource_cate());
-            educationalResources.setFileType(educationVaildation.getFile_type());
-            educationalResources.setFileUrl(null);
-            educationalResources.setServiceType(educationVaildation.getService_type());
-            educationalResources.setDescription(educationVaildation.getDescription());
-            educationalResources.setCreationDate(LocalDateTime.now());
-
-            //교육자료 저장
-            educationalRepository.save(educationalResources);
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save educational resources: " + e.getMessage());
         }
     }
+
+    @Transactional
+    public void saveWithoutFile(EducationValidation educationValidation) {
+        // 파일이 없는 경우의 처리
+        // 교육 자료만 저장하는 로직을 포함
+        EducationalResources educationalResources = toEducationalResources(educationValidation);
+        try {
+            educationalResources.setFileUrl(null);
+            educationalRepository.save(educationalResources);   //교육자료를 저장
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save educational resources: " + e.getMessage());
+        }
+    }
+
     //교육자료목록조회 (페이징처리)
     public Page<EducationalResources> getList(int page) {
 
@@ -97,25 +81,24 @@ public class EducationService {
     }
 
     //교육자료수정
-    public void modify(EducationalResources educationalResources,EducationVaildation educationVaildation) throws IOException {
+    public void modify(EducationalResources educationalResources,EducationValidation educationValidation) throws IOException {
 
         // 필요한 필드를 업데이트
-        educationalResources.setResourceName(educationVaildation.getResource_name());
-        educationalResources.setResourceCate(educationVaildation.getResource_cate());
-        educationalResources.setFileType(educationVaildation.getFile_type());
-        educationalResources.setServiceType(educationVaildation.getService_type());
-        educationalResources.setDescription(educationVaildation.getDescription());
+        educationalResources.setResourceName(educationValidation.getResource_name());
+        educationalResources.setResourceCate(educationValidation.getResource_cate());
+        educationalResources.setFileType(educationValidation.getFile_type());
+        educationalResources.setServiceType(educationValidation.getService_type());
+        educationalResources.setDescription(educationValidation.getDescription());
         educationalResources.setCreationDate(LocalDateTime.now());
 
         // 수정된 교육 자료 저장
         educationalRepository.save(educationalResources);
 
-        List<MultipartFile> boardFile1 = educationVaildation.getBoardFile();
+        List<MultipartFile> boardFile1 = educationValidation.getBoardFile();
         System.out.println("boardFile1 " + boardFile1);
         if (boardFile1 != null && !boardFile1.isEmpty()) {
             for (MultipartFile boardFile : boardFile1) {
                 if (boardFile != null && !boardFile.isEmpty()) { // 파일이 비어있지 않은 경우에만 저장 로직 실행
-                    System.out.println("boardFile?" + boardFile.getOriginalFilename());
                     // 나머지 저장 로직은 그대로 유지
                     ResourcesFiles resourcesFiles = new ResourcesFiles();
                     resourcesFiles.setEducationalResources(educationalResources);
@@ -146,7 +129,6 @@ public class EducationService {
 
     //resourceNo 주면 Contents값 전체 조회
     public EducationalResources getEducation(int resourceNo){
-        System.out.println("getEducation 서비스 들어옴?? "+resourceNo);
         EducationalResources educationalResources = educationalRepository.findById(resourceNo).orElse(null);
         if (educationalResources != null) {
             educationalResources.setResourcesFilesList(resourcesFilesService.getResourcesFilesByResourceNo(resourceNo));
@@ -155,39 +137,35 @@ public class EducationService {
     }
 
     //EducationalResources -> EducationVaildation으로 변경
-    public EducationVaildation toEducationVaildation(EducationalResources education) {
-        EducationVaildation educationVaildation = new EducationVaildation();
-        educationVaildation.setResource_no(education.getResourceNo());
-        educationVaildation.setResource_name(education.getResourceName());
-        educationVaildation.setResource_cate(education.getResourceCate());
-        educationVaildation.setFile_type(education.getFileType());
-        educationVaildation.setFile_url(education.getFileUrl());
-        educationVaildation.setService_type(education.getServiceType());
-        educationVaildation.setDescription(education.getDescription());
+    public EducationValidation toEducationValidation(EducationalResources education) {
+        EducationValidation educationValidation = new EducationValidation();
+        educationValidation.setResource_no(education.getResourceNo());
+        educationValidation.setResource_name(education.getResourceName());
+        educationValidation.setResource_cate(education.getResourceCate());
+        educationValidation.setFile_type(education.getFileType());
+        educationValidation.setFile_url(education.getFileUrl());
+        educationValidation.setService_type(education.getServiceType());
+        educationValidation.setDescription(education.getDescription());
         // 이미 업로드된 이미지 파일 목록을 가져와서 EducationVaildation에 설정
         List<ResourcesFiles> resourcesFilesList = resourcesFilesService.getResourcesFilesByResourceNo(education.getResourceNo());
-        educationVaildation.setBoardFileList(resourcesFilesList);
+        educationValidation.setBoardFileList(resourcesFilesList);
 
-        return educationVaildation;
+        return educationValidation;
     }
 
     //  EducationVaildation -> EducationalResources 변경
-    public EducationVaildation toEducationalResources(EducationVaildation educationVaildation) {
+    public EducationalResources toEducationalResources(EducationValidation educationValidation) {
         EducationalResources educationalResources = new EducationalResources();
 
-        educationalResources.setResourceName(educationVaildation.getResource_name());
-        educationalResources.setResourceCate(educationVaildation.getResource_cate());
-        educationalResources.setFileType(educationVaildation.getFile_type());
-        educationalResources.setFileUrl(null);
-        educationalResources.setServiceType(educationVaildation.getService_type());
-        educationalResources.setDescription(educationVaildation.getDescription());
+        educationalResources.setResourceName(educationValidation.getResource_name());
+        educationalResources.setResourceCate(educationValidation.getResource_cate());
+        educationalResources.setFileType(educationValidation.getFile_type());
+        educationalResources.setServiceType(educationValidation.getService_type());
+        educationalResources.setDescription(educationValidation.getDescription());
         educationalResources.setCreationDate(LocalDateTime.now());
+        educationalResources.setGameContents(null);
 
-        // 이미 업로드된 이미지 파일 목록을 가져와서 EducationVaildation에 설정
-        List<ResourcesFiles> resourcesFilesList = resourcesFilesService.getResourcesFilesByResourceNo(educationVaildation.getResource_no());
-        educationVaildation.setBoardFileList(resourcesFilesList);
-
-        return educationVaildation;
+        return educationalResources;
     }
 
 // 삭제 처리
@@ -230,6 +208,36 @@ public class EducationService {
         System.out.println("EducationalResources 서비스의 pgInsert-educationalResources?: "+ educationalResources);
         educationalResources.setGameContents(gameContents);
         educationalRepository.save(educationalResources);
+    }
+
+    // 기존에 게임 콘텐츠를 가지고 있다면 기존내용을 복사해 새로 저장함.
+    public void copysave(EducationalResources education, GameContents gameContents) {
+        EducationalResources ori_education = getEducation(education.getResourceNo());
+
+        EducationalResources copy_education = new EducationalResources();
+        copy_education.setResourceNo(ori_education.getResourceNo());
+        copy_education.setResourceName(ori_education.getResourceName());
+        copy_education.setResourceCate(ori_education.getResourceCate());
+        copy_education.setFileType(ori_education.getFileType());
+        copy_education.setServiceType(ori_education.getServiceType());
+        copy_education.setDescription(ori_education.getDescription());
+        copy_education.setCreationDate(LocalDateTime.now());
+        copy_education.setGameContents(gameContents);
+        copy_education.setFileUrl(ori_education.getFileUrl());
+        educationalRepository.save(copy_education);   //교육자료를 저장
+
+        EducationalResources educationalResources1 = educationalRepository.findById(copy_education.getResourceNo()).get();
+        List<ResourcesFiles> ori_resourcesfiles = resourcesFilesService.getResourcesFilesByResourceNo(ori_education.getResourceNo());
+        //파일이 있다면 (DB에 파일 정보만 저장처리한다.)
+        if(!ori_resourcesfiles.equals(null) || !ori_resourcesfiles.isEmpty()){
+            for(ResourcesFiles resourcesFiles : ori_resourcesfiles){
+                ResourcesFiles copyResourcesFiles = new ResourcesFiles(); // DB에 이미지 제목 복사처리
+                copyResourcesFiles.setOriginFileName(resourcesFiles.getOriginFileName());
+                copyResourcesFiles.setCopyFileName(resourcesFiles.getCopyFileName());
+                copyResourcesFiles.setEducationalResources(copy_education);
+                resourcesFilesReprository.save(copyResourcesFiles);
+            }
+        }
     }
 }//class
 
