@@ -146,6 +146,7 @@ public class EducationService {
 
     //resourceNo 주면 Contents값 전체 조회
     public EducationalResources getEducation(int resourceNo){
+        System.out.println("getEducation 서비스 들어옴?? "+resourceNo);
         EducationalResources educationalResources = educationalRepository.findById(resourceNo).orElse(null);
         if (educationalResources != null) {
             educationalResources.setResourcesFilesList(resourcesFilesService.getResourcesFilesByResourceNo(resourceNo));
@@ -225,6 +226,8 @@ public class EducationService {
 
     //게임콘텐츠에서 패키지로 추가처리함
     public void pgInsert(EducationalResources educationalResources,GameContents gameContents) {
+        System.out.println("EducationalResources 서비스의 pgInsert-gameContents?: " + gameContents);
+        System.out.println("EducationalResources 서비스의 pgInsert-educationalResources?: "+ educationalResources);
         educationalResources.setGameContents(gameContents);
         educationalRepository.save(educationalResources);
     }

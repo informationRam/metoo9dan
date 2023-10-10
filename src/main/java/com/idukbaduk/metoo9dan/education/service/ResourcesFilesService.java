@@ -1,9 +1,7 @@
 package com.idukbaduk.metoo9dan.education.service;
 
-import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.reprository.ResourcesFilesReprository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +28,6 @@ public class ResourcesFilesService {
     public ResourcesFiles getFileByFileNo(Integer fileNo) {
         ResourcesFiles resourcesFiles = resourcesFilesRepository.findById(fileNo).get();
         return resourcesFiles;
-
     }
 
     public void deleteFile(Integer fileNo) {

@@ -19,7 +19,5 @@ public class WebConfig implements WebMvcConfigurer {
      /*   registry.addResourceHandler("/ckUpload/**")
                 .addResourceLocations("/resources/ckUpload/");*/
 
-       /* registry.addResourceHandler(resourcePath)
-                .addResourceLocations(savePath);*/
     }
 }

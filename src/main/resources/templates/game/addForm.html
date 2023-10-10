@@ -14,7 +14,7 @@
                         <li class="breadcrumb-item active">게임콘텐츠 등록</li>
                     </ol>
                     <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-                    <form id="gameadd" class="my-3" th:object="${gameVaildation}" th:action="@{/game/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data" onsubmit="prepareForm()">
+                    <form id="gameadd" class="my-3" th:object="${gameValidation}" th:action="@{/game/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data" onsubmit="prepareForm()">
 
                         <div class="row">
                             <!-- Left-side content -->
@@ -347,6 +347,12 @@ xhr.send(params);
          });
      });
 
+  function clearSelectedValues() {
+    selectedResourceNos = [];
+    var selectedValuesInput = document.getElementById('selectedValues');
+    selectedValuesInput.value = '';
+}
+
      // 선택한 자료 번호 배열을 서버로 보내는 예시 함수
      function submitSelected() {
          var selectedValuesInput = document.getElementById('selectedValues');
@@ -359,6 +365,7 @@ xhr.send(params);
 
         // 모달 창을 닫습니다.
         educationModal.hide();
+        clearSelectedValues();
      }
 
     </script>

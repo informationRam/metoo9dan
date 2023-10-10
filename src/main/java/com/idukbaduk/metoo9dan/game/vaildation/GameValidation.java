@@ -1,19 +1,17 @@
 package com.idukbaduk.metoo9dan.game.vaildation;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.hibernate.sql.Insert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class GameVaildation {
+public class GameValidation {
 
 
-    private Insert game_no;
+    private Integer game_no;
 
     @NotBlank(message = "게임콘텐츠명은 필수 입니다.")
     private String game_name;             //'게임 콘텐츠명'

@@ -2,13 +2,10 @@ package com.idukbaduk.metoo9dan.game.service;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
-import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.game.reprository.GameContentsFileRepository;
 import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
-import com.idukbaduk.metoo9dan.game.vaildation.GameContentFilesVaildation;
-import com.idukbaduk.metoo9dan.game.vaildation.GameVaildation;
+import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,27 +30,27 @@ public class GameService {
     private final GameContentsFileRepository gameContentsFileRepository;
 
     //게임콘텐츠등록 (파일같이저장)
-    public void save(GameVaildation gameVaildation) throws IOException {
+    public GameValidation save(GameValidation gameValidation) throws IOException {
        GameContents gameContents = new GameContents();
 
         //파일이 있다면
-        if(gameVaildation.getBoardFile() != null) {
+        if(gameValidation.getBoardFile() != null) {
 
-            gameContents.setGameName(gameVaildation.getGame_name());
-            gameContents.setDifficulty(gameVaildation.getDifficulty());
-            gameContents.setSubscriptionDuration(gameVaildation.getSubscription_duration());
-            gameContents.setMaxSubscribers(gameVaildation.getMax_subscribers());
-            gameContents.setOriginalPrice(gameVaildation.getOriginal_price());
-            gameContents.setDiscountRate(gameVaildation.getDiscount_rate());
-            gameContents.setSalePrice(gameVaildation.getSale_price());
-            gameContents.setPackageDetails(gameVaildation.getPackage_details());
+            gameContents.setGameName(gameValidation.getGame_name());
+            gameContents.setDifficulty(gameValidation.getDifficulty());
+            gameContents.setSubscriptionDuration(gameValidation.getSubscription_duration());
+            gameContents.setMaxSubscribers(gameValidation.getMax_subscribers());
+            gameContents.setOriginalPrice(gameValidation.getOriginal_price());
+            gameContents.setDiscountRate(gameValidation.getDiscount_rate());
+            gameContents.setSalePrice(gameValidation.getSale_price());
+            gameContents.setPackageDetails(gameValidation.getPackage_details());
             gameContents.setCreationDate(LocalDateTime.now());
-            gameContents.setStatus(gameVaildation.getStatus());    //게시글상태
-            gameRepository.save(gameContents);
+            gameContents.setStatus("Y");//게시글상태
+            gameContents.setContentType(gameValidation.getContent_type());
+            gameContents = gameRepository.save(gameContents);
 
             //파일 저장
-
-            for (MultipartFile boardFile : gameVaildation.getBoardFile()) {
+            for (MultipartFile boardFile : gameValidation.getBoardFile()) {
                 GameContentFiles gameContentFiles = new GameContentFiles();
                 gameContentFiles.setGameContents(gameContents);
                 String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
@@ -67,23 +64,33 @@ public class GameService {
                 gameContentFiles.setOriginFileName(originalFileName);
                 gameContentFiles.setCopyFileName(copyFileName);
                 gameContentsFileRepository.save(gameContentFiles);
+
+                // 저장한 gameContents의 GameContentNo(pk)를 return한다.
+                gameValidation.setGame_no(gameContents.getGameContentNo());
+                return gameValidation;
             }
         }else {
 
-            gameContents.setGameName(gameVaildation.getGame_name());
-            gameContents.setDifficulty(gameVaildation.getDifficulty());
-            gameContents.setSubscriptionDuration(gameVaildation.getSubscription_duration());
-            gameContents.setMaxSubscribers(gameVaildation.getMax_subscribers());
-            gameContents.setOriginalPrice(gameVaildation.getOriginal_price());
-            gameContents.setDiscountRate(gameVaildation.getDiscount_rate());
-            gameContents.setSalePrice(gameVaildation.getSale_price());
-            gameContents.setPackageDetails(gameVaildation.getPackage_details());
+            gameContents.setGameName(gameValidation.getGame_name());
+            gameContents.setDifficulty(gameValidation.getDifficulty());
+            gameContents.setSubscriptionDuration(gameValidation.getSubscription_duration());
+            gameContents.setMaxSubscribers(gameValidation.getMax_subscribers());
+            gameContents.setOriginalPrice(gameValidation.getOriginal_price());
+            gameContents.setDiscountRate(gameValidation.getDiscount_rate());
+            gameContents.setSalePrice(gameValidation.getSale_price());
+            gameContents.setPackageDetails(gameValidation.getPackage_details());
             gameContents.setCreationDate(LocalDateTime.now());
             gameContents.setStatus("Y");    //게시글상태
-            gameContents.setContentType("package");
+            gameContents.setContentType(gameValidation.getContent_type());
             gameRepository.save(gameContents);
+
+            // 저장한 gameContents의 GameContentNo(pk)를 return한다.
+            gameValidation.setGame_no(gameContents.getGameContentNo());
+            return gameValidation;
         }
+        return gameValidation;
     }
+
     //게임목록조회 (페이징처리)
     public Page<GameContents> getList(int page) {
 
@@ -104,21 +111,35 @@ public class GameService {
         return gameContents;
     }
 
-    public GameVaildation getContentVaildation(GameContents gameContents) {
-        GameVaildation gameVaildation = new GameVaildation();
-        gameVaildation.setGame_name(gameContents.getGameName());
-        gameVaildation.setDifficulty(gameContents.getDifficulty());
-        gameVaildation.setSubscription_duration(gameContents.getSubscriptionDuration());
-        gameVaildation.setMax_subscribers(gameContents.getMaxSubscribers());
-        gameVaildation.setOriginal_price(gameContents.getOriginalPrice());
-        gameVaildation.setDiscount_rate(gameContents.getDiscountRate());
-        gameVaildation.setSale_price(gameContents.getSalePrice());
-        return gameVaildation;
+    public GameValidation getContentValidation(GameContents gameContents) {
+        GameValidation gameValidation = new GameValidation();
+        gameValidation.setGame_name(gameContents.getGameName());
+        gameValidation.setDifficulty(gameContents.getDifficulty());
+        gameValidation.setSubscription_duration(gameContents.getSubscriptionDuration());
+        gameValidation.setMax_subscribers(gameContents.getMaxSubscribers());
+        gameValidation.setOriginal_price(gameContents.getOriginalPrice());
+        gameValidation.setDiscount_rate(gameContents.getDiscountRate());
+        gameValidation.setSale_price(gameContents.getSalePrice());
+        return gameValidation;
     }
 
-    public GameContents toGameContents(GameVaildation gameVaildation) {
+    public GameContents toGameContents(GameValidation gameValidation) {
         GameContents gameContents = new GameContents();
-        gameContents.setGameContentNo(gameContents.getGameContentNo());
+
+        gameContents.setGameName(gameValidation.getGame_name());
+        gameContents.setDifficulty(gameValidation.getDifficulty());
+        gameContents.setSubscriptionDuration(gameValidation.getSubscription_duration());
+        gameContents.setMaxSubscribers(gameValidation.getMax_subscribers());
+        gameContents.setOriginalPrice(gameValidation.getOriginal_price());
+        gameContents.setDiscountRate(gameValidation.getDiscount_rate());
+        gameContents.setSalePrice(gameValidation.getSale_price());
+        gameContents.setPackageDetails(gameValidation.getPackage_details());
+        gameContents.setCreationDate(LocalDateTime.now());
+        gameContents.setStatus("Y");    //게시글상태
+        gameContents.setContentType(gameValidation.getContent_type());
+        gameRepository.save(gameContents);
+
+        System.out.println("toGameContents 서비스" +gameValidation.getGame_no());
         return gameContents;
     }
 

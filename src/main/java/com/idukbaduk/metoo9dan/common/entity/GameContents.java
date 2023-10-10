@@ -49,10 +49,13 @@ public class GameContents {
     @Column
     private String status;                //enum('posted', 'notposted') NOT NULL    COMMENT '게시글 상태',
 
-    @Column(name="content_type")
+    @Column(name="content_type", nullable = false)
     private String contentType;           //enum('package','individual') NOT NULL    COMMENT '콘텐츠 타입',
 
     @OneToMany(mappedBy = "gameContents", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<GameContentFiles> gameContentFilesList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "gameContents", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EducationalResources> educationalResourcesList = new ArrayList<>();
 
 }
