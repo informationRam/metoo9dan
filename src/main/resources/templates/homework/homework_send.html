@@ -2,6 +2,7 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
     <link rel="stylesheet" href="/css/homework/homework_send.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
@@ -11,98 +12,123 @@
                 <div class="upperSection">
                     <div class="px-3 py-3">
                     <h3>Homeworks</h3>
-                    <select id="homeworkDropdown" onchange="filterHomeworks()">
-                        <option value="All">All</option>
-                        <option th:each="title : ${distinctHomeworkTitles}" th:value="${title}" th:text="${title}"></option>
-                    </select>
+                        <div style="width:20%; margin: 12px 20px;">
+                            <div class="dropdown">
+                                <select id="homeworkDropdown" onchange="filterHomeworks()" class="form-select">
+                                    <option value="All" selected="selected">All</option>
+                                    <option th:each="title : ${distinctHomeworkTitles}" th:value="${title}" th:text="${title}"></option>
+                                </select>
+                            </div>
+                        </div>
 
-                    <div>
-                    <table class="sendhwTable">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Homework Title</th>
-                            <th>Homework Content Preview</th>
-                            <th>Progress</th>
-                            <th>Due Date</th>
-                        </tr>
-                        </thead>
-                        <tbody id="homeworkTableBody">
-                            <tr th:each="hw : ${homeworks}">
-                                <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
-                                <td th:text="${hw.homeworkTitle}"></td>
-                                <td th:text="${hw.homeworkContentPreview}"></td>
-                                <td th:text="${hw.progress} + '레벨'"></td>
-                                <td th:text="${hw.dueDate}"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div id="paginationContainer">
-                        <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
-                    </div>
-                    </div>
-                    <div class="curveEffect"></div>
+                            <table class="sendhwTable mt-3">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Homework Title</th>
+                                    <th>Homework Content Preview</th>
+                                    <th>Progress</th>
+                                    <th>Due Date</th>
+                                </tr>
+                                </thead>
+                                <tbody id="homeworkTableBody">
+                                    <tr th:each="hw : ${homeworks}">
+                                        <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
+                                        <td th:text="${hw.homeworkTitle}"></td>
+                                        <td th:text="${hw.homeworkContentPreview}"></td>
+                                        <td th:text="${hw.progress} + '레벨'"></td>
+                                        <td th:text="${hw.dueDate}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="paginationContainer" class="d-flex justify-content-center mt-5">
+                                <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
+                            </div>
+
+                    <div class="curveEffect"><i class="bi bi-chevron-double-down center-icon"></i></div>
                     </div>
                 </div>
 <!-- 여기를 기준으로 위아래 색이 달라졌으면 좋겠어 위는 편안한 연두색 아래는 편안한 아이보리색으로. 그리고 색이 달라지는 선 가운데에 원이 겹치게 존재해서 차리 선이 곡선인 것처럼 보였으면 좋겠어 -->
                 <div class="lowerSection">
-                <!-- Group Students -->
-                    <h3>Study Groups</h3>
-                    <!-- skippedEntries Flash Attribute가 존재하고 비어 있지 않을 때만 표시 -->
-                    <div th:if="${skippedEntries != null and not #lists.isEmpty(skippedEntries)}" class="alert alert-warning">
-                        <strong>주의!</strong> 다음 학생과 숙제의 조합은 이미 존재하여 저장되지 않았습니다:
-                        <ul>
-                            <!-- 각 건너뛴 조합을 순회하며 목록에 추가 -->
-                            <li th:each="entry : ${skippedEntries}" th:text="${entry}"></li>
-                        </ul>
+                    <div class="px-3 py-3">
+                    <!-- Group Students -->
+                        <h3>Study Groups</h3>
+                        <!-- skippedEntries Flash Attribute가 존재하고 비어 있지 않을 때만 표시 -->
+                        <div th:if="${successMessage != null}" class="alert alert-warning">
+                            <strong>숙제가 성공적으로 전송되었습니다</strong>
+                        <div th:if="${skippedEntries != null and not #lists.isEmpty(skippedEntries)}">
+                            <strong>주의!</strong> 다음 학생과 숙제의 조합은 이미 존재하여 저장되지 않았습니다:
+                            <ul>
+                                <!-- 각 건너뛴 조합을 순회하며 목록에 추가 -->
+                                <li th:each="entry : ${skippedEntries}" th:text="${entry}"></li>
+                            </ul>
+                        </div>
+                        </div>
+                        <div style="width:30%; margin: 8px 12px;">
+                            <div class="dropdown">
+                                <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()" class="form-select">
+                                    <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
+                                    <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="groupMessage" class="groupMessage">
+                            <img src="/css/homework/groupIcon.png" alt="Group Icon">
+                            <br/>
+                            <div id="groupMessageText"></div>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Tel</th>
+                                <th>Current Level</th>
+                                <!-- 두 번째 학생의 정보를 위한 헤더 추가 -->
+                                <th></th>
+                                <th>Name</th>
+                                <th>Tel</th>
+                                <th>Current Level</th>
+                            </tr>
+                            </thead>
+                            <tbody id="studyGroupMembersBody">
+                            <!-- Ajax로 가져온 데이터로 테이블 로우 생성 -->
+                            </tbody>
+                        </table>
+                        <!-- <button onclick="postSelected()">Submit</button> -->
+                        <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
+                        <input type="hidden" id="hiddenSelectedMembers" name="selectedMembers" value="">
+                        <button id="submitButton" type="button" onclick="validateAndSubmitForm()">숙제 전송</button>
                     </div>
-
-                    <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()">
-                        <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
-                        <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
-                    </select>
-
-                    <div id="groupMessage"></div>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Tel</th>
-                            <th>Current Level</th>
-                            <!-- 두 번째 학생의 정보를 위한 헤더 추가 -->
-                            <th></th>
-                            <th>Name</th>
-                            <th>Tel</th>
-                            <th>Current Level</th>
-                        </tr>
-                        </thead>
-                        <tbody id="studyGroupMembersBody">
-                        <!-- Ajax로 가져온 데이터로 테이블 로우 생성 -->
-                        </tbody>
-                    </table>
-                    <!-- <button onclick="postSelected()">Submit</button> -->
-                    <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
-                    <input type="hidden" id="hiddenSelectedMembers" name="selectedMembers" value="">
-                    <button id="submitButton" type="button" onclick="validateAndSubmitForm()">숙제 전송</button>
                 </div>
             </form>
             <script>
                 let currentPage = 1;
                 const rowsPerPage = 5;
                 const maxPageNumbersToShow = 3;
+                let currentSelectedHomeworkTitle = 'ALL';
 
                 //페이지네이션
                 function paginate() {
                     const rows = document.querySelectorAll('#homeworkTableBody tr');
                     const totalPages = Math.ceil(rows.length / rowsPerPage);
 
-                    // 모든 행을 초기에 숨깁니다.
-                    rows.forEach(row => row.style.display = 'none');
+                    let displayedRowCount = 0; // 현재 페이지에서 표시된 행의 수를 추적합니다.
 
-                    // 현재 페이지에 맞는 행만 보여줍니다.
-                    for (let i = (currentPage - 1) * rowsPerPage; i < currentPage * rowsPerPage && i < rows.length; i++) {
-                        rows[i].style.display = '';
+                    for (let i = 0; i < rows.length; i++) {
+                        const titleCell = rows[i].querySelector('td:nth-child(2)');
+
+                        if (currentSelectedHomeworkTitle === 'All' || titleCell.innerText.trim() === currentSelectedHomeworkTitle.trim()) {
+                            if (displayedRowCount >= (currentPage - 1) * rowsPerPage && displayedRowCount < currentPage * rowsPerPage) {
+                                rows[i].style.display = ''; // 해당 행을 표시합니다.
+                                displayedRowCount++;
+                            } else {
+                                rows[i].style.display = 'none'; // 해당 행을 숨깁니다.
+                            }
+                        } else {
+                            rows[i].style.display = 'none'; // 해당 행을 숨깁니다.
+                        }
                     }
 
                     // 페이지네이션 버튼을 그립니다.
@@ -158,50 +184,53 @@
                     container.appendChild(nextBtn);
                 }
 
-                // 초기 페이지네이션 적용
-                paginate();
                 window.onload = function() {
                     fetchStudentsByGroup();
+                    filterHomeworks();
                 };
 
                 function filterHomeworks() {
-                    const selectedHomeworkTitle = document.getElementById('homeworkDropdown').value;
+                    currentSelectedHomeworkTitle = document.getElementById('homeworkDropdown').value;
                     const rows = document.querySelectorAll('#homeworkTableBody tr');
                     const checkboxes = document.querySelectorAll('#homeworkTableBody input[type="checkbox"]');
 
-                    checkboxes.forEach(checkbox => checkbox.checked = false); // 체크박스 모두 해제
+                    checkboxes.forEach(checkbox => checkbox.checked = false);
 
                     rows.forEach(row => {
                         const titleCell = row.querySelector('td:nth-child(2)');
-                        if (selectedHomeworkTitle === 'All' || titleCell.innerText === selectedHomeworkTitle) {
-                            row.style.display = '';
+                        if (currentSelectedHomeworkTitle === 'All' || titleCell.innerText.trim() === currentSelectedHomeworkTitle.trim()) {
+                            row.style.display = '';  // 일치하는 행만 보이도록 설정
                         } else {
-                            row.style.display = 'none';
+                            row.style.display = 'none';  // 그 외의 행은 숨깁니다
                         }
                     });
 
                     paginate();
                 }
 
+
                 function fetchStudentsByGroup() {
                     const groupId = document.getElementById('StudyGroupDropdown').value;
                     const tableBody = document.getElementById('studyGroupMembersBody');
                     const table = tableBody.closest('table');
                     const messageDiv = document.getElementById('groupMessage');
+                    const messageTextDiv = document.getElementById('groupMessageText');
 
                     if (groupId === "none") {
                         table.style.display = 'none'; // 테이블을 숨깁니다.
-                        messageDiv.innerText = "학습 그룹을 선택해서 학생을 조회하세요."; // 메시지 표시
+                        messageTextDiv.innerText = "학습 그룹을 선택해서 학생을 조회하세요."; // 메시지 표시
+                        messageDiv.style.display = 'block';
                     } else {
                         fetch(`/homework/group-students?studyGroupNo=${groupId}`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.length === 0) {
                                 table.style.display = 'none'; // 테이블을 숨깁니다.
-                                messageDiv.innerText = "승인된 학생이 없습니다."; // 메시지 표시
+                                messageTextDiv.innerText = "승인된 학생이 없습니다."; // 메시지 표시
                             } else {
                                 table.style.display = ''; // 테이블을 보여줍니다.
                                 messageDiv.innerText = ""; // 메시지 숨김
+                                messageDiv.style.display = 'none';
                                 populateTable(data); // 테이블로 표시
                             }
                         });

@@ -3,22 +3,18 @@ package com.idukbaduk.metoo9dan.homework.controller;
 import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkDetailDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDTO;
+import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
 import com.idukbaduk.metoo9dan.homework.service.HomeworkService;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,9 +47,9 @@ public class HomeworkController {
         detail.setHomeworkMemo(homework.getHomeworkMemo());
         detail.setDueDate(homework.getDueDate());
         detail.setCreationDate(homework.getCreationDate());
-        detail.setHomeworkSendList(homeworkService.getHomeworkSendListByhomework(homeworkId)); // 또는 실제 전송 내역
 
-        System.out.println(detail.toString());
+        //여기서 detail 말고 다른 객체도 생성해서 보내주고싶어
+
         return ResponseEntity.ok(detail);
     }
     @PostMapping("/add")
@@ -99,6 +95,7 @@ public class HomeworkController {
                                RedirectAttributes redirectAttributes) {
         List<String> skipped = homeworkService.saveHomeworksForMembers(selectedHomeworks, selectedMembers);
         redirectAttributes.addFlashAttribute("skippedEntries", skipped); // 건너뛴 학생과 숙제의 조합 정보를 리디렉션 후에 사용할 수 있게 저장
+        redirectAttributes.addFlashAttribute("successMessage", "숙제가 전송되었습니다");
         return "redirect:/homework/send";
     }
 
@@ -113,8 +110,8 @@ public class HomeworkController {
 
     //숙제 더블클릭 시, 전송할 객체
     @GetMapping("/submit/detail/{sendNo}")
-    public ResponseEntity<HomeworkDetailDTO> getHomeworkSubmitDetail(@PathVariable Integer sendNo) {
-        HomeworkDetailDTO dto = homeworkService.getDetail(sendNo);
+    public ResponseEntity<HomeworkSubmitDetailDTO> getHomeworkSubmitDetail(@PathVariable Integer sendNo) {
+        HomeworkSubmitDetailDTO dto = homeworkService.getDetail(sendNo);
         return ResponseEntity.ok(dto);
     }
     //숙제 제출 post

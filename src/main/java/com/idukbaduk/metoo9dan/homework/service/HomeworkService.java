@@ -3,7 +3,7 @@ package com.idukbaduk.metoo9dan.homework.service;
 import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkDetailDTO;
+import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDTO;
 import com.idukbaduk.metoo9dan.homework.repository.*;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
@@ -11,15 +11,12 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.lang.Boolean.TRUE;
 
 @Service
 public class HomeworkService {
@@ -153,7 +150,7 @@ public class HomeworkService {
 
     }
 
-    public HomeworkDetailDTO getDetail(Integer sendNo) {
+    public HomeworkSubmitDetailDTO getDetail(Integer sendNo) {
         /*
     -private Integer homeworkNo;
     -private Integer sendNo;
@@ -166,7 +163,7 @@ public class HomeworkService {
     -private String content;
     -private String additionalQuestion;
          */
-        HomeworkDetailDTO dto = new HomeworkDetailDTO();
+        HomeworkSubmitDetailDTO dto = new HomeworkSubmitDetailDTO();
         dto.setSendNo(sendNo);
 
         Optional<HomeworkSend> optionalHomeworkSend =homeworkSendRepository.findById(sendNo);

@@ -56,7 +56,7 @@
                     <td th:text="${hw.homeworkContentPreview}"></td>
                     <td th:text="${hw.progress}"></td>
                     <td th:text="${#dates.format(hw.dueDate, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${hw.isSent ? '전송완료' : '전송안함'}"></td>
+                    <td th:text="${hw.isSent ? '전송 기록 있음' : '전송 기록 없음'}"></td>
                 </tr>
                 <!-- 목록이 없을 때의 메시지를 추가합니다. -->
                 <tr th:if="${homeworkList == null or homeworkList.size() == 0}">
@@ -77,8 +77,6 @@
                 메모<p id="modalMemo"></p>
                 기한<p id="modalDueDate"></p>
                 생성일<p id="modalCreateDate"></p>
-                <h3>전송 내역</h3>
-                <div id="modalSendDetails"></div>
             </div>
             <div id="hw-backdrop"></div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -207,15 +205,6 @@
                             $("#modalMemo").text(data.homeworkMemo);
                             $("#modalDueDate").text(formatDate(data.dueDate));
                             $("#modalCreateDate").text(formatDate(data.creationDate));
-                            // 숙제 전송 내역 확인 및 세팅
-                            if(data.homeworkSendList !== null && data.homeworkSendList.length > 0) {
-                                // 중복되지 않는 sendDate만 추출
-                                let uniqueSendDates = [...new Set(data.homeworkSendList.map(item => item.sendDate))];
-                                // 추출한 날짜들을 화면에 표시
-                                $("#modalSendDetails").html(formatDate(uniqueSendDates).join('<br>'));
-                            } else {
-                                $("#modalSendDetails").text("전송 내역 없음");
-                            }
 
                             // 모달 및 오버레이 표시
                             $("#hw-homeworkDetailModal, #hw-backdrop").show();
