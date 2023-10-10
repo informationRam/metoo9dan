@@ -21,7 +21,7 @@
                     <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
                 </div>
                 <p/>
-                <table class="table">
+                <table class="table" id="selectGroupResult">
                     <thead class="table-dark">
                     <tr>
                         <th>선택</th>
@@ -114,6 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //-------조회하기 버튼----------
 // 페이지가 로드될 때
+/*
 document.addEventListener("DOMContentLoaded", function () {
     var selectSudyGroup = document.getElementById("selectSudyGroup"); // 학습그룹 select 요소 가져오기
     var selectEducatorName = document.getElementById("selectEducatorName"); // 교육자명 select 요소 가져오기
@@ -139,19 +140,166 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = newURL;
         }
 
-     /*   if (selectedMemberNo) {
-            if (selectedGroupNo) {
-                newURL += "&";
-            }
-            newURL += "member_no=" + selectedMemberNo;
-        }
-      */
+        //if (selectedMemberNo) {
+        //    if (selectedGroupNo) {
+        //        newURL += "&";
+        //    }
+        //    newURL += "member_no=" + selectedMemberNo;
+        //}
+
         // 새 URL로 리다이렉트
         window.location.href = newURL;
     });
 });
+*/
+    document.addEventListener("DOMContentLoaded", function () {
+        var searchButton = document.getElementById("searchButton");
+        var selectGroupResult = document.getElementById("selectGroupResult");
 
+        searchButton.addEventListener("click", function () {
+            var selectedGroupNo = document.getElementById("selectSudyGroup").value;
 
+            if (selectedGroupNo !== "") {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/studygroup/groupJoinListGroupEnd?group_no=' + selectedGroupNo, true);
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        try {
+                            var responseData = JSON.parse(xhr.responseText);
+                            var resultHTML = "";
+
+                            if (responseData && responseData.length > 0) {
+                                resultHTML = "<table class='table' id='selectGroupResult'>";
+                                resultHTML += "<thead class='table-dark'>";
+                                resultHTML += "<tr>";
+                                resultHTML += "<th>선택</th>";
+                                resultHTML += "<th>콘텐츠이미지</th>";
+                                resultHTML += "<th>학습그룹명</th>";
+                                resultHTML += "<th>교육자명</th>";
+                                resultHTML += "<th>그룹 시작일</th>";
+                                resultHTML += "<th>그룹 종료일</th>";
+                                resultHTML += "<th>그룹T/O</th>";
+                                resultHTML += "</tr>";
+                                resultHTML += "</thead>";
+                                resultHTML += "<tbody>";
+
+                                responseData.forEach(function (groupJoinList) {
+                                resultHTML += "<tr>";
+                                resultHTML += "<td>";
+                                resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' />";
+                                resultHTML += "</td>";
+                                resultHTML += "<td>" + groupJoinList.copy_file_name + "</td>";
+                                resultHTML += "<td>" + groupJoinList.group_name + "</td>";
+                                resultHTML += "<td>" + groupJoinList.name + "</td>";
+
+                                var originalStartDate = new Date(groupJoinList.group_start_date);
+                                var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
+                                var originalFinishDate = new Date(groupJoinList.group_finish_date);
+                                var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
+
+                                resultHTML += "<td>" + formattedStartDate + "</td>";
+                                resultHTML += "<td>" + formattedFinishDate + "</td>";
+                                resultHTML += "<td>" + groupJoinList.group_TO + "</td>";
+                                resultHTML += "</tr>";
+                                });
+
+                                resultHTML += "</tbody>";
+                                resultHTML += "</table>";
+                            } else {
+                                resultHTML = "<p>선택한 그룹의 정보가 없습니다.</p>";
+                            }
+
+                            selectGroupResult.innerHTML = resultHTML; // 데이터를 컨테이너에 삽입
+                    } catch (e) {
+                            console.error('JSON 파싱 오류:', e);
+                        }
+                    } else {
+                        console.error('Ajax 요청 오류: ' + xhr.status);
+                    }
+                };
+
+                xhr.send();
+            } else {
+                window.location.href = "/studygroup/groupJoinList";
+            }
+        });
+    });
+/*
+    document.addEventListener("DOMContentLoaded", function () {
+        var searchButton = document.getElementById("searchButton");
+        var selectGroupResult = document.getElementById("selectGroupResult");
+
+        searchButton.addEventListener("click", function () {
+            var selectedGroupNo = document.getElementById("selectSudyGroup").value;
+
+            if (selectedGroupNo !== "") {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/studygroup/groupJoinListNameEnd?member_no=' + selectedGroupNo, true);
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        try {
+                            var responseData = JSON.parse(xhr.responseText);
+                            var resultHTML = "";
+
+                            if (responseData && responseData.length > 0) {
+                                resultHTML = "<table class='table' id='selectGroupResult'>";
+                                resultHTML += "<thead class='table-dark'>";
+                                resultHTML += "<tr>";
+                                resultHTML += "<th>선택</th>";
+                                resultHTML += "<th>콘텐츠이미지</th>";
+                                resultHTML += "<th>학습그룹명</th>";
+                                resultHTML += "<th>교육자명</th>";
+                                resultHTML += "<th>그룹 시작일</th>";
+                                resultHTML += "<th>그룹 종료일</th>";
+                                resultHTML += "<th>그룹T/O</th>";
+                                resultHTML += "</tr>";
+                                resultHTML += "</thead>";
+                                resultHTML += "<tbody>";
+
+                                responseData.forEach(function (groupJoinList) {
+                                resultHTML += "<tr>";
+                                resultHTML += "<td>";
+                                resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' />";
+                                resultHTML += "</td>";
+                                resultHTML += "<td>" + groupJoinList.copy_file_name + "</td>";
+                                resultHTML += "<td>" + groupJoinList.group_name + "</td>";
+                                resultHTML += "<td>" + groupJoinList.name + "</td>";
+
+                                var originalStartDate = new Date(groupJoinList.group_start_date);
+                                var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
+                                var originalFinishDate = new Date(groupJoinList.group_finish_date);
+                                var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
+
+                                resultHTML += "<td>" + formattedStartDate + "</td>";
+                                resultHTML += "<td>" + formattedFinishDate + "</td>";
+                                resultHTML += "<td>" + groupJoinList.group_TO + "</td>";
+                                resultHTML += "</tr>";
+                                });
+
+                                resultHTML += "</tbody>";
+                                resultHTML += "</table>";
+                            } else {
+                                resultHTML = "<p>선택한 그룹의 정보가 없습니다.</p>";
+                            }
+
+                            selectGroupResult.innerHTML = resultHTML; // 데이터를 컨테이너에 삽입
+                    } catch (e) {
+                            console.error('JSON 파싱 오류:', e);
+                        }
+                    } else {
+                        console.error('Ajax 요청 오류: ' + xhr.status);
+                    }
+                };
+
+                xhr.send();
+            } else {
+                window.location.href = "/studygroup/groupJoinList";
+            }
+        });
+    });
+*/
 
 </script>
 

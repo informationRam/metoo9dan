@@ -64,7 +64,7 @@ public class StudyGroupController {
         map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
 
         List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
-        model.addAttribute("gameContents",gameContents);
+        //model.addAttribute("gameContents",gameContents);
         System.out.println("엔드포인트gameContents="+gameContents);
         return gameContents;
     }
@@ -265,6 +265,7 @@ public class StudyGroupController {
 
         //학습 그룹 가입 신청 학생 리스트
         List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
+        //model.addAttribute("approveList",approveList);
         System.out.println("approveList="+approveList);
         return approveList;
     }
@@ -290,7 +291,6 @@ public class StudyGroupController {
     }
 
 
-
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
     @GetMapping("/groupJoinList")
     public String joinList(Model model){
@@ -313,16 +313,18 @@ public class StudyGroupController {
     @ResponseBody
     public List<GroupJoinListDTO> joinLisGrouptEndpoint(@RequestParam int group_no){
         //학습그룹명 리스트(전체) 가져오기
-    /*    List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
+     /*   List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
         model.addAttribute("groupNameALL",groupNameALL);
         //교육자명 리스트(전체) 가져오기
         List<HashMap<String, Object>> educatorName = studyGroupService.getEducatorName();
         model.addAttribute("educatorName",educatorName);
     */
         //학습그룹명 조건 조회(학습 그룹 신청 리스트)
-        List<GroupJoinListDTO> selectNameList = studyGroupService.selectNameList(group_no);
-        System.out.println("selectNameList="+selectNameList);
-        return selectNameList;
+        System.out.println("group_no="+group_no);
+        List<GroupJoinListDTO> groupJoinList = studyGroupService.selectNameList(group_no);
+        //model.addAttribute("selectNameList",selectNameList);
+        System.out.println("groupJoinList엔드="+groupJoinList);
+        return groupJoinList;
         
     }
 
@@ -354,6 +356,9 @@ public class StudyGroupController {
 
         StudyGroups studyGroups = groupRepository.findById(group_no).orElse(null);
         studyGroupService.groupJoin(studyGroups,member,groupJoinDTO.getApplication_date(),groupJoinDTO.getIs_approved(),groupJoinDTO.getApproved_date());
+
+        //학습 그룹 신청 했으면 중복 신청 불가능->학습 그룸 가입 확인으로 이동
+
         return "redirect:/studygroup/groupJoinList";
     }
 
@@ -361,6 +366,8 @@ public class StudyGroupController {
     //학습 그룹 가입 확인(학생)
     @GetMapping("/joinConfirm")
     public String joinConfirm(){
+
+
         return "studyGroup/joinConfirm";
     }
 
