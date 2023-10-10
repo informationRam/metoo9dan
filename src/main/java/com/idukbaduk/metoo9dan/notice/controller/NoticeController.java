@@ -4,24 +4,33 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
+import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
 import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 // 공지사항 관련 요청을 담당하는 컨트롤러
+
 @RequestMapping("/notice")
 @RequiredArgsConstructor
 @Controller
@@ -79,12 +88,67 @@ public class NoticeController {
         return "notice/noticeForm";
     }
 
+    /*//공지사항 등록 처리해줘 요청 (임시)
+    @PostMapping("/add") //관리자만 작성 가능해야 함.
+    public String add(@Valid NoticeForm noticeForm,
+                      BindingResult bindingResult,
+                      @RequestParam("originFiles") List<MultipartFile> originFiles,
+                      RedirectAttributes redirectAttributes
+                      ){
+
+        if(bindingResult.hasErrors()){ //에러가 있으면,
+            System.out.println("Errors: " + bindingResult);
+            return "/notice/noticeForm"; //noticeForm.html로 이동.
+
+        }//에러가 없으면, 공지사항 등록 진행
+        for(int i = 0; i < originFiles.size(); i++){
+            System.out.println("originFiles["+i+"]: "+originFiles.get(i).getOriginalFilename());
+        }
+
+        //1. 파라미터 받기
+        //로그인한 사람이 관리자인지 확인하는 코드 필요.
+        //임시로 작성자 memberNo1로 설정
+        Member member = new Member();
+        member.setMemberNo(1);
+
+        LocalDateTime today = LocalDateTime.now();
+        //문자열로 받은 postDate를 LocalDateTime으로 변환.
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime fPostDate = LocalDate.parse(noticeForm.getPostDate(), formatter).atStartOfDay();
+
+        NoticeDTO noticeDTO = new NoticeDTO();
+        noticeDTO.setNoticeType(noticeForm.getNoticeType());
+        noticeDTO.setNoticeTitle(noticeForm.getTitle());
+        noticeDTO.setNoticeContent(noticeForm.getContent());
+        noticeDTO.setMember(member); //로그인한 유저 정보(수정 요)
+        noticeDTO.setImp(noticeForm.getIsImp());
+
+        if (noticeForm.getStatus().equals("SCHEDULED")){ //예약게시인 경우,
+            noticeDTO.setStatus("not_post");
+            noticeDTO.setWriteDate(today);
+            noticeDTO.setPostDate(fPostDate);
+        } else {//등록즉시 게시인경우
+            noticeDTO.setStatus("post");
+            noticeDTO.setWriteDate(today);
+            noticeDTO.setPostDate(fPostDate);
+        }
+        //2. 비즈니스로직 수행
+        noticeService.add(noticeDTO);
+        redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
+
+        //3. 모델
+
+        //4. 뷰
+        return "redirect:/notice/list"; //질문목록조회 요청
+
+    }*/
+
     //공지사항 등록 처리해줘 요청 (임시)
     @PostMapping("/add") //관리자만 작성 가능해야 함.
     public String add(@Valid NoticeForm noticeForm,
-                      BindingResult bindingResult
-                      ){
-
+                      BindingResult bindingResult,
+                      @RequestParam("uploadFiles") List<MultipartFile> uploadFiles,
+                      RedirectAttributes redirectAttributes ){
         if(bindingResult.hasErrors()){ //에러가 있으면,
             System.out.println("Errors: " + bindingResult);
             return "/notice/noticeForm"; //noticeForm.html로 이동.
@@ -118,14 +182,67 @@ public class NoticeController {
             noticeDTO.setWriteDate(today);
             noticeDTO.setPostDate(fPostDate);
         }
+
+        //Notice 테이블에 저장
+        int noticeNo = noticeService.add(noticeDTO);
+
+        //파일업로드처리(NoticeFiles 테이블에 저장)
+        String uploadFolder = "C:\\upload";
+
+        File uploadPath = new File(uploadFolder, getFolder());
+
+        if(uploadPath.exists() == false){
+            uploadPath.mkdirs();
+        }
+
+        // 으악~~~~
+        for(int i = 0; i < uploadFiles.size(); i++){
+            System.out.println("uploadFiles["+i+"]: "+uploadFiles.get(i).getOriginalFilename());
+        }
+
+        for(MultipartFile multipartFile : uploadFiles){
+            String uploadFileName = multipartFile.getOriginalFilename();
+
+            //파일이름 중복방지를 위한 UUID
+            UUID uuid =UUID.randomUUID();
+            uploadFileName = uuid.toString()+"_"+uploadFileName;
+
+            File saveFile = new File(uploadPath, uploadFileName);
+
+            try {
+                multipartFile.transferTo(saveFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        //DB에 파일정보 저장
+        //DTO에 담아 간다
+        for(MultipartFile multipartFile : uploadFiles){
+            NoticeFileDTO fileDTO = new NoticeFileDTO();
+            fileDTO.setNotice(multipartFile.);
+        }
+
+
+
         //2. 비즈니스로직 수행
-        noticeService.add(noticeDTO);
+
+        redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
 
         //3. 모델
 
         //4. 뷰
         return "redirect:/notice/list"; //질문목록조회 요청
 
+    }
+
+    //중복된 이름의 파일처리
+    //년/월/일 폴더 생성
+    private String getFolder(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String str = sdf.format(date);
+        return str.replace("-", File.separator);
     }
 
 

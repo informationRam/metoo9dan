@@ -59,4 +59,8 @@ public class Notice {
     //이 해당필드가 NoticeReply 엔티티의 'notice 필드'에 의해 매핑된다는 의미.
     @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
     private List<NoticeReply> noticeReplies;
+
+    //이 해당필드가 NoticeFiles 엔티티의 'notice 필드'에 의해 매핑된다는 의미.
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<NoticeFiles> noticeFiles;
 }

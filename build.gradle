@@ -31,6 +31,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2'
 	//implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.14.2'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 	testImplementation 'org.projectlombok:lombok:1.18.28'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
