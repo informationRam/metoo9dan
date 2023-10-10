@@ -304,61 +304,10 @@ public class StudyGroupController {
         return "studyGroup/studyGroup_joinList";
     }
 
- /*   //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
-    //학습그룹명 조건 조회
-    @GetMapping(value = "/groupJoinListGroupEnd", produces = "application/json")
-    @ResponseBody
-    public List<GroupJoinListDTO> joinLisGrouptEndpoint(@RequestParam int group_no){
-
-        //학습그룹명 조건 조회(학습 그룹 신청 리스트)
-        System.out.println("group_no="+group_no);
-        List<GroupJoinListDTO> groupJoinList = studyGroupService.selectNameList(group_no);
-        //model.addAttribute("selectNameList",selectNameList);
-        System.out.println("groupJoinList엔드="+groupJoinList);
-        return groupJoinList;
-        
-    }
-
     //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
-    //교육자명 조건 조회
-    @GetMapping(value = "/groupJoinListNameEnd", produces = "application/json")
-    @ResponseBody
-    public List<GroupJoinListDTO> joinListNameEndpoint(@RequestParam int member_no){
-
-        System.out.println("member_no="+member_no);
-        //교육자명 조건 조회(학습 그룹 신청 리스트)
-        List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectEducatorNameList(member_no);
-        System.out.println("groupJoinList="+groupJoinList);
-        return groupJoinList;
-
-    }*/
-
     @GetMapping(value = "/groupJoinListEndpoint", produces = "application/json")
     @ResponseBody
     public List<GroupJoinListDTO> groupJoinListEndpoint(@RequestParam(required = false) Integer group_no, @RequestParam(required = false) Integer member_no){
-      /*  if (group_no != null) {
-            // group_no를 이용한 처리
-            List<GroupJoinListDTO> groupJoinListByGroup = studyGroupService.selectNameList(group_no);
-            System.out.println("group_no="+group_no);
-            return groupJoinListByGroup;
-        } else if (member_no != null) {
-            // member_no를 이용한 처리
-            List<GroupJoinListDTO> groupJoinListByMember = studyGroupService.SelectEducatorNameList(member_no);
-            System.out.println("member_no="+member_no);
-            return groupJoinListByMember;
-        }else if(group_no != null && member_no != null){
-            System.out.println("같이");
-            System.out.println("group_no="+group_no);
-            System.out.println("member_no="+member_no);
-            map.put("group_no", group_no); // map에 member_no 추가
-            map.put("member_no", member_no); // map에 selectedGroupNo 추가
-            List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectGroupJoinList(map);
-            return groupJoinList;
-
-        } else {
-            // 두 파라미터 중 하나도 전달되지 않은 경우 처리
-            return Collections.emptyList();
-        }*/
         if (group_no != null && member_no != null) {
             // 두 파라미터가 동시에 전달될 경우 처리
             System.out.println("같이");
