@@ -104,6 +104,11 @@ public class StudyGroupService {
         return studyGroupRepository.SelectEducatorNameList(member_no);
     }
 
+    //학습그룹명&교육자명 조건 조회(학습 그룹 신청 리스트)
+    public List<GroupJoinListDTO> SelectGroupJoinList(Map<String, Integer> map) {
+        return studyGroupRepository.SelectGroupJoinList(map);
+    }
+
 
     //학습그룹 신청
     public void groupJoin(StudyGroups studyGroups, Member member, LocalDateTime application_date, Boolean is_approved,LocalDateTime approved_date){
