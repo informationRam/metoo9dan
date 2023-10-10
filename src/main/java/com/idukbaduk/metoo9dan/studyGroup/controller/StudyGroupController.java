@@ -217,6 +217,13 @@ public class StudyGroupController {
         model.addAttribute("GroupInfo",GroupInfo);
         System.out.println("GroupDetail="+GroupDetail);
         System.out.println("GroupInfo="+GroupInfo);
+        model.addAttribute("group_no",group_no);
+
+        //학습 그룹 이름 가져오기(SelectBox)
+        int member_no=1;
+        List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
+        model.addAttribute("groupNameList",groupNameList);
+
         return "studyGroup/studyGroup_detail";
     }
 
