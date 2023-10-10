@@ -83,16 +83,17 @@ public class NoticeService {
     }
 
     //공지사항 등록처리
-    public void add(String title, String content) {
+    public void add(NoticeDTO noticeDTO) {
         Notice notice = new Notice();
-        notice.setNoticeTitle(title);
-        notice.setNoticeContent(content);
-        //notice.setNoticeType();
-        //notice.setImp();
-        //notice.setMemberNo();
-        //notice.setStatus();
-        //notice.setWriteDate();
-        //notice.setPostDate();
+        notice.setNoticeType(noticeDTO.getNoticeType());
+        notice.setNoticeTitle(noticeDTO.getNoticeTitle());
+        notice.setNoticeContent(noticeDTO.getNoticeContent());
+        notice.setWriteDate(noticeDTO.getWriteDate());
+        notice.setPostDate(noticeDTO.getPostDate());
+        notice.setMember(noticeDTO.getMember());
+        notice.setStatus(noticeDTO.getStatus());
+        notice.setIsImp(noticeDTO.isImp());
+        notice.setReadCnt(0);
         noticeRepository.save(notice);
     }
 

@@ -55,14 +55,15 @@
             <div>
                 <a th:text="|총 게시물 ${noticePage.getTotalElements}개 조회되었습니다.|"></a>
                 <table class="table">
-                    <thead class="table-success">
+                    <thead class="table-dark">
                         <tr>
                             <th>No</th>
                             <th>상태</th><!--운영관리자한테만-->
                             <th>분류</th>
                             <th>제목</th>
                             <th>작성자</th>
-                            <th>등록일시</th>
+                            <th>작성일시</th><!--운영자한테만-->
+                            <th>게시일</th>
                             <th>조회수</th>
                         </tr>
                     </thead>
@@ -96,7 +97,8 @@
                                   th:if="${notice.replyCnt>0}"
                                   th:text="${notice.replyCnt}"></span></td>
                             <td th:text="${notice.member.memberId}"></td>
-                            <td th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${#temporals.format(notice.writeDate, 'yyyy-MM-dd HH:mm')}"></td> <!--작성일시 운영자만-->
+                            <td th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd')}"></td> <!--게시일자-->
                             <td th:text="${notice.readCnt}"></td>
                         </tr>
                         <tr th:if="${noticePage.isEmpty()}">

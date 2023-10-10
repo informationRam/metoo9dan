@@ -16,6 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 // 공지사항 관련 요청을 담당하는 컨트롤러
@@ -83,39 +86,46 @@ public class NoticeController {
                       ){
 
         if(bindingResult.hasErrors()){ //에러가 있으면,
+            System.out.println("Errors: " + bindingResult);
             return "/notice/noticeForm"; //noticeForm.html로 이동.
 
-        } else { //에러가 없으면, 공지사항 등록 진행
+        }//에러가 없으면, 공지사항 등록 진행
 
-            //1. 파라미터 받기
-            //로그인한 사람이 관리자인지 확인하는 코드 필요.
-            //임시로 작성자 memberNo1로 설정
-            Member member = new Member();
-            member.setMemberNo(1);
+        //1. 파라미터 받기
+        //로그인한 사람이 관리자인지 확인하는 코드 필요.
+        //임시로 작성자 memberNo1로 설정
+        Member member = new Member();
+        member.setMemberNo(1);
 
-            NoticeDTO noticeDTO = new NoticeDTO();
-            noticeDTO.setNoticeType(noticeForm.getNoticeType());
-            noticeDTO.setNoticeTitle(noticeForm.getTitle());
-            noticeDTO.setNoticeContent(noticeForm.getContent());
-            noticeDTO.setMemberNo(member.getMemberNo()); //로그인한 유저 정보(수정 요)
-            noticeDTO.setStatus(noticeForm.getStatus());
-            noticeDTO.setImp(noticeForm.getIsImp());
-            System.out.println("noticeForm.getNoticeType():"+noticeForm.getNoticeType());
-            System.out.println("noticeForm.getTitle():"+noticeForm.getTitle());
-            System.out.println("noticeForm.getContent():"+noticeForm.getContent());
-            System.out.println("noticeForm.getStatus():"+noticeForm.getStatus());
-            System.out.println("noticeForm.isImp():"+noticeForm.getIsImp());
+        LocalDateTime today = LocalDateTime.now();
+        //문자열로 받은 postDate를 LocalDateTime으로 변환.
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime fPostDate = LocalDate.parse(noticeForm.getPostDate(), formatter).atStartOfDay();
 
+        NoticeDTO noticeDTO = new NoticeDTO();
+        noticeDTO.setNoticeType(noticeForm.getNoticeType());
+        noticeDTO.setNoticeTitle(noticeForm.getTitle());
+        noticeDTO.setNoticeContent(noticeForm.getContent());
+        noticeDTO.setMember(member); //로그인한 유저 정보(수정 요)
+        noticeDTO.setImp(noticeForm.getIsImp());
 
-            //2. 비즈니스로직 수행
-            //noticeService.add(noticeForm.getTitle(),
-            //                  noticeForm.getContent());
-
-            //3. 모델
-
-            //4. 뷰
-            return "redirect:/notice/list"; //질문목록조회 요청
+        if (noticeForm.getStatus().equals("SCHEDULED")){ //예약게시인 경우,
+            noticeDTO.setStatus("not_post");
+            noticeDTO.setWriteDate(today);
+            noticeDTO.setPostDate(fPostDate);
+        } else {//등록즉시 게시인경우
+            noticeDTO.setStatus("post");
+            noticeDTO.setWriteDate(today);
+            noticeDTO.setPostDate(fPostDate);
         }
+        //2. 비즈니스로직 수행
+        noticeService.add(noticeDTO);
+
+        //3. 모델
+
+        //4. 뷰
+        return "redirect:/notice/list"; //질문목록조회 요청
+
     }
 
 
