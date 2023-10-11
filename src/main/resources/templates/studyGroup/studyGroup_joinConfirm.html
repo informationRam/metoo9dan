@@ -1,0 +1,57 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h3>[학습 그룹 가입 확인]</h3>
+            <table class="table">
+                <thead class="table-dark">
+                <tr>
+                    <th>선택</th>
+                    <th>학습그룹명</th>
+                    <th>교육자명</th>
+                    <!--<th>그룹 시작일</th>
+                    <th>그룹 종료일</th>-->
+                    <th>학습 구독 기간</th>
+                    <th>가입 요청일</th>
+                    <th>가입 승인일</th>
+                    <th>승인여부</th>
+                </tr>
+                </thead>
+                <tbody>
+                <p>게임콘텐츠명 :  <strong><span th:text="${joinConfirm.game_name}"></span></strong></p>
+                <tr th:each="joinConfirm, loop : ${joinConfirm}">
+                    <td>
+                        <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${joinConfirm.group_no}" />
+                    </td>
+                    <td th:text="${joinConfirm.group_name}"></td>
+                    <td th:text="${joinConfirm.name}"></td>
+                    <td>
+                        <span th:text="${#dates.format(joinConfirm.group_start_date,'yyyy-MM-dd')}"></span>
+                        ~
+                        <span th:text="${#dates.format(joinConfirm.group_finish_date,'yyyy-MM-dd')}"></span>
+                    </td>
+                    <!--<td th:text="${#dates.format(joinConfirm.group_start_date,'yyyy-MM-dd')}"></td>
+                    <td th:text="${#dates.format(joinConfirm.group_finish_date,'yyyy-MM-dd')}"></td>-->
+                    <td th:text="${#dates.format(joinConfirm.application_date,'yyyy-MM-dd')}"></td>
+                    <td th:text="${#dates.format(joinConfirm.approved_date,'yyyy-MM-dd')}"></td>
+                    <td th:text="${joinConfirm.is_approved ? 'O' : 'X'}"></td> <!--true이면 'O'가 출력, false이면 'X'가 출력-->
+                </tr>
+                </tbody>
+            </table>
+            <style>
+                /* 표의 값들을 가운데 정렬하는 CSS 스타일 */
+                .table td,
+                .table th {
+                    text-align: center;
+                }
+            </style>
+
+        </div>
+    </div>
+</div>
+
+
+</html>

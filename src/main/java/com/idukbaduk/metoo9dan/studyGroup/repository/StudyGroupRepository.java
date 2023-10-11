@@ -108,5 +108,9 @@ public class StudyGroupRepository {
         return sqlSession.selectOne("StudyGroup.BasicGroupNo",member_no);
     }
 
+    //학습 그룹 가입 확인(학생)
+    public JoinConfirmDTO joinConfirm(int member_no) {
+        return sqlSession.selectOne("StudyGroup.JoinConfirm",member_no);
+    }
 
 }

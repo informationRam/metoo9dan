@@ -162,5 +162,10 @@ public class StudyGroupService {
         return studyGroupRepository.basicGroupNo(member_no);
     }
 
+    //학습 그룹 가입 확인(학생)
+    public JoinConfirmDTO joinConfirm(int member_no) {
+        return studyGroupRepository.joinConfirm(member_no);
+    }
+
 
 }
