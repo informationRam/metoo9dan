@@ -157,5 +157,10 @@ public class StudyGroupService {
         return studyGroupRepository.getEducatorName();
     }
 
+    //학습 그룹 신청 리스트에서 기본으로 보여질 group_no
+    public int basicGroupNo(int member_no){
+        return studyGroupRepository.basicGroupNo(member_no);
+    }
+
 
 }

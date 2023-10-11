@@ -265,6 +265,13 @@
 		]]>
     </select>
 
+    <!--학습 그룹 신청 리스트에서 기본으로 보여질 group_no-->
+    <select id="BasicGroupNo" parameterType="int" resultType="int">
+        SELECT MIN(group_no)
+        FROM study_groups
+        WHERE member_no=#{member_no}
+    </select>
+
 
 
 </mapper>
