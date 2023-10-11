@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @ToString
 public class JoinConfirmDTO {
-    private int group_no; //그룹 번호
+    private int group_students_no; //그룹 신청 번호
     private String game_name;//게임콘텐츠명
     private String group_name;//학습그룹명
     private String name;//교육자명

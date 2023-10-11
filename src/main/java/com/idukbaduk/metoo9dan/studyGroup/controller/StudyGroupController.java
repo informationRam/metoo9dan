@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.studyGroup.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.GroupStudents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
 import com.idukbaduk.metoo9dan.studyGroup.dto.*;
@@ -397,16 +398,25 @@ public class StudyGroupController {
     //학습 그룹 가입 확인(학생)
     @GetMapping("/joinConfirm")
     public String joinConfirm(Model model){
-        int member_no=3; //로그인 처리하기
+        int member_no=16; //로그인 처리하기
+
         JoinConfirmDTO joinConfirm = studyGroupService.joinConfirm(member_no);
         model.addAttribute("joinConfirm",joinConfirm);
         System.out.println("joinConfirm="+joinConfirm);
 
-        return "studyGroup/studyGroup_joinConfirm";
+        if(joinConfirm==null){
+            //alert창 띄우기('가입 신청된 학습 그룹이 없습니다')
+            return "redirect:/studygroup/groupJoinList";
+        }return "studyGroup/studyGroup_joinConfirm";
     }
 
     //학습 그룹 가입 취소(학생)
-
+    @GetMapping("/cancel/{group_students_no}")
+    public String cancel(@PathVariable("group_students_no") int group_students_no){
+        GroupStudents groupStudents = studyGroupService.getGroupStudents(group_students_no);
+        studyGroupService.cancel(groupStudents);
+        return "redirect:/studygroup/groupJoinList";
+    }
 
 
 }
