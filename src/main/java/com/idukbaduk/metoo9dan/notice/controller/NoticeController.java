@@ -222,7 +222,7 @@ public class NoticeController {
                 File saveFile = new File(uploadPath, uploadFileName);
                 multipartFile.transferTo(saveFile);
                 fileDTO.setUuid(uuid.toString()); //사본파일명 저장
-                fileDTO.setUploadPath(uploadFolder);
+                fileDTO.setUploadPath(uploadPath.toString()); //파일경로 저장
                 list.add(fileDTO);
             } catch (IOException e) {
                 logger.error(e.getMessage());
