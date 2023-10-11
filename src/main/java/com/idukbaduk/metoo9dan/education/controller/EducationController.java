@@ -81,7 +81,7 @@ public class EducationController {
     @GetMapping("/modify/{resourceNo}")
     public String userUpdateForm(@PathVariable Integer resourceNo, Model model) {
         EducationalResources education = educationService.getEducation(resourceNo);
-        EducationValidation educationValidation = educationService.toEducationValidation(education);// 인증을위한 userModifyForm값으로 변경
+        EducationValidation educationValidation = educationService.toEducationValidation(education);    // Validation사용
 
         model.addAttribute("educationValidation", educationValidation);
         return "education/modify";
