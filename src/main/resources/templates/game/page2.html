@@ -21,7 +21,7 @@
                         <li class="breadcrumb-item active">저장</li>
                     </ol>
                     <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-                        <form id="gameadd" class="my-3" th:object="${gameValidation}" th:action="@{/game/page2}" method="post" style="margin-left: 30px" enctype="multipart/form-data">
+                        <form id="gameadd" class="my-3" th:action="@{/game/page2}" method="post" style="margin-left: 30px" enctype="multipart/form-data">
                             <!--------->
                             <div class="nado-education" id="nado-education">
                                     <h5 class="modal-title" id="educationModalLabel">교육자료목록</h5>

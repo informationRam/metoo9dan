@@ -267,15 +267,14 @@ public class GameController {
     @PostMapping("/page2")
     public String handlePage2Post(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult,
                                   HttpSession session, Model model) {
+        List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
+        List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
+        gameValidation = (GameValidation) session.getAttribute("gameValidation");
 
-     /*   model.addAttribute("gameValidation", gameValidation);
-        // page2에서 입력 받은 데이터를 세션에 추가 또는 업데이트
-        GameValidation gameValidationPage1 = (GameValidation) session.getAttribute("gameValidationPage1");
-        gameValidationPage1.setOriginal_price(gameValidation.getOriginal_price());
-        gameValidationPage1.setDiscount_rate(gameValidation.getDiscount_rate());
-        gameValidationPage1.setSale_price(gameValidation.getSale_price());
+        model.addAttribute("educationalResources", educationalResources);
+        model.addAttribute("originFileNames", originFileNames);
+        model.addAttribute("gameValidation", gameValidation);
 
-        session.setAttribute("gameValidation", gameValidationPage1);*/
         return "redirect:/game/page3"; // Page3로 리다이렉트
     }
 
