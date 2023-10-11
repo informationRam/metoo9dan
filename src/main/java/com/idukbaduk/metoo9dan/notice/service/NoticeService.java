@@ -1,9 +1,12 @@
 package com.idukbaduk.metoo9dan.notice.service;
 
 import com.idukbaduk.metoo9dan.common.entity.Notice;
+import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
+import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
 import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
+import com.idukbaduk.metoo9dan.notice.repository.NoticeFilesRepository;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeReplyRepository;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -29,6 +32,7 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final NoticeReplyRepository replyRepository;
+    private final NoticeFilesRepository filesRepository;
 
     //목록조회
     public Page<Notice> getList(int pageNo, int listSize) {
@@ -83,7 +87,7 @@ public class NoticeService {
     }
 
     //공지사항 등록처리
-    public int add(NoticeDTO noticeDTO) {
+    public Notice add(NoticeDTO noticeDTO) {
         Notice notice = new Notice();
         notice.setNoticeType(noticeDTO.getNoticeType());
         notice.setNoticeTitle(noticeDTO.getNoticeTitle());
@@ -94,11 +98,24 @@ public class NoticeService {
         notice.setStatus(noticeDTO.getStatus());
         notice.setIsImp(noticeDTO.isImp());
         notice.setReadCnt(0);
-        return noticeRepository.save(notice).getNoticeNo();
+        return noticeRepository.save(notice);
     }
 
     //공지사항 삭제처리
     public void delete(Notice notice) {
         noticeRepository.delete(notice);
     }
+
+    //첨부파일 저장처리
+    public void addFiles(List<NoticeFileDTO> list) {
+        for (int i = 0; i < list.size(); i++) {
+            NoticeFiles noticeFiles = new NoticeFiles();
+            noticeFiles.setNotice(list.get(i).getNotice());
+            noticeFiles.setOriginFileName(list.get(i).getOriginFileName());
+            noticeFiles.setCopyFileName(list.get(i).getUuid());
+            noticeFiles.setFileUrl(list.get(i).getUploadPath());
+            filesRepository.save(noticeFiles);
+        }
+    }
+
 }

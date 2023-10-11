@@ -2,14 +2,18 @@ package com.idukbaduk.metoo9dan.notice.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
+import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
 import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
+import groovy.util.logging.Log4j2;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,11 +34,13 @@ import java.util.List;
 import java.util.UUID;
 
 // 공지사항 관련 요청을 담당하는 컨트롤러
-
+@Log4j2
 @RequestMapping("/notice")
 @RequiredArgsConstructor
 @Controller
 public class NoticeController {
+    //looger
+    Logger logger = LoggerFactory.getLogger(NoticeController.class);
 
     private final NoticeService noticeService;
 
@@ -150,7 +156,7 @@ public class NoticeController {
                       @RequestParam("uploadFiles") List<MultipartFile> uploadFiles,
                       RedirectAttributes redirectAttributes ){
         if(bindingResult.hasErrors()){ //에러가 있으면,
-            System.out.println("Errors: " + bindingResult);
+            logger.info("Errors: " +bindingResult);
             return "/notice/noticeForm"; //noticeForm.html로 이동.
 
         }//에러가 없으면, 공지사항 등록 진행
@@ -161,6 +167,7 @@ public class NoticeController {
         Member member = new Member();
         member.setMemberNo(1);
 
+        //2. 비즈니스로직 수행
         LocalDateTime today = LocalDateTime.now();
         //문자열로 받은 postDate를 LocalDateTime으로 변환.
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -184,56 +191,50 @@ public class NoticeController {
         }
 
         //Notice 테이블에 저장
-        int noticeNo = noticeService.add(noticeDTO);
+        Notice notice = noticeService.add(noticeDTO);
 
-        //파일업로드처리(NoticeFiles 테이블에 저장)
+        List<NoticeFileDTO> list = new ArrayList<>();
+        //파일업로드(물리적 폴더에 저장)
         String uploadFolder = "C:\\upload";
-
+        // getFolder(): 년/월/일 폴더 생성
         File uploadPath = new File(uploadFolder, getFolder());
+
+        logger.info("uploadPath: "+uploadPath); // C:\\upload\2023\10\11
 
         if(uploadPath.exists() == false){
             uploadPath.mkdirs();
         }
 
-        // 으악~~~~
-        for(int i = 0; i < uploadFiles.size(); i++){
-            System.out.println("uploadFiles["+i+"]: "+uploadFiles.get(i).getOriginalFilename());
-        }
-
+        //파일업로드처리(DB NoticeFiles 테이블에 저장)
+        //DTO에 담아 간다
         for(MultipartFile multipartFile : uploadFiles){
+            NoticeFileDTO fileDTO = new NoticeFileDTO(); //DTO객체 생성
+            fileDTO.setNotice(notice); //방금 생성한 공지번호 저장
+
             String uploadFileName = multipartFile.getOriginalFilename();
+            fileDTO.setOriginFileName(uploadFileName); //원본파일명 저장
 
             //파일이름 중복방지를 위한 UUID
             UUID uuid =UUID.randomUUID();
             uploadFileName = uuid.toString()+"_"+uploadFileName;
 
-            File saveFile = new File(uploadPath, uploadFileName);
-
             try {
+                File saveFile = new File(uploadPath, uploadFileName);
                 multipartFile.transferTo(saveFile);
+                fileDTO.setUuid(uuid.toString()); //사본파일명 저장
+                fileDTO.setUploadPath(uploadFolder);
+                list.add(fileDTO);
             } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        //DB에 파일정보 저장
-        //DTO에 담아 간다
-        for(MultipartFile multipartFile : uploadFiles){
-            NoticeFileDTO fileDTO = new NoticeFileDTO();
-            fileDTO.setNotice(multipartFile.);
-        }
-
-
-
-        //2. 비즈니스로직 수행
-
-        redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
+                logger.error(e.getMessage());
+                redirectAttributes.addFlashAttribute("msg", "공지등록하는 중에 에러 발생");
+            }//end catch
+        }//end for
+        noticeService.addFiles(list);
 
         //3. 모델
-
+        redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
         //4. 뷰
         return "redirect:/notice/list"; //질문목록조회 요청
-
     }
 
     //중복된 이름의 파일처리

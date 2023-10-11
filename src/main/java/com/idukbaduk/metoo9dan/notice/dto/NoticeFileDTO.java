@@ -14,10 +14,11 @@ import java.util.List;
 //공지사항 첨부파일 데이터 관련 DTO
 @Data
 public class NoticeFileDTO {
-    private Notice notice; //공지 번호
-    private List<String> originFileName; //원본파일명
-    private List<String> copyFileName; //사본파일명
-    private List<String> fileUrl; //파일주소
-    private List<MultipartFile> noticeFiles; //파일들
+    private Notice notice; //공지 번호(정보)
+    private String originFileName; //원본파일명
+    //private List<MultipartFile> noticeFiles; //원본파일명
+    private String uuid; //사본파일명
+    //private List<String> uuid; //사본파일명
+    private String uploadPath; //파일경로
 
 }
