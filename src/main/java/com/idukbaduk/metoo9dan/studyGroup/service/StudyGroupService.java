@@ -167,5 +167,14 @@ public class StudyGroupService {
         return studyGroupRepository.joinConfirm(member_no);
     }
 
+    //학습 그룹 가입 취소(학생)
+    public void cancel(GroupStudents groupStudents) {
+        groupStudentsRepository.delete(groupStudents);
+    }
 
+    //그룹 학생 가져오기
+    public GroupStudents getGroupStudents(int group_students_no){
+        Optional<GroupStudents> groupStudents = groupStudentsRepository.findById(group_students_no);
+        return groupStudents.get();
+    }
 }

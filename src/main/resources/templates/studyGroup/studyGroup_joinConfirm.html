@@ -24,7 +24,7 @@
                 <p>게임콘텐츠명 :  <strong><span th:text="${joinConfirm.game_name}"></span></strong></p>
                 <tr th:each="joinConfirm, loop : ${joinConfirm}">
                     <td>
-                        <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${joinConfirm.group_no}" />
+                        <input type="checkbox" class="groupCheckbox" name="selectedStudentGroup" th:value="${joinConfirm.group_students_no}" />
                     </td>
                     <td th:text="${joinConfirm.group_name}"></td>
                     <td th:text="${joinConfirm.name}"></td>
@@ -41,6 +41,9 @@
                 </tr>
                 </tbody>
             </table>
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <input id="cancelButton" type="submit" value="학습 그룹 가입 취소" class="btn btn-outline-primary my-2"/>
+            </div>
             <style>
                 /* 표의 값들을 가운데 정렬하는 CSS 스타일 */
                 .table td,
@@ -55,3 +58,42 @@
 
 
 </html>
+<script>
+//---학습그룹 가입 취소----
+ document.addEventListener("DOMContentLoaded", function () {
+        var cancelButton = document.getElementById("cancelButton");
+        cancelButton.addEventListener("click", function () {
+            var selectedCheckboxes = document.querySelectorAll(".groupCheckbox:checked");
+            var selectedGroupStudentsNo = [];
+
+            if (selectedCheckboxes.length > 0) {
+                var isApproved = false;
+                for (var i = 0; i < selectedCheckboxes.length; i++) {
+                    var checkbox = selectedCheckboxes[i];
+                    var groupStudentNo = checkbox.getAttribute("value"); // 체크박스에서 값 가져오기
+                    selectedGroupStudentsNo.push(groupStudentNo);
+
+                    //isApproved가 true이면 가입 취소 불가
+                    var rowIndex = checkbox.closest("tr").rowIndex;
+                    var isApprovedValue = document.querySelector("table").rows[rowIndex].cells[6].textContent; // 6은 joinConfirm.is_approved에 해당하는 셀 인덱스
+                    if (isApprovedValue === 'O') {
+                        isApproved = true;
+                        break;
+                    }
+                }
+
+                if (isApproved) {
+                    alert("가입 승인이 되어 가입 취소를 할 수 없습니다.");
+                } else {
+                    var confirmCancel = confirm("정말로 학습 그룹 가입을 취소하시겠습니까?");
+                    if (confirmCancel) {
+                         window.location.href ="/studygroup/cancel/" + selectedGroupStudentsNo;
+                    }
+                }
+            } else {
+                alert("선택된 항목이 없습니다.");
+            }
+        });
+    });
+
+</script>

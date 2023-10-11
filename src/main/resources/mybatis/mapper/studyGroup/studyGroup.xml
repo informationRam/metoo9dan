@@ -274,12 +274,12 @@
 
     <!--학습 그룹 가입 확인(학생)-->
     <select id="JoinConfirm" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.JoinConfirmDTO">
-        SELECT gs.group_no,g.game_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,gs.application_date,gs.approved_date,gs.is_approved
+        SELECT gs.group_students_no,g.game_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,gs.application_date,gs.approved_date,gs.is_approved
         FROM baduk.group_students gs
         JOIN baduk.study_groups s ON gs.group_no=s.group_no
         JOIN baduk.game_contents g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
-        WHERE gs.member_no=3;
+        WHERE gs.member_no=#{member_no}
     </select>
 
 </mapper>
