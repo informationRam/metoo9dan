@@ -1,120 +1,51 @@
-/* 기본 스타일 */
+/* 공통 스타일 */
 body {
-    font-family: 'Noto Sans KR', sans-serif; /* 한국어 폰트를 위한 Noto Sans 사용 */
-    background-color: #f6f8fa;
+    font-family: 'Arial', sans-serif;
 }
 
-h2 {
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-form {
-    background-color: #ffffff;
+/* 상단 카드 스타일 */
+.card {
+    margin: 40px auto;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
 }
 
-form div {
-    margin-bottom: 15px;
+.homework-form label {
+    display: inline-block;
+    width: 140px;
+    margin-right: 30px;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+.baduk-board {
+    padding: 20px;
+    border-radius: 0;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #F8E4C9, #F2D7B1 80%);
 }
 
-input[type="text"],
-input[type="number"],
-input[type="date"],
-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-}
-
-span {
-    color: red;
-    font-size: 12px;
-}
-
-button[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-button[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
-table {
+#homeworkTable {
     width: 100%;
     border-collapse: collapse;
-    background-color: #ffffff;
-    margin-bottom: 20px;
+    border: 1px solid black;
+    background-color: transparent;
 }
 
-table th, table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
+#homeworkTable th,
+#homeworkTable td {
+    padding: 20px;
+    border: 1px solid black;
 }
 
-table th {
-    background-color: #f5f5f5;
-    cursor: pointer;
+
+#noSearchResult {
+    color: red;
 }
 
-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-#hw-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
-
-#hw-pagination button {
-    background-color: #007bff;
-    color: #fff;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-#hw-pagination button:hover {
-    background-color: #0056b3;
-}
-
-#hw-pagination .hw-page-number {
-    padding: 5px 10px;
-    border-radius: 4px;
-    background-color: #f5f5f5;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-#hw-pagination .hw-page-number.active,
-#hw-pagination .hw-page-number:hover {
-    background-color: #007bff;
-    color: #fff;
-}
-
+/* 모달 관련 스타일 */
 #hw-homeworkDetailModal,
 #hw-editModal,
 #hw-backdrop {
@@ -145,3 +76,5 @@ table tr:nth-child(even) {
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 5;
 }
+
+

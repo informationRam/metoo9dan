@@ -236,6 +236,15 @@ public class HomeworkService {
     }
 
     public void deleteHomeworkSubmitted(Integer homeworkSubmitNo){
+        Optional<HomeworkSubmit> optionalHomeworkSubmit =homeworkSubmitRepository.findById(homeworkSubmitNo);
+        if(optionalHomeworkSubmit.isPresent()){
+            HomeworkSend homeworkSend =optionalHomeworkSubmit.get().getHomeworkSend();
+            homeworkSend.setIsSubmit("N");
+            homeworkSendRepository.save(homeworkSend);
+        }else{
+            System.out.println("N으로 바꾸는거 실패");
+        }
+
         homeworkSubmitRepository.deleteById(homeworkSubmitNo);
     }
 }

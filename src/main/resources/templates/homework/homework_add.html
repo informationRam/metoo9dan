@@ -8,42 +8,45 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <div class="card">
             <h2>숙제 생성</h2>
-            <form th:action="@{/homework/add}" th:object="${homeworksForm}" method="post">
-                <div>
-                    <label>숙제 제목:</label>
-                    <input type="text" th:field="*{homeworkTitle}">
-                    <span th:if="${#fields.hasErrors('homeworkTitle')}" th:errors="*{homeworkTitle}">Invalid Title</span>
-                </div>
-                <div>
-                    <label>숙제 내용:</label>
-                    <textarea th:field="*{homeworkContent}"></textarea>
-                    <span th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}">Invalid Content</span>
-                </div>
-                <div>
-                    <label>숙제 진도:</label>
-                    <input type="number" th:field="*{progress}">레벨
-                    <span th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}">Invalid Progress</span>
-                </div>
-                <div>
-                    <label>제출 기한:</label>
-                    <input type="date" th:field="*{dueDate}">
-                    <span th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">Invalid Date</span>
-                </div>
-                <div>
-                    <label>숙제 메모:</label>
-                    <textarea th:field="*{homeworkMemo}"></textarea>
-                    <span th:if="${#fields.hasErrors('homeworkMemo')}" th:errors="*{homeworkMemo}">Invalid Memo</span>
-                </div>
-                <div>
-                    <button type="submit">숙제 등록</button>
-                </div>
-            </form>
-            <div>
+                <form th:action="@{/homework/add}" th:object="${homeworksForm}" method="post">
+                    <div>
+                        <label>숙제 제목:</label>
+                        <input type="text" th:field="*{homeworkTitle}">
+                        <span th:if="${#fields.hasErrors('homeworkTitle')}" th:errors="*{homeworkTitle}">Invalid Title</span>
+                    </div>
+                    <div>
+                        <label>숙제 내용:</label>
+                        <textarea th:field="*{homeworkContent}"></textarea>
+                        <span th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}">Invalid Content</span>
+                    </div>
+                    <div>
+                        <label>숙제 진도:</label>
+                        <input type="number" th:field="*{progress}">레벨
+                        <span th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}">Invalid Progress</span>
+                    </div>
+                    <div>
+                        <label>제출 기한:</label>
+                        <input type="date" th:field="*{dueDate}">
+                        <span th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">Invalid Date</span>
+                    </div>
+                    <div>
+                        <label>숙제 메모:</label>
+                        <textarea th:field="*{homeworkMemo}"></textarea>
+                        <span th:if="${#fields.hasErrors('homeworkMemo')}" th:errors="*{homeworkMemo}">Invalid Memo</span>
+                    </div>
+                    <div>
+                        <button type="submit">숙제 등록</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="baduk-board">
             <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="검색어를 입력하세요">
             <table id="homeworkTable">
                 <tr>
-                    <th onclick="sortTable(0)">No</th><!-- 지피티야 왜 이걸 눌러서 정렬을 하면 이상하게 될까 -->
+                    <th onclick="sortTable(0)">No</th>
                     <th onclick="sortTable(1)">숙제 제목</th>
                     <th onclick="sortTable(2)">숙제 내용</th>
                     <th onclick="sortTable(3)">숙제 진도</th>

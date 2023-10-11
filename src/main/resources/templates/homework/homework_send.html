@@ -240,9 +240,9 @@
                             if (data.length === 0) {
                                 table.style.display = 'none'; // 테이블을 숨깁니다.
                                 messageTextDiv.innerText = "승인된 학생이 없습니다."; // 메시지 표시
+                                messageDiv.style.display = 'block';
                             } else {
                                 table.style.display = ''; // 테이블을 보여줍니다.
-                                messageDiv.innerText = ""; // 메시지 숨김
                                 messageDiv.style.display = 'none';
                                 populateTable(data); // 테이블로 표시
                             }

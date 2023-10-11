@@ -68,7 +68,7 @@
                             <span id="homeworkEditContentError" class="error-message"></span>
                             <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
                             <button type="submit">수정</button>
-                            <button type="button">제출 취소</button>
+                            <button type="button" id="deleteBtn">제출 내역 삭제</button>
                         </form>
                     </div>
                 </div>
@@ -97,6 +97,22 @@
                 </tbody>
             </table>
 
+            <div id="successModal" class="bs-modal">
+                <div class="bs-modal-dialog">
+                    <div class="bs-modal-content">
+                        <div class="bs-modal-header">
+                            <h5 class="bs-modal-title">제출 성공!</h5>
+                        </div>
+                        <div class="bs-modal-body">
+                            <p>~제출 성공~ 나도 9단이 될 수 있다!</p>
+                        </div>
+                        <div class="bs-modal-footer">
+                            <button id="modalCloseBtn" class="btn-close"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
             <script src="https://tistory4.daumcdn.net/tistory/3134841/skin/images/confetti_v2.js"></script>
             <script>
@@ -106,7 +122,7 @@
 
                  setTimeout(function(){
                  $("#stopButton").trigger("click");
-                 }, 2500);
+                 }, 5000);
                 }
 
               function loadForm(element) {
@@ -143,6 +159,7 @@
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = data.homeworkSubmitNo;
                               document.querySelector(".submit-form").style.display = 'none';
                               document.querySelector(".edit-form").style.display = 'block';
+                              $("#deleteBtn").data('submit-id', data.homeworkSubmitNo);
                           } else {
                               // 제출 폼 초기화 및 표시
                               document.querySelector(".submit-form textarea[name='homeworkContent']").value = '';
@@ -155,7 +172,16 @@
                       .catch(error => {
                           console.error("There was a problem with the fetch operation:", error.message);
                       });
+
+
               }
+
+              $(document).ready(function() {
+                    $("#modalCloseBtn").click(function() {
+                        location.reload(); // 페이지 리로드
+                    });
+                });
+
 
               // addForm 제출
               $("#addForm").submit(function(e) {
@@ -168,9 +194,8 @@
                       type: "POST",
                       data: $(this).serialize(),
                       success: function(response) {
-                          alert("~제출 성공~ 나도 9단이 될 수 있다!");
-                          reAction();
-                          location.reload();
+                          reAction(); // 꽃가루 효과
+                          $("#successModal").show(); // 모달 보이기
                       },
                       error: function(xhr) {
                           let errors = xhr.responseJSON;
@@ -188,6 +213,7 @@
                   e.preventDefault();
 
                   $(".error-message").text("");  // 초기화
+                  reAction();
 
                   $.ajax({
                       url: $(this).attr("action"),
@@ -195,7 +221,6 @@
                       data: $(this).serialize(),
                       success: function(response) {
                           alert("제출한 숙제가 수정되었습니다");
-                          reAction();
                           location.reload();
                       },
                       error: function(xhr) {
@@ -208,6 +233,27 @@
                       }
                   });
               });
+
+                //삭제 버튼 클릭
+                $("#deleteBtn").click(function(){
+                            let submitId = $(this).data('submit-id');
+
+                            if(submitId && confirm("숙제를 삭제하시겠습니까?")) {
+                                $.ajax({
+                                    url: `/homework/submit/delete/${submitId}`,
+                                    type: 'DELETE',
+                                    success: function(response) {
+                                        alert("숙제가 삭제되었습니다")
+                                        location.reload();
+                                    },
+                                    error: function(xhr, status, error) {
+                                        alert('삭제 실패: ' + xhr.responseText);
+                                    }
+                                });
+                            } else {
+                                alert('숙제 제출 ID가 없습니다. 다시 시도해주세요.');
+                            }
+                        });
 
             </script>
         </div><!--콘텐츠영역끝-->
