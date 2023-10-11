@@ -16,9 +16,7 @@ import java.util.List;
 public class NoticeFileDTO {
     private Notice notice; //공지 번호(정보)
     private String originFileName; //원본파일명
-    //private List<MultipartFile> noticeFiles; //원본파일명
     private String uuid; //사본파일명
-    //private List<String> uuid; //사본파일명
     private String uploadPath; //파일경로
 
 }

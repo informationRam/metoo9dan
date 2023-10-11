@@ -6,6 +6,7 @@ import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
+import com.idukbaduk.metoo9dan.notice.service.NoticeFilesService;
 import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
@@ -43,6 +44,7 @@ public class NoticeController {
     Logger logger = LoggerFactory.getLogger(NoticeController.class);
 
     private final NoticeService noticeService;
+    private final NoticeFilesService filesService;
 
     // 공지사항 등록 메뉴를 누르면 공지사항 목록을 보여줌
     @GetMapping("/list")
@@ -65,9 +67,12 @@ public class NoticeController {
         if(notice!=null){
             noticeService.readCntUp(noticeNo);
         }
+        List<NoticeFiles> filesList=filesService.getFiles(notice);
+
         List<NoticeReply> noticeReply = noticeService.getNoticeReply(notice);
         model.addAttribute("notice", notice); //공지상세 내용
         model.addAttribute("noticeReply", noticeReply); //공지 댓글 목록
+        model.addAttribute("filesList", filesList); //공지 파일 목록
         return "notice/noticeDetail";
     }
 
@@ -94,62 +99,7 @@ public class NoticeController {
         return "notice/noticeForm";
     }
 
-    /*//공지사항 등록 처리해줘 요청 (임시)
-    @PostMapping("/add") //관리자만 작성 가능해야 함.
-    public String add(@Valid NoticeForm noticeForm,
-                      BindingResult bindingResult,
-                      @RequestParam("originFiles") List<MultipartFile> originFiles,
-                      RedirectAttributes redirectAttributes
-                      ){
-
-        if(bindingResult.hasErrors()){ //에러가 있으면,
-            System.out.println("Errors: " + bindingResult);
-            return "/notice/noticeForm"; //noticeForm.html로 이동.
-
-        }//에러가 없으면, 공지사항 등록 진행
-        for(int i = 0; i < originFiles.size(); i++){
-            System.out.println("originFiles["+i+"]: "+originFiles.get(i).getOriginalFilename());
-        }
-
-        //1. 파라미터 받기
-        //로그인한 사람이 관리자인지 확인하는 코드 필요.
-        //임시로 작성자 memberNo1로 설정
-        Member member = new Member();
-        member.setMemberNo(1);
-
-        LocalDateTime today = LocalDateTime.now();
-        //문자열로 받은 postDate를 LocalDateTime으로 변환.
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDateTime fPostDate = LocalDate.parse(noticeForm.getPostDate(), formatter).atStartOfDay();
-
-        NoticeDTO noticeDTO = new NoticeDTO();
-        noticeDTO.setNoticeType(noticeForm.getNoticeType());
-        noticeDTO.setNoticeTitle(noticeForm.getTitle());
-        noticeDTO.setNoticeContent(noticeForm.getContent());
-        noticeDTO.setMember(member); //로그인한 유저 정보(수정 요)
-        noticeDTO.setImp(noticeForm.getIsImp());
-
-        if (noticeForm.getStatus().equals("SCHEDULED")){ //예약게시인 경우,
-            noticeDTO.setStatus("not_post");
-            noticeDTO.setWriteDate(today);
-            noticeDTO.setPostDate(fPostDate);
-        } else {//등록즉시 게시인경우
-            noticeDTO.setStatus("post");
-            noticeDTO.setWriteDate(today);
-            noticeDTO.setPostDate(fPostDate);
-        }
-        //2. 비즈니스로직 수행
-        noticeService.add(noticeDTO);
-        redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
-
-        //3. 모델
-
-        //4. 뷰
-        return "redirect:/notice/list"; //질문목록조회 요청
-
-    }*/
-
-    //공지사항 등록 처리해줘 요청 (임시)
+    //공지사항 등록 처리해줘 요청
     @PostMapping("/add") //관리자만 작성 가능해야 함.
     public String add(@Valid NoticeForm noticeForm,
                       BindingResult bindingResult,
@@ -195,11 +145,12 @@ public class NoticeController {
 
         List<NoticeFileDTO> list = new ArrayList<>();
         //파일업로드(물리적 폴더에 저장)
-        String uploadFolder = "C:\\upload";
+        String uploadFolder = "C:/upload";
         // getFolder(): 년/월/일 폴더 생성
-        File uploadPath = new File(uploadFolder, getFolder());
+        String uploadFolderPath = getFolder();
+        File uploadPath = new File(uploadFolder, uploadFolderPath);
 
-        logger.info("uploadPath: "+uploadPath); // C:\\upload\2023\10\11
+        logger.info("uploadPath: "+uploadPath); // C:/upload/yyyy/MM/dd
 
         if(uploadPath.exists() == false){
             uploadPath.mkdirs();
@@ -222,7 +173,7 @@ public class NoticeController {
                 File saveFile = new File(uploadPath, uploadFileName);
                 multipartFile.transferTo(saveFile);
                 fileDTO.setUuid(uuid.toString()); //사본파일명 저장
-                fileDTO.setUploadPath(uploadPath.toString()); //파일경로 저장
+                fileDTO.setUploadPath(uploadFolderPath+""); //C:/upload이하 파일경로 저장
                 list.add(fileDTO);
             } catch (IOException e) {
                 logger.error(e.getMessage());
