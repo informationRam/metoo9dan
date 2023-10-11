@@ -351,7 +351,8 @@
                             $("#editContent").text(data.homeworkContent);
                             $("#editProgress").val(data.progress);
                             $("#editMemo").val(data.homeworkMemo);
-                            $("#editDueDate").val(formatDate(data.dueDate.split("T")[0]));
+                            $("#editDueDate").val(data.dueDate.split("T")[0]);
+                            console.log(data.dueDate);
 
                             // 모달 및 오버레이 표시
                             $("#hw-editModal, #hw-backdrop").show();
@@ -359,24 +360,46 @@
                     });
 
                     // 삭제 버튼 클릭 이벤트
-                    $("#deleteBtn").click(function(){
-                        if(confirm("숙제를 삭제하시겠습니까?")) {
+                    $(document).ready(function(){
+                        $(".edit-btn").click(function(){
                             let homeworkId = $(this).data('hw-id');
 
-                            $.ajax({
-                                url: `/homework/delete/${homeworkId}`,
-                                type: 'DELETE',
-                                success: function(response) {
-                                    alert("숙제가 삭제되었습니다")
-                                    location.reload();
-                                },
-                                error: function(xhr, status, error) {
-                                    // 오류 발생 시 동작
-                                    alert('삭제 실패: ' + xhr.responseText);
-                                }
+                            $.get("/homework/detail/" + homeworkId, function(data){
+                                $("#editNo").val(homeworkId);
+                                $("#editTitle").val(data.homeworkTitle);
+                                $("#editContent").text(data.homeworkContent);
+                                $("#editProgress").val(data.progress);
+                                $("#editMemo").val(data.homeworkMemo);
+                                $("#editDueDate").val(formatDate(data.dueDate.split("T")[0]));
+
+                                // 여기서 data-hw-id 속성을 삭제 버튼에 설정합니다.
+                                $("#deleteBtn").data('hw-id', homeworkId);
+
+                                $("#hw-editModal, #hw-backdrop").show();
                             });
-                        }
+                        });
+
+                        $("#deleteBtn").click(function(){
+                            let homeworkId = $(this).data('hw-id');
+
+                            if(homeworkId && confirm("숙제를 삭제하시겠습니까?")) {
+                                $.ajax({
+                                    url: `/homework/delete/${homeworkId}`,
+                                    type: 'DELETE',
+                                    success: function(response) {
+                                        alert("숙제가 삭제되었습니다")
+                                        location.reload();
+                                    },
+                                    error: function(xhr, status, error) {
+                                        alert('삭제 실패: ' + xhr.responseText);
+                                    }
+                                });
+                            } else {
+                                alert('숙제 ID가 없습니다. 다시 시도해주세요.');
+                            }
+                        });
                     });
+
                 });
 
                 $("#editForm").submit(function(e) {

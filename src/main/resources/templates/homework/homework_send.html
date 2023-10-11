@@ -112,9 +112,18 @@
                 //페이지네이션
                 function paginate() {
                     const rows = document.querySelectorAll('#homeworkTableBody tr');
-                    const totalPages = Math.ceil(rows.length / rowsPerPage);
 
-                    let displayedRowCount = 0; // 현재 페이지에서 표시된 행의 수를 추적합니다.
+                    let filteredRowCount = 0;
+                    for (let i = 0; i < rows.length; i++) {
+                        const titleCell = rows[i].querySelector('td:nth-child(2)');
+                        if (currentSelectedHomeworkTitle === 'All' || titleCell.innerText.trim() === currentSelectedHomeworkTitle.trim()) {
+                            filteredRowCount++;
+                        }
+                    }
+
+                    const totalPages = Math.ceil(filteredRowCount / rowsPerPage);
+
+                    let displayedRowCount = 0;
 
                     for (let i = 0; i < rows.length; i++) {
                         const titleCell = rows[i].querySelector('td:nth-child(2)');
@@ -122,18 +131,19 @@
                         if (currentSelectedHomeworkTitle === 'All' || titleCell.innerText.trim() === currentSelectedHomeworkTitle.trim()) {
                             if (displayedRowCount >= (currentPage - 1) * rowsPerPage && displayedRowCount < currentPage * rowsPerPage) {
                                 rows[i].style.display = ''; // 해당 행을 표시합니다.
-                                displayedRowCount++;
                             } else {
                                 rows[i].style.display = 'none'; // 해당 행을 숨깁니다.
                             }
+                            displayedRowCount++;
                         } else {
                             rows[i].style.display = 'none'; // 해당 행을 숨깁니다.
                         }
                     }
 
-                    // 페이지네이션 버튼을 그립니다.
                     drawPaginationButtons(totalPages);
                 }
+
+
 
                 function drawPaginationButtons(totalPages) {
                     const container = document.getElementById('paginationContainer');
@@ -205,8 +215,11 @@
                         }
                     });
 
+                    // 현재 페이지를 1로 재설정
+                    currentPage = 1;
                     paginate();
                 }
+
 
 
                 function fetchStudentsByGroup() {

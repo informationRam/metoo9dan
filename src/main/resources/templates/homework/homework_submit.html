@@ -62,13 +62,13 @@
                         <form id="editForm" th:action="@{/homework/submit/edit}" th:object="${hwSubmitForm}" method="post">
                             <p>진도: <span class="currentLevel"></span>레벨</p>
                             <input type="hidden" name="homeworkNo"/>
-                            <input type="hidden" name="homeworkSubmitNo" id="homeworkSubmitNoForD"/>
+                            <input type="hidden" name="homeworkSubmitNo"/>
                             <input type="hidden" name="sendNo"/>
                             <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
                             <span id="homeworkEditContentError" class="error-message"></span>
                             <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
                             <button type="submit">수정</button>
-                            <button type="button" id="deleteBtn">제출 내역 삭제</button>
+                            <button type="button">제출 취소</button>
                         </form>
                     </div>
                 </div>
@@ -155,27 +155,6 @@
                       .catch(error => {
                           console.error("There was a problem with the fetch operation:", error.message);
                       });
-
-                    //수정 폼 로드 시에만 작용
-                    // 삭제 버튼 클릭 이벤트
-                    $("#deleteBtn").click(function(){
-                        if(confirm("숙제를 삭제하시겠습니까?")) {
-                            let homeworkSubmitNo = $(#homeworkSubmitNoForD).val();
-
-                            $.ajax({
-                                url: `/homework/submit/delete/${homeworkId}`,
-                                type: 'DELETE',
-                                success: function(response) {
-                                    alert("숙제 전송 내역이 삭제되었습니다");
-                                    location.reload();
-                                },
-                                error: function(xhr, status, error) {
-                                    // 오류 발생 시 동작
-                                    alert('삭제 실패: ' + xhr.responseText);
-                                }
-                            });
-                        }
-                    });
               }
 
               // addForm 제출
@@ -189,7 +168,7 @@
                       type: "POST",
                       data: $(this).serialize(),
                       success: function(response) {
-                          alert("~제출 성공~ 바둑왕에 한걸음 가까워졌어요!");
+                          alert("~제출 성공~ 나도 9단이 될 수 있다!");
                           reAction();
                           location.reload();
                       },
