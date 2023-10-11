@@ -367,7 +367,7 @@
                                 url: `/homework/delete/${homeworkId}`,
                                 type: 'DELETE',
                                 success: function(response) {
-                                    // 성공적으로 삭제되었을 때 동작, 예를 들면 페이지 새로고침
+                                    alert("숙제가 삭제되었습니다")
                                     location.reload();
                                 },
                                 error: function(xhr, status, error) {

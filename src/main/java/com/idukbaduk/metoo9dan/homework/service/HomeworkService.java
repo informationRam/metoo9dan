@@ -11,6 +11,7 @@ import com.idukbaduk.metoo9dan.homework.validation.HomeworksEditForm;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -219,5 +220,22 @@ public class HomeworkService {
         homeworkSubmit.setAdditionalQuestions(hwSubmitForm.getAdditionalQuestions());
         homeworkSubmit.setProgress(homeworks.getProgress());
         homeworkSubmitRepository.save(homeworkSubmit);
+    }
+
+    public HomeworkSubmit getHomeworkSubmitByHomeworkSubmitNo(Integer submitNo){
+        Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findById(submitNo);
+        return optionalHomeworkSubmit.orElse(null);
+    }
+
+    public void updateHomeworkSubmitted(@Valid HwSubmitForm hwSubmitForm, HomeworkSubmit homeworkSubmit) {
+        homeworkSubmit.setHomeworkContent(hwSubmitForm.getHomeworkContent());
+        homeworkSubmit.setAdditionalQuestions(hwSubmitForm.getAdditionalQuestions());
+        homeworkSubmit.setSubmitDate(LocalDateTime.now());
+
+        homeworkSubmitRepository.save(homeworkSubmit);
+    }
+
+    public void deleteHomeworkSubmitted(Integer homeworkSubmitNo){
+        homeworkSubmitRepository.deleteById(homeworkSubmitNo);
     }
 }

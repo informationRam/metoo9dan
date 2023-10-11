@@ -178,8 +178,38 @@ public class HomeworkController {
 
 
     //숙제 수정 post
-    //@PostMapping("/submit/edit")
+    @PostMapping("/submit/edit")
+    public ResponseEntity<?> editSubmitHomework(@Valid HwSubmitForm hwSubmitForm, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            // 에러 메시지를 담을 Map 생성
+            Map<String, String> errors = new HashMap<>();
+
+            result.getFieldErrors().forEach(error -> {
+                String fieldName = error.getField();
+                String errorMessage = error.getDefaultMessage();
+                errors.put(fieldName, errorMessage);
+                System.out.println(errors);
+            });
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+        HomeworkSubmit homeworkSubmit =homeworkService.getHomeworkSubmitByHomeworkSubmitNo(hwSubmitForm.getHomeworkSubmitNo());
+        //로그인한 아이디로 바꿔야함!!!!!!!!!!!!!!!!!
+        homeworkService.updateHomeworkSubmitted(hwSubmitForm,homeworkSubmit);
+
+        // 성공 응답 (HTTP 상태 코드 200 OK와 함께 메시지 반환)
+        return ResponseEntity.ok("Homework edited successfully");
+    }
     //숙제 삭제 post
+    @DeleteMapping("/submit/delete/{id}")
+    public ResponseEntity<String> deleteHomeworkSubmitted(@PathVariable Integer id) {
+        try {
+            homeworkService.deleteHomeworkSubmitted(id);
+            return new ResponseEntity<>("삭제 성공", HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity<>("삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     //숙제 평가 보기
 
