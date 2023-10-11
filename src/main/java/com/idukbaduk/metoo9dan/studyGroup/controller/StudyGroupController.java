@@ -231,7 +231,8 @@ public class StudyGroupController {
     //학습 그룹 가입 승인(교육자)
     //학습 그룹 가입 신청 리스트 가져오기
     @GetMapping("/approveList")
-    public String approveList(Model model,@RequestParam(defaultValue="1") int member_no,@RequestParam(defaultValue="1") int selectedGroupNo,@RequestParam Map<String, Integer> map){
+    public String approveList(Model model,@RequestParam(defaultValue="1") int member_no,
+                              @RequestParam(defaultValue="1") int selectedGroupNo,@RequestParam Map<String, Integer> map){ //selectedGroupNo 각 선생님 학습그룹의 맨 앞 숫자가 나오게 바꾸기
         //학습그룹명 리스트 가져오기
         List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
         model.addAttribute("groupNameList",groupNameList);
@@ -253,7 +254,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 신청 리스트 엔드포인트
-    @GetMapping(value = "/approveListEndpoint", produces = "application/json")
+ /*   @GetMapping(value = "/approveListEndpoint", produces = "application/json")
     @ResponseBody
     public List<ApproveListDTO> approveListEndPoint(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
 
@@ -273,9 +274,9 @@ public class StudyGroupController {
         //model.addAttribute("approveList",approveList);
         System.out.println("approveList="+approveList);
         return approveList;
-    }
+    }*/
 
-    @GetMapping(value = "/approveListEnd", produces = "application/json")
+ /*   @GetMapping(value = "/approveListEnd", produces = "application/json")
     @ResponseBody
     public List<GroupsDetailListDTO> approveListEnd(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
 
@@ -295,30 +296,31 @@ public class StudyGroupController {
         //model.addAttribute("approveList",approveList);
         //System.out.println("approveList="+approveList);
         return GroupInfo;
-    }
+    }*/
 
-  /*  @GetMapping(value = "/approveListEndpoint", produces = "application/json")
+    //학습 그룹 가입 신청 리스트 엔드포인트
+    @GetMapping(value = "/approveListEndpoint", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<GroupInfoAndApproveList> approveListEndPoint(Model model,@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
+    public ResponseEntity<GroupInfoAndApproveList> approveListEndPoint(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
         String groupNoString = String.valueOf(map.get("group_no"));
         int selectedGroupNo = Integer.parseInt(groupNoString);
         System.out.println("selectedGroupNo=" + selectedGroupNo);
 
-        List<GroupsDetailListDTO> groupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
-        model.addAttribute("groupInfo",groupInfo);
-        System.out.println("groupInfo=" + groupInfo);
+        //그룹 정보 가져오기
+        List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
+        System.out.println("GroupInfo=" + GroupInfo);
 
+        //그룹 구성원 정보 가져오기
         map.put("member_no", member_no);
         map.put("selectedGroupNo", selectedGroupNo);
 
         List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
-        model.addAttribute("approveList",approveList);
         System.out.println("approveList=" + approveList);
 
-        GroupInfoAndApproveList result = new GroupInfoAndApproveList(groupInfo, approveList);
-
+        GroupInfoAndApproveList result = new GroupInfoAndApproveList(GroupInfo, approveList);
+        //GroupInfo,approveList 결과 보내기
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }*/
+    }
 
 
 
