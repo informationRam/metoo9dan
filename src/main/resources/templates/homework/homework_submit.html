@@ -65,6 +65,7 @@
                             <input type="hidden" name="homeworkSubmitNo"/>
                             <input type="hidden" name="sendNo"/>
                             <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                            <span id="homeworkEditContentError" class="error-message"></span>
                             <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
                             <button type="submit">수정</button>
                             <button type="button">제출 취소</button>
@@ -177,6 +178,32 @@
                           // 에러 메시지 출력
                           if (errors.homeworkContent) {
                               $("#homeworkContentError").text(errors.homeworkContent);
+                          }
+                      }
+                  });
+              });
+
+              // editForm 제출
+              $("#editForm").submit(function(e) {
+                  e.preventDefault();
+
+                  $(".error-message").text("");  // 초기화
+
+                  $.ajax({
+                      url: $(this).attr("action"),
+                      type: "POST",
+                      data: $(this).serialize(),
+                      success: function(response) {
+                          alert("제출한 숙제가 수정되었습니다");
+                          reAction();
+                          location.reload();
+                      },
+                      error: function(xhr) {
+                          let errors = xhr.responseJSON;
+
+                          // 에러 메시지 출력
+                          if (errors.homeworkContent) {
+                              $("#homeworkEditContentError").text(errors.homeworkContent);
                           }
                       }
                   });
