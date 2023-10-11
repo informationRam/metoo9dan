@@ -232,11 +232,14 @@ public class StudyGroupController {
     //학습 그룹 가입 신청 리스트 가져오기
     @GetMapping("/approveList")
     public String approveList(Model model,@RequestParam(defaultValue="1") int member_no,
-                              @RequestParam(defaultValue="1") int selectedGroupNo,@RequestParam Map<String, Integer> map){ //selectedGroupNo 각 선생님 학습그룹의 맨 앞 숫자가 나오게 바꾸기
+                              @RequestParam Map<String, Integer> map){
         //학습그룹명 리스트 가져오기
         List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
         model.addAttribute("groupNameList",groupNameList);
         System.out.println("groupNameList="+groupNameList);
+
+        //학습 그룹 신청 리스트에서 기본으로 보여질 group_no(학습그룹no 중 가장 작은 값)
+        int selectedGroupNo = studyGroupService.basicGroupNo(member_no);
 
         //학습 그룹 정보
         List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
@@ -261,14 +264,14 @@ public class StudyGroupController {
         int selectedGroupNo = Integer.parseInt(groupNoString);
         System.out.println("selectedGroupNo=" + selectedGroupNo);
 
-        //그룹 정보 가져오기
+        //학습 그룹 정보
         List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
         System.out.println("GroupInfo=" + GroupInfo);
 
-        //그룹 구성원 정보 가져오기
         map.put("member_no", member_no);
         map.put("selectedGroupNo", selectedGroupNo);
 
+        //학습 그룹 가입 신청 학생 리스트
         List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
         System.out.println("approveList=" + approveList);
 
@@ -297,6 +300,19 @@ public class StudyGroupController {
             return "redirect:/studygroup/approveList";
         }
     }
+
+/*    @PostMapping(value = "/updateApproveEnd", produces = "application/json")
+    public ResponseEntity<String> updateApproveEnd(@RequestBody List<Integer> selectedMembers) {
+        System.out.println("updateApproveEnd진입");
+        // 'selectedMembers' 데이터를 사용하여 필요한 작업을 수행 (예: 데이터베이스 업데이트)
+        int result = studyGroupService.updateApproval(selectedMembers);
+
+        if (result > 0) {
+            return ResponseEntity.ok("Data processed successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Data processing failed");
+        }
+    }*/
 
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
