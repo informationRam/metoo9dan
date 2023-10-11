@@ -33,7 +33,7 @@
                          <form id="loginForm"  th:action="@{/member/login}" th:object="${userCreateForm}" method="post">
                              <!-- ID input -->
                              <div class="form-outline mb-4">
-                                 <input type="text" id="memberId" class="form-control" />
+                                 <input type="text" name="memberId" id="memberId" class="form-control" />
                                  <label class="form-label" for="memberId">아이디</label>
                              </div>
 
