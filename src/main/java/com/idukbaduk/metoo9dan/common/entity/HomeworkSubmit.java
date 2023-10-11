@@ -17,7 +17,7 @@ public class HomeworkSubmit {
     private Integer homeworkSubmitNo;    //int  NOT NULL    AUTO_INCREMENT COMMENT '숙제 제출 번호',
 
     @Column
-    private String progress;              //varchar(50) NOT NULL    COMMENT '진도',
+    private Integer progress;              //varchar(50) NOT NULL    COMMENT '진도',
 
     @Column(name="homework_content")
     private String homeworkContent;      //text NOT NULL    COMMENT '숙제 내용',

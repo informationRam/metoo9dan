@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.homework.service;
 
 import com.idukbaduk.metoo9dan.common.entity.*;
+import com.idukbaduk.metoo9dan.homework.validation.HwSubmitForm;
 import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
@@ -166,7 +167,7 @@ public class HomeworkService {
         /*
     -private Integer homeworkNo;
     -private Integer sendNo;
-
+    -private Integer homeworkSubmitNo;
     -private String homeworkTitle;
     -private String homeworkContent;
     -private String memberName;//교육자명
@@ -187,16 +188,36 @@ public class HomeworkService {
             dto.setMemberName(homeworks.getMember().getName());
             dto.setProgress(homeworks.getProgress());
             dto.setDueDate(homeworks.getDueDate());
+            dto.setSendNo(optionalHomeworkSend.get().getSendNo());
         }
         Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend_SendNo(sendNo);
         if(optionalHomeworkSubmit.isPresent()){
             HomeworkSubmit homeworkSubmit =optionalHomeworkSubmit.get();
+            System.out.println("homeworkSubmit.getHomeworkSubmitNo():"+homeworkSubmit.getHomeworkSubmitNo());
+            dto.setHomeworkSubmitNo(homeworkSubmit.getHomeworkSubmitNo());
             dto.setContent(homeworkSubmit.getHomeworkContent());
             dto.setAdditionalQuestion(homeworkSubmit.getAdditionalQuestions());
         }
+        System.out.println("dto:"+dto);
         return dto;
     }
 
-    public void addHomework(HomeworkSubmitDTO homeworkSubmitDto) {
+    public Optional<HomeworkSend> getHomeworkSendById(Integer homeworkSendNo) {
+        return homeworkSendRepository.findById(homeworkSendNo);
+    }
+
+    public void addHomeworkSubmit(@Valid HwSubmitForm hwSubmitForm, Homeworks homeworks, HomeworkSend homeworkSend) {
+        homeworkSend.setIsSubmit("Y");
+        homeworkSendRepository.save(homeworkSend);
+
+        HomeworkSubmit homeworkSubmit = new HomeworkSubmit();
+        homeworkSubmit.setHomeworkSend(homeworkSend);
+        homeworkSubmit.setHomeworks(homeworks);
+        homeworkSubmit.setHomeworkContent(hwSubmitForm.getHomeworkContent());
+        homeworkSubmit.setMember(hwSubmitForm.getMember());
+        homeworkSubmit.setSubmitDate(LocalDateTime.now());
+        homeworkSubmit.setAdditionalQuestions(hwSubmitForm.getAdditionalQuestions());
+        homeworkSubmit.setProgress(homeworks.getProgress());
+        homeworkSubmitRepository.save(homeworkSubmit);
     }
 }

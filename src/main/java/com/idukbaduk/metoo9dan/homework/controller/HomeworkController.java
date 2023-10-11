@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.homework.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.*;
+import com.idukbaduk.metoo9dan.homework.validation.HwSubmitForm;
 import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
 import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
@@ -42,7 +43,6 @@ public class HomeworkController {
     @GetMapping("/detail/{homeworkId}")
     public ResponseEntity<HomeworkDTO> getHomeworkDetail(@PathVariable Integer homeworkId) {
         Homeworks homework=homeworkService.findById(homeworkId);
-        homeworkService.getHomeworkSendListByhomework(homeworkId);
 
         HomeworkDTO detail = new HomeworkDTO();
         detail.setHomeworkTitle(homework.getHomeworkTitle());
@@ -136,8 +136,8 @@ public class HomeworkController {
 
     //숙제 제출 화면
     @GetMapping("/submit")
-    public String getHomeworkList(Model model) {
-        //아이디로 전송된 숙제 찾기
+    public String getHomeworkList(HwSubmitForm hwSubmitForm, Model model) {
+        //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
         List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
         model.addAttribute("homeworkSend", homeworkSendList);
         return "homework/homework_submit";
@@ -150,9 +150,31 @@ public class HomeworkController {
         return ResponseEntity.ok(dto);
     }
     //숙제 제출 post
-    //@PostMapping("/submit/add")
-    //public ResponseEntity<?> homeworkAdd(@RequestBody HomeworkSubmitDTO homeworkSubmitDto){
-    //}
+    @PostMapping("/submit/add")
+    public ResponseEntity<?> submitHomework(@Valid HwSubmitForm hwSubmitForm, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            // 에러 메시지를 담을 Map 생성
+            Map<String, String> errors = new HashMap<>();
+
+            result.getFieldErrors().forEach(error -> {
+                String fieldName = error.getField();
+                String errorMessage = error.getDefaultMessage();
+                errors.put(fieldName, errorMessage);
+                System.out.println(errors);
+            });
+            // 400 상태 코드와 함께 에러 메시지를 JSON 형태로 반환
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+        System.out.println("폼에서 받은 것들"+hwSubmitForm);
+        Homeworks homeworks =homeworkService.findById(hwSubmitForm.getHomeworkNo());
+        HomeworkSend homeworkSend = homeworkService.getHomeworkSendById(hwSubmitForm.getSendNo()).get();//전송 번호가 null
+        //로그인한 아이디로 바꿔야함!!!!!!!!!!!!!!!!!
+        hwSubmitForm.setMember(homeworkService.findMemberByMemberId("baduk"));
+        homeworkService.addHomeworkSubmit(hwSubmitForm,homeworks,homeworkSend);
+
+        // 성공 응답 (HTTP 상태 코드 200 OK와 함께 메시지 반환)
+        return ResponseEntity.ok("Homework edited successfully");
+    }
 
 
     //숙제 수정 post
