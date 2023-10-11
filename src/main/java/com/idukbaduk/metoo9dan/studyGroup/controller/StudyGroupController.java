@@ -254,51 +254,6 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 신청 리스트 엔드포인트
- /*   @GetMapping(value = "/approveListEndpoint", produces = "application/json")
-    @ResponseBody
-    public List<ApproveListDTO> approveListEndPoint(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
-
-        String groupNoString = String.valueOf(map.get("group_no")); // 문자열로 추출
-        int selectedGroupNo = Integer.parseInt(groupNoString); // 문자열을 정수로 변환
-        System.out.println("selectedGroupNo="+selectedGroupNo);
-
-        //학습 그룹 정보
-        List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
-        System.out.println("GroupInfo="+GroupInfo);
-
-        map.put("member_no", member_no); // map에 member_no 추가
-        map.put("selectedGroupNo", selectedGroupNo); // map에 selectedGroupNo 추가
-
-        //학습 그룹 가입 신청 학생 리스트
-        List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
-        //model.addAttribute("approveList",approveList);
-        System.out.println("approveList="+approveList);
-        return approveList;
-    }*/
-
- /*   @GetMapping(value = "/approveListEnd", produces = "application/json")
-    @ResponseBody
-    public List<GroupsDetailListDTO> approveListEnd(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
-
-        String groupNoString = String.valueOf(map.get("group_no")); // 문자열로 추출
-        int selectedGroupNo = Integer.parseInt(groupNoString); // 문자열을 정수로 변환
-        System.out.println("selectedGroupNo="+selectedGroupNo);
-
-        //학습 그룹 정보
-        List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
-        System.out.println("GroupInfo="+GroupInfo);
-
-        //map.put("member_no", member_no); // map에 member_no 추가
-        //map.put("selectedGroupNo", selectedGroupNo); // map에 selectedGroupNo 추가
-
-        //학습 그룹 가입 신청 학생 리스트
-        //List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
-        //model.addAttribute("approveList",approveList);
-        //System.out.println("approveList="+approveList);
-        return GroupInfo;
-    }*/
-
-    //학습 그룹 가입 신청 리스트 엔드포인트
     @GetMapping(value = "/approveListEndpoint", produces = "application/json")
     @ResponseBody
     public ResponseEntity<GroupInfoAndApproveList> approveListEndPoint(@RequestParam(defaultValue="1") int member_no, @RequestParam Map<String, Integer> map) {
