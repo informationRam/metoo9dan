@@ -396,10 +396,13 @@ public class StudyGroupController {
 
     //학습 그룹 가입 확인(학생)
     @GetMapping("/joinConfirm")
-    public String joinConfirm(){
+    public String joinConfirm(Model model){
+        int member_no=3; //로그인 처리하기
+        JoinConfirmDTO joinConfirm = studyGroupService.joinConfirm(member_no);
+        model.addAttribute("joinConfirm",joinConfirm);
+        System.out.println("joinConfirm="+joinConfirm);
 
-
-        return "studyGroup/joinConfirm";
+        return "studyGroup/studyGroup_joinConfirm";
     }
 
     //학습 그룹 가입 취소(학생)

@@ -210,12 +210,12 @@
     <!--학습그룹명 조건 조회(학습 그룹 신청 리스트)-->
     <select id="SelectNameList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
     SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
-    (SELECT COUNT(member_no)
-    FROM baduk.group_students gs
-    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
-    s.group_size - (SELECT COUNT(member_no)
-    FROM baduk.group_students gs
-    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+        (SELECT COUNT(member_no)
+            FROM baduk.group_students gs
+            WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+        s.group_size - (SELECT COUNT(member_no)
+                        FROM baduk.group_students gs
+                        WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
     FROM baduk.study_groups s
     JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
     JOIN baduk.members m ON s.member_no=m.member_no
@@ -272,6 +272,14 @@
         WHERE member_no=#{member_no}
     </select>
 
-
+    <!--학습 그룹 가입 확인(학생)-->
+    <select id="JoinConfirm" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.JoinConfirmDTO">
+        SELECT gs.group_no,g.game_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,gs.application_date,gs.approved_date,gs.is_approved
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s ON gs.group_no=s.group_no
+        JOIN baduk.game_contents g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE gs.member_no=3;
+    </select>
 
 </mapper>
