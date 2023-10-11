@@ -90,6 +90,16 @@ public class HomeworkController {
         return ResponseEntity.ok("Homework edited successfully");
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteHomework(@PathVariable Integer id) {
+        try {
+            homeworkService.deleteHomework(id);
+            return new ResponseEntity<>("삭제 성공", HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity<>("삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/send")
     public String showSendPage(Model model) {
         //로그인한 아이디로 바꿔야함!!!!!!!!!!!!!!!!!!!!!!

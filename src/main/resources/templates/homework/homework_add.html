@@ -361,7 +361,20 @@
                     // 삭제 버튼 클릭 이벤트
                     $("#deleteBtn").click(function(){
                         if(confirm("숙제를 삭제하시겠습니까?")) {
-                            // 삭제 API를 호출하는 코드를 여기에 추가합니다.
+                            let homeworkId = $(this).data('hw-id');
+
+                            $.ajax({
+                                url: `/homework/delete/${homeworkId}`,
+                                type: 'DELETE',
+                                success: function(response) {
+                                    // 성공적으로 삭제되었을 때 동작, 예를 들면 페이지 새로고침
+                                    location.reload();
+                                },
+                                error: function(xhr, status, error) {
+                                    // 오류 발생 시 동작
+                                    alert('삭제 실패: ' + xhr.responseText);
+                                }
+                            });
                         }
                     });
                 });
