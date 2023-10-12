@@ -8,8 +8,9 @@
         <a th:href="@{/}" class="btn"> gameContent </a>
         <a th:href="@{/}" class="btn"> member </a>
         <div>
-            <a th:href="@{#}"> 로그인</a>
-            <a th:href="@{#}"> 로그아웃</a>
+        <!--    <a th:href="@{#}"> 회원가입</a>-->
+            <a th:href="@{/member/join}" sec:authorize="isAnonymous()"> 로그인&회원가입</a>
+            <a th:href="@{/logout}" sec:authorize="isAuthenticated()"> 로그아웃</a>
         </div>
     </div>
 
