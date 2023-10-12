@@ -30,8 +30,10 @@ public class HomeworkService {
     private HomeworkRepository homeworkRepository;
     @Autowired
     private HomeworkSendRepository homeworkSendRepository;
+
     @Autowired
-    private MemberRepository memberRepository;
+    private HwMemberRepository memberRepository;
+
     @Autowired
     private GroupStudentsRepository groupStudentsRepository;
     @Autowired

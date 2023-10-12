@@ -1,6 +1,6 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-<div layout:fragment="content" class="container my-3">
-    <link rel="stylesheet" href="/css/game/list.css" />
+<div th:replace="~{/game/gametestSidebar::sidebar}"></div>
+<link rel="stylesheet" href="/css/game/list.css" />
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->

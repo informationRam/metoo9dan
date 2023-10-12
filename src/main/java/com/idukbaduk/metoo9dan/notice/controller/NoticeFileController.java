@@ -28,7 +28,8 @@ public class NoticeFileController {
     @GetMapping(value="/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
     public ResponseEntity<Resource> download(String fileName){
-        Resource resource = new FileSystemResource("C:\\upload\\"+fileName);
+        Resource resource = new FileSystemResource("/Users/ryuahn/Desktop/baduk/noti/"+fileName);
+       /* Resource resource = new FileSystemResource("C:\\upload\\"+fileName);*/
         if(resource.exists()==false){ //존재하지 않으면 에러처리
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

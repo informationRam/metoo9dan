@@ -148,7 +148,8 @@ public class NoticeController {
 
         List<NoticeFileDTO> list = new ArrayList<>();
         //파일업로드(물리적 폴더에 저장)
-        String uploadFolder = "C:/upload";
+       /* String uploadFolder = "C:/upload";*/
+        String uploadFolder = "/Users/ryuahn/Desktop/baduk/noti/";
         // getFolder(): 년/월/일 폴더 생성
         String uploadFolderPath = getFolder();
         File uploadPath = new File(uploadFolder, uploadFolderPath);

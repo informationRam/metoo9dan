@@ -4,7 +4,7 @@ import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.GroupStudents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
-import com.idukbaduk.metoo9dan.homework.repository.MemberRepository;
+import com.idukbaduk.metoo9dan.homework.repository.HwMemberRepository;
 import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import com.idukbaduk.metoo9dan.studyGroup.repository.*;
 import com.idukbaduk.metoo9dan.homework.repository.*;
@@ -21,7 +21,7 @@ public class StudyGroupService {
     private final GroupRepository groupRepository;
     private final GroupStudentsRepository groupStudentsRepository;
     private final GameContentRepository gameContentRepository;
-    private final MemberRepository memberRepository;
+    private final HwMemberRepository hwMemberRepository;
 
     //학습그룹 목록 조회
     public List<StudyGroupsListDTO> getList(int member_no) {
@@ -54,7 +54,7 @@ public class StudyGroupService {
         studyGroups.setGameContents(gameContents);
         studyGroups.setMember(member);
         //studyGroups.setGameContents(gameContentRepository.findById(game_content_no).orElse(null));
-        //studyGroups.setMember(memberRepository.findById(member_no).orElse(null));
+        //studyGroups.setMember(hwMemberRepository.findById(member_no).orElse(null));
         groupRepository.save(studyGroups);
     }
 
