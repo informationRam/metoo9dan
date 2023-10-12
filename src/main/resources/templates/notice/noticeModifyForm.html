@@ -1,0 +1,166 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="styleLink" >
+    <style>
+    </style>
+</div>
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/notice/manageSidebar::sidebar}" ></div>
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h2>공지사항 게시글 수정</h2>
+            <form id="noticeForm" th:object="${noticeForm}" th:action="@{|/notice/modify/${notice.noticeNo}|}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{postDate}">
+                <label for="noticeType">공지구분</label>
+                <div class="d-flex">
+                    <select th:field="*{noticeType}" class="form-control" style="width:200px;" th:value="${notice.noticeType}">
+                        <option value="">분류를 선택하세요</option>
+                        <option value="noti">공지사항</option>
+                        <option value="faq">자주묻는질문</option>
+                    </select>
+                    <input type="checkbox" th:field="*{isImp}" class="form-check-input mt-2">
+                    <label for="isImp1" class="form-label p-2"><div>중요글로 상단 노출</div></label>
+                </div>
+                <label for="title">제목</label>
+                <input type="text" th:field="*{title}" placeholder="제목을 입력하세요" class="form-control">
+                <div>게시여부</div>
+                <div class="d-flex">
+                    <input type="radio" value="IMMEDIATE" th:field="*{status}" onclick="disableDateInput()" class="form-check-input mt-2">
+                    <label for="status1" class="form-label p-2">등록 즉시 게시</label>
+
+                    <input type="radio" value="SCHEDULED" th:field="*{status}" onclick="enableDateInput()" class="form-check-input mt-2">
+                    <label for="status2" class="form-label p-2">게시 일자</label>
+                    <input type="date" id="selectDate" name="selectDate" class="form-control" style="width:200px;">
+                </div>
+                <label for="content" class="col-form-label">내용</label>
+                <textarea th:field="*{content}" rows="6" placeholder="내용을 입력하세요" class="form-control p-2"></textarea>
+
+                첨부파일 (파일 1개당 최대 첨부용량: 30MB)
+                <div id="fileInfo" style="border: 1px solid black;"></div>
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.</label>
+                    <input class="form-control" type="file" id="formFileMultiple" name="uploadFiles" multiple>
+                </div>
+                <input type="button" onclick="saveForm()" value="게시글 저장" class="btn btn-primary">
+            </form>
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+<div layout:fragment="script">
+<script th:inline="javascript">
+
+    document.getElementById('formFileMultiple').addEventListener('change', handleDrop);
+
+    function handleDrop(event) {
+        event.preventDefault();
+
+        var files = event.target.files; // input 요소에서 files 속성 직접 사용
+        var fileList = []; // 파일 정보를 담아 둘 배열
+
+        // 파일 처리 로직을 여기에 추가
+        for (var i = 0; i < files.length; i++) {
+            console.log('첨부된 파일:', files[i]);
+            var tag = "";
+            var f = files[i];
+            fileList.push(f);
+            var fileName = f.name;
+            var fileSize = f.size / 1024 / 1024;
+            fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
+            tag += "<div class='d-flex justify-content-between'>"+
+                    "<span>"+fileName+"</span>" +
+                    "<span style='float:right;'>"+fileSize+" MB</span>" +
+                    "</div>";
+
+            document.getElementById('fileInfo').insertAdjacentHTML('beforeend', tag);
+        }
+    }
+
+    // 게시일자 라디오를 선택하면 날짜 선택 부분이 활성화
+    function disableDateInput() {
+        document.getElementById('selectDate').disabled = true;
+    }
+
+    function enableDateInput() {
+        document.getElementById('selectDate').disabled = false;
+    }
+
+    // 폼 저장 및 제출
+    function saveForm() {
+        if(checkForm()){ //유효성검사 마쳤으면,
+            if(document.getElementById("status1").checked){ //등록즉시 게시 선택시
+                var today = /*[[${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}]]*/ '';
+                document.getElementById("postDate").value = today;
+                document.getElementById("noticeForm").submit(); // 폼 제출
+            } else if(document.getElementById("status2").checked){ //예약게시 선택시
+                document.getElementById("postDate").value = document.getElementById("selectDate").value;
+                document.getElementById("noticeForm").submit(); // 폼 제출
+            }
+        }
+    }
+
+    // 폼 유효성검사
+    function checkForm() {
+        // 제목 유효성 검사
+        var title = document.getElementById("title").value;
+        if (title.trim() === "") {
+            alert("제목을 입력하세요.");
+            return false;
+        }
+
+        // 분류 선택 여부 확인
+        var noticeType = document.getElementById("noticeType").value;
+        if (noticeType === "") {
+            alert("분류를 선택하세요.");
+            return false;
+        }
+
+        // 내용 유효성 검사
+        var content = document.getElementById("content").value;
+        if (content.trim() === "") {
+            alert("내용을 입력하세요.");
+            return false;
+        }
+
+        // 게시여부 선택 여부 확인
+        var postChecked = document.getElementById("status1").checked;
+        var notPostChecked = document.getElementById("status2").checked;
+
+        if (!postChecked && !notPostChecked) {
+            alert("게시여부를 선택하세요.");
+            return false;
+        }
+
+        // 게시일자 선택 여부 확인
+        if (notPostChecked) {
+            var selectDate = document.getElementById("selectDate").value;
+            var postDate = new Date(selectDate);
+            if(isNaN(postDate.getTime())){
+                alert("게시 일자를 선택하세요.");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //넘어온 model 'impCk'가 true면, 체크박스 선택하기
+    if([[${impCk}]]!=null){
+        document.getElementById("isImp1").checked = true;
+    }
+
+    //넘어온 model 'status'가 등록즉시게시가 아니면, 게시일자 라디오타입에 체크하고 postDate 세팅하기
+    if([[${status}]]!='IMMEDIATE'){
+        var beforeFDate = [[${status}]];
+        var formattedDate = new Date(beforeFDate).toISOString().split('T')[0];
+
+        document.getElementById("status2").checked = true;
+        document.getElementById("selectDate").value = formattedDate;
+    } else {
+        document.getElementById("status1").checked = true;
+    }
+</script>
+</div>
+</html>

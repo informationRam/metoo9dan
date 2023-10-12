@@ -118,4 +118,15 @@ public class NoticeService {
         }
     }
 
+    //공지사항 수정처리
+    public void modify(Notice notice, NoticeDTO noticeDTO) {
+        notice.setNoticeType(noticeDTO.getNoticeType());
+        notice.setNoticeTitle(noticeDTO.getNoticeTitle());
+        notice.setNoticeContent(noticeDTO.getNoticeContent());
+        notice.setWriteDate(noticeDTO.getWriteDate());
+        notice.setPostDate(noticeDTO.getPostDate());
+        notice.setStatus(noticeDTO.getStatus());
+        notice.setIsImp(noticeDTO.isImp());
+        noticeRepository.save(notice);
+    }
 }
