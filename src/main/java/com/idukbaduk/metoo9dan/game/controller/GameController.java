@@ -37,11 +37,14 @@ public class GameController {
 
     //게임컨텐츠 등록 폼 (교육자료 함께 저장시 교육자료가 update 및 생성된다.)
     @GetMapping("/addForm")
-    public String gameAddForm(GameValidation gameValidation, Model model) {
-        model.addAttribute("gameValidation", gameValidation);
+    public String gameAddForm(GameValidation gameValidation, Model model, HttpSession session) {
+
+        List<EducationalResources> educationalResources = new ArrayList<>();
 
         List<EducationalResources> allEducation = educationService.getAllEducation();
+        session.setAttribute("educationalResources", educationalResources);
         model.addAttribute("allEducation", allEducation);
+        model.addAttribute("gameValidation", gameValidation);
         return "game/addForm";
     }
 
@@ -73,8 +76,8 @@ public class GameController {
     @PostMapping("/add")
     @Transactional
     public String gameAdd(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult,
-                          @RequestParam("boardFile") MultipartFile file, @RequestParam(name = "selectedValues", required = false) String selectedValues) throws IOException {
-
+                          @RequestParam("boardFile") MultipartFile file,
+                          @RequestParam(name = "selectedValues", required = false) String selectedValues,Model model) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "game/addForm";
@@ -256,6 +259,7 @@ public class GameController {
             response.put("message", "실패하였습니다.");
         } else {
             // 세션에 educationalResources를 저장
+
             session.setAttribute("educationalResources", educationalResources);
             // 성공 메시지를 맵에 추가
             response.put("message", "저장되었습니다.");
@@ -267,13 +271,14 @@ public class GameController {
     @PostMapping("/page2")
     public String handlePage2Post(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult,
                                   HttpSession session, Model model) {
-        List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
-        List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
-        gameValidation = (GameValidation) session.getAttribute("gameValidation");
+       // List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
+        //List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
+       // gameValidation = (GameValidation) session.getAttribute("gameValidation");
 
-        model.addAttribute("educationalResources", educationalResources);
-        model.addAttribute("originFileNames", originFileNames);
-        model.addAttribute("gameValidation", gameValidation);
+
+       // model.addAttribute("educationalResources", educationalResources);
+       // model.addAttribute("originFileNames", originFileNames);
+       // model.addAttribute("gameValidation", gameValidation);
 
         return "redirect:/game/page3"; // Page3로 리다이렉트
     }
@@ -283,47 +288,59 @@ public class GameController {
     public String getPage3(Model model,HttpSession session) {
 
         // 세션에서 정보를 가져옵니다.
-        List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
+       /* List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
         List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
         GameValidation gameValidation = (GameValidation) session.getAttribute("gameValidation");
 
         // 모델에 추가하여 뷰로 전달합니다.
         model.addAttribute("educationalResources", educationalResources);
         model.addAttribute("originFileNames", originFileNames);
-        model.addAttribute("gameValidation", gameValidation);
+        model.addAttribute("gameValidation", gameValidation);*/
 
         return "game/page3";
     }
-
+/*
+    // page3 가격 업데이트 처리
+    @PostMapping("/updateValidation")
+    public String updateGameValidation(@ModelAttribute("gameValidation") @Valid GameValidation updatedValidation, HttpSession session) {
+        GameValidation originalValidation = (GameValidation) session.getAttribute("gameValidationPage1");
+        originalValidation.setOriginal_price(updatedValidation.getOriginal_price());
+        originalValidation.setDiscount_rate(updatedValidation.getDiscount_rate());
+        originalValidation.setSale_price(updatedValidation.getSale_price());
+        session.setAttribute("gameValidationPage1", originalValidation);
+        return "redirect:/game/page3";
+    }
+*/
 
     // 저장 처리 로직
     @PostMapping("/save")
-    public String saveGame(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation,BindingResult bindingResult,
-                    HttpSession session, @RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
+    public String saveGame(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult, HttpSession session, @RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
         // page3에서 확인 버튼을 눌렀을 때 서버에 저장
         // gameValidation 객체에 필요한 데이터가 모두 채워져 있을 것입니다.
 
         //정가, 할인율, 판매가가 null이면 보여주는 에러
-        if(gameValidation.getOriginal_price() == null) {
+       /* if(gameValidation.getOriginal_price() == null) {
             bindingResult.rejectValue("original_price", "original_priceInCorrect", "값을 확인해주세요.");
             return "game/page3";
-        }
+        }*/
 
         //세션에서 값을 가져옴
         List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
         //세션에 저장된 educationalResources 값을 가져온다
         List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
 
-
-        // page3에서 입력 받은 데이터를 세션에 추가 하여 session으로 저장
-        model.addAttribute("gameValidation", gameValidation);
+        // 기존의 gameValidation 값을 가져옵니다.
         GameValidation gameValidationPage1 = (GameValidation) session.getAttribute("gameValidationPage1");
+
+        // gameValidationPage1을 업데이트합니다.
         gameValidationPage1.setOriginal_price(gameValidation.getOriginal_price());
         gameValidationPage1.setDiscount_rate(gameValidation.getDiscount_rate());
         gameValidationPage1.setSale_price(gameValidation.getSale_price());
+
+        // page3에서 입력 받은 데이터를 세션에 추가 하여 session으로 저장
         session.setAttribute("gameValidation", gameValidationPage1);
 
-        gameValidation = (GameValidation) session.getAttribute("gameValidation");
+        System.out.println("gameValidation?: "+gameValidation);
 
         // gameValidation 값을 gameContents Entity로 변경한다.
         GameContents gameContents = gameService.toGameContents(gameValidation);
@@ -371,7 +388,5 @@ public class GameController {
         session.removeAttribute("gameValidationPage1");
         return "redirect:/game/list";
     }
-
-
 
 }//class

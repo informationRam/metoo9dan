@@ -82,9 +82,6 @@
                                                     <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
                                                 </td>
                                             </tbody>
-                                            <div class="nado-selectedu">
-                                                <span><p></p></span>
-                                            </div>
                                         </table>
                                     </div>
                                     <div class="mb-3 text-center">
@@ -104,32 +101,6 @@
             </main>
         </div>
     </div>
-    <script>
-        function addCommas(inputElement) {
-            // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.
-            var value = inputElement.value.replace(/,/g, ''); // 입력된 콤마를 제거
-            value = parseFloat(value).toLocaleString('en-US');
-            inputElement.value = value;
-        }
-
-        function formatPrice(price) {
-            // 콤마가 추가된 값을 콤마를 제거하고 부동 소수점 숫자로 변환합니다.
-            return parseFloat(price.toString().replace(/,/g, ''));
-        }
-
-        function calculateSalePrice() {
-            var originalPrice = formatPrice(document.getElementById('original_price').value);
-            var discountRate = parseFloat(document.getElementById('discount_rate').value);
-
-            if (!isNaN(originalPrice) && !isNaN(discountRate)) {
-                var salePrice = originalPrice * (1 - discountRate / 100);
-
-                // 판매가를 소수점 첫 번째 자리에서 반올림하고, 부동 소수점 숫자로 변환한 후 콤마를 추가하여 표시합니다.
-                var roundedSalePrice = Math.round(salePrice);
-                document.getElementById('sale_price').value = roundedSalePrice.toLocaleString('en-US');
-            }
-        }
-    </script>
     <script th:inline="javascript">
      // 선택한 교육 자료 번호를 저장할 배열
      var selectedResourceNos = [];
@@ -185,9 +156,7 @@
         if (this.status == 200) {
             var responseJson = JSON.parse(this.responseText);
 
-            // educationalResources를 HTML에 추가
-            var selectedResourceList = document.querySelector('.nado-selectedu span');
-            selectedResourceList.innerHTML = '';
+
 
             // JSON 응답 파싱
             var responseJson = JSON.parse(this.responseText);

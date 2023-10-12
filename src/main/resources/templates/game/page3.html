@@ -22,14 +22,17 @@
                         <h1>Page 3</h1>
                         <!-- 표시할 데이터 -->
                         <h2>입력한 데이터 확인:</h2>
-                        <p>게임 콘텐츠명: <span th:text="${gameValidation.game_name}"></span></p>
-                        <p>난이도: <span th:text="${gameValidation.difficulty}"></span></p>
-                        <p>구독기간: <span th:text="${gameValidation.subscription_duration}"></span></p>
-                        <p>구독 인원: <span th:text="${gameValidation.max_subscribers}"></span></p>
-                        <p>정가: <span th:text="${gameValidation.original_price}"></span></p>
-                        <p>할인율: <span th:text="${gameValidation.discount_rate}"></span></p>
-                        <p>판매가: <span th:text="${gameValidation.sale_price}"></span></p>
-                        <p>패키지 내용: <span th:text="${gameValidation.package_details}"></span></p>
+
+                        1.[[${session.gameValidationPage1.game_name}]]
+
+                        <p>게임 콘텐츠명: [[${session.gameValidationPage1.game_name}]]</p>
+                        <p>난이도:   [[${session.gameValidationPage1.game_name}]]</p>
+                        <p>구독기간:   [[${session.gameValidationPage1.subscription_duration}]]</p>
+                        <p>구독 인원:  [[${session.gameValidationPage1.max_subscribers}]]</p>
+                        <p>정가: [[${session.gameValidationPage1.original_price}]]</p>
+                        <p>할인율: [[${session.gameValidationPage1.discount_rate}]]</p>
+                        <p>판매가: [[${session.gameValidationPage1.sale_price}]]</p>
+                        <p>패키지 내용: [[${session.gameValidationPage1.package_details}]]</p>
 
                         <p>업로드 파일 :</p>
                         <h2>업로드한 파일 목록:</h2>
@@ -38,48 +41,129 @@
                                 <p th:text="${fileName}"></p>
                             </li>
                         </ul>
-                        <form action="/game/save" method="post" enctype="multipart/form-data">
-                        <div class="nado-gameprice">
-                            <!-- 정가 -->
-                            <div class="mb-3 row">
-                                <label for="original_price" class="col-sm-2 col-form-label">정가</label>
-                                <div class="col-sm-7">
-                                    <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
-                                    <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
-                                </div>
-                            </div>
-                            <!-- 할인율 -->
-                            <div class="mb-3 row">
-                                <label for="discount_rate" class="col-sm-2 col-form-label">할인율</label>
-                                <div class="col-sm-7">
-                                    <div class="input-group"> <!-- Input 그룹을 사용하여 입력 필드와 % 기호를 함께 표시 -->
-                                        <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
-                                        <span class="input-group-text">%</span> <!-- Input 그룹의 추가 텍스트로 % 기호를 추가 -->
+                        <div class="table-wrapper">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>선택</th>
+                                    <th scope="col">교육자료명</th>
+                                    <th scope="col">자료구분</th>
+                                    <th scope="col">자료유형</th>
+                                    <th scope="col">서비스구분</th>
+                                    <th scope="col">패키지상태</th>
+                                    <th scope="col" colspan="2">등록일</th>
+                                </tr>
+                                </thead>
+                                <tbody class="table-light" id="educationlist">
+                                <tr th:each="education : ${educationalResources}">
+                                    <!-- 선택하기 -->
+                                    <td class="custom-checkbox-label">
+                                        <input type="checkbox" class="form-check-input" name="selectedValues" th:value="${education.resourceNo}">
+                                        <span class="custom-checkbox-indicator"></span>
+                                        <!-- 교육자료 제목 -->
+                                    <td class="education title" th:text="${education.resourceName}"></td>
+                                    <!-- 자료구분 -->
+                                    <td class="education resourceCate">
+                                        <span th:switch="${education.resourceCate}">
+                                            <span th:case="tutorial">튜토리얼</span>
+                                            <span th:case="lecture">교육영상</span>
+                                        </span>
+                                    </td>
+                                    <!-- 자료유형 -->
+                                    <td class="education fileType">
+                                        <span th:switch="${education.fileType}">
+                                            <span th:case="'image'">이미지</span>
+                                            <span th:case="'video'">동영상</span>
+                                            <span th:case="'image/video'">이미지/동영상</span>
+                                            <span th:case="'ect'">기타</span>
+                                        </span>
+                                    </td>
+                                    <!-- 서비스구분 -->
+                                    <td class="education serviceType">
+                                        <span th:switch="${education.serviceType}">
+                                            <span th:case="full">유료</span>
+                                            <span th:case=="short">무료</span>
+                                        </span>
+                                    </td>
+                                    <!-- 패키지유형 -->
+                                    <td class="education-gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : '-'}" data-game-contents="${education.gameContents != null ? education.gameContents.gameName : '-'}"></td>
+                                    <!-- 등록일 (수정하면 날짜 변경) -->
+                                    <td class="education date">
+                                        <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
+                                    </td>
+                                </tbody>
+                            </table>
+                            <form action="/game/save" method="post" enctype="multipart/form-data">
+                                <div class="nado-gameprice">
+                                    <!-- 정가 -->
+                                    <div class="mb-3 row">
+                                        <label for="original_price" class="col-sm-2 col-form-label">정가</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
+                                            <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
+                                        </div>
                                     </div>
-                                    <small class="text-muted ms-2">적용 버튼을 눌러 판매가를 적용하세요.</small><br>
-                                    <span th:if="${#fields.hasErrors('discount_rate')}" th:errors="*{discount_rate}" class="error-message text-danger small"></span>
-                                </div>
-                                <div class="col-sm-3">
-                                    <button type="button" class="btn btn-primary" onclick="calculateSalePrice()">적용</button>
-                                </div>
-                            </div>
-                            <!-- 판매가 -->
-                            <div class="mb-3 row">
-                                <label for="sale_price" class="col-sm-2 col-form-label">판매가</label>
-                                <div class="col-sm-7">
-                                    <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price" readonly oninput="addCommas(this)" placeholder="할인율 적용시 자동 적용">
-                                    <span th:if="${#fields.hasErrors('sale_price')}" th:errors="*{sale_price}" class="error-message text-danger small"></span>
-                                </div>
-                            </div>
-                        </div>
-                    <!-- 확인 버튼 -->
-                        <div>
-                            <input type="submit" value="확인">
-                        </div>
-          </form>
+                                        <!-- 할인율 -->
+                                        <div class="mb-3 row">
+                                            <label for="discount_rate" class="col-sm-2 col-form-label">할인율</label>
+                                            <div class="col-sm-7">
+                                                <div class="input-group"> <!-- Input 그룹을 사용하여 입력 필드와 % 기호를 함께 표시 -->
+                                                    <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
+                                                    <span class="input-group-text">%</span> <!-- Input 그룹의 추가 텍스트로 % 기호를 추가 -->
+                                                </div>
+                                                <small class="text-muted ms-2">적용 버튼을 눌러 판매가를 적용하세요.</small><br>
+                                                <span th:if="${#fields.hasErrors('discount_rate')}" th:errors="*{discount_rate}" class="error-message text-danger small"></span>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <button type="button" class="btn btn-primary" onclick="calculateSalePrice()">적용</button>
+                                            </div>
+                                        </div>
+                                        <!-- 판매가 -->
+                                        <div class="mb-3 row">
+                                            <label for="sale_price" class="col-sm-2 col-form-label">판매가</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" th:field="*{sale_price}" class="form-control" id="sale_price" readonly oninput="addCommas(this)" placeholder="할인율 적용시 자동 적용">
+                                                <span th:if="${#fields.hasErrors('sale_price')}" th:errors="*{sale_price}" class="error-message text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <!-- 확인 버튼 -->
+
+                                    <div>
+                                        <input type="submit" value="확인">
+                                    </div>
+
+                            </form>
+
         </div>
       </main>
     </div>
   </div>
+    <script>
+        function addCommas(inputElement) {
+            // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.
+            var value = inputElement.value.replace(/,/g, ''); // 입력된 콤마를 제거
+            value = parseFloat(value).toLocaleString('en-US');
+            inputElement.value = value;
+        }
+
+        function formatPrice(price) {
+            // 콤마가 추가된 값을 콤마를 제거하고 부동 소수점 숫자로 변환합니다.
+            return parseFloat(price.toString().replace(/,/g, ''));
+        }
+
+        function calculateSalePrice() {
+            var originalPrice = formatPrice(document.getElementById('original_price').value);
+            var discountRate = parseFloat(document.getElementById('discount_rate').value);
+
+            if (!isNaN(originalPrice) && !isNaN(discountRate)) {
+                var salePrice = originalPrice * (1 - discountRate / 100);
+
+                // 판매가를 소수점 첫 번째 자리에서 반올림하고, 부동 소수점 숫자로 변환한 후 콤마를 추가하여 표시합니다.
+                var roundedSalePrice = Math.round(salePrice);
+                document.getElementById('sale_price').value = roundedSalePrice.toLocaleString('en-US');
+            }
+        }
+    </script>
 </div>
 </html>
