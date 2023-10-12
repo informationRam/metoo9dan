@@ -40,9 +40,10 @@ public class EducationController {
 
     //교육자료 등록 처리
     @PostMapping("/add")
-    public String educationAdd(@ModelAttribute("educationVaildation") @Valid EducationValidation educationValidation, BindingResult bindingResult, @RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
-        System.out.println("boardFile?"+educationValidation.getBoardFile().get(0));
-
+    public String educationAdd(@ModelAttribute("educationVaildation") @Valid EducationValidation educationValidation,
+                               BindingResult bindingResult, @RequestParam("boardFile") MultipartFile file,
+                               @RequestParam("thumFile") MultipartFile thumFile,
+                               Model model) throws IOException {
         // hasErrors 확인
         if (bindingResult.hasErrors()) {
             model.addAttribute("educationValidation", educationValidation);
@@ -51,12 +52,11 @@ public class EducationController {
         // 업로드된 파일의 확장자 확인
         MultipartFile fileName = educationValidation.getBoardFile().get(0);
 
-        //파일이 있으면
-        if (fileName != null && !file.isEmpty()) {
+        //파일이 존재하면 처리한다.
+        if (fileName != null && !file.isEmpty() || thumFile != null && thumFile.isEmpty()) {
             educationService.saveWithFile(educationValidation);
-        }else {
-            educationService.saveWithoutFile(educationValidation);
         }
+
         return "redirect:/education/list";
     }
 

@@ -34,15 +34,13 @@ public class EducationService {
 
     @Transactional
     public void saveWithFile(EducationValidation educationValidation) throws IOException {
-        // 파일이 있는 경우의 처리
         // 파일을 저장하고, 교육 자료를 저장하는 로직을 포함
         EducationalResources educationalResources = toEducationalResources(educationValidation);
+        int numberfile = educationValidation.getBoardFile().size();
+        EducationalResources educationalResources1 = educationalRepository.save(educationalResources);   //교육자료를 저장
         try {
-            if(educationValidation.getBoardFile() !=null){
-                String fileUrl = "/Users/ryuahn/Desktop/baduk/education/";     //mac 파일 지정 C:/baduk
-                educationalResources.setFileUrl(fileUrl);
-                EducationalResources educationalResources1 = educationalRepository.save(educationalResources);   //교육자료를 저장
-                resourcesFilesService.save(educationalResources1,educationValidation,fileUrl);
+             if(!educationValidation.getBoardFile().isEmpty() && !educationValidation.getThumFile().isEmpty()){
+                 resourcesFilesService.save(educationalResources1,educationValidation);
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +99,7 @@ public class EducationService {
                     String fileUrl = "/Users/ryuahn/Desktop/baduk/education/";     //mac 파일 지정 C:/baduk
                     educationalResources.setFileUrl(fileUrl);
                     EducationalResources geteducationalResources = educationalRepository.save(educationalResources);   //교육자료를 저장
-                    resourcesFilesService.save(geteducationalResources, educationValidation, fileUrl);
+                    resourcesFilesService.save(geteducationalResources, educationValidation);
                 }
             }
         }
@@ -135,7 +133,6 @@ public class EducationService {
         educationValidation.setResource_name(education.getResourceName());
         educationValidation.setResource_cate(education.getResourceCate());
         educationValidation.setFile_type(education.getFileType());
-        educationValidation.setFile_url(education.getFileUrl());
         educationValidation.setService_type(education.getServiceType());
         educationValidation.setDescription(education.getDescription());
         // 이미 업로드된 이미지 파일 목록을 가져와서 EducationVaildation에 설정
@@ -208,7 +205,6 @@ public class EducationService {
         copy_education.setResourceName(ori_education.getResource_name());
         copy_education.setResourceCate(ori_education.getResource_cate());
         copy_education.setFileType(ori_education.getFile_type());
-        copy_education.setFileUrl(ori_education.getFile_url());
         copy_education.setServiceType(ori_education.getService_type());
         copy_education.setDescription(ori_education.getDescription());
         copy_education.setCreationDate(LocalDateTime.now());

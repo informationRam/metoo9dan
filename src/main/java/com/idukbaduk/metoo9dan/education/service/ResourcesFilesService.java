@@ -45,22 +45,48 @@ public class ResourcesFilesService {
         return resourcesFiles;
     }
 
-    //저장처리 (파일도 저장함)
-    public void save(EducationalResources educationalResources, EducationValidation educationValidation,String getfileUrl) throws IOException {
-        for (MultipartFile boardFile : educationValidation.getBoardFile()) {
-            ResourcesFiles resourcesFiles = new ResourcesFiles(); // 이미지 저장을 위한 객체 생성
-            String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
-            String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            String copyFileName = todayDate + "_" + originalFileName;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
-            String savePath = getfileUrl + copyFileName;   //mac 파일 지정 C:/baduk
-            boardFile.transferTo(new File(savePath));   //파일저장 처리
+    // 저장처리 (썸네일 저장함)
+    public void save(EducationalResources educationalResources, EducationValidation educationValidation) throws IOException {
+        String fileUrl = "파일 저장 경로"; // 파일 저장 경로를 여기에 설정
 
-            resourcesFiles.setEducationalResources(educationalResources);
-            resourcesFiles.setOriginFileName(originalFileName);
-            resourcesFiles.setCopyFileName(copyFileName);
-            resourcesFilesRepository.save(resourcesFiles);
+        MultipartFile thumFile = educationValidation.getThumFile();
+        if (!thumFile.isEmpty()) {
+            String thumOriginFile = thumFile.getOriginalFilename();
+            String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+            String thumCopyFileName = todayDate + "_" + thumOriginFile;
+            String thumSavePath = fileUrl + thumCopyFileName;
+
+            thumFile.transferTo(new File(thumSavePath));
+
+            ResourcesFiles thumResourcesFile = new ResourcesFiles();
+            thumResourcesFile.setThumOriginFileName(thumOriginFile);
+            thumResourcesFile.setThumOriginCopyName(thumCopyFileName);
+            thumResourcesFile.setFileUrl(fileUrl);
+            thumResourcesFile.setEducationalResources(educationalResources);
+            resourcesFilesRepository.save(thumResourcesFile);
+        }
+
+        for (MultipartFile boardFile : educationValidation.getBoardFile()) {
+            if (!boardFile.isEmpty()) {
+                String originalFileName = boardFile.getOriginalFilename();
+                String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+                String copyFileName = todayDate + "_" + originalFileName;
+                String savePath = fileUrl + copyFileName;
+
+                boardFile.transferTo(new File(savePath));
+
+                ResourcesFiles resourcesFiles = new ResourcesFiles();
+                resourcesFiles.setFileUrl(fileUrl);
+                resourcesFiles.setEducationalResources(educationalResources);
+                resourcesFiles.setOriginFileName(originalFileName);
+                resourcesFiles.setCopyFileName(copyFileName);
+                resourcesFilesRepository.save(resourcesFiles);
+            }
         }
     }
+
+
+
 
     // 삭제된 파일 처리
     public void deleteFile(List<Integer> deletedFiles) {

@@ -38,7 +38,7 @@
                     </div>
             <!-- 서비스 구분 -->
                     <div class="mb-3 row">
-                        <label for="max_subscribers" class="col-sm-2 col-form-label">구독가능인원</label>
+                        <label for="max_subscribers" class="col-sm-2 col-form-label">서비스구분</label>
                         <div class="col-sm-3">
                             <select th:field="*{service_type}" class="form-select">
                                 <option value="full">유료</option>
@@ -53,11 +53,20 @@
                         <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요."></textarea>
                     </div>
                 </div>
-                <!-- 파일 업로드 -->
+                <!-- 썸네일 -->
                 <div class="mb-5 row">
-                    <label for="boardFile" class="col-sm-2 col-form-label">썸네일</label>
+                    <label for="thumFileInput" class="col-sm-2 col-form-label">썸네일</label>
                     <div class="col-sm-5">
-                    <input class="form-control" type="file" th:field="*{boardFile}" multiple>
+                        <input class="form-control" type="file" th:field="*{thumFile}" onchange="displayFileName(this, 'thumFileName')">
+                        <div id="thumFileName"></div>
+                    </div>
+                </div>
+                <!-- 교육자료 파일 -->
+                <div class="mb-5 row">
+                    <label for="boardFile" class="col-sm-2 col-form-label">교육자료파일</label>
+                    <div class="col-sm-5">
+                        <input class="form-control" type="file" th:field="*{boardFile}" multiple onchange="displayFileName2(this, 'boardFileName')">
+                        <div id="boardFileName"></div>
                     </div>
                 </div>
                 <div class="mb-3 text-center">
@@ -67,5 +76,27 @@
             </form>
         </div>
     </div>
+    <script>
+        function displayFileName(input, targetId) {
+            var fileInput = input;
+            var fileName = fileInput.value.split("\\").pop(); // 파일 경로에서 파일 이름만 추출
+            var targetElement = document.getElementById(targetId); // 표시할 요소
+            targetElement.textContent = fileName; // 파일 이름을 요소에 설정
+        }
+    function displayFileName2(input, targetId) {
+    var fileInput = input;
+    var fileList = Array.from(fileInput.files);
+
+    var targetElement = document.getElementById(targetId); // 표시할 요소
+    targetElement.innerHTML = ''; // 기존 내용 초기화
+
+    fileList.forEach(function (file) {
+        var fileNameDiv = document.createElement('div');
+        fileNameDiv.textContent = file.name;
+        targetElement.appendChild(fileNameDiv);
+    });
+}
+
+    </script>
 </div>
 </html>

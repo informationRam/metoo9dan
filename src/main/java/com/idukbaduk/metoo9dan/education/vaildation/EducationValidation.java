@@ -20,14 +20,14 @@ public class EducationValidation {
 
     private String file_type;        //'자료 유형',
 
-    private String file_url;         //'자료url',
-
     @NotEmpty(message = "서비스 구분을 선택해주세요.")
     private String service_type;     //enum('paid', 'free') '서비스 구분',
 
     private String description;      //'자료내용'
 
-    private List<MultipartFile> boardFile;  //  파일저장시 필요
+    private List<MultipartFile> boardFile;  //  교육자료파일저장시 필요
+
+    private MultipartFile thumFile;  //  썸네일파일저장시 필요
 
     private List<ResourcesFiles> boardFileList; // 이미 업로드된 이미지 파일 목록
 
