@@ -1,0 +1,132 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="row">
+        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h3>[학습 그룹 수정 폼]</h3>
+            <div>
+                <table class="table">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>게임콘텐츠명</th>
+                        <th>학습시작일</th>
+                        <th>학습종료일</th>
+                        <th>학습가능인원</th>
+                        <th>그룹지정된 인원</th>
+                        <!--<th>교육자명</th>-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="gameInfo, loop : ${gameInfo}">
+                        <td th:text="${gameInfo.game_name}"></td>
+                        <td th:text="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${gameInfo.max_subscribers}"></td>
+                        <td th:text="${gameInfo.appointed_group_num}"></td>
+                        <!--<td th:text="${gameInfo.name}"></td>-->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>[그룹 상세 정보]</p>
+            <p>교육자명 :  <strong><span th:text="${gameInfo.name}"></span></strong></p>
+            <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
+                <div th:replace="~{form_errors::formErrorsFragment}"></div>
+                <div class="mb-3">
+                    <label for="group_name" class="form-label">그룹명</label>
+                    <input type="text" th:field="*{groupName}" class="form-control"/>
+                </div>
+                <label for="group_size" class="form-label">그룹인원</label>
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="floatingInput" th:field="*{groupSize}"
+                           th:min="1" th:max="${calculatedValue}" />
+                    <label for="floatingInput" th:text="'현재 그룹 인원은 ' + *{groupSize} + '명 입니다.'"></label>
+                </div>
+                <div class="mb-3">
+                    <label for="group_start_date" class="form-label">그룹 시작일</label>
+                    <input type="date" id="groupStartDate" name="groupStartDate" th:field="*{groupStartDate}" class="form-control"
+                           th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
+                           th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
+                </div>
+                <div class="mb-3">
+                    <label for="group_finish_date" class="form-label">그룹 종료일</label>
+                    <input type="date"  id="groupFinishDate" name="groupFinishDate" th:field="*{groupFinishDate}" class="form-control"
+                           th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
+                           th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
+                </div>
+                <div class="mb-3">
+                    <label for="group_introduce" class="form-label">그룹 소개글</label>
+                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요."/>
+                </div>
+                    <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
+                    <input type="hidden" th:value="${member_no}" class="form-control"/>
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <input type="submit" value="수정하기" class="btn btn-primary my-2"/>
+                </div>
+            </form>
+            <script th:inline="javascript">
+                var groupNo = /*[[${group_no}]]*/ null; // 컨트롤러에서 전달받은 group_no 값을 JavaScript 변수에 할당
+            </script>
+        </div>
+    </div>
+</div>
+
+
+</html>
+
+<script>
+// 그룹 시작일과 종료일 필드를 가져오기
+var groupStartDateInput = document.getElementById("groupStartDate");
+var groupFinishDateInput = document.getElementById("groupFinishDate");
+
+// 폼 제출 시 이벤트 핸들러 추가
+document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // 폼의 기본 동작 방지
+
+    // 그룹 시작일과 종료일 값을 가져오기
+    var groupStartDateValue = groupStartDateInput.value;
+    var groupFinishDateValue = groupFinishDateInput.value;
+
+    // Date 객체로 변환
+    var startDate = new Date(groupStartDateValue);
+    var finishDate = new Date(groupFinishDateValue);
+
+    // 그룹 시작일이 그룹 종료일보다 크다면 유효성 검사
+    if (startDate > finishDate) {
+        alert("그룹 종료일은 그룹 시작일보다 같거나 뒤에 있어야 합니다.");
+        return;  // 함수 실행 중단, 아래 코드 실행되지 않음.
+     }
+
+     // 폼 데이터를 생성
+     var formData = new FormData(this);
+
+     // formData에 groupNo를 추가
+     formData.append("groupNo", groupNo);
+
+     // 폼 데이터를 서버로 전송
+     fetch("/studygroup/modify/" + groupNo, {
+         method: "POST",
+         body: formData,
+      })
+      .then(function (response) {
+          if (response.status === 200) {
+              alert("수정이 완료되었습니다.");
+              window.location.href ="/studygroup/list";
+          } else {
+              window.location.href ="/studygroup/modify/" + groupNo;
+              alert("수정에 실패했습니다. 다시 시도하세요.");
+          }
+      })
+      .catch(function (error) {
+          alert("오류가 발생했습니다. 다시 시도하세요.");
+       });
+});
+
+
+</script>
