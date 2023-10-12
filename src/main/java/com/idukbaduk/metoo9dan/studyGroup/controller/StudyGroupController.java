@@ -405,10 +405,12 @@ public class StudyGroupController {
         System.out.println("joinConfirm="+joinConfirm);
 
         if(joinConfirm==null){
-            //alert창 띄우기('가입 신청된 학습 그룹이 없습니다')
-            return "redirect:/studygroup/groupJoinList";
+            //alert창 띄우기
+            MessageDto message = new MessageDto("가입 신청된 학습 그룹이 없습니다.", "/studygroup/groupJoinList", RequestMethod.GET, null);
+            return showMessageAndRedirect(message,model);
         }return "studyGroup/studyGroup_joinConfirm";
     }
+
 
     //학습 그룹 가입 취소(학생)
     @GetMapping("/cancel/{group_students_no}")
@@ -418,5 +420,11 @@ public class StudyGroupController {
         return "redirect:/studygroup/groupJoinList";
     }
 
+
+    // alert창(사용자에게 메시지를 전달하고, 페이지를 리다이렉트 함)
+    private String showMessageAndRedirect(final MessageDto params, Model model) {
+        model.addAttribute("params", params);
+        return "studygroup/messageRedirect";
+    }
 
 }
