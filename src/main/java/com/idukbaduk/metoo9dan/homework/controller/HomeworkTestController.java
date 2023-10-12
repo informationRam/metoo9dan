@@ -21,7 +21,12 @@ public class HomeworkTestController {
 
     @Autowired
     private HomeworkService homeworkService;
-    /*
+
+    @GetMapping("/evaluate")
+    public String evaluateView(){
+        return "homework/homework_evaluate";
+    }
+
     @GetMapping("/evaluate/hw-list") //원래 data였음
     public ResponseEntity<?> fetchData(
             @RequestParam(name = "title", defaultValue = "") String title,
@@ -39,12 +44,7 @@ public class HomeworkTestController {
     @GetMapping("/evaluate/hw-titles") //원래 titles였음
     public ResponseEntity<List<String>> fetchTitles() {
         List<String> titles = homeworkService.fetchAllTitles();
-        return ResponseEntity.ok(titles);
+        System.out.println(titles);
+        return ResponseEntity.ok(titles);//이십분만 더 버티자
     }
-
-    @GetMapping("/hagisiro")
-    public ResponseEntity<> fetchDataHafisiro(){
-        return ResponseEntity.ok("성공");
-    }
-    */
 }

@@ -17,5 +17,7 @@ public interface HomeworkRepository extends JpaRepository<Homeworks, Integer> {
     List<Homeworks> findByMember_MemberIdOrderByCreationDateDesc(String memberId);
     @Query("SELECT h FROM Homeworks h WHERE h.member.memberId = :memberId AND h.dueDate > :currentDate ORDER BY h.creationDate DESC")
     List<Homeworks> findHomeworksByMemberIdAndDueDateAfter(String memberId, Date currentDate);
+
+    List<String> findDistinctHomeworkTitleBy();
 }
 

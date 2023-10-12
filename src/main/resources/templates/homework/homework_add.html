@@ -8,7 +8,7 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <div class="card">
+            <div>
             <h2>숙제 생성</h2>
                 <form th:action="@{/homework/add}" th:object="${homeworksForm}" method="post">
                     <div>
@@ -240,10 +240,10 @@
                         $.get("/homework/detail/" + homeworkId, function(data){
                             // 모달에 데이터 세팅
                             //$("#modalTitle").text(data.homeworkTitle);
-                            $("#modalTitle").html(data.homeworkTitle.replace(/\n\g,'<br>'));
-                            $("#modalContent").html(data.homeworkContent.replace(/\n/g, '<br>'));
+                            $("#modalTitle").html(data.homeworkTitle.replace(/\n/g,'<br>'));
+                            $("#modalContent").html(data.homeworkContent.replace(/\n/g,'<br>'));
                             $("#modalProgress").text(data.progress);
-                            $("modalMemo").html(data.homeworkMemo.replace(/\n\g,'<br>'))
+                            $("#modalMemo").html(data.homeworkMemo.replace(/\n/g,'<br>'))
                             $("#modalDueDate").text(formatDate(data.dueDate));
                             $("#modalCreateDate").text(formatDate(data.creationDate));
 

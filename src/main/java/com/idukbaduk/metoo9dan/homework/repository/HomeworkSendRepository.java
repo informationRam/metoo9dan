@@ -3,6 +3,8 @@ package com.idukbaduk.metoo9dan.homework.repository;
 import com.idukbaduk.metoo9dan.common.entity.HomeworkSend;
 import com.idukbaduk.metoo9dan.common.entity.Homeworks;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,4 +23,6 @@ public interface HomeworkSendRepository extends JpaRepository<HomeworkSend, Inte
 
     @Query("SELECT hs FROM HomeworkSend hs WHERE hs.member.memberId = :memberId AND hs.homeworks.dueDate > CURDATE()")
     List<HomeworkSend> findByMemberIdAndDueDateAfterCurrentDate(String memberId);
+
+    Page<HomeworkSend> findByHomeworks_HomeworkTitleContaining(String title, Pageable pageable);
 }

@@ -249,15 +249,11 @@ public class HomeworkService {
 
         homeworkSubmitRepository.deleteById(homeworkSubmitNo);
     }
-
-    /*
     public Page<HomeworkSend> fetchData(String title, Pageable pageable) {
-        // 간단한 예시: 이름으로 검색
-        return homeworkSendRepository.findByNameContaining(query, pageable);
+        return homeworkSendRepository.findByHomeworks_HomeworkTitleContaining(title, pageable);
     }
 
     public List<String> fetchAllTitles() {
-        return homeworkSendRepository.findAllTitles();
+        return homeworkRepository.findDistinctHomeworkTitleBy();
     }
-     */
 }
