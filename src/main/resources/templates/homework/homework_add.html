@@ -239,10 +239,11 @@
                         // API를 호출하여 숙제 상세 정보 및 전송 내역을 불러옵니다.
                         $.get("/homework/detail/" + homeworkId, function(data){
                             // 모달에 데이터 세팅
-                            $("#modalTitle").text(data.homeworkTitle);
-                            $("#modalContent").text(data.homeworkContent);
+                            //$("#modalTitle").text(data.homeworkTitle);
+                            $("#modalTitle").html(data.homeworkTitle.replace(/\n\g,'<br>'));
+                            $("#modalContent").html(data.homeworkContent.replace(/\n/g, '<br>'));
                             $("#modalProgress").text(data.progress);
-                            $("#modalMemo").text(data.homeworkMemo);
+                            $("modalMemo").html(data.homeworkMemo.replace(/\n\g,'<br>'))
                             $("#modalDueDate").text(formatDate(data.dueDate));
                             $("#modalCreateDate").text(formatDate(data.creationDate));
 
@@ -354,7 +355,7 @@
                             $("#editContent").text(data.homeworkContent);
                             $("#editProgress").val(data.progress);
                             $("#editMemo").val(data.homeworkMemo);
-                            $("#editDueDate").val(data.dueDate.split("T")[0]);
+                            $("#editDueDate").val(data.dueDate.toISOString().split("T")[0]);
                             console.log(data.dueDate);
 
                             // 모달 및 오버레이 표시

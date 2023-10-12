@@ -12,6 +12,8 @@ import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -247,4 +249,15 @@ public class HomeworkService {
 
         homeworkSubmitRepository.deleteById(homeworkSubmitNo);
     }
+
+    /*
+    public Page<HomeworkSend> fetchData(String title, Pageable pageable) {
+        // 간단한 예시: 이름으로 검색
+        return homeworkSendRepository.findByNameContaining(query, pageable);
+    }
+
+    public List<String> fetchAllTitles() {
+        return homeworkSendRepository.findAllTitles();
+    }
+     */
 }
