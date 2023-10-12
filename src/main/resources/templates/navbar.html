@@ -3,9 +3,11 @@
         네비게이션바 영역
         <a th:href="@{/}"> home </a>
         <div>
-            <a th:href="@{#}"> 로그인</a>
-            <a th:href="@{#}"> 로그아웃</a>
+            <!--    <a th:href="@{#}"> 회원가입</a>-->
+            <a th:href="@{/member/join}" sec:authorize="isAnonymous()"> 로그인&회원가입</a>
+            <a th:href="@{/logout}" sec:authorize="isAuthenticated()"> 로그아웃</a>
         </div>
     </div>
 
+</nav>
 </nav>
