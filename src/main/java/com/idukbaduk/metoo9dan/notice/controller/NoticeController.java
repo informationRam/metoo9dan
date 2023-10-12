@@ -11,10 +11,13 @@ import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
 import groovy.util.logging.Log4j2;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,14 +28,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 // 공지사항 관련 요청을 담당하는 컨트롤러
 @Log4j2
@@ -45,6 +46,9 @@ public class NoticeController {
 
     private final NoticeService noticeService;
     private final NoticeFilesService filesService;
+
+    @Autowired
+    private HttpSession httpSession;
 
     // 공지사항 등록 메뉴를 누르면 공지사항 목록을 보여줌
     @GetMapping("/list")
@@ -60,15 +64,13 @@ public class NoticeController {
 
     // 상세조회 (+댓글 목록조회 및 작성 폼)
     @GetMapping("/detail/{noticeNo}")
-    public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo,
-                                  NoticeReplyForm noticeReplyForm,
+    public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo, NoticeReplyForm noticeReplyForm,
+                                  //Principal principal,
                                   Model model){
-        Notice notice = noticeService.getNotice(noticeNo);
-        if(notice!=null){
-            noticeService.readCntUp(noticeNo);
-        }
-        List<NoticeFiles> filesList=filesService.getFiles(notice);
 
+        Notice notice = noticeService.getNotice(noticeNo);
+
+        List<NoticeFiles> filesList=filesService.getFiles(notice);
         List<NoticeReply> noticeReply = noticeService.getNoticeReply(notice);
         model.addAttribute("notice", notice); //공지상세 내용
         model.addAttribute("noticeReply", noticeReply); //공지 댓글 목록
@@ -85,9 +87,10 @@ public class NoticeController {
         Notice notice = noticeService.getNotice(noticeNo);
         //댓글 작성자와 로그인한 유저가 같지 않는 경우 BAD_REQUEST 응답처리하는 코드 추가해야함
         /*if(member.~~~.equals(principal.getName())){
-
         }*/
         noticeService.delete(notice);
+        //물리적 파일도 삭제하는 로직 추가해야함
+
         // 3. 모델
         // 4. 뷰
         return "redirect:/notice/list";
@@ -197,5 +200,78 @@ public class NoticeController {
         return str.replace("-", File.separator);
     }
 
+    //공지사항 수정폼 보여줘 요청
+    @GetMapping("/modify/{noticeNo}")
+    public String noticeModifyForm(@PathVariable("noticeNo")Integer noticeNo,
+                                   NoticeForm noticeForm,
+                                   //Principal principal,
+                                   Model model){
+        //1.파라미터받기
+        //2.비즈니스로직수행
+        Notice notice = noticeService.getNotice(noticeNo);
+        List<NoticeFiles> filesList=filesService.getFiles(notice);
 
+        noticeForm.setNoticeType(notice.getNoticeType());
+        noticeForm.setTitle(notice.getNoticeTitle());
+        noticeForm.setContent(notice.getNoticeContent());
+        if(notice.getStatus().equals("not_post")) {
+            LocalDateTime postDate =notice.getPostDate();
+            model.addAttribute("status", postDate);
+        } else {
+            model.addAttribute("status", "IMMEDIATE");
+        }
+        if(notice.getIsImp()){
+            model.addAttribute("impCk", "impChecked");
+        }
+        
+        //파일도 수정하기 위해 보여줘야함
+        
+        //3.모델
+        model.addAttribute("filesList", filesList); //공지 파일 목록
+        model.addAttribute("notice", notice); //공지 파일 목록
+        //4.뷰
+        return "notice/noticeModifyForm";
+    }
+
+    //공지사항 수정 처리해줘 요청
+    @PostMapping("/modify/{noticeNo}")
+    public String modify(@PathVariable("noticeNo")Integer noticeNo,
+                         @Valid NoticeForm noticeForm, //유효성검사처리를 해주어야함
+                         BindingResult bindingResult, //유효성검사의 결과
+                         RedirectAttributes redirectAttributes){
+
+        Notice notice = noticeService.getNotice(noticeNo);
+
+        //수정하려는 자와 작성자가 같은 사람인지 확인해야함
+
+        NoticeDTO noticeDTO = new NoticeDTO();
+
+        LocalDateTime today = LocalDateTime.now();
+        //문자열로 받은 postDate를 LocalDateTime으로 변환.
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime fPostDate = LocalDate.parse(noticeForm.getPostDate(), formatter).atStartOfDay();
+
+        //1.파라미터받기
+        noticeDTO.setNoticeType(noticeForm.getNoticeType());
+        noticeDTO.setNoticeTitle(noticeForm.getTitle());
+        noticeDTO.setNoticeContent(noticeForm.getContent());
+        noticeDTO.setImp(noticeForm.getIsImp());
+        if (noticeForm.getStatus().equals("SCHEDULED")){ //예약게시인 경우,
+            noticeDTO.setStatus("not_post");
+            noticeDTO.setWriteDate(today);
+            noticeDTO.setPostDate(fPostDate);
+        } else {
+            noticeDTO.setStatus("post");
+            noticeDTO.setWriteDate(today);
+            noticeDTO.setPostDate(fPostDate);
+        }
+        
+        //파일도 수정처리해야함
+        
+        //2.비즈니스로직수행
+        noticeService.modify(notice, noticeDTO);
+        //3.모델
+        //4.뷰
+        return String.format("redirect:/notice/detail/%d", noticeNo);
+    }
 }
