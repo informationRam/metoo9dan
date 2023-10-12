@@ -40,6 +40,7 @@ public class ResourcesFilesService {
         return resourcesFilesRepository.findByEducationalResources_ResourceNo(resourceNo);
     }
 
+
     public ResourcesFiles getFileByFileNo(Integer fileNo) {
         ResourcesFiles resourcesFiles = resourcesFilesRepository.findById(fileNo).get();
         return resourcesFiles;
@@ -47,7 +48,6 @@ public class ResourcesFilesService {
 
     // 저장처리 (썸네일 저장함)
     public void save(EducationalResources educationalResources, EducationValidation educationValidation) throws IOException {
-        String fileUrl = "파일 저장 경로"; // 파일 저장 경로를 여기에 설정
 
         MultipartFile thumFile = educationValidation.getThumFile();
         if (!thumFile.isEmpty()) {

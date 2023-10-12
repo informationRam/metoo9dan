@@ -33,34 +33,16 @@ public class EducationService {
     private final ResourcesFilesService resourcesFilesService;
 
     @Transactional
-    public void saveWithFile(EducationValidation educationValidation) throws IOException {
+    public EducationalResources save(EducationValidation educationValidation) throws IOException {
         // 파일을 저장하고, 교육 자료를 저장하는 로직을 포함
         EducationalResources educationalResources = toEducationalResources(educationValidation);
-        int numberfile = educationValidation.getBoardFile().size();
         EducationalResources educationalResources1 = educationalRepository.save(educationalResources);   //교육자료를 저장
-        try {
-             if(!educationValidation.getBoardFile().isEmpty() && !educationValidation.getThumFile().isEmpty()){
-                 resourcesFilesService.save(educationalResources1,educationValidation);
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to save educational resources: " + e.getMessage());
-        }
+        return educationalResources1;
+
     }
 
-    @Transactional
-    public void saveWithoutFile(EducationValidation educationValidation) {
-        // 파일이 없는 경우의 처리
-        // 교육 자료만 저장하는 로직을 포함
-        EducationalResources educationalResources = toEducationalResources(educationValidation);
-        try {
-            educationalResources.setFileUrl(null);
-            educationalRepository.save(educationalResources);   //교육자료를 저장
-        }catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to save educational resources: " + e.getMessage());
-        }
-    }
+
+
 
     //교육자료목록조회 (페이징처리)
     public Page<EducationalResources> getList(int page) {
@@ -77,7 +59,7 @@ public class EducationService {
     }
 
     //교육자료수정
-    public void modify(EducationalResources educationalResources,EducationValidation educationValidation) throws IOException {
+    public EducationalResources modify(EducationalResources educationalResources,EducationValidation educationValidation) throws IOException {
 
         // 필요한 필드를 업데이트
         educationalResources.setResourceName(educationValidation.getResource_name());
@@ -88,21 +70,8 @@ public class EducationService {
         educationalResources.setCreationDate(LocalDateTime.now());
 
         // 수정된 교육 자료 저장
-        educationalRepository.save(educationalResources);
-
-        // 파일저장 - 추가된 파일이 있는 경우 실행
-        List<MultipartFile> boardFileList = educationValidation.getBoardFile();
-        System.out.println("boardFile1 " + boardFileList);
-        if (boardFileList != null && !boardFileList.isEmpty()) {
-            for (MultipartFile boardFile : boardFileList) {
-                if (boardFile != null && !boardFile.isEmpty()) { // 파일이 비어있지 않은 경우에만 저장 로직 실행
-                    String fileUrl = "/Users/ryuahn/Desktop/baduk/education/";     //mac 파일 지정 C:/baduk
-                    educationalResources.setFileUrl(fileUrl);
-                    EducationalResources geteducationalResources = educationalRepository.save(educationalResources);   //교육자료를 저장
-                    resourcesFilesService.save(geteducationalResources, educationValidation);
-                }
-            }
-        }
+        EducationalResources saveEducationalResources = educationalRepository.save(educationalResources);
+        return saveEducationalResources;
     }
 
     // 교육자료명으로 교육자료 찾기
@@ -139,6 +108,11 @@ public class EducationService {
         List<ResourcesFiles> resourcesFilesList = resourcesFilesService.getResourcesFilesByResourceNo(education.getResourceNo());
         educationValidation.setBoardFileList(resourcesFilesList);
 
+        for(ResourcesFiles file : resourcesFilesList){
+            if(file != null){
+                educationValidation.setSaveThumFile(file);
+            }
+        }
         return educationValidation;
     }
 
@@ -152,6 +126,7 @@ public class EducationService {
         educationalResources.setServiceType(educationValidation.getService_type());
         educationalResources.setDescription(educationValidation.getDescription());
         educationalResources.setCreationDate(LocalDateTime.now());
+        educationalResources.setStatus("Y");
         educationalResources.setGameContents(null);
 
         return educationalResources;

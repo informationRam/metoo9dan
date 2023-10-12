@@ -53,8 +53,14 @@ public class EducationController {
         MultipartFile fileName = educationValidation.getBoardFile().get(0);
 
         //파일이 존재하면 처리한다.
-        if (fileName != null && !file.isEmpty() || thumFile != null && thumFile.isEmpty()) {
-            educationService.saveWithFile(educationValidation);
+        try {
+            if (fileName != null && !file.isEmpty() || thumFile != null && thumFile.isEmpty()) {
+                EducationalResources saveEducationalResources = educationService.save(educationValidation);
+                resourcesFilesService.save(saveEducationalResources,educationValidation);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save educational resources: " + e.getMessage());
         }
 
         return "redirect:/education/list";
@@ -99,10 +105,22 @@ public class EducationController {
         // 2. 수정된 컨텐츠 내용 처리
             EducationalResources educationalResources = educationService.getEducation(resourceNo);
             if (educationalResources != null) {
-                educationService.modify(educationalResources, educationValidation);
+                EducationalResources modify = educationService.modify(educationalResources, educationValidation);
+
+                // 업로드된 파일의 확장자 확인
+                MultipartFile fileName = educationValidation.getBoardFile().get(0);
+
+                //파일이 존재하면 처리한다.
+                try {
+                    if (fileName != null && !fileName.isEmpty()) {
+                            resourcesFilesService.save(modify, educationValidation);
+                        }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("Failed to save educational resources: " + e.getMessage());
+                }
                 return "redirect:/education/list";
             }
-
         return "redirect:/education/list";
     }
 

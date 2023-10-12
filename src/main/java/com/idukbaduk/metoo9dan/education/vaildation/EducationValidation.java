@@ -33,6 +33,8 @@ public class EducationValidation {
 
     private List<Integer> deletedFiles;   // 삭제된 파일 목록
 
+    private ResourcesFiles saveThumFile;  //이미 업로드된 이미지 파일 목록
+
     private String origin_file_name;  //'원본파일명'
 
 }

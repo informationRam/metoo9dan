@@ -29,8 +29,7 @@ public class EducationalResources {
     @Column(name="file_type")
     private String fileType;        //varchar(50) NOT NULL    COMMENT '자료 유형',
 
-    @Column(name="file_url")
-    private String fileUrl;         //text  NOT NULL    COMMENT '자료url',
+    private String status;         //text  NOT NULL    COMMENT '파일상태',
 
     @Column(name="service_type")
     private String serviceType;     // NOT NULL    COMMENT '서비스 구분',
@@ -56,7 +55,7 @@ public class EducationalResources {
                 ", resourceName='" + resourceName + '\'' +
                 ", resourceCate='" + resourceCate + '\'' +
                 ", fileType='" + fileType + '\'' +
-                ", fileUrl='" + fileUrl + '\'' +
+                ", status='" + status + '\'' +
                 ", serviceType='" + serviceType + '\'' +
                 ", description='" + description + '\'' +
                 ", creationDate=" + creationDate +

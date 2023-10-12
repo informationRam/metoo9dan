@@ -62,15 +62,24 @@
                 </div>
                 <!-- 기존에 업로드된 파일-->
                 <td class="education files">
+                    교육자료 :
                     <ul>
-                        <li th:each="file : ${educationValidation.boardFileList}">
+                        <!-- 교육자료 -->
+                        <li th:each="file : ${educationValidation.boardFileList}" th:if="${educationValidation.boardFileList != null}">
                             <a th:href="@{|/education/downloadFile/${file.fileNo}|}" th:text="${file.originFileName}">다운로드</a>
                             <!-- 파일 삭제 버튼 -->
                             <a class="btn btn-sm btn-danger" th:attr="data-fileNo=${file.fileNo}" onclick="deleteFile(event, this.getAttribute('data-fileNo'))">삭제</a>
                             <!-- 컨텐츠 삭제를 위한 hidden input -->
-                            <input type="hidden" th:each="fileNo : ${educationValidation.deletedFiles}" th:name="'deletedFiles[' + ${fileNo} + ']'" th:value="${fileNo}">
+                           <!-- <input type="hidden" th:each="fileNo : ${educationValidation.deletedFiles}" th:name="'deletedFiles[' + ${fileNo} + ']'" th:value="${fileNo}">-->
                         </li>
                     </ul>
+                    썸네일 :
+                    <!-- 썸네일 -->
+                    <p th:each="file : ${educationValidation.saveThumFile}" th:if="${educationValidation.saveThumFile != null}">
+                        <a th:href="@{|/education/downloadFile/${educationValidation.saveThumFile.fileNo}|}" th:text="${educationValidation.saveThumFile.originFileName}">다운로드</a>
+                        <!-- 컨텐츠 삭제를 위한 hidden input -->
+                        <input type="hidden" th:each="fileNo : ${educationValidation.deletedFiles}" th:name="'deletedFiles[' + ${fileNo} + ']'" th:value="${fileNo}">
+                    </p>
                 </td>
                 <!-- 수정된 컨텐츠 내용을 전달하기 위한 hidden input -->
                 <div class="mb-3 text-center">
