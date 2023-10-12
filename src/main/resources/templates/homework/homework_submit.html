@@ -1,0 +1,262 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/homework/homework_submit.css">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <canvas id="canvas"></canvas>
+
+            <div style="display:none;">
+                <button id="startButton"></button>
+                <button id="stopButton"></button>
+            </div>
+
+            <div class="submit-form" style="display:none;">
+                <form id="addForm" th:action="@{/homework/submit/add}" th:object="${hwSubmitForm}" method="post">
+                    <div class="book">
+                        <div class="cover"></div>
+                        <div class="index"><button type="submit">제출</button></div>
+                        <div class="page left page1"></div>
+                        <div class="page left page2"></div>
+                        <div class="page left page3">
+                            <p>숙제 제목: <span class="homework-title"></span></p>
+                            <p>진도: <span class="progress"></span> 레벨</p>
+                            <p>숙제 내용: <span class="homework-content"></span></p>
+                            <p>교육자: <span class="member-name"></span></p>
+                            <p>제출 기한: <span class="due-date"></span></p>
+                        </div>
+                        <div class="page right page1"></div>
+                        <div class="page right page2"></div>
+                        <div class="page right page3">
+                                <p>진도: <span class="currentLevel"></span> 레벨</p>
+                                <input type="hidden" name="homeworkNo"/>
+                                <input type="hidden" name="sendNo"/>
+                                <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                                <span id="homeworkContentError" class="error-message"></span>
+                                <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="edit-form" style="display:none;">
+                <div class="book">
+                    <div class="cover"></div>
+                    <div class="index"></div>
+                    <!-- 지피티야. 이자리에 위에 있는 인덱스 아래 자리에 겹치지 않게 똑같이 생겼는데 색이 빨간색이 인덱스를 추가하고싶다-->
+                    <div class="page left page1"></div>
+                    <div class="page left page2"></div>
+                    <div class="page left page3">
+                        <p>숙제 제목: <span class="homework-title"></span></p>
+                        <p>진도: <span class="progress"></span>레벨</p>
+                        <p>교육자: <span class="member-name"></span></p>
+                        <p>숙제 내용: <span class="homework-content"></span></p>
+                        <p>제출 기한: <span class="due-date"></span></p>
+                    </div>
+                    <div class="page right page1"></div>
+                    <div class="page right page2"></div>
+                    <div class="page right page3">
+                        <form id="editForm" th:action="@{/homework/submit/edit}" th:object="${hwSubmitForm}" method="post">
+                            <p>진도: <span class="currentLevel"></span>레벨</p>
+                            <input type="hidden" name="homeworkNo"/>
+                            <input type="hidden" name="homeworkSubmitNo"/>
+                            <input type="hidden" name="sendNo"/>
+                            <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                            <span id="homeworkEditContentError" class="error-message"></span>
+                            <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                            <button type="submit">수정</button>
+                            <button type="button" id="deleteBtn">제출 내역 삭제</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 숙제 목록 -->
+            <table>
+                <thead>
+                <tr>
+                    <th>숙제 제목</th>
+                    <th>진도</th>
+                    <th>제출 기한</th>
+                    <th>제출</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="homeworkSend : ${homeworkSend}"
+                    th:data-send-no="${homeworkSend.sendNo}"
+                    th:class="${homeworkSend.isSubmit != 'N' ? 'submitted' : 'not-submitted'}"
+                    ondblclick="loadForm(this)">
+                    <td th:text="${homeworkSend.homeworks.homeworkTitle}"></td>
+                    <td th:text="${homeworkSend.homeworks.progress}"></td>
+                    <td th:text="${homeworkSend.homeworks.dueDate}"></td>
+                    <td th:text="${homeworkSend.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div id="successModal" class="bs-modal">
+                <div class="bs-modal-dialog">
+                    <div class="bs-modal-content">
+                        <div class="bs-modal-header">
+                            <h5 class="bs-modal-title">제출 성공!</h5>
+                        </div>
+                        <div class="bs-modal-body">
+                            <p>~제출 성공~ 나도 9단이 될 수 있다!</p>
+                        </div>
+                        <div class="bs-modal-footer">
+                            <button id="modalCloseBtn" class="btn-close"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+            <script src="https://tistory4.daumcdn.net/tistory/3134841/skin/images/confetti_v2.js"></script>
+            <script>
+                function reAction(){
+                console.log('폭죽 불붙음');
+                 $("#startButton").trigger("click");
+
+                 setTimeout(function(){
+                 $("#stopButton").trigger("click");
+                 }, 5000);
+                }
+
+              function loadForm(element) {
+                  let hwSendNo = element.getAttribute("data-send-no");
+                  let isSubmitted = element.classList.contains("submitted");
+
+                  fetch(`/homework/submit/detail/${hwSendNo}`)
+                      .then(response => response.json())
+                      .then(data => {
+                          // 숙제 내용 채우기
+                          document.querySelector(".edit-form input[name='homeworkNo']").value = data.homeworkNo;
+                          document.querySelector(".edit-form input[name='sendNo']").value = data.sendNo;
+                          document.querySelector(".submit-form input[name='homeworkNo']").value = data.homeworkNo;
+                          document.querySelector(".submit-form input[name='sendNo']").value = data.sendNo;
+
+                          document.querySelector(".submit-form span.homework-title").textContent = data.homeworkTitle;
+                          document.querySelector(".submit-form span.homework-content").textContent = data.homeworkContent;
+                          document.querySelector(".submit-form span.member-name").textContent = data.memberName;
+                          document.querySelector(".submit-form span.progress").textContent = data.progress;
+                          document.querySelector(".submit-form span.due-date").textContent = data.dueDate;
+                          document.querySelector(".edit-form span.homework-title").textContent = data.homeworkTitle;
+                          document.querySelector(".edit-form span.homework-content").textContent = data.homeworkContent;
+                          document.querySelector(".edit-form span.member-name").textContent = data.memberName;
+                          document.querySelector(".edit-form span.progress").textContent = data.progress;
+                          document.querySelector(".edit-form span.due-date").textContent = data.dueDate;
+
+                          document.querySelector(".edit-form span.currentLevel").textContent = data.progress;
+                          document.querySelector(".submit-form span.currentLevel").textContent = data.progress;
+
+                          if (isSubmitted) {
+                              // 제출 내용으로 수정 폼 채우기
+                              document.querySelector(".edit-form textarea[name='homeworkContent']").value = data.content;
+                              document.querySelector(".edit-form textarea[name='additionalQuestion']").value = data.additionalQuestion;
+                              document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = data.homeworkSubmitNo;
+                              document.querySelector(".submit-form").style.display = 'none';
+                              document.querySelector(".edit-form").style.display = 'block';
+                              $("#deleteBtn").data('submit-id', data.homeworkSubmitNo);
+                          } else {
+                              // 제출 폼 초기화 및 표시
+                              document.querySelector(".submit-form textarea[name='homeworkContent']").value = '';
+                              document.querySelector(".submit-form textarea[name='additionalQuestion']").value = '';
+                              document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = '';
+                              document.querySelector(".edit-form").style.display = 'none';
+                              document.querySelector(".submit-form").style.display = 'block';
+                          }
+                      })
+                      .catch(error => {
+                          console.error("There was a problem with the fetch operation:", error.message);
+                      });
+
+
+              }
+
+              $(document).ready(function() {
+                    $("#modalCloseBtn").click(function() {
+                        location.reload(); // 페이지 리로드
+                    });
+                });
+
+
+              // addForm 제출
+              $("#addForm").submit(function(e) {
+                  e.preventDefault();
+
+                  $(".error-message").text("");  // 초기화
+
+                  $.ajax({
+                      url: $(this).attr("action"),
+                      type: "POST",
+                      data: $(this).serialize(),
+                      success: function(response) {
+                          reAction(); // 꽃가루 효과
+                          $("#successModal").show(); // 모달 보이기
+                      },
+                      error: function(xhr) {
+                          let errors = xhr.responseJSON;
+
+                          // 에러 메시지 출력
+                          if (errors.homeworkContent) {
+                              $("#homeworkContentError").text(errors.homeworkContent);
+                          }
+                      }
+                  });
+              });
+
+              // editForm 제출
+              $("#editForm").submit(function(e) {
+                  e.preventDefault();
+
+                  $(".error-message").text("");  // 초기화
+                  reAction();
+
+                  $.ajax({
+                      url: $(this).attr("action"),
+                      type: "POST",
+                      data: $(this).serialize(),
+                      success: function(response) {
+                          alert("제출한 숙제가 수정되었습니다");
+                          location.reload();
+                      },
+                      error: function(xhr) {
+                          let errors = xhr.responseJSON;
+
+                          // 에러 메시지 출력
+                          if (errors.homeworkContent) {
+                              $("#homeworkEditContentError").text(errors.homeworkContent);
+                          }
+                      }
+                  });
+              });
+
+                //삭제 버튼 클릭
+                $("#deleteBtn").click(function(){
+                            let submitId = $(this).data('submit-id');
+
+                            if(submitId && confirm("숙제를 삭제하시겠습니까?")) {
+                                $.ajax({
+                                    url: `/homework/submit/delete/${submitId}`,
+                                    type: 'DELETE',
+                                    success: function(response) {
+                                        alert("숙제가 삭제되었습니다")
+                                        location.reload();
+                                    },
+                                    error: function(xhr, status, error) {
+                                        alert('삭제 실패: ' + xhr.responseText);
+                                    }
+                                });
+                            } else {
+                                alert('숙제 제출 ID가 없습니다. 다시 시도해주세요.');
+                            }
+                        });
+
+            </script>
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+</html>

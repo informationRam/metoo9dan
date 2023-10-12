@@ -1,0 +1,105 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <!-- 제목 드롭다운 -->
+            <select id="titleDropdown">
+                <!-- AJAX로 가져온 게시물 제목이 들어갈 예정 -->
+            </select>
+
+            <!-- 정렬 옵션 -->
+            <select id="sortOrder">
+                <option value="asc">오름차순</option>
+                <option value="desc">내림차순</option>
+            </select>
+
+            <!-- 결과 테이블 -->
+            <table id="resultTable">
+                <!-- 여기에 결과가 들어갈 예정 -->
+            </table>
+
+            <!-- 페이지네이션 -->
+            <div id="pagination">
+                <!-- 여기에 페이지네이션 내용이 들어갈 예정 -->
+            </div>
+
+            <script>
+                $(document).ready(function() {
+                    // 초기 제목 드롭다운 내용 로드
+                    loadTitles();
+
+                    // 초기 결과 테이블 로드
+                    loadTable();
+
+                    // 드롭다운 변경 이벤트
+                    $("#titleDropdown").on('change', function() {
+                        loadTable(1); // 선택 후 첫 페이지 로드
+                    });
+
+                    // 정렬 이벤트
+                    $("#sortOrder").on('change', function() {
+                        loadTable();
+                    });
+
+                    // 페이지네이션 클릭 이벤트
+                    $(document).on('click', '.pagination-link', function(e) {
+                        e.preventDefault();
+                        let page = $(this).data('page');
+                        loadTable(page);
+                    });
+                });
+
+                function loadTitles() {
+                    $.ajax({
+                        url: '/homework/submit/hw-titles',
+                        type: 'GET',
+                        success: function(response) {
+                            let dropdownContent = "<option value=''>모든 제목</option>";
+                            response.forEach(title => {
+                                dropdownContent += `<option value="${title}">${title}</option>`;
+                            });
+                            $("#titleDropdown").html(dropdownContent);
+                        }
+                    });
+                }
+
+                function loadTable(page = 1) {
+                    let title = $("#titleDropdown").val();
+                    let sortOrder = $("#sortOrder").val();
+
+                    $.ajax({
+                        url: '/homework/submit/hw-list',
+                        type: 'GET',
+                        data: {
+                            title: title,
+                            sort: sortOrder,
+                            page: page
+                        },
+                        success: function(response) {
+                         // 결과 테이블 갱신
+                            let tableContent = "";
+                            response.content.forEach(item => {
+                                tableContent += `<tr><td>${item.name}</td><td>${item.details}</td></tr>`;
+                            });
+                            $("#resultTable").html(tableContent);
+
+                            // 페이지네이션 갱신
+                            let paginationContent = "";
+                            for(let i = 1; i <= response.totalPages; i++) {
+                                paginationContent += `<a href="#" class="pagination-link" data-page="${i}">${i}</a> `;
+                            }
+                            $("#pagination").html(paginationContent);
+                        }
+                    });
+                }
+
+            </script>
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+</html>
