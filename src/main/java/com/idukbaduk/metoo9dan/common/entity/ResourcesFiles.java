@@ -2,9 +2,11 @@ package com.idukbaduk.metoo9dan.common.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 // 교육자료 파일 테이블 - PRIMARY KEY (file_no)
 @Entity
+@Data
 @Table(name = "resources_files")
 public class ResourcesFiles {
 
@@ -22,5 +24,7 @@ public class ResourcesFiles {
     @ManyToOne(fetch = FetchType.LAZY) // 다대일 관계
     @JoinColumn(name = "resource_no", referencedColumnName = "resource_no") // 외래 키 설정
     private EducationalResources educationalResources;
+
+
 
 }

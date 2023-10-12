@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 // 게임콘텐츠 - PRIMARY KEY (game_content_no)
 @Entity
@@ -29,8 +31,8 @@ public class GameContents {
     @Column(name="max_subscribers")
     private Integer maxSubscribers;        //int  NOT NULL    COMMENT '구독 인원',
 
-    @Column(name="originalPrice")
-    private Double original_price;         //decimal(10,2) NOT NULL    COMMENT '정가',
+    @Column(name="original_price")
+    private Double originalPrice;         //decimal(10,2) NOT NULL    COMMENT '정가',
 
     @Column(name="discount_rate")
     private Double discountRate;          //decimal(5,2) NOT NULL    COMMENT '할인율',
@@ -38,8 +40,8 @@ public class GameContents {
     @Column(name="sale_price")
     private Double salePrice;             //decimal(10,2) NOT NULL    COMMENT '판매가',
 
-    @Column(name="packageDetails")
-    private String package_details;        //text NOT NULL    COMMENT '패키지 내용',
+    @Column(name="package_details")
+    private String packageDetails;        //text NOT NULL    COMMENT '패키지 내용',
 
     @Column(name="creation_date",columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;  //datetime  NOT NULL    COMMENT '등록일',
@@ -47,9 +49,13 @@ public class GameContents {
     @Column
     private String status;                //enum('posted', 'notposted') NOT NULL    COMMENT '게시글 상태',
 
-    @Column(name="content_type")
+    @Column(name="content_type", nullable = false)
     private String contentType;           //enum('package','individual') NOT NULL    COMMENT '콘텐츠 타입',
 
+    @OneToMany(mappedBy = "gameContents", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<GameContentFiles> gameContentFilesList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "gameContents", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EducationalResources> educationalResourcesList = new ArrayList<>();
 
 }

@@ -1,0 +1,95 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">콘텐츠</th>
+                    <th scope="col">가격</th>
+                    <th scope="col">구독기간</th>
+                    <th scope="col">구독가능인원</th>
+                    <th scope="col">상품소개</th>
+                </tr>
+                </thead>
+                <tbody class="table-light">
+                <!-- 판매구분 상태가 'Y'인 값만 보임-->
+                <tr th:each="game, loop : ${gamePage}" th:if="${game.status == 'Y'}">
+                    <td class="gameContents image">
+                    <!-- 이미지 -->
+                    <div class="card" style="width: 18rem;">
+                        <img th:if="${game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                             th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <!-- 게임제목 -->
+                            <p class="card-text"> <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a></p>
+                        </div>
+                    </div>
+<!--                  모든 사진을 반복적으로 가져옴
+                    <td class="gameContents image">
+                        <ul>
+                            <li th:each="file : ${game.gameContentFilesList}">
+                                <img th:src="@{|/upload/game/${file.copyFileName}|}" alt="" width="100" height="100">
+                            </li>
+                        </ul>
+                    </td>-->
+                    <!-- 난이도 -->
+                    <td class="game difficulty">
+                        <span th:switch="${game.difficulty}">
+                            <span th:case="'beginner'">초급</span>
+                            <span th:case="'intermediate'">중급</span>
+                            <span th:case="'advanced'">고급</span>
+                        </span>
+                    </td>
+                    <!-- 구독기간 -->
+                    <td class="game subscriptionDuration"
+                        th:text="${game.subscriptionDuration}">
+                    </td>
+                    <!-- 구독가능인원 -->
+                    <td class="game maxSubscribers"
+                        th:text="|${game.maxSubscribers} 명|">
+                    </td>
+                    <!-- 판매가 -->
+                    <td class="game salePrice">
+                        <span th:text="${game.salePrice <= 999 ? #numbers.formatInteger(game.salePrice.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(game.salePrice.intValue(), 3, 'COMMA') + '원'}"></span>
+                    </td>
+                    <!-- 게임 등록일 -> 수정하면 날짜 변경. -->
+                    <td class="game date">
+                        <span th:text="${#temporals.format(game.creationDate,'yyyy-MM-dd')}">
+                    </td>
+                </tr><!-- 1페이지당 출력할 게시물수만큼 반복끝 -->
+                </tbody>
+            </table>
+            <!-- 게임컨텐츠 등록하기 -->
+            <div sec:authorize="hasRole('ROLE_ADMIN')" class="text-end ms-auto">
+                <a th:href="@{/game/addForm}" class="btn btn-outline-danger">작성하기</a>
+            </div>
+            <!-- Pagination 부분 영역 시작 -->
+            <div th:if="${gamePage != null && !gamePage.isEmpty()}">
+                <!-- <ul class="pagination justify-content-center"> --><!-- 여기에 bg-danger 클래스 추가 -->
+                <ul class="pagination justify-content-center">
+                    <ul class="qna-pagination">
+                        <!-- 이전 버튼 -->
+                        <li class="qna-page-item" th:classappend="${!gamePage.hasPrevious()} ? 'disabled'">
+                            <a class="qna-page-link" th:href="@{|?page=${gamePage.getNumber() - 1}|}"><span>이전</span></a>
+                        </li>
+                        <!-- 페이지 번호: 반복 + 연결 + bootstrap [0] [1] [2] [3~] [4] [5] [6] [7]~~[9] [10] [11] -->
+                        <li class="qna-page-item" th:each="page : ${#numbers.sequence(0, gamePage.getTotalPages() - 1)}"
+                            th:if="${page >= gamePage.getNumber() - 3 and page <= gamePage.getNumber() + 3}"
+                            th:classappend="${page == gamePage.getNumber()} ? 'active'">
+                            <a class="qna-page-link" th:href="@{|?page=${page}|}" th:text="${page + 1}"></a>
+                        </li>
+                        <!-- 다음 버튼 -->
+                        <li class="qna-page-item" th:classappend="${!gamePage.hasNext()} ? 'disabled'">
+                            <a class="qna-page-link" th:href="@{|?page=${gamePage.getNumber() + 1}|}"><span>다음</span></a>
+                        </li>
+                    </ul>
+                </ul>
+            </div><!-- Pagination 부분 영역 끝 -->
+        </div>
+    </div>
+</div>
+</html>
