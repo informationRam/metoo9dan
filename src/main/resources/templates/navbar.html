@@ -1,7 +1,12 @@
 <nav th:fragment="navbarFragment" class="">
     <div layout:fragment="navbar" class="container-fluid" style="border: 1px solid black;">
         네비게이션바 영역
-        <a th:href="@{/}"> home </a>
+        <a th:href="@{/}" class="btn"> home </a>
+        <a th:href="@{/notice/list}" class="btn"> notice </a>
+        <a th:href="@{/homework/add}" class="btn"> homework </a>
+        <a th:href="@{/studygroup/list}" class="btn"> studyGroup </a>
+        <a th:href="@{/}" class="btn"> gameContent </a>
+        <a th:href="@{/}" class="btn"> member </a>
         <div>
             <a th:href="@{#}"> 로그인</a>
             <a th:href="@{#}"> 로그아웃</a>

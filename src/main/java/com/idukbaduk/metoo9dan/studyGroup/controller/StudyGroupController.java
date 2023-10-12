@@ -7,7 +7,7 @@ import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
 import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GroupRepository;
-import com.idukbaduk.metoo9dan.studyGroup.repository.MemberRepository;
+import com.idukbaduk.metoo9dan.homework.repository.MemberRepository;
 import com.idukbaduk.metoo9dan.studyGroup.service.StudyGroupService;
 import com.idukbaduk.metoo9dan.studyGroup.validation.StudyGroupForm;
 import jakarta.validation.Valid;

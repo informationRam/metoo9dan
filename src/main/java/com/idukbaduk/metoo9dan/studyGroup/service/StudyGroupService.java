@@ -4,8 +4,10 @@ import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.GroupStudents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
+import com.idukbaduk.metoo9dan.homework.repository.MemberRepository;
 import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import com.idukbaduk.metoo9dan.studyGroup.repository.*;
+import com.idukbaduk.metoo9dan.homework.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
