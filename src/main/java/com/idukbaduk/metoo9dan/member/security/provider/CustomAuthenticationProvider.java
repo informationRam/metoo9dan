@@ -1,5 +1,6 @@
+/*
 package com.idukbaduk.metoo9dan.member.security.provider;
-
+//사용안함
 import com.idukbaduk.metoo9dan.member.service.MemberContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,8 +23,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    /*authentication : authenticationManager 클래스로 부터 전달받는 인증객체
-      사용자가 입력한 ID, Pwd정보가 담겨져 있음*/
+    */
+/*authentication : authenticationManager 클래스로 부터 전달받는 인증객체
+      사용자가 입력한 ID, Pwd정보가 담겨져 있음*//*
+
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
        //인증에 대한 추가 검증
@@ -47,10 +50,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         return authenticationToken;
     }
 
-    /*username,password,autnentication 토큰이
-    현재 파라미터로 전달된 이 클래스 타입과 일치하면 인증 */
+    */
+/*username,password,autnentication 토큰이
+    현재 파라미터로 전달된 이 클래스 타입과 일치하면 인증 *//*
+
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }
+*/

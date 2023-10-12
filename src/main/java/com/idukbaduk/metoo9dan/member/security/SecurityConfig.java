@@ -1,13 +1,11 @@
 package com.idukbaduk.metoo9dan.member.security;
 
-import com.idukbaduk.metoo9dan.member.security.provider.CustomAuthenticationProvider;
-import com.idukbaduk.metoo9dan.member.service.UserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -18,6 +16,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration //  스프링 환경설정 파일임을 공지
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)//@PreAuthorize("isAuthenticated()")//로그인인증가 동작할 수 있기 위함
 @EnableWebSecurity  // 모든 요청 url이 스프링 시큐리티의 제어를 받도록 만든다.
 public class SecurityConfig {
 
@@ -25,16 +24,8 @@ public class SecurityConfig {
 
     //UserSecurityService와 PasswordEncoder가 자동으로 설정
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(authenticationProvider());
-        return authenticationManagerBuilder.build();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        return new CustomAuthenticationProvider();
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws  Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -65,25 +56,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
-            .authorizeHttpRequests()
-                //.requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+            .csrf().disable();
+
+
+//            .sessionManagement()
+//            .maximumSessions(1) //최대 세션 허용 수
+//            .maxSessionsPreventsLogin(false)    // 2중 로그인 방지 -> 먼저로그인한 user가 튕긴다.
+//            .expiredUrl("/user/login");         // 튕겨지면 user/login페이지로 이동
+      //특정 URL 로그인 기능을 등록
+       http.authorizeHttpRequests()
                 .requestMatchers( new AntPathRequestMatcher("/member/mypage")).hasRole("STUDENT")
                 .requestMatchers( new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
                 .requestMatchers( new AntPathRequestMatcher("/edu/**")).hasRole("EDUCATOR")
-                .requestMatchers(new AntPathRequestMatcher("/member/join#pills-register")).denyAll() //로그인 후 회원가입접근불가
+                .requestMatchers(new AntPathRequestMatcher("/member/login")).denyAll() //로그인 후 로그인창 접근불가
+                .requestMatchers(new AntPathRequestMatcher("/member/join")).denyAll() //로그인 후 회원가입 접근불가
                 //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
-                .anyRequest().permitAll()
+                .anyRequest().permitAll() //그외는 인증을 받지 않음
 
         .and()
              .formLogin()
-                  .loginPage("/member/login")               // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
-                 // .loginProcessingUrl("/member/login")      // 로그인 Form Action Url
-                  .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지
-                  .permitAll();
-//                .failureUrl("/member/login")              // 로그인 실패 후 이동 페이지
-//                .usernameParameter("user_id")                   // 아이디 파라미터명 설정
-//                .passwordParameter("pwd")                       // 패스워드 파라미터명 설정
+                  .loginPage("/member/login")             // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
+                  .permitAll()                           //인증받지 않아도 모두 접근가능
+                  .usernameParameter("memberId")         //로그인처리시 아이디 파리미터명 설정
+                  .passwordParameter("password")         //패스워드 파라미터명 설정
+                  .defaultSuccessUrl("/");               // 로그인 성공 후 이동 페이지
+//                .failureUrl("/member/login")           // 로그인 실패 후 이동 페이지
+//
 //                .successHandler(new AuthenticationSuccessHandler() {    // 로그인 성공 후 핸들러
 //                    @Override
 //                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -98,13 +96,11 @@ public class SecurityConfig {
 //                        response.sendRedirect("/member/login");  // 로그인 실패 후 이동 페이지
 //                    }
 //                })
-//                .permitAll(); //인증받지 않아도 모두 접근가능
-
 
         http
                 .logout()
-                .logoutUrl("/logout");
-//                .logoutSuccessUrl("/")
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/");
 //                .addLogoutHandler(new LogoutHandler() {
 //                    @Override
 //                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {

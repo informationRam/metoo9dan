@@ -4,8 +4,8 @@
         <a th:href="@{/}"> home </a>
         <div>
         <!--    <a th:href="@{#}"> 회원가입</a>-->
-            <a th:href="@{/member/join}"> 로그인&회원가입</a>
-            <a th:href="@{/logout}"> 로그아웃</a>
+            <a th:href="@{/member/join}" sec:authorize="isAnonymous()"> 로그인&회원가입</a>
+            <a th:href="@{/logout}" sec:authorize="isAuthenticated()"> 로그아웃</a>
         </div>
     </div>
 

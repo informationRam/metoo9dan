@@ -5,14 +5,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <!-- 약관내용 스타일 적용 -->
     <link rel="stylesheet" type="text/css" th:href="@{/css/member/joinForm.css}">
-
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/member/memberSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <!--            <h1 class="text-center fs-4"> 나도9단 회원가입</h1>-->
             <div class="d-flex justify-content-center align-items-center mt-5">
                 <div class="row">
                     <!-- Pills navs -->
@@ -32,17 +30,26 @@
                     <div class="tab-content" id="pills-tabContent">
                         <!-- 로그인 영역 -->
                         <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
-                            <form id="loginForm"  th:action="@{/member/login}" th:object="${userCreateForm}" method="post">
+                            <form id="loginForm"  th:action="@{/member/login}" th:object="${loginVaildation}" method="post">
                                 <!-- ID input -->
                                 <div class="form-outline mb-4">
-                                    <input type="text" id="memberId" class="form-control" />
-                                    <label class="form-label" th:field="*{memberId}" for="memberId">아이디</label>
+                                    <input type="text" th:field="*{memberId}" name="memberId" id="memberId" class="form-control" />
+                                    <label class="form-label" for="memberId"></label>
+                                    <div th:if="${#fields.hasErrors('memberId')}" th:errors="*{memberId}" class="alert alert-danger"></div>
                                 </div>
 
                                 <!-- Password input -->
                                 <div class="form-outline mb-4">
-                                    <input type="password" id="loginPassword" class="form-control" />
-                                    <label class="form-label" th:field="*{memberId}" for="loginPassword">비밀번호</label>
+                                    <input type="password" th:field="*{password}" name="password" id="loginPassword" class="form-control" />
+                                    <label class="form-label" for="loginPassword">비밀번호</label>
+                                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="alert alert-danger"></div>
+                                </div>
+
+                                <!-- 오류시 보여주는 문구 -->
+                                <div th:if="${param.error}">
+                                    <div class="alert alert-danger">
+                                        사용자ID 또는 비밀번호를 확인해주세요.
+                                    </div>
                                 </div>
 
                                 <!-- 2 column grid layout -->
@@ -57,12 +64,13 @@
 
                                     <div class="col-md-6 d-flex justify-content-center">
                                         <!-- Simple link -->
-                                        <a href="#!">Forgot password?</a>
+                                        <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/member/idpwSearch}">아이디 / 비밀번호 찾기
+                                            </a>
                                     </div>
                                 </div>
 
                                 <!-- Submit button -->
-                                <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+                                <button id=login type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
 
                                 <!-- Register buttons -->
                                 <div class="text-center">
@@ -91,8 +99,8 @@
                                             <p class="text-center mb-4">가입 유형을 선택해주세요</p>
                                             <!-- 회원 구분 드롭다운 -->
                                             <div class="mb-3">
-                                                <label for="memberType" class="form-label"></label>
-                                                <select class="form-select" id="memberType" name="memberType">
+                                                <label for="role" class="form-label"></label>
+                                                <select class="form-select" id="role" name="role">
                                                     <option value="EDUCATOR">교육자</option>
                                                     <option value="STUDENT">학습자</option>
                                                     <option value="NORMAL">일반인</option>
@@ -151,7 +159,7 @@
                                             <div class="agreement form-check">
                                                 <div class="row">
                                                     <div class="col-1">
-                                                        <input class="form-check-input" type="checkbox" id="agreement3">
+                                                        <input class="form-check-input"  th:field="*{privacyConsent}"type="checkbox" id="agreement3">
                                                     </div>
                                                     <div class="col-11">
                                                         <label class="form-check-label" for="agreement3">개인정보 선택항목에 대한 처리 및 이용 (선택)</label>
@@ -201,7 +209,7 @@
                                                     <input class="form-control" type="text" placeholder="이름" oninput="this.className = ''" name="memName" id="memName">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <input type="tel" class="form-control" name="to" placeholder="본인 휴대폰번호를 입력하세요" maxlength="14"  id="phone"/>
+                                                    <input type="tel" class="form-control" name="to" placeholder="본인 휴대폰번호를 입력하세요" maxlength="14"  id="to"/>
                                                 </div>
                                                 <button class="btn btn-outline-secondary" onclick="sendVerificationCode()">발송</button>
                                             </div> <!-- authMember 끝 -->
@@ -233,18 +241,18 @@
                                             <div id="verificationSuccess" style="display: none;">
                                                 <div class="mb-3">
                                                     <label for="userNameInput" class="form-label">이름</label>
-                                                    <input type="text" id="userNameInput" class="form-control" th:value="${session.userName}" readonly>
+                                                    <input type="text" name="name" id="userNameInput"  class="form-control" readonly>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="userPhoneInput" class="form-label">휴대폰 번호</label>
-                                                    <input type="text" id="userPhoneInput" class="form-control" th:value="${session.userPhone}" readonly>
+                                                    <input type="text" id="userPhoneInput" class="form-control" name="tel" readonly>
                                                 </div>
                                             </div>
                                             <!-- 아이디 입력란 -->
                                             <div class="mb-3">
                                                 <label for="memberIdInput" class="form-label">아이디</label>
                                                 <div class="input-group">
-                                                    <input type="text" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput"  th:field="*{user_name}" disabled required>
+                                                    <input type="text"  th:field="*{memberId}" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput" disabled required>
                                                     <button type="button" class="btn btn-primary" id="chechMemberId">ID 중복 확인</button>
                                                 </div>
                                             </div>
@@ -252,7 +260,7 @@
                                             <!-- 비밀번호 입력란 -->
                                             <div class="mb-3">
                                                 <label for="password" class="form-label">비밀번호</label>
-                                                <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password" disabled required>
+                                                <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password" disabled >
                                             </div>
                                             <!-- 비밀번호 확인 입력란 -->
                                             <div class="mb-3">
@@ -263,13 +271,13 @@
                                             <!-- 생년월일 입력란 -->
                                             <div class="mb-3">
                                                 <label for="birth" class="form-label">생년월일</label>
-                                                <input type="date" oninput="this.className = ''" class="form-control" id="birth" name="birth"  disabled required>
+                                                <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"  required>
                                             </div>
 
                                             <!-- 이메일 주소 입력란 -->
                                             <div class="mb-3">
                                                 <label for="email" class="form-label">이메일 주소</label>
-                                                <input type="email"  placeholder="12345@gmail.com" oninput="this.className = ''" class="form-control" id="email" name="email"  disabled required>
+                                                <input type="email"  th:field="*{email}" placeholder="12345@gmail.com" oninput="this.className = ''" class="form-control" id="email" name="email"  disabled required>
                                             </div>
 
                                             <!-- 성별 -->
@@ -277,11 +285,11 @@
                                                 <div class="gender d-flex justify-content-start">
                                                     <label class="form-label">성별</label>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+                                                        <input class="form-check-input" th:field="*{gender}" th:value="M" type="radio" name="gender" id="male" >
                                                         <label class="form-check-label" for="male">남성</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="gender" id="female" value="female">
+                                                        <input class="form-check-input" th:field="*{gender}" th:value="F" type="radio" name="gender" id="female" >
                                                         <label class="form-check-label" for="female">여성</label>
                                                     </div>
                                                 </div>
@@ -293,11 +301,11 @@
 
                                                 <div class="d-flex">
                                                     <div class="form-check me-3">
-                                                        <input class="form-check-input" type="checkbox" id="emailConsent" name="emailConsent" value="1">
+                                                        <input class="form-check-input" th:field="*{emailConsent}" type="checkbox" id="emailConsent" name="emailConsent" th:value="1">
                                                         <label class="form-check-label" for="emailConsent">이메일</label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="smsConsent" name="smsConsent" value="1">
+                                                        <input class="form-check-input" th:field="*{smsConsent}" type="checkbox" id="smsConsent" name="smsConsent" th:value="1">
                                                         <label class="form-check-label" for="smsConsent">SMS</label>
                                                     </div>
                                                 </div>
@@ -309,7 +317,7 @@
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="schoolName">소속 학원명:</label>
-                                                        <input type="text" id="schoolName" name="schoolName" class="form-control">
+                                                        <input type="text"  th:field="*{schoolName}" id="schoolName" name="schoolName" class="form-control">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -356,7 +364,7 @@
             registerTab.show();
         });
 
-           //mulitStep-form 작동
+        //mulitStep-form 작동
 
                  var currentTab = 0; // 현재 탭을 첫 번째 탭(0)으로 설정합니다.
                  showTab(currentTab); // 현재 탭을 표시합니다.
@@ -436,8 +444,9 @@
 
     </script>
     <script th:src="@{/js/member/AgreenAuth.js}"></script>
-    <script th:src="@{/js/member/educatorSido.js}"></script>
-
+    <!--<script th:src="@{/js/member/educatorSido.js}"></script>-->
+    <!--<script src="/js/member/AgreenAuth.js"></script>-->
+    <script src="/js/member/educatorSido.js"></script>
 
 
 

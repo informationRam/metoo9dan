@@ -12,6 +12,19 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     //아이디로 값 찾기
-    Member findByMemberId (String memberId);
+    Optional<Member> findByMemberId(String memberId);
+
+    //회원가입시 중복값 아이디 확인
+    boolean existsBymemberId(String memberId);
+
+    //회원가입시 중복값 이메일 확인
+    boolean existsByEmail(String email);
+
+    //이메일로 아이디 찾기
+    Optional<Member> findByEmail(String email);
+
+    //비밀번호 찾기 - 아이디 && 이메일주소
+    Optional<Member> findBymemberIdAndEmail(String memberId, String email);
+
 
 }
