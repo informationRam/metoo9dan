@@ -355,7 +355,7 @@
                             $("#editContent").text(data.homeworkContent);
                             $("#editProgress").val(data.progress);
                             $("#editMemo").val(data.homeworkMemo);
-                            $("#editDueDate").val(data.dueDate.toISOString().split("T")[0]);
+                            $("#editDueDate").val(data.dueDate.split("T")[0]);
                             console.log(data.dueDate);
 
                             // 모달 및 오버레이 표시
