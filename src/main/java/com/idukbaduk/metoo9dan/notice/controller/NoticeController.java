@@ -51,12 +51,13 @@ public class NoticeController {
     private HttpSession httpSession;
 
     // 공지사항 등록 메뉴를 누르면 공지사항 목록을 보여줌
+    // 페이지네이션 추가
     @GetMapping("/list")
     public String getNoticeList(Model model,
                                 @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
                                 @RequestParam(value = "listSize", defaultValue = "10") int listSize
                                 ){
-
+        logger.info("pageNo: "+pageNo);
         Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
         model.addAttribute("noticePage", noticePage);
         return "notice/noticeList";

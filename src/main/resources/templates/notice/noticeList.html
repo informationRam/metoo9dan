@@ -15,10 +15,10 @@
                 <form action="/notice/list">
                     <input type="hidden" id="pageNo" name="pageNo" value="">
                     <label for="listSize">표기:
-                        <select id="listSize" name="listSize" onchange="changeUrl(this)">
+                        <select id="listSize" name="listSize" onchange="changeUrl(this.value)">
                             <!--list?pageNo=&listSize=30&noticeType=noti&status=post&searchCategory=titleAndContent&searchKeyword=-->
-                            <option value="10">10</option>
-                            <option value="20">20</option>
+                            <option value="/notice/list?listSize=10">10</option>
+                            <option value="/notice/list?listSize=20">20</option>
                             <option value="30">30</option>
                             <option value="40">40</option>
                             <option value="50">50</option>
@@ -32,9 +32,9 @@
                     </label>
                     <!--운영자한테만 보여야 함-->
                     <label for="status">상태:
-                        <select id="status" name="status">
-                            <option value="post">게시</option>
-                            <option value="notPost">예약</option>
+                        <select id="status" name="status" onchange="changeOptUrl(this.value)">
+                            <option value="&status=post">게시</option>
+                            <option value="&status=notPost">예약</option>
                         </select>
                     </label>
                     <br/>
@@ -82,8 +82,9 @@
                             <!--3? =12-(0*10)-9 -->
                             <!--2? =12-(1*10)-0 -->
                             <!--1? =12-(1*10)-1 -->
-                        <tr th:each="notice : ${noticePage}">
+                        <tr th:each="notice, loop:${noticePage}">
                             <td th:text="${notice.noticeNo}"></td>
+                            <!--<td th:text="${noticePage.getTotalElements - (noticePage.number * noticePage.size) - loop.index}"></td>-->
                             <td> <!--운영관리자한테만-->
                                 <a th:if="${notice.status.equals('post')}" th:text="게시"></a>
                                 <a th:if="${notice.status.equals('not_post')}" th:text="예약"></a>
@@ -108,9 +109,40 @@
                 </table>
             </div>
             <!--페이지네이션 들어가야함-->
-            <nav>
+            <nav th:if="${!noticePage.isEmpty()}">
                 <ul class="pagination">
-                    <li></li>
+                    <!--이전-->
+                    <li class="page-item" th:classappend="${!noticePage.hasPrevious} ? 'disabled'">
+                        <a class="page-link" th:href="@{|?page=${noticePage.number-5}|}"><span>Prev</span></a>
+                    </li>
+                    <!--페이지번호-->
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, noticePage.totalPages-1)}"
+                        th:classappend="${page == noticePage.number} ? 'active'">
+                        <!--th:if="${page>=noticePage.number-2 and page<=noticePage.number+2}"-->
+                        <a class="page-link" th:href="@{|?pageNo=${page}|}" th:text="${page+1}"></a>
+                    </li>
+                    <!--다음-->
+                    <li class="page-item" th:classappend="${!noticePage.hasNext} ? 'disabled'">
+                        <a class="page-link" th:href="@{|?page=${noticePage.number+5}|}"><span>Next</span></a>
+                    </li>
+                </ul>
+            </nav>
+            <nav th:if="${!noticePage.isEmpty()}">
+                <ul class="pagination">
+                    <!--이전-->
+                    <li class="page-item" th:classappend="${noticePage.number <= 5} ? 'disabled'">
+                        <a class="page-link" th:href="@{|?page=${noticePage.number-5}|}"><span>Prev</span></a>
+                    </li>
+                    <!--페이지번호-->
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, noticePage.totalPages-1)}"
+                        th:classappend="${page == noticePage.number} ? 'active'">
+                        <!--th:if="${page>=noticePage.number-2 and page<=noticePage.number+2}"-->
+                        <a class="page-link" th:href="@{|?pageNo=${page}|}" th:text="${page+1}"></a>
+                    </li>
+                    <!--다음-->
+                    <li class="page-item" th:classappend="${noticePage.number + 5 >= noticePage.totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{|?page=${noticePage.number+5}|}"><span>Next</span></a>
+                    </li>
                 </ul>
             </nav>
 
@@ -124,7 +156,19 @@
             alert([[${msg}]]);
         }
         function changeUrl(url) {
-            location.href = url
+            var status = document.getElementById('status').value;
+            console.log('listSize: '+listSize);
+            //listSize.setAttribute('selected', true);
+            location.href = url+status;
+        }
+
+        function changeOptUrl(url){
+            var optUrl = url;
+            var listSizeUrl =  document.getElementById('listSize').value; //&status=post
+            //location.href = optUrl+listSizeUrl; //http://localhost/notice/&status=notPost/notice/list?listSize=10
+            //listSizeUrl.setAttribute('selected', 'selected');
+            location.href = listSizeUrl+optUrl; //
+
         }
     </script>
 </div>
