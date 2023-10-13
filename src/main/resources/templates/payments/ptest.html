@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KakaoPay Example</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>KakaoPay Example</h1>
+
+<!-- 결제를 시작할 폼 -->
+<form id="payment-form">
+  <label for="item-name">상품명:</label>
+  <input type="text" id="item-name" name="item_name" value="상품명">
+  <br>
+  <label for="total-amount">총 금액:</label>
+  <input type="text" id="total-amount" name="total_amount" value="10000">
+  <br>
+  <button type="submit">결제 시작</button>
+</form>
+
+<!-- 결제 성공 시 표시될 메시지 -->
+<div id="success-message" style="display: none;">
+  결제가 성공적으로 완료되었습니다.
+</div>
+
+<script>
+  // 결제 시작 폼 제출 시 처리
+  $('#payment-form').submit(function (event) {
+      event.preventDefault();
+
+      // 결제 정보를 준비
+      var paymentData = {
+          item_name: $('#item-name').val(),
+          total_amount: $('#total-amount').val()
+      };
+
+      // /ready 엔드포인트로 Ajax POST 요청 보내기
+      $.ajax({
+          url: '/kakaopay/ready',
+          method: 'POST',
+          data: paymentData,
+          success: function (response) {
+              // 카카오페이 페이지로 이동
+              location.href = response.next_redirect_pc_url;
+          },
+          error: function () {
+              alert('결제 준비 중 오류가 발생했습니다.');
+          }
+      });
+  });
+
+  // 결제 성공 시 처리 (이 부분은 실제 카카오페이에서 콜백을 받아 처리)
+  function handlePaymentSuccess(pgToken) {
+      // /success 엔드포인트로 Ajax GET 요청 보내기
+      $.get('/kakaopay/success', { pg_token: pgToken }, function (data) {
+          $('#success-message').show();
+      });
+  }
+</script>
+</body>
+</html>

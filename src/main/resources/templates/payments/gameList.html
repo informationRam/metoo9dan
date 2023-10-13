@@ -17,7 +17,7 @@
                 </thead>
                 <tbody class="table-light">
                 <!-- 판매구분 상태가 'Y'인 값만 보임-->
-                <tr th:each="game, loop : ${gamePage}" th:if="${game.status == 'Y'}">
+                <tr th:each="game, loop : ${gamePage}">
                     <td class="gameContents image">
                     <!-- 이미지 -->
                     <div class="card" style="width: 18rem;">

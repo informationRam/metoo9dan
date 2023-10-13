@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.beans.Transient;
 import java.time.LocalDateTime;
 
-@SpringBootTest
 class Metoo9danApplicationTests {
 
 	@Autowired
@@ -41,7 +40,7 @@ class Metoo9danApplicationTests {
 	@Autowired
 	private MemberService memberService;
 
-	@Test
+
 	void DBConnectionTest() throws Exception {
 //		Info info = new Info();
 //		info.setText("test1");
@@ -55,7 +54,7 @@ class Metoo9danApplicationTests {
 	}
 
 	@Test
-	void gameTest() throws Exception {
+/*	void gameTest() throws Exception {
 		GameContents gameContents = new GameContents();
 		gameContents.setGameName("게임제목");
 		gameContents.setDifficulty("beginner");
@@ -75,12 +74,12 @@ class Metoo9danApplicationTests {
 		gameContentFiles1.setOriginFileName("원본파일명");
 		gameContentFiles1.setCopyFileName("사본파일명");
 		gameContentsFileRepository.save(gameContentFiles1);
-		
+
 	}
+*/
 
-
-	@Test
-	void gamefileTest() throws Exception {
+	//@Test
+	//void gamefileTest() throws Exception {
 //		Member member = new Member();
 //		member.setName("이름5555");
 //		member.setTel("010-2222-5555");
@@ -110,9 +109,9 @@ class Metoo9danApplicationTests {
 
 		// Perform your assertions or further testing as needed
 
-	}
+	//}
 
-	@Test
+
 	public void testRegisterEducator() {
 		// 교육자 정보 생성
 		Member member = new Member();

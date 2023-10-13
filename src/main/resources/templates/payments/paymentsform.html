@@ -1,0 +1,67 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            결제를 해보장</br>
+          <!--  <form id="nado-pay" class="my-3" th:object="${kakaopayDTO}" th:action="@{/payments/add}" method="post" style="margin-left: 30px">
+-->
+
+                <h2>주문하실 상품</h2>
+                    <p>구매상품명</p>
+               <span> ~~상품명 넣으세요~~~~</span>
+
+                <h2>구매자 정보</h2>
+                    <p>구매자명</p>
+                    <p>연락처</p>
+                <span> ~주문합계 넣으세요~~~~ <</span>
+
+                <h2>결제 방법 선택하세오</h2>
+                    <input type="radio" value="deposit">무통장</br>
+                    <input type="radio" value="account">계좌이체</br>
+                    <input type="radio" value="pay">카카오페이</br>
+
+        <div class="" id="apibtn">
+            <img src="/image/game/kakao_payment_icon.png" id="paymentIcon">
+        </div>
+                <div>
+                    <button type="submit"></button>
+                </div>
+          <!--  </form>-->
+
+        </div>
+    </div>
+    <script>
+        // 이미지 클릭 이벤트 처리
+               document.getElementById("paymentIcon").addEventListener("click", function() {
+                   // AJAX 요청
+                   var xhr = new XMLHttpRequest();
+                   xhr.open("POST", "/payments/kakaopay", true);
+                   xhr.onreadystatechange = function () {
+
+                       if (xhr.readyState === 4 && xhr.status === 200) {
+                           var response = JSON.parse(xhr.responseText);
+                           console.log("response.next_redirect_pc_url",response.next_redirect_pc_url)    // 받을 정보
+                           var box = response.next_redirect_pc_url;
+                           window.open(box);
+                       }
+                   };
+                   xhr.send();
+               });
+
+
+              /* Content-type: application/json;charset=UTF-8
+                   {
+                    "tid": "T1234567890123456789",
+                    "next_redirect_app_url": "https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/aInfo",
+                    "next_redirect_mobile_url": "https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/mInfo",
+                    "next_redirect_pc_url": "https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/info",
+                    "android_app_scheme": "kakaotalk://kakaopay/pg?url=https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/order",
+                    "ios_app_scheme": "kakaotalk://kakaopay/pg?url=https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/order",
+                    "created_at": "2016-11-15T21:18:22"
+                   }
+                    */
+    </script>
+</div>
+</html>

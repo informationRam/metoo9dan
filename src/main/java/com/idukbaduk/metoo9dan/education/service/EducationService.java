@@ -104,6 +104,7 @@ public class EducationService {
         educationValidation.setFile_type(education.getFileType());
         educationValidation.setService_type(education.getServiceType());
         educationValidation.setDescription(education.getDescription());
+
         // 이미 업로드된 이미지 파일 목록을 가져와서 EducationVaildation에 설정
         List<ResourcesFiles> resourcesFilesList = resourcesFilesService.getResourcesFilesByResourceNo(education.getResourceNo());
         educationValidation.setBoardFileList(resourcesFilesList);

@@ -32,6 +32,7 @@ dependencies {
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2'
 	//implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	testImplementation 'org.projectlombok:lombok:1.18.28'
+	testImplementation 'junit:junit:4.13.1'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
