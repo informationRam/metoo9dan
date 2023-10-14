@@ -11,6 +11,6 @@ public class EducatorController {
     //test- 학생관리 페이지 접근
     @GetMapping(value="/studentManage")
     public String studentManage() throws Exception {
-        return "member/studentManage";
+        return "/member/studentManage";
     }
 }

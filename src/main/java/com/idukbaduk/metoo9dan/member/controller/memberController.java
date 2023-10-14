@@ -30,16 +30,14 @@ import java.util.Map;
 public class memberController {
 
     private final MemberService memberService;
-    // 메일발송 서비스
     private final EmailService emailService;
     private PasswordEncoder passwordEncoder;
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
+
 
     //test- 마에페이지 접근
     @GetMapping(value="/mypage")
     public String myPage() {
-        return "member/myPage";
+        return "/member/myPage";
     }
 
     //로그인 화면 보여주기
@@ -60,31 +58,45 @@ public class memberController {
     //회원가입 처리하기
     //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
     @PostMapping("/join")
-    public String createUser(@Valid UserCreateForm form, BindingResult bindingResult, Model model) {
+    public String createUser(@Valid UserCreateForm userCreateForm, BindingResult bindingResult, Model model) {
 
+        // userCreateForm 의 양식과 일치하는지 검증하는 작업
         if (bindingResult.hasErrors()) {
             return "/user/signupForm2";
         }
 
         ModelMapper modelMapper = new ModelMapper();
         System.out.println("join컨트롤러 진입");
-        MemberDTO memberDTO = modelMapper.map(form, MemberDTO.class);
-        memberDTO.setPassword(passwordEncoder.encode(form.getPwd1()));
+        MemberDTO memberDTO = modelMapper.map(userCreateForm, MemberDTO.class);
+        memberDTO.setPassword(passwordEncoder.encode(userCreateForm.getPwd1()));
 
-        if ("EDUCATOR".equals(form.getRole())) {
-            EducatorInfoDTO educatorInfoDTO = modelMapper.map(form, EducatorInfoDTO.class);
+        if (!userCreateForm.getPwd1().equals(userCreateForm.getPwd2())) {
+            model.addAttribute("passwordMismatch", true);
+            return "/user/signupForm2";
+        }
 
+        if (memberService.checkmemberIdDuplication(userCreateForm.getMemberId())) {
+            model.addAttribute("memberIdDuplicate", true);
+            return "/user/signupForm2";
+        }
+
+        if (memberService.checkEmailDuplication(userCreateForm.getEmail())) {
+            model.addAttribute("emailDuplicate", true);
+            return "/user/signupForm2";
+        }
+
+        if ("EDUCATOR".equals(userCreateForm.getRole())) {
             // MemberDTO 데이터를 Member 엔티티로 이동
             Member member = modelMapper.map(memberDTO, Member.class);
 
             // EducatorInfoDTO 데이터를 EducatorInfo 엔티티로 이동
+            EducatorInfoDTO educatorInfoDTO = modelMapper.map(userCreateForm, EducatorInfoDTO.class);
             EducatorInfo educatorInfo = modelMapper.map(educatorInfoDTO, EducatorInfo.class);
 
             memberService.createUserWithEducatorInfo(member, educatorInfo);
         } else {
             // MemberDTO 데이터를 Member 엔티티로 이동
             Member member = modelMapper.map(memberDTO, Member.class);
-
             memberService.createUser(member);
         }
 
@@ -99,21 +111,6 @@ public class memberController {
         return "/member/forgotAccount";
     }
 
-    //id 찾기 GET 요청
-//    @GetMapping("/searchId")
-//    @ResponseBody
-//    public Map<String, String> getsearchid(@RequestParam("email") String email) {
-//        Map<String, String> member = new HashMap<>();
-//        String memberId = memberService.searchId(email);
-//        //회원정보에 사용자가 입력한 이메일이 있는지 확인
-//        if (!memberService.checkEmailDuplication(email) || memberId == null) {
-//            member.put("memberId", "회원정보를 찾을 수 없습니다.");
-//            return member;
-//        } else {
-//            member.put("memberId", memberId);
-//            return member;
-//        }
-//    }
     //id 찾기 POST 요청
     @PostMapping("/idSearch")
     @ResponseBody

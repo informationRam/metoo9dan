@@ -254,6 +254,7 @@
                                                 <div class="input-group">
                                                     <input type="text"  th:field="*{memberId}" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput" disabled required>
                                                     <button type="button" class="btn btn-primary" id="chechMemberId">ID 중복 확인</button>
+                                                    <span th:if="${#fields.hasErrors('memberId')}" th:errors="*{memberId}" class="error-message text-danger"></span>
                                                 </div>
                                             </div>
 
@@ -261,17 +262,20 @@
                                             <div class="mb-3">
                                                 <label for="password" class="form-label">비밀번호</label>
                                                 <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password" disabled >
+                                                <span th:if="${#fields.hasErrors('pwd1')}" th:errors="*{pwd1}" class="error-message text-danger"></span>
                                             </div>
                                             <!-- 비밀번호 확인 입력란 -->
                                             <div class="mb-3">
                                                 <label for="confirmPassword" class="form-label">비밀번호 확인</label>
                                                 <input type="password" th:field="*{pwd2}" placeholder="비밀번호와 일치하게 입력하세요" autocomplete="new-password"    oninput="this.className = ''" class="form-control" id="confirmPassword" name="confirmPassword" disabled required>
+                                                <span th:if="${#fields.hasErrors('pwd2')}" th:errors="*{pwd2}" class="error-message text-danger"></span>
                                             </div>
 
                                             <!-- 생년월일 입력란 -->
                                             <div class="mb-3">
                                                 <label for="birth" class="form-label">생년월일</label>
                                                 <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"  required>
+                                                <span th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" class="error-message text-danger"></span>
                                             </div>
 
                                             <!-- 이메일 주소 입력란 -->
@@ -294,6 +298,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="error-message text-danger"></span>
                                             <!-- 수신동의 (이메일 및 SMS 중 선택) -->
                                             <div class="mb-3">
                                                 <label class="form-label d-flex align-items-center">수신 동의 </label>
@@ -318,6 +323,7 @@
                                                     <div class="mb-3">
                                                         <label for="schoolName">소속 학원명:</label>
                                                         <input type="text"  th:field="*{schoolName}" id="schoolName" name="schoolName" class="form-control">
+                                                        <span th:if="${#fields.hasErrors('schoolName')}" th:errors="*{schoolName}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -327,6 +333,7 @@
                                                             <option value="" selected disabled>시도 선택</option>
                                                             <!-- 시도 옵션들을 여기에 추가 -->
                                                         </select>
+                                                        <span th:if="${#fields.hasErrors('sido')}" th:errors="*{sido}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -336,6 +343,7 @@
                                                             <option value="" selected disabled>시군구 선택</option>
                                                             <!-- 시군구 옵션들을 여기에 추가 -->
                                                         </select>
+                                                        <span th:if="${#fields.hasErrors('sigungu')}" th:errors="*{sigungu}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                             </div>

@@ -34,7 +34,6 @@ public class SecurityConfig {
     }
     @Bean
     public BCryptPasswordEncoder PasswordEncoder(){
-
         return new BCryptPasswordEncoder();
     }
 
@@ -56,15 +55,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable();
-
-
-//            .sessionManagement()
-//            .maximumSessions(1) //최대 세션 허용 수
-//            .maxSessionsPreventsLogin(false)    // 2중 로그인 방지 -> 먼저로그인한 user가 튕긴다.
-//            .expiredUrl("/user/login");         // 튕겨지면 user/login페이지로 이동
-      //특정 URL 로그인 기능을 등록
-       http.authorizeHttpRequests()
+            .csrf().disable()
+            .authorizeHttpRequests()
                 .requestMatchers( new AntPathRequestMatcher("/member/mypage")).hasRole("STUDENT")
                 .requestMatchers( new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
                 .requestMatchers( new AntPathRequestMatcher("/edu/**")).hasRole("EDUCATOR")
@@ -76,10 +68,10 @@ public class SecurityConfig {
         .and()
              .formLogin()
                   .loginPage("/member/login")             // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
-                  .permitAll()                           //인증받지 않아도 모두 접근가능
                   .usernameParameter("memberId")         //로그인처리시 아이디 파리미터명 설정
                   .passwordParameter("password")         //패스워드 파라미터명 설정
-                  .defaultSuccessUrl("/");               // 로그인 성공 후 이동 페이지
+                  .defaultSuccessUrl("/")              // 로그인 성공 후 이동 페이지
+                  .permitAll(); // 로그인 페이지는 인증 필요 없음
 //                .failureUrl("/member/login")           // 로그인 실패 후 이동 페이지
 //
 //                .successHandler(new AuthenticationSuccessHandler() {    // 로그인 성공 후 핸들러
@@ -100,7 +92,8 @@ public class SecurityConfig {
         http
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/");
+                .logoutSuccessUrl("/")
+                .permitAll();
 //                .addLogoutHandler(new LogoutHandler() {
 //                    @Override
 //                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -108,27 +101,7 @@ public class SecurityConfig {
 //                        session.invalidate();
 //                    }
 //                })
-//        // RememberMe
-//        .and()
-//                .rememberMe()
-//                .rememberMeParameter("remember")
-//                .tokenValiditySeconds(3600) //1시간
-//                .userDetailsService(userDetailsService); //Autowired
 
-//        //d예외처리
-//        http.exceptionHandling()
-//                .authenticationEntryPoint(new AuthenticationEntryPoint() {
-//                    @Override
-//                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-//
-//                    }
-//                })
-//                .accessDeniedHandler(new AccessDeniedHandler() {
-//                    @Override
-//                    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-//                        response.sendRedirect("/denied");
-//                    }
-//                });
 
         return http.build();
 

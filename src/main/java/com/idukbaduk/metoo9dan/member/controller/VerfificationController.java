@@ -24,7 +24,7 @@ public class VerfificationController {
     private final SecureRandom secureRandom = new SecureRandom();
     private final String numericCharacters = "0123456789";
 
-       // 인증번호 발송
+    // 인증번호 발송
     @PostMapping("/sendSMS-code")
     public ResponseEntity<Map<String, Object>> sendVerificationCode(@RequestBody VerificationRequest request, HttpSession session) {
         try {
