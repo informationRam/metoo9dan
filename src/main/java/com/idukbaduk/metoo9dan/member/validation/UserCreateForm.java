@@ -16,7 +16,7 @@ public class UserCreateForm {
 
     private Integer memberNo;
 
-    @Size(min = 2, max = 5)
+    @Size(min = 2, max = 8)
     @NotEmpty(message = "이름은 필수입력입니다.")
     private String name;          //'회원 이름'
 
