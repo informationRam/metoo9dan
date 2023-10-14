@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginVaildation{
+public class  LoginVaildation{
 
     @NotEmpty(message = "아이디는 필수입력입니다.")
     private String memberId;            //'회원 아이디'

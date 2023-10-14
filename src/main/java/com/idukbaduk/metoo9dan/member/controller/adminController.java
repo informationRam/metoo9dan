@@ -12,6 +12,6 @@ public class adminController {
     @GetMapping(value="/memberManage")
     public String memberManange() throws Exception {
 
-        return "member/memberManage";
+        return "/member/memberManage";
     }
 }
