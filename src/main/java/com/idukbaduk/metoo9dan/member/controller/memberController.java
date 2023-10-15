@@ -3,25 +3,22 @@ package com.idukbaduk.metoo9dan.member.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
-import com.idukbaduk.metoo9dan.mail.service.EmailService;
 import com.idukbaduk.metoo9dan.member.dto.EducatorInfoDTO;
 import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
-import com.idukbaduk.metoo9dan.member.validation.LoginVaildation;
+import com.idukbaduk.metoo9dan.member.validation.LoginValidation;
 import com.idukbaduk.metoo9dan.member.validation.UserCreateForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.security.Principal;
 
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -30,30 +27,34 @@ import java.util.Map;
 public class memberController {
 
     private final MemberService memberService;
-    private final EmailService emailService;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    //test- 마이페이지 접근
+    @GetMapping(value="/mypage/{memberId}")
+    public String myPage(  @PathVariable("memberId") String memberId,
+                           Model model, Principal principal) throws Exception {
+        Member member = memberService.getUser(principal.getName());
+        String memname = member.getName(); //  회원이름
+        String Id = member.getMemberId(); // 회원아이디
 
-    //test- 마에페이지 접근
-    @GetMapping(value="/mypage")
-    public String myPage() {
+
+        System.out.println("이름"+memname);
+        System.out.println("아이디"+Id);
+
+        model.addAttribute("member",member); // 로그인 사용자 전체 정보
+        model.addAttribute("memberName",memname); // 로그인 회원 이름
         return "/member/myPage";
     }
 
-    //로그인 화면 보여주기
+    //로그인 & 회원가입 폼 화면 보여주기
     @GetMapping("/login")
-    public String login(Model model, LoginVaildation loginVaildation, UserCreateForm userCreateForm){
+    public String login(Model model, LoginValidation loginValidation, UserCreateForm userCreateForm){
+        model.addAttribute("loginValidation", loginValidation);
         model.addAttribute("userCreateForm", userCreateForm);
-        return "/member/loginForm";
+        return "member/signupForm2";
     }
 
-    //회원가입 폼 보여주기
-    @GetMapping("/join")
-    public String joinForm(UserCreateForm userCreateForm, Model model){
-        // userCreateForm을 모델에 추가
-        model.addAttribute("userCreateForm", userCreateForm);
-        return "/member/signupForm2";
-    }
 
     //회원가입 처리하기
     //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
@@ -62,7 +63,7 @@ public class memberController {
 
         // userCreateForm 의 양식과 일치하는지 검증하는 작업
         if (bindingResult.hasErrors()) {
-            return "/user/signupForm2";
+            return "member/signupForm2";
         }
 
         ModelMapper modelMapper = new ModelMapper();
@@ -72,17 +73,17 @@ public class memberController {
 
         if (!userCreateForm.getPwd1().equals(userCreateForm.getPwd2())) {
             model.addAttribute("passwordMismatch", true);
-            return "/user/signupForm2";
+            return "member/signupForm2";
         }
 
         if (memberService.checkmemberIdDuplication(userCreateForm.getMemberId())) {
             model.addAttribute("memberIdDuplicate", true);
-            return "/user/signupForm2";
+            return "member/signupForm2";
         }
 
         if (memberService.checkEmailDuplication(userCreateForm.getEmail())) {
             model.addAttribute("emailDuplicate", true);
-            return "/user/signupForm2";
+            return "member/signupForm2";
         }
 
         if ("EDUCATOR".equals(userCreateForm.getRole())) {
@@ -100,51 +101,14 @@ public class memberController {
             memberService.createUser(member);
         }
 
-        return "redirect:/";
+        return "redirect:/member/login"; //회원가입 후 로그인 페이지
     }
-
 
     //id&pw 찾기 화면
     @GetMapping("/idpwSearch")
     public String searchidform() {
 
         return "/member/forgotAccount";
-    }
-
-    //id 찾기 POST 요청
-    @PostMapping("/idSearch")
-    @ResponseBody
-    public Map<String, String> SearchId(@RequestParam("email") String email) {
-        Map<String, String> member = new HashMap<>();
-        String memberId = memberService.searchId(email);
-        //회원정보에 사용자가 입력한 이메일이 있는지 확인
-        if (!memberService.checkEmailDuplication(email) || memberId == null) {
-            member.put("memberId", "회원정보를 찾을 수 없습니다.");
-            return member;
-        } else {
-            member.put("memberId", memberId);
-            return member;
-        }
-    }
-    // 비밀번호 찾기
-    @PostMapping("/pwdSearch")
-    @ResponseBody
-    public Map<String, String> pwdSearch(@RequestParam("email") String email, @RequestParam("memberId") String memberId) {
-        System.out.println("email" + email);
-        System.out.println("memberId" + memberId);
-        Map<String, String> message = new HashMap<>();
-
-        // 이메일 중복 여부 체크
-        if (memberService.searchPwd(memberId, email)) {
-            message.put("message", "사용자 정보를 찾을 수 없습니다.");
-            return message;
-        } else {
-            String tempPassword = emailService.sendSimpleMessage(email);   // 메일 발송 후 임시 비밀번호 값 저장
-            Member member = memberService.getUser(memberId);
-            memberService.userPwdModify(member, tempPassword);                // 임시 패스워드로 변경
-            message.put("message", "메일을 발송하였습니다.");
-            return message; // 메일 전송 성공 -> 로그인 창으로 이동
-        }
     }
 
 }
