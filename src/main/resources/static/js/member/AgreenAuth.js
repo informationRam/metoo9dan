@@ -223,7 +223,7 @@ function verifyCode() {
                 }
             } else {
                 alert("인증에 실패했습니다.");
-                 verificationIsSuccessful = false; yv
+                 verificationIsSuccessful = false;
             }
         }
     };

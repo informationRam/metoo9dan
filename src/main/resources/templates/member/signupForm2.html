@@ -30,7 +30,7 @@
                     <div class="tab-content" id="pills-tabContent">
                         <!-- 로그인 영역 -->
                         <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
-                            <form id="loginForm"  th:action="@{/member/login}" th:object="${loginVaildation}" method="post">
+                            <form id="loginForm"  th:action="@{/member/login}" th:object="${loginValidation}" method="post">
                                 <!-- ID input -->
                                 <div class="form-outline mb-4">
                                     <input type="text" th:field="*{memberId}" name="memberId" id="memberId" class="form-control" />
@@ -206,10 +206,14 @@
 
                                                 <!-- 휴대폰 번호와 인증 버튼 -->
                                                 <div class="mb-3">
-                                                    <input class="form-control" type="text" placeholder="이름" oninput="this.className = ''" name="memName" id="memName">
+                                                    <label for="memName" class="form-label">이름</label>
+                                                    <input type="text" class="form-control" placeholder="이름" name="memName" id="memName" oninput="validateName()" required />
+                                                    <span class="error-message" id="name-error-message"></span>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <input type="tel" class="form-control" name="to" placeholder="본인 휴대폰번호를 입력하세요" maxlength="14"  id="to"/>
+                                                    <label for="to" class="form-label">휴대폰 번호</label>
+                                                    <input type="tel" class="form-control" name="to" placeholder="본인 휴대폰번호를 입력하세요" id="to" oninput="validatePhoneNumberAndFormat(this)" required />
+                                                    <span class="error-message" id="phone-error-message"></span>
                                                 </div>
                                                 <button class="btn btn-outline-secondary" onclick="sendVerificationCode()">발송</button>
                                             </div> <!-- authMember 끝 -->
@@ -222,7 +226,8 @@
 
                                                 <!-- 인증 코드 입력란 -->
                                                 <div class="mb-3">
-                                                    <input type="text" class="form-control" placeholder="인증 코드 입력" id="verificationCode">
+                                                    <input type="text" class="form-control" placeholder="인증 코드 입력" id="verificationCode"  oninput="validateVerificationCode()" required>
+                                                    <span class="error-message" id="verification-code-error-message"></span>
                                                 </div>
                                                 <!-- 확인 버튼 -->
                                                 <button class="btn btn-outline-secondary" onclick="verifyCode()">확인</button>
@@ -400,20 +405,27 @@
                  }
 
                  function nextPrev(n) {
-                   var x = document.getElementsByClassName("step");
+                    var x = document.getElementsByClassName("step");
 
-                   if (n == 1 && !validateForm()) return false; // "다음" 버튼을 클릭하고 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
+                    if (n == 1) {
+                        if (!validateForm()) return false; // 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
+                        if (currentTab === 1) { // 두 번째 스텝인 경우
+                            if (!verificationIsSuccessful) { // 인증이 실패한 경우
+                                alert("본인 인증 단계를 완료하세요.");
+                                return false; // 인증이 실패한 경우 다음으로 진행하지 않습니다.
+                            }
+                        }
+                    }
 
-                   x[currentTab].style.display = "none"; // 현재 탭을 숨깁니다.
-                   currentTab = currentTab + n; // 다음 탭 또는 이전 탭으로 이동합니다.
+                    x[currentTab].style.display = "none"; // 현재 탭을 숨깁니다.
+                    currentTab = currentTab + n; // 다음 탭 또는 이전 탭으로 이동합니다.
 
-                  //2번째 step
-                  if (currentTab === x.length - 1) {
-                    var lastStepFormInputs = document.querySelectorAll("#lastStepForm input");
-                    lastStepFormInputs.forEach(function (input) {
-                      input.removeAttribute("disabled");
-                    });
-                  }
+                    if (currentTab === x.length - 1) {
+                        var lastStepFormInputs = document.querySelectorAll("#lastStepForm input");
+                        lastStepFormInputs.forEach(function (input) {
+                            input.removeAttribute("disabled");
+                        });
+                    }
 
                     if (currentTab === x.length) {
                         document.getElementById("signUpForm").submit(); // 마지막 탭이면 폼을 제출합니다.
@@ -421,6 +433,7 @@
                         showTab(currentTab); // 다음 탭을 표시합니다.
                     }
                 }
+
 
 
                  function validateForm() {

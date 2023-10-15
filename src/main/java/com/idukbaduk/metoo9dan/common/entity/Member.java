@@ -52,6 +52,5 @@ public class Member {
     @Column(name="sms_consent",columnDefinition = "TINYINT(1)")
     private Boolean smsConsent;      //boolean NOT NULL    COMMENT 'sms수신동의',
 
-    @Column(name="member_memo")
-    private String memberMemo;      //varchar(300) NULL COMMENT "회원별 메모"
+
 }
