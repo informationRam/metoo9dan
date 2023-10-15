@@ -41,13 +41,15 @@ public class NoticeService {
         sorts.add(Sort.Order.desc("isImp")); //중요 게시글인 경우 내림차순 정렬.
         sorts.add(Sort.Order.desc("writeDate")); //작성일 기준으로 내림차순 정렬.
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
-        //Specification<Notice> specification = search(keyword);
+        /*if(keyword != null){
+            Specification<Notice> specification = search(keyword);
+            return noticeRepository.findAll(specification, pageable);
+        }*/
 
-        //return noticeRepository.findAll(specification, pageable);
         return noticeRepository.findAll(pageable);
     }
 
-    //검색
+    /*검색 - 9월30일에 써놨네?
     public Specification<Notice> search(String keyword) {
         return new Specification<Notice>() {
             @Override
@@ -58,6 +60,12 @@ public class NoticeService {
                                           criteriaBuilder.like(notice.get("noticeContent"), "%" + keyword + "%")); //내용
             }
         };
+    }*/
+
+    /*검색 - 10월15일 작성*/
+    public List<Notice> search(String keyword, Pageable pageable) {
+        List<Notice> noticeList = noticeRepository.findByNoticeTitleContaining(keyword, pageable);
+        return noticeList;
     }
 
     //상세조회

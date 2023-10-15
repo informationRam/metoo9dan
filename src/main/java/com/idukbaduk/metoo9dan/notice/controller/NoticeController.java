@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -54,12 +56,27 @@ public class NoticeController {
     // 페이지네이션 추가
     @GetMapping("/list")
     public String getNoticeList(Model model,
-                                @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
-                                @RequestParam(value = "listSize", defaultValue = "10") int listSize
+                                @RequestParam(value = "page", defaultValue = "0") int pageNo,
+                                @RequestParam(value = "listSize", defaultValue = "10") int listSize,
+                                String keyword,
+                                Pageable pageable
                                 ){
-        logger.info("pageNo: "+pageNo);
-        Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
-        model.addAttribute("noticePage", noticePage);
+        logger.info("page: "+pageNo);
+
+        /*1안*/
+        if(keyword!=null){
+            List<Notice> searchList = noticeService.search(keyword, pageable);
+            model.addAttribute("searchList", searchList);
+        } else {
+            Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
+            model.addAttribute("noticePage", noticePage);
+        }
+
+        /*2안
+        Page<Notice> noticePage = noticeService.getList(keyword, pageNo, listSize);
+        model.addAttribute("noticePage", noticePage);*/
+
+
         return "notice/noticeList";
     }
 
@@ -274,5 +291,14 @@ public class NoticeController {
         //3.모델
         //4.뷰
         return String.format("redirect:/notice/detail/%d", noticeNo);
+    }
+
+    //검색
+    @GetMapping("/search")
+    public String search(String keyword, Model model, Pageable pageable){
+        List<Notice> searchList = noticeService.search(keyword, pageable);
+        //Specification<Notice> searchList = noticeService.search(keyword);
+        model.addAttribute("searchList", searchList);
+        return "notice/searchList";
     }
 }
