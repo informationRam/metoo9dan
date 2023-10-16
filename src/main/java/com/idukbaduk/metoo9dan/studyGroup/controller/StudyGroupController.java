@@ -341,6 +341,8 @@ public class StudyGroupController {
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
     @GetMapping("/groupJoinList")
     public String joinList(Model model){
+        int member_no=16; //로그인 처리하기
+
         //학습그룹명 리스트(전체) 가져오기
         List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
         model.addAttribute("groupNameALL",groupNameALL);
@@ -351,6 +353,11 @@ public class StudyGroupController {
         List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList();
         model.addAttribute("groupJoinList",groupJoinList);
         System.out.println("groupJoinList="+groupJoinList);
+
+        int ingStudyGroup = studyGroupService.ingStudyGroup(member_no);
+        model.addAttribute("ingStudyGroup",ingStudyGroup);
+        System.out.println("ingStudyGroup="+ingStudyGroup);
+
         return "studyGroup/studyGroup_joinList";
     }
 
@@ -391,7 +398,7 @@ public class StudyGroupController {
     //학습 그룹 가입 신청 처리(학생)
     @PostMapping("/join/{group_no}")
     public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no){
-        int member_no=3; //로그인 처리하기
+        int member_no=16; //로그인 처리하기
 
         Member member = memberRepository.findById(member_no).orElse(null);
 

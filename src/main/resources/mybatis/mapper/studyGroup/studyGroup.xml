@@ -155,7 +155,7 @@
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
                     s.group_size - (SELECT COUNT(member_no)
                                     FROM baduk.group_students gs
-                                    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+                                    WHERE gs.group_no = s.group_no) AS group_to
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
@@ -227,7 +227,7 @@
             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
         s.group_size - (SELECT COUNT(member_no)
                         FROM baduk.group_students gs
-                        WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+                        WHERE gs.group_no = s.group_no) AS group_to
     FROM baduk.study_groups s
     JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
     JOIN baduk.members m ON s.member_no=m.member_no
@@ -252,7 +252,7 @@
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
                     s.group_size - (SELECT COUNT(member_no)
                                     FROM baduk.group_students gs
-                                    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+                                    WHERE gs.group_no = s.group_no) AS group_to
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
@@ -269,7 +269,7 @@
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
                     s.group_size - (SELECT COUNT(member_no)
                                     FROM baduk.group_students gs
-                                    WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
+                                    WHERE gs.group_no = s.group_no) AS group_to
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
@@ -292,6 +292,14 @@
         JOIN baduk.game_contents g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
         WHERE gs.member_no=#{member_no}
+    </select>
+
+    <!--진행 중 학습 그룹 확인-->
+    <select id="IngStudyGroup" parameterType="int" resultType="int">
+        SELECT COUNT(gs.group_students_no) AS ing
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s ON gs.group_no=s.group_no
+        WHERE s.group_finish_date>DATE_FORMAT(CURDATE(), '%Y-%m-%d') and gs.member_no=#{member_no}
     </select>
 
 </mapper>

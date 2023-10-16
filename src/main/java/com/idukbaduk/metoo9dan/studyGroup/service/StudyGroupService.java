@@ -182,4 +182,10 @@ public class StudyGroupService {
         Optional<GroupStudents> groupStudents = groupStudentsRepository.findById(group_students_no);
         return groupStudents.get();
     }
+
+    //진행 중 학습 그룹 확인
+    public int ingStudyGroup(int member_no) {
+        return studyGroupRepository.ingStudyGroup(member_no);
+    }
+
 }
