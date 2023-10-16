@@ -4,6 +4,8 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
+import com.idukbaduk.metoo9dan.member.service.MemberService;
+import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
 import com.idukbaduk.metoo9dan.notice.service.NoticeFilesService;
@@ -48,6 +50,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
     private final NoticeFilesService filesService;
+    private final MemberServiceImpl memberServiceImpl;
 
     @Autowired
     private HttpSession httpSession;
@@ -58,22 +61,33 @@ public class NoticeController {
     public String getNoticeList(Model model,
                                 @RequestParam(value = "page", defaultValue = "0") int pageNo,
                                 @RequestParam(value = "listSize", defaultValue = "10") int listSize,
-                                Pageable pageable
+                                Pageable pageable,
+                                Principal principal
                                 ){
-        logger.info("page: "+pageNo);
+        String memberRole = null;
+        Page<Notice> noticePage = null;
 
-        Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
+        if(principal != null){
+            memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
+        }
+        logger.info(memberRole);
+
+        if(principal == null || !memberRole.equalsIgnoreCase("admin")){
+            noticePage = this.noticeService.getList(pageNo, listSize);
+            model.addAttribute("memberRole", "notAdmin");
+        } else {
+            noticePage = this.noticeService.getAdminList(pageNo, listSize);
+            model.addAttribute("memberRole", memberRole);
+        }
+
         int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
         int startPage = endPage - 4; //1, 5의 배수 +1 ...
         if(endPage > noticePage.getTotalPages()){
             int realEnd = noticePage.getTotalPages();
             model.addAttribute("endPage", realEnd);
-            logger.info("realEnd: "+realEnd);
         } else {
             model.addAttribute("endPage", endPage);
         }
-        logger.info("endPage: "+endPage);
-        logger.info("startPage: "+startPage);
 
         model.addAttribute("noticePage", noticePage);
         model.addAttribute("startPage", startPage);
@@ -109,6 +123,7 @@ public class NoticeController {
         logger.info("endPage: "+endPage);
         logger.info("startPage: "+startPage);
 
+        model.addAttribute("noticeType", noticeType);
         model.addAttribute("status", status);
         model.addAttribute("listSize", listSize);
         model.addAttribute("searchCategory", searchCategory);
