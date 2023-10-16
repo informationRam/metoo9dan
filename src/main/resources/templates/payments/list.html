@@ -7,5 +7,29 @@
 <body>
 
 구매 목록확인융
+
+<h1>게임컨텐츠 목록</h1>
+<table>
+    <tr>
+        <th>Payment Number</th>
+        <th>Order Number</th>
+        <th>Contact</th>
+        <th>Method</th>
+        <th>Payment Date</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th>Depositor Name</th>
+    </tr>
+    <tr th:each="payment : ${payments}">
+        <td th:text="${payment.paymentNo}"></td>
+        <td th:text="${payment.orderNumber}"></td>
+        <td th:text="${payment.contact}"></td>
+        <td th:text="${payment.method}"></td>
+        <td th:text="${payment.paymentDate}"></td>
+        <td th:text="${payment.status}"></td>
+        <td th:text="${payment.amount}"></td>
+        <td th:text="${payment.depositorName}"></td>
+    </tr>
+</table>
 </body>
 </html>

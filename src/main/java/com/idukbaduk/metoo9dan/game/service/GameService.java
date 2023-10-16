@@ -3,6 +3,7 @@ package com.idukbaduk.metoo9dan.game.service;
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
 import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.Payments;
 import com.idukbaduk.metoo9dan.game.reprository.GameContentsFileRepository;
 import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
 import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
@@ -108,7 +109,10 @@ public void saveIndividual(GameValidation gameValidation) {
         return gameContents;
     }
 
+    public GameContents getGameContentsForPayment(Payments payment) {
+        GameContents gameContents = payment.getGameContents();
 
+    }
 
 
 

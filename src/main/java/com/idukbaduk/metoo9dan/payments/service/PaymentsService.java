@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,10 @@ public class PaymentsService {
     private EntityManager entityManager;
 
     // 구매한 게임컨텐츠에 대한 정보를 가져온다.
-    public void paymentsList(){
+    public List<Payments> paymentsList(Integer memberNo){
+
+        List<Payments> paymentsList = paymentsRepository.findByMemberMemberNo(memberNo);
+        return paymentsList;
 
     }
 
@@ -50,7 +54,7 @@ public class PaymentsService {
             payments.setContact(member.getTel());
             payments.setMethod(paymentMethod);
             payments.setPaymentDate(LocalDateTime.now());
-            payments.setStatus("Y");
+            payments.setStatus("complete");     //complete,waiting,refund
             payments.setAmount(gameContents.getSalePrice());
             payments.setDepositorName(member.getName());
             payments.setGameContents(gameContents);
@@ -58,6 +62,8 @@ public class PaymentsService {
             paymentsRepository.save(payments);
         }
     }
+
+
 
 
    /* //결제 내용 저장하기 (DB)

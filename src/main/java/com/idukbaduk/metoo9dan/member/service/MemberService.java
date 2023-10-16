@@ -4,6 +4,8 @@ import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import org.springframework.transaction.annotation.Transactional;
 
+
+
 public interface MemberService {
 
     void createUserWithEducatorInfo(Member member, EducatorInfo educatorInfo);

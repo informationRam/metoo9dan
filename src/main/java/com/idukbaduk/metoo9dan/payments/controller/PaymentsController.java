@@ -1,8 +1,6 @@
 package com.idukbaduk.metoo9dan.payments.controller;
 
-import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
-import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
@@ -67,7 +65,6 @@ public class PaymentsController {
     @PostMapping("/payments")
     public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session) {
 
-
         List<GameContents> selectedGameContents = (List<GameContents>) session.getAttribute("selectedGameContents");
         System.out.println("selectedGameContents?" + selectedGameContents);
         int totalSalePrice = (int) session.getAttribute("totalSalePrice");
@@ -77,11 +74,11 @@ public class PaymentsController {
         Member user = memberService.getUser(memberID);
 
         // paymentMethod 변수에 선택한 결제 방법이 무통장이면
-        if(paymentMethod.equals("directtransfer")){
+        if(paymentMethod.equals("deposit")){
             paymentsService.save(selectedGameContents,user,paymentMethod);
         }
 
-        return "payments/ptest";
+        return "payments/list";
     }
 
 
@@ -89,7 +86,44 @@ public class PaymentsController {
     @GetMapping("/list")
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
 
-        return "";
+        //임시용 ---------- 추후 수정 필 -------------
+        String memberID = "lee123";
+        Member user = memberService.getUser(memberID);
+
+        List<Payments> payments = paymentsService.paymentsList(user.getMemberNo());
+
+
+        for (Payments payments1 : payments) {
+            payments1.getGameContents()
+        }
+
+        GameContents gameContents1 = gameService.getGameContents(payments.get(0).);
+        // 게임컨텐츠 목록 조회
+        Page<GameContents> gamePage = this.gameService.getList(page);
+
+        for (GameContents gamecon : gamePage.getContent()) {
+            // 게임컨텐츠에 대한 파일 정보 가져오기
+            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
+            gamecon.setGameContentFilesList(gameContentFilesList);
+
+            // 게임컨텐츠에 대한 교육자료 정보 가져오기
+            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
+
+            for (EducationalResources educationalResource : education) {
+                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
+                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
+            }
+            gamecon.setEducationalResourcesList(education);
+
+        }
+        model.addAttribute("gamePage", gamePage);
+
+
+
+
+        model.addAttribute("payments",payments);
+
+        return "payments/list";
     }
 
 
