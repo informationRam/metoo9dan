@@ -83,6 +83,11 @@ public class StudyGroupRepository {
         return sqlSession.selectOne("StudyGroup.GameContentInfo",map);
     }
 
+    //학습그룹 등록학생수 가져오기(학습그룹 등록 폼)
+    public int getGroupNum(int group_no) {
+        return sqlSession.selectOne("StudyGroup.approved_num",group_no);
+    }
+
     //학습그룹명 리스트 가져오기
     public List<HashMap<String, Object>> getGroupName(int member_no){
         return sqlSession.selectList("StudyGroup.GroupNameList",member_no);

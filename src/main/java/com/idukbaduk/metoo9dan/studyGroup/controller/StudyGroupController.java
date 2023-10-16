@@ -47,18 +47,6 @@ public class StudyGroupController {
         model.addAttribute("gameNameList",gameNameList);
         System.out.println("gameNameList="+gameNameList);
 
-/*
-        // max_subscribers 값을 가져오기 위해 gameContent 리스트를 순회
-        for (GameContentsListDTO gameContent : gameContents) {
-            int max_subscribers = gameContent.getMax_subscribers();
-            int appointed_group_num = gameContent.getAppointed_group_num();
-
-            if(max_subscribers==appointed_group_num){
-                MessageDto message = new MessageDto("만들 수 있는 학습그룹 인원이 없습니다", "/studygroup/gameList", RequestMethod.GET, null);
-                return showMessageAndRedirect(message,model);
-            }
-        }
-*/
         return "studyGroup/gameContents_list";
     }
 
@@ -149,6 +137,16 @@ public class StudyGroupController {
         //수정 가능 그룹인원(학습가능인원-(그룹지정된 인원-현재 그룹인원))
         int calculatedValue = gameInfo.getMax_subscribers() - (gameInfo.getAppointed_group_num() - studyGroupForm.getGroupSize());
         model.addAttribute("calculatedValue", calculatedValue);
+
+        //학습 그룹 정보(등록 학생 수(approved_num) 가져오기)
+        List<StudyGroupsListDTO> studyGroup = studyGroupService.getList(member_no);
+        model.addAttribute("studyGroup",studyGroup);
+        System.out.println("studyGroup="+studyGroup);
+
+        //학습그룹 등록학생수 가져오기
+        int groupNum = studyGroupService.getGroupNum(group_no);
+        model.addAttribute("groupNum",groupNum);
+        System.out.println("groupNum="+groupNum);
 
         return "studygroup/studyGroup_modifyForm";
     }
