@@ -72,7 +72,8 @@
             s.group_size,
             (SELECT COUNT(member_no)
              FROM baduk.group_students gs
-             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
+            s.group_introduce
         FROM
             baduk.study_groups s
         JOIN
@@ -134,7 +135,7 @@
 		]]>
     </select>
 
-    <!--학습그룹 가입(학습그룹 전체리스트)-->
+    <!--학습그룹 가입-학생(학습그룹 전체리스트)-->
     <select id="GroupJoinList" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
         <![CDATA[
         SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
@@ -146,7 +147,7 @@
                                     WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_to
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
-        JOIN baduk.members m ON s.member_no=m.member_no
+        JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
 		]]>
     </select>
 
@@ -219,7 +220,7 @@
     FROM baduk.study_groups s
     JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
     JOIN baduk.members m ON s.member_no=m.member_no
-    WHERE s.group_no=#{group_no}
+    WHERE s.group_no=#{group_no} AND s.group_finish_date >= CURDATE()
     </select>
 
     <!--교육자명 리스트(전체)-->
@@ -244,7 +245,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
-        WHERE m.member_no=#{member_no}
+        WHERE m.member_no=#{member_no} AND s.group_finish_date >= CURDATE()
 		]]>
     </select>
 
@@ -261,7 +262,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
-        WHERE s.group_no=#{group_no} and m.member_no=#{member_no}
+        WHERE s.group_no=#{group_no} AND m.member_no=#{member_no} AND s.group_finish_date >= CURDATE()
 		]]>
     </select>
 

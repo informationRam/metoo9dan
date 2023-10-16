@@ -19,5 +19,6 @@ public class GroupsDetailListDTO {
     private String tel; //그룹가입학생 번호
     private String email; //그룹가입학생 이메일
     private Date join_date; //그룹가입학생 가입일
+    private String group_introduce; //그룹 소개글
 
 }
