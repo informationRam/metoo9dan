@@ -37,12 +37,14 @@ public class memberController {
         Member member = memberService.getUser(principal.getName());
         String memname = member.getName(); //  회원이름
         String Id = member.getMemberId(); // 회원아이디
+        String Role = member.getRole(); // 역할
 
 
         System.out.println("이름"+memname);
         System.out.println("아이디"+Id);
 
         model.addAttribute("member",member); // 로그인 사용자 전체 정보
+        model.addAttribute("role",Role); // 로그인 사용자 전체 정보
         model.addAttribute("memberName",memname); // 로그인 회원 이름
         return "/member/myPage";
     }

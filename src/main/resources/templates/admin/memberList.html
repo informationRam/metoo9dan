@@ -78,7 +78,9 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th scope="col">체크박스</th>
+                        <th scope="col"><!-- 체크박스 클릭시 하위 행 전체 선택-->
+                            <input type="checkbox" id="selectAllCheckbox" th:checked="${false}">
+                        </th>
                         <th scope="col">넘버링</th>
                         <th scope="col">회원구분</th>
                         <th scope="col">회원이름</th>
@@ -91,16 +93,18 @@
                     </thead>
                     <tbody>
                     <!-- Thymeleaf 반복문을 이용하여 회원 목록 데이터 표시 -->
-                        <tr th:each="member : ${members}">
-                            <td><input type="checkbox" th:id="${member.memberNo}" th:checked="${false}"></td>
-                            <td th:text="${member.memberNo}">1</td>
+                        <tr th:each="member, rowStat : ${members}">
+                            <td>
+                                <input type="checkbox" class="memberCheckbox" th:id="${member.memberNo}" th:checked="${false}">
+                            </td>
+                            <td th:text="${rowStat.index + 1}">1</td>
                             <td th:text="${member.role}">교육자</td>
                             <td th:text="${member.name}">이름</td>
                             <td th:text="${member.memberId}">아이디</td>
                             <td th:text="${member.tel}">연락처</td>
                             <td th:text="${member.email}">이메일</td>
-                            <td th:text="${member.membershipStatus}">유료회원</td>
-                            <td th:text="${#dates.format(member.joinDate, 'yyyy.MM.dd')}">2023.10.01</td>
+                            <td th:text="${member.membershipStatus}">자격</td>
+                            <td th:text="${joinDate[rowStat.index]}">가입일</td>
                         </tr>
                     </tbody>
                 </table>
@@ -135,7 +139,7 @@
 
             <!-- Bootstrap 5 JS 및 jQuery -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+            <script th:src="@{/js/admin/memberlist.js}"></script>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->

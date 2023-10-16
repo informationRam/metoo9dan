@@ -4,7 +4,12 @@ import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface MemberService {
+
+    //회원정보전체 조회
+    List<Member> getAllMembers();
 
     void createUserWithEducatorInfo(Member member, EducatorInfo educatorInfo);
 

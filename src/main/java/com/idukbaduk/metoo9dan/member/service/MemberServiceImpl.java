@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.member.service;
 
+import com.idukbaduk.metoo9dan.admin.repository.PaymentsRepository;
 import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.member.exception.DataNotFoundException;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -18,8 +20,21 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final PaymentsRepository paymentsRepository;
     private final EducatorinfoRepository educatorInfoRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    //회원정보전체 조회
+    @Override
+    public List<Member> getAllMembers() {
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            boolean isPaidMember = paymentsRepository.existsByMemberMemberNo(member.getMemberNo());
+          //결제내역 있으면 유료, 없으면 무료회원
+            member.setMembershipStatus(isPaidMember ? "유료회원" : "무료회원");
+        }
+        return members;
+    }
 
     //회원가입 처리 : roled이 educator일때
     @Transactional
@@ -33,6 +48,7 @@ public class MemberServiceImpl implements MemberService {
     }
     
     //회원가입 처리 : roled이 그 외
+    @Override
     @Transactional
     public void createUser(Member member) {
 
@@ -42,6 +58,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     //id로 회원정보 가져오기
+    @Override
     public Member getUser(String memberId){
         System.out.println("getUser진입");
         Optional<Member> member = memberRepository.findByMemberId(memberId);
@@ -53,6 +70,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     //이메일 넣어 회원정보 찾기
+    @Override
     public Member getUserbyEmail (String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
@@ -62,6 +80,7 @@ public class MemberServiceImpl implements MemberService {
         }
     }
     // 회원 가입시 이메일 중복 여부 확인 or id 찾기에 사용
+    @Override
     @Transactional(readOnly = true)
     public boolean checkEmailDuplication(String email) {
         System.out.println("서비스들어옴");
@@ -69,6 +88,7 @@ public class MemberServiceImpl implements MemberService {
         return emailDuplicate;
     }
     //정보 수정시 사용
+    @Override
     @Transactional(readOnly = true)
     public boolean checkEmailDuplication(Member member,MemberModifyForm memberModifyForm) {
         boolean emailDuplicate = false;
@@ -79,6 +99,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 회원 가입시 아이디 중복 여부 확인
+    @Override
     @Transactional(readOnly = true)
     public boolean checkmemberIdDuplication(String memberId) {
         System.out.println("서비스들어옴");
@@ -87,6 +108,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     //아이디 찾기 - 이메일로 찾기
+    @Override
     public String searchId(String email) {
         System.out.println("searchId서비스 진입");
         Optional<Member> idSearchMem = memberRepository.findByEmail(email);
@@ -99,6 +121,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     //비밀번호찾기 - id & email값 동시에 일치하는 회원이 있는지
+    @Override
     public boolean searchPwd(String memberId,String email){
         System.out.println("searchPwd 서비스 진입");
         Optional<Member> pwdSearchMem = memberRepository.findBymemberIdAndEmail(memberId,email);
@@ -113,6 +136,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 임시 비번 변경
+    @Override
     public void userPwdModify(Member member, String tempPassword){
         member.setPassword(passwordEncoder.encode(tempPassword));
         memberRepository.save(member);

@@ -74,7 +74,13 @@ public class SecurityConfig {
                 //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
                 .anyRequest().permitAll()
                 );
-
+//        http
+//                .sessionManagement()
+//                .sessionFixation()
+//                .migrateSession() // 세션 변조 공격 방지
+//                .invalidSessionUrl("/logout") // 세션 만료 시 리디렉션할 URL
+//                .maximumSessions(1) // 한 사용자당 최대 1개의 세션 허용 (동시 다중 로그인 방지)
+//                .maxSessionsPreventsLogin(false); // 다른 장치에서 로그인하면 이전 세션 만료
         http.
              formLogin()
                   .loginPage("/member/login")               // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
