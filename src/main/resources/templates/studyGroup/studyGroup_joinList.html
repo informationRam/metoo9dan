@@ -92,6 +92,7 @@
                             if (response.status === 200) {
                                 alert("그룹에 가입 신청되었습니다.");
                                 // 가입이 성공한 경우, 필요한 동작 수행
+                                //location.reload();
                             } else {
                                 alert("가입 신청에 실패했습니다. 다시 시도하세요.");
                             }
@@ -124,7 +125,27 @@
     });
 
     //-------조회하기 버튼----------
-        document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
+         // 체크박스 선택 해제 로직을 함수로 분리
+        function applyCheckboxLogic() {
+            var checkboxes = document.querySelectorAll(".groupCheckbox");
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener("click", function () {
+                    if (this.checked) {
+                        // 다른 체크박스 선택 해제
+                        checkboxes.forEach(function (otherCheckbox) {
+                            if (otherCheckbox !== checkbox) {
+                                otherCheckbox.checked = false;
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // 페이지 로드 시 한 번 실행
+        applyCheckboxLogic();
+
         var searchButton = document.getElementById("searchButton");
         var dataContainer = document.getElementById("dataContainer");
 
@@ -136,6 +157,7 @@
             function callGroupAPI(endpoint, params) {
                 var url = new URL("/studygroup/" + endpoint, window.location.origin);
                 var searchParams = new URLSearchParams(params);
+
 
                 url.search = searchParams.toString();
 
@@ -153,6 +175,9 @@
                 .then(function (data) {
                     var resultHTML = generateHTML(data);
                     dataContainer.innerHTML = resultHTML;
+
+                    // 데이터 로딩 후에도 체크박스 선택 해제 로직 적용
+                    applyCheckboxLogic();
                 })
                 .catch(function (error) {
                     console.error("오류 발생:", error);
