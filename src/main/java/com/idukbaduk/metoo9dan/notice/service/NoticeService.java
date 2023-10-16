@@ -39,7 +39,8 @@ public class NoticeService {
 
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("isImp")); //중요 게시글인 경우 내림차순 정렬.
-        sorts.add(Sort.Order.desc("writeDate")); //작성일 기준으로 내림차순 정렬.
+        sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
+        sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
         /*if(keyword != null){
             Specification<Notice> specification = search(keyword);
@@ -63,8 +64,11 @@ public class NoticeService {
     }*/
 
     /*검색 - 10월15일 작성*/
-    public List<Notice> search(String keyword, Pageable pageable) {
-        List<Notice> noticeList = noticeRepository.findByNoticeTitleContaining(keyword, pageable);
+    public Page<Notice> search(String keyword, int pageNo, int listSize) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
+        Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
+        Page<Notice> noticeList = noticeRepository.findByNoticeTitleContaining(keyword, pageable);
         return noticeList;
     }
 

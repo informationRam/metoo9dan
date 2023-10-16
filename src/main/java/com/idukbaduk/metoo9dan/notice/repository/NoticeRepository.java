@@ -15,5 +15,5 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     Page<Notice> findAll(Specification<Notice> specification, Pageable pageable);
 
     //검색 -Containing쓰면 Like 연산자가 가능하다고 함
-    List<Notice> findByNoticeTitleContaining(String keyword, Pageable pageable);
+    Page<Notice> findByNoticeTitleContaining(String keyword, Pageable pageable);
 }
