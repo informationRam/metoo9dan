@@ -58,57 +58,65 @@ public class NoticeController {
     public String getNoticeList(Model model,
                                 @RequestParam(value = "page", defaultValue = "0") int pageNo,
                                 @RequestParam(value = "listSize", defaultValue = "10") int listSize,
+                                Pageable pageable
+                                ){
+        logger.info("page: "+pageNo);
+
+        Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
+        int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
+        int startPage = endPage - 4; //1, 5의 배수 +1 ...
+        if(endPage > noticePage.getTotalPages()){
+            int realEnd = noticePage.getTotalPages();
+            model.addAttribute("endPage", realEnd);
+            logger.info("realEnd: "+realEnd);
+        } else {
+            model.addAttribute("endPage", endPage);
+        }
+        logger.info("endPage: "+endPage);
+        logger.info("startPage: "+startPage);
+
+        model.addAttribute("noticePage", noticePage);
+        model.addAttribute("startPage", startPage);
+        return "notice/noticeList";
+    }
+
+    //검색
+    @GetMapping("/search")
+    public String getNoticeList(Model model,
+                                @RequestParam(value = "page", defaultValue = "0") int pageNo,
+                                @RequestParam(value = "listSize", defaultValue = "10") int listSize,
+                                String noticeType,
+                                String status,
                                 String searchCategory,
                                 String keyword,
                                 Pageable pageable
-                                ){
+    ){
         logger.info("page: "+pageNo);
         logger.info("searchCategory: "+searchCategory);
         logger.info("keyword: "+keyword);
 
-        /*1안*/
-        if(keyword!=null){
-            Page<Notice> noticePage = noticeService.search(keyword, pageNo, listSize);
-            logger.info("검색)searchList: "+noticePage);
-            int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
-            int startPage = endPage - 4; //1, 5의 배수 +1 ...
-            if(endPage > noticePage.getTotalPages()){
-                int realEnd = noticePage.getTotalPages();
-                model.addAttribute("endPage", realEnd);
-                logger.info("realEnd: "+realEnd);
-            } else {
-                model.addAttribute("endPage", endPage);
-            }
-            logger.info("endPage: "+endPage);
-            logger.info("startPage: "+startPage);
-
-            model.addAttribute("noticePage", noticePage);
-            model.addAttribute("startPage", startPage);
-
+        Page<Notice> noticePage = noticeService.search(searchCategory, keyword, pageNo, listSize);
+        logger.info("검색)searchList: "+noticePage);
+        int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
+        int startPage = endPage - 4; //1, 5의 배수 +1 ...
+        if(endPage > noticePage.getTotalPages()){
+            int realEnd = noticePage.getTotalPages();
+            model.addAttribute("endPage", realEnd);
+            logger.info("realEnd: "+realEnd);
         } else {
-            Page<Notice> noticePage = this.noticeService.getList(pageNo, listSize);
-            int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
-            int startPage = endPage - 4; //1, 5의 배수 +1 ...
-            if(endPage > noticePage.getTotalPages()){
-                int realEnd = noticePage.getTotalPages();
-                model.addAttribute("endPage", realEnd);
-                logger.info("realEnd: "+realEnd);
-            } else {
-                model.addAttribute("endPage", endPage);
-            }
-            logger.info("endPage: "+endPage);
-            logger.info("startPage: "+startPage);
-
-            model.addAttribute("noticePage", noticePage);
-            model.addAttribute("startPage", startPage);
+            model.addAttribute("endPage", endPage);
         }
+        logger.info("endPage: "+endPage);
+        logger.info("startPage: "+startPage);
 
-        /*2안
-        Page<Notice> noticePage = noticeService.getList(keyword, pageNo, listSize);
-        model.addAttribute("noticePage", noticePage);*/
-
-
+        model.addAttribute("status", status);
+        model.addAttribute("listSize", listSize);
+        model.addAttribute("searchCategory", searchCategory);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("noticePage", noticePage);
+        model.addAttribute("startPage", startPage);
         return "notice/noticeList";
+
     }
 
     // 상세조회 (+댓글 목록조회 및 작성 폼)
@@ -324,12 +332,54 @@ public class NoticeController {
         return String.format("redirect:/notice/detail/%d", noticeNo);
     }
 
-    /*검색
-    @GetMapping("/search")
-    public String search(String keyword, Model model, Pageable pageable){
-        List<Notice> searchList = noticeService.search(keyword, pageable);
-        //Specification<Notice> searchList = noticeService.search(keyword);
-        model.addAttribute("searchList", searchList);
-        return "notice/searchList";
-    }*/
+    //자주묻는질문 목록
+    @GetMapping("/faq")
+    public String getFaqList(Model model,
+                             @RequestParam(value = "page", defaultValue = "0") int pageNo,
+                             @RequestParam(value = "listSize", defaultValue = "5") int listSize,
+                             Pageable pageable
+    ){
+        logger.info("page: "+pageNo);
+        Page<Notice> noticePage = this.noticeService.getFaqList(pageNo, listSize);
+        int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
+        int startPage = endPage - 4; //1, 5의 배수 +1 ...
+        if(endPage > noticePage.getTotalPages()){
+            int realEnd = noticePage.getTotalPages();
+            model.addAttribute("endPage", realEnd);
+            logger.info("realEnd: "+realEnd);
+        } else {
+            model.addAttribute("endPage", endPage);
+        }
+        logger.info("endPage: "+endPage);
+        logger.info("startPage: "+startPage);
+
+        model.addAttribute("noticePage", noticePage);
+        model.addAttribute("startPage", startPage);
+        return "notice/faqList";
+    }
+
+    //FAQ검색
+    @GetMapping("/faq/search")
+    public String getFaqSearchList(Model model,
+                                @RequestParam(value = "page", defaultValue = "0") int pageNo,
+                                @RequestParam(value = "listSize", defaultValue = "5") int listSize,
+                                String keyword,
+                                Pageable pageable){
+
+        Page<Notice> noticePage = noticeService.searchFaq(keyword, pageNo, listSize);
+        int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
+        int startPage = endPage - 4; //1, 5의 배수 +1 ...
+        if(endPage > noticePage.getTotalPages()){
+            int realEnd = noticePage.getTotalPages();
+            model.addAttribute("endPage", realEnd);
+        } else {
+            model.addAttribute("endPage", endPage);
+        }
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("noticePage", noticePage);
+        model.addAttribute("startPage", startPage);
+        return "notice/faqList";
+
+    }
 }

@@ -12,11 +12,10 @@
             <!-- 조회 컨트롤러 영역 -->
             <!--각각의 option value 값에 넘어가는 url을 모두 써줘야함. 변하는 값에 맞게끔.-->
             <div>
-                <form action="/notice/list">
-                    <input type="hidden" id="pageNo" name="pageNo" value="">
+                <form action="/notice/search">
+                    <input type="hidden" id="page" name="page" value="">
                     <label for="listSize">표기:
-                        <select id="listSize" name="listSize">
-                            <!--list?pageNo=&listSize=30&noticeType=noti&status=post&searchCategory=titleAndContent&searchKeyword=-->
+                        <select id="listSize" name="listSize" >
                             <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
@@ -24,13 +23,14 @@
                             <option value="50">50</option>
                         </select>
                     </label>
+                    <!--운영자만. 운영자가 아니면 noti만 볼 수 있게-->
                     <label for="noticeType">구분:
                         <select id="noticeType" name="noticeType">
                             <option value="noti">공지사항</option>
                             <option value="faq">자주 묻는 질문</option>
                         </select>
                     </label>
-                    <!--운영자한테만 보여야 함-->
+                    <!--운영자한테만 보여야 함, 운영자가 아니면 post만 볼 수 있게-->
                     <label for="status">상태:
                         <select id="status" name="status">
                             <option value="post">게시</option>
@@ -44,7 +44,7 @@
                             <option value="noticeTitle">제목</option>
                             <option value="noticeContent">내용</option>
                         </select>
-                        <input type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요">
+                        <input type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
                     </label>
 
                     <input type="submit" value="검색">
@@ -59,7 +59,7 @@
                         <tr>
                             <th>No</th>
                             <th>상태</th><!--운영관리자한테만-->
-                            <th>분류</th>
+                            <th>분류</th><!--운영관리자한테만-->
                             <th>제목</th>
                             <th>작성자</th>
                             <th>작성일시</th><!--운영자한테만-->
@@ -99,18 +99,27 @@
                 <ul class="pagination">
                     <!-- 이전 -->
                     <li class="page-item" th:classappend="${startPage <= 5} ? 'disabled'">
-                        <a class="page-link" th:href="@{|?page=${startPage-2}|}"><span>Prev</span></a>
+                        <a class="page-link"
+                           th:href="@{|?page=${startPage-2}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Prev</span></a>
                     </li>
 
-                    <!-- 페이지 번호 -->
+                    <!-- 페이지 번호 ?page=&listSize=10&noticeType=noti&status=post&searchCategory=noticeTitle&keyword=test -->
                     <li class="page-item" th:each="page : ${#numbers.sequence(startPage-1, endPage-1)}"
                         th:classappend="${page == noticePage.number} ? 'active'">
-                        <a class="page-link" th:href="@{|?page=${page}|}" th:text="${page+1}"></a>
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?page=${page}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"
+                           th:text="${page+1}"></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${page}|}"
+                           th:text="${page+1}"></a>
                     </li>
 
-                    <!-- 다음  -->
+                    <!-- 다음  &=${}-->
                     <li class="page-item" th:classappend="${endPage >= noticePage.totalPages} ? 'disabled'">
-                        <a class="page-link" th:href="@{|?page=${endPage}|}"><span>Next</span></a>
+                        <a class="page-link"
+                           th:href="@{|?page=${endPage}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
                     </li>
                 </ul>
             </nav>
@@ -125,21 +134,20 @@
         if([[${msg}]]!=null){
             alert([[${msg}]]);
         }
-        function changeUrl(url) {
-            var status = document.getElementById('status').value;
-            console.log('listSize: '+listSize);
-            //listSize.setAttribute('selected', true);
-            location.href = url+status;
-        }
+        document.addEventListener("DOMContentLoaded", function () {
+            var listSize = [[${listSize}]];
+            var selectElement = document.getElementById("listSize");
 
-        function changeOptUrl(url){
-            var optUrl = url;
-            var listSizeUrl =  document.getElementById('listSize').value; //&status=post
-            //location.href = optUrl+listSizeUrl; //http://localhost/notice/&status=notPost/notice/list?listSize=10
-            //listSizeUrl.setAttribute('selected', 'selected');
-            location.href = listSizeUrl+optUrl; //
+            // 각 옵션에 대해 반복
+            for (var i = 0; i < selectElement.options.length; i++) {
+                if (selectElement.options[i].value == listSize) {
+                    // 모델에서 가져온 값과 일치하는 경우 selected 속성 추가
+                    selectElement.options[i].selected = true;
+                    break; // 일치하는 옵션을 찾으면 더 이상 반복할 필요가 없으므로 종료
+                }
+            }
+        });
 
-        }
     </script>
 </div>
 </html>
