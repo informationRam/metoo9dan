@@ -3,8 +3,8 @@
 <div layout:fragment="content" class="container my-3">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
-        <!--<div th:replace="~{/notice/utilSidebar::sidebar}" ></div>운영자가 아니면 보여주는 사이드바 밑에서 공지등록버튼과 상태 드롭다운은 운영자한테만 보여주어야 함-->
+        <div th:if="${memberRole}==ADMIN" th:replace="~{/notice/manageSidebar::sidebar}"></div>
+        <div th:if="${memberRole}==notAdmin" th:replace="~{/notice/utilSidebar::sidebar}"></div><!--운영자가 아니면 보여주는 사이드바 밑에서 공지등록버튼과 상태 드롭다운은 운영자한테만 보여주어야 함-->
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
@@ -24,14 +24,14 @@
                         </select>
                     </label>
                     <!--운영자만. 운영자가 아니면 noti만 볼 수 있게-->
-                    <label for="noticeType">구분:
-                        <select id="noticeType" name="noticeType">
+                    <label for="noticeType" th:if="${memberRole}==ADMIN">구분:
+                        <select id="noticeType" name="noticeType" >
                             <option value="noti">공지사항</option>
                             <option value="faq">자주 묻는 질문</option>
                         </select>
                     </label>
                     <!--운영자한테만 보여야 함, 운영자가 아니면 post만 볼 수 있게-->
-                    <label for="status">상태:
+                    <label for="status" th:if="${memberRole}==ADMIN">상태:
                         <select id="status" name="status">
                             <option value="post">게시</option>
                             <option value="notPost">예약</option>
@@ -48,43 +48,45 @@
                     </label>
 
                     <input type="submit" value="검색">
-                    <a href="/notice/add" th:href="@{/notice/add}" class="btn btn-primary">공지사항 등록</a>
+                    <a href="/notice/add" th:href="@{/notice/add}" th:if="${memberRole}==ADMIN" class="btn btn-primary">공지사항 등록</a>
 
                 </form>
             </div>
             <div>
                 <a th:text="|총 게시물 ${noticePage.getTotalElements}개 조회되었습니다.|"></a>
-                <table class="table">
+                <table class="table table-hover">
                     <thead class="table-dark">
                         <tr>
                             <th>No</th>
-                            <th>상태</th><!--운영관리자한테만-->
-                            <th>분류</th><!--운영관리자한테만-->
+                            <th th:if="${memberRole}==ADMIN">상태</th><!--운영관리자한테만-->
+                            <th th:if="${memberRole}==ADMIN">분류</th><!--운영관리자한테만-->
                             <th>제목</th>
                             <th>작성자</th>
-                            <th>작성일시</th><!--운영자한테만-->
+                            <th th:if="${memberRole}==ADMIN">작성일시</th><!--운영자한테만-->
                             <th>게시일</th>
                             <th>조회수</th>
                         </tr>
                     </thead>
-                    <tbody class="table-hover">
+                    <tbody class="">
+                        <!--관리자가 로그인한 경우, 모든 항목을 조회할 수 있음. th:if="${memberRole}==ADMIN"-->
                         <tr th:each="notice, loop:${noticePage}">
-                            <td th:text="${notice.noticeNo}"></td>
+                            <td th:if="${notice.isImp}==true"><?xml version="1.0" ?><svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12.0004 2.00195C9.86006 2.00195 8.125 3.73701 8.125 5.87732C8.125 8.79606 9.33243 12.4289 9.93776 14.0759C10.2606 14.9542 11.097 15.4995 12.0025 15.4995C12.9057 15.4995 13.7409 14.957 14.0646 14.0809C14.6705 12.4413 15.8757 8.827 15.8757 5.87732C15.8757 3.73701 14.1407 2.00195 12.0004 2.00195Z" fill="#212121"/><path d="M12.0011 17.001C10.6198 17.001 9.5 18.1208 9.5 19.5021C9.5 20.8834 10.6198 22.0032 12.0011 22.0032C13.3825 22.0032 14.5022 20.8834 14.5022 19.5021C14.5022 18.1208 13.3825 17.001 12.0011 17.001Z" fill="#212121"/></svg></td>
+                            <td th:if="${notice.isImp}!=true" th:text="${notice.noticeNo}"></td>
                             <!--<td th:text="${noticePage.getTotalElements - (noticePage.number * noticePage.size) - loop.index}"></td>-->
-                            <td> <!--운영관리자한테만-->
+                            <td th:if="${memberRole}==ADMIN"> <!--운영관리자한테만-->
                                 <a th:if="${notice.status.equals('post')}" th:text="게시"></a>
                                 <a th:if="${notice.status.equals('not_post')}" th:text="예약"></a>
                             </td>
-                            <td>
+                            <td th:if="${memberRole}==ADMIN">
                                 <a th:if="${notice.noticeType.equals('noti')}" th:text="공지사항"></a>
                                 <a th:if="${notice.noticeType.equals('faq')}" th:text="자주묻는질문"></a>
                             </td>
                             <td><a href="/notice/detail/${notice.noticeNo}" th:href="@{|/notice/detail/${notice.noticeNo}|}" th:text="${notice.noticeTitle}"></a>
-                            <span class="text-danger small ms-1"
-                                  th:if="${notice.replyCnt>0}"
-                                  th:text="${notice.replyCnt}"></span></td>
+                                <span class="text-danger small ms-1"
+                                      th:if="${notice.replyCnt>0}"
+                                      th:text="${notice.replyCnt}"></span></td>
                             <td th:text="${notice.member.memberId}"></td>
-                            <td th:text="${#temporals.format(notice.writeDate, 'yyyy-MM-dd HH:mm')}"></td> <!--작성일시 운영자만-->
+                            <td th:text="${#temporals.format(notice.writeDate, 'yyyy-MM-dd HH:mm')}" th:if="${memberRole}==ADMIN"></td> <!--작성일시 운영자만-->
                             <td th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd')}"></td> <!--게시일자-->
                             <td th:text="${notice.readCnt}"></td>
                         </tr>
@@ -100,7 +102,11 @@
                     <!-- 이전 -->
                     <li class="page-item" th:classappend="${startPage <= 5} ? 'disabled'">
                         <a class="page-link"
+                           th:if="${keyword}!=null"
                            th:href="@{|?page=${startPage-2}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Prev</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${startPage-2}|}"><span>Prev</span></a>
                     </li>
 
                     <!-- 페이지 번호 ?page=&listSize=10&noticeType=noti&status=post&searchCategory=noticeTitle&keyword=test -->
@@ -119,7 +125,11 @@
                     <!-- 다음  &=${}-->
                     <li class="page-item" th:classappend="${endPage >= noticePage.totalPages} ? 'disabled'">
                         <a class="page-link"
+                           th:if="${keyword}!=null"
                            th:href="@{|?page=${endPage}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${endPage}|}"><span>Next</span></a>
                     </li>
                 </ul>
             </nav>
@@ -130,6 +140,8 @@
 </div><!--container-->
 <div layout:fragment="script">
     <script th:inline="javascript">
+        alert([[${memberRole}]]);
+
         /*댓글등록성공시 메시지 alert*/
         if([[${msg}]]!=null){
             alert([[${msg}]]);

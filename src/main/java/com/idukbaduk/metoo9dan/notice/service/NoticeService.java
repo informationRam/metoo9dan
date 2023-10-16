@@ -34,8 +34,8 @@ public class NoticeService {
     private final NoticeReplyRepository replyRepository;
     private final NoticeFilesRepository filesRepository;
 
-    //목록조회
-    public Page<Notice> getList(int pageNo, int listSize) {
+    //목록조회 - 관리자용
+    public Page<Notice> getAdminList(int pageNo, int listSize) {
 
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("isImp")); //중요 게시글인 경우 내림차순 정렬.
@@ -45,6 +45,19 @@ public class NoticeService {
 
         return noticeRepository.findAll(pageable);
     }
+
+    //목록조회 - 관리자 아닌 사람용
+    public Page<Notice> getList(int pageNo, int listSize) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("isImp")); //중요 게시글인 경우 내림차순 정렬.
+        sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
+        sorts.add(Sort.Order.desc("postDate")); //게시일 기준으로 내림차순 정렬.
+        Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
+
+        return noticeRepository.findByNoticeTypeAndStatus("noti", "post", pageable);
+    }
+
     //faq 목록조회
     public Page<Notice> getFaqList(int pageNo, int listSize) {
 

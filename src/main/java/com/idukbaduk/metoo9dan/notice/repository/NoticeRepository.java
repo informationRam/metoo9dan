@@ -14,7 +14,6 @@ import java.util.List;
 //Notice Repository Interface
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Integer> {
-    Page<Notice> findAll(Specification<Notice> specification, Pageable pageable);
 
     //검색 -Containing쓰면 Like 연산자가 가능하다고 함
     //제목만
@@ -38,4 +37,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
             "AND (n.noticeTitle LIKE %:keyword% OR n.noticeContent LIKE %:keyword%)")
     Page<Notice> findFaqsByTypeAndKeyword(@Param("type") String type, @Param("keyword") String keyword, Pageable pageable);
+
+    //공지 목록 - 관리자 아닌 사람용
+    Page<Notice> findByNoticeTypeAndStatus(String noti, String post, Pageable pageable);
 }
