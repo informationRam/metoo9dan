@@ -40,36 +40,49 @@ public class NoticeService {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("isImp")); //중요 게시글인 경우 내림차순 정렬.
         sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
-        sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
+        sorts.add(Sort.Order.desc("postDate")); //게시일 기준으로 내림차순 정렬.
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
-        /*if(keyword != null){
-            Specification<Notice> specification = search(keyword);
-            return noticeRepository.findAll(specification, pageable);
-        }*/
 
         return noticeRepository.findAll(pageable);
     }
+    //faq 목록조회
+    public Page<Notice> getFaqList(int pageNo, int listSize) {
 
-    /*검색 - 9월30일에 써놨네?
-    public Specification<Notice> search(String keyword) {
-        return new Specification<Notice>() {
-            @Override
-            public Predicate toPredicate(Root<Notice> notice, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                query.distinct(true); //중복 제거
-                
-                return criteriaBuilder.or(criteriaBuilder.like(notice.get("noticeTitle"), "%" + keyword + "%"), //제목
-                                          criteriaBuilder.like(notice.get("noticeContent"), "%" + keyword + "%")); //내용
-            }
-        };
-    }*/
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("postDate")); //게시일 기준으로 내림차순 정렬.
+        Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
+
+        return noticeRepository.findByNoticeType("faq", pageable);
+    }
 
     /*검색 - 10월15일 작성*/
-    public Page<Notice> search(String keyword, int pageNo, int listSize) {
+    public Page<Notice> search(String searchCategory, String keyword, int pageNo, int listSize) {
         List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
         sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
-        Page<Notice> noticeList = noticeRepository.findByNoticeTitleContaining(keyword, pageable);
-        return noticeList;
+        switch (searchCategory){
+            case "noticeTitleAndNoticeContent":
+                Page<Notice> noticeList = noticeRepository.findByNoticeTitleContainingOrNoticeContentContaining(keyword, keyword, pageable);
+                return noticeList;
+            case "noticeTitle":
+                Page<Notice> searchTitleList = noticeRepository.findByNoticeTitleContaining(keyword, pageable);
+                return searchTitleList;
+            case "noticeContent":
+                Page<Notice> searchContentList = noticeRepository.findByNoticeContentContaining(keyword, pageable);
+                return searchContentList;
+        }
+        return null;
+    }
+
+    //FAQ 검색
+    public Page<Notice> searchFaq(String keyword, int pageNo, int listSize) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
+        sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
+        Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
+        Page<Notice> searchFaqList = noticeRepository.findFaqsByTypeAndKeyword("faq", keyword, pageable);
+        return searchFaqList;
     }
 
     //상세조회
@@ -141,4 +154,5 @@ public class NoticeService {
         notice.setIsImp(noticeDTO.isImp());
         noticeRepository.save(notice);
     }
+
 }
