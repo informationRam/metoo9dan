@@ -19,7 +19,7 @@ public class StudyGroupService {
     private final GroupRepository groupRepository;
     private final GroupStudentsRepository groupStudentsRepository;
     private final GameContentRepository gameContentRepository;
-    private final MemberRepository memberRepository;
+    private final MemberRepository_studyGroup memberRepositoryStudyGroup;
 
     //학습그룹 목록 조회
     public List<StudyGroupsListDTO> getList(int member_no) {
