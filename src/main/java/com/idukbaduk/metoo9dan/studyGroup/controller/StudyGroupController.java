@@ -7,20 +7,17 @@ import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
 import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GroupRepository;
-import com.idukbaduk.metoo9dan.studyGroup.repository.MemberRepository;
+import com.idukbaduk.metoo9dan.studyGroup.repository.MemberRepository_studyGroup;
 import com.idukbaduk.metoo9dan.studyGroup.service.StudyGroupService;
 import com.idukbaduk.metoo9dan.studyGroup.validation.StudyGroupForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 
@@ -30,7 +27,7 @@ import java.util.*;
 public class StudyGroupController {
     private final StudyGroupService studyGroupService;
     private final GameContentRepository gameContentRepository;
-    private final MemberRepository memberRepository;
+    private final MemberRepository_studyGroup memberRepositoryStudyGroup;
     private final GroupRepository groupRepository;
 
     //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
@@ -105,7 +102,7 @@ public class StudyGroupController {
         int member_no=1; //로그인 처리하기
 
         GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
-        Member member = memberRepository.findById(member_no).orElse(null);
+        Member member = memberRepositoryStudyGroup.findById(member_no).orElse(null);
 
         studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member);
 
@@ -171,7 +168,7 @@ public class StudyGroupController {
         int member_no=1; //로그인 처리하기
 
         model.addAttribute("group_no",group_no);
-        Member member = memberRepository.findById(member_no).orElse(null);
+        Member member = memberRepositoryStudyGroup.findById(member_no).orElse(null);
         StudyGroups studyGroups = studyGroupService.getGruop(group_no);
         studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member);
         return "redirect:/studygroup/list";
@@ -400,7 +397,7 @@ public class StudyGroupController {
     public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no){
         int member_no=16; //로그인 처리하기
 
-        Member member = memberRepository.findById(member_no).orElse(null);
+        Member member = memberRepositoryStudyGroup.findById(member_no).orElse(null);
 
         StudyGroups studyGroups = groupRepository.findById(group_no).orElse(null);
         studyGroupService.groupJoin(studyGroups,member,groupJoinDTO.getApplication_date(),groupJoinDTO.getIs_approved(),groupJoinDTO.getApproved_date());
