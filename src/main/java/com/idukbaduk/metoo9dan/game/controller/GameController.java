@@ -416,8 +416,16 @@ public class GameController {
         }
         model.addAttribute("gamePage", gamePage);
 
-        return "game/allList";
+        return "cyborg-1.0.02/streams";
     }
+
+    //게임컨텐츠 구매 할때 목록조회
+    @GetMapping("/testlist")
+    public String test(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
+
+        return "cyborg-1.0.02/streams";
+    }
+
 
 
 

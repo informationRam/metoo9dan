@@ -90,38 +90,20 @@ public class PaymentsController {
         String memberID = "lee123";
         Member user = memberService.getUser(memberID);
 
+
         List<Payments> payments = paymentsService.paymentsList(user.getMemberNo());
 
+        // Create a list to store the associated GameContents
+        List<GameContents> gameContentsList = new ArrayList<>();
 
-        for (Payments payments1 : payments) {
-            payments1.getGameContents()
+        // Iterate through the payments list and retrieve GameContents for each payment
+        for (Payments payment : payments) {
+            GameContents gameContentsForPayment = paymentsService.getGameContentsForPayment(payment);
+            gameContentsList.add(gameContentsForPayment);
         }
 
-        GameContents gameContents1 = gameService.getGameContents(payments.get(0).);
-        // 게임컨텐츠 목록 조회
-        Page<GameContents> gamePage = this.gameService.getList(page);
-
-        for (GameContents gamecon : gamePage.getContent()) {
-            // 게임컨텐츠에 대한 파일 정보 가져오기
-            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
-            gamecon.setGameContentFilesList(gameContentFilesList);
-
-            // 게임컨텐츠에 대한 교육자료 정보 가져오기
-            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
-
-            for (EducationalResources educationalResource : education) {
-                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
-                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
-            }
-            gamecon.setEducationalResourcesList(education);
-
-        }
-        model.addAttribute("gamePage", gamePage);
-
-
-
-
-        model.addAttribute("payments",payments);
+        model.addAttribute("payments", payments);
+        model.addAttribute("gameContentsList", gameContentsList);
 
         return "payments/list";
     }

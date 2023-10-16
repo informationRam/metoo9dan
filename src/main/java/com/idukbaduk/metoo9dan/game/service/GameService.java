@@ -109,19 +109,6 @@ public void saveIndividual(GameValidation gameValidation) {
         return gameContents;
     }
 
-    public GameContents getGameContentsForPayment(Payments payment) {
-        GameContents gameContents = payment.getGameContents();
-
-    }
-
-
-
-  /*  //gameNo값을 주면 ContentsFile 값 전체 조회
-    public GameContents getGameContentsFile(int gameContentNo){
-        GameContentFiles gameContentFiles = gameContentsFileRepository.findAllById(gameContentNo).get();
-        return getGameContentsFile;
-    }*/
-
     //게임 컨텐츠 삭제
     public void delete(GameContents gameContents) {
         gameContents.setStatus("N");

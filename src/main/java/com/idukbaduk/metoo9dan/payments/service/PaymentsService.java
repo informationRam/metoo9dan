@@ -3,6 +3,8 @@ package com.idukbaduk.metoo9dan.payments.service;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Payments;
+import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
+import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.payments.reprository.PaymentsRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class PaymentsService {
 
     private final PaymentsRepository paymentsRepository;
+    private final GameService gameService;
     private EntityManager entityManager;
 
     // 구매한 게임컨텐츠에 대한 정보를 가져온다.
@@ -61,6 +64,11 @@ public class PaymentsService {
             payments.setMember(member);
             paymentsRepository.save(payments);
         }
+    }
+
+    public GameContents getGameContentsForPayment(Payments payment) {
+        GameContents gameContents = gameService.getGameContents(payment.getGameContents().getGameContentNo());
+        return gameContents;
     }
 
 

@@ -30,6 +30,16 @@
         <td th:text="${payment.amount}"></td>
         <td th:text="${payment.depositorName}"></td>
     </tr>
+    <tr th:each="game : ${gameContentsList}">
+        <td th:text="${game.gameContentNo}"></td>
+        <td th:text="${game.gameName}"></td>
+        <td th:text="${game.difficulty}"></td>
+        <td th:text="${game.subscriptionDuration}"></td>
+        <td th:text="${game.maxSubscribers}"></td>
+        <td th:text="${game.salePrice}"></td>
+        <td th:text="${game.packageDetails}"></td>
+        <td th:text="${game.creationDate}"></td>
+    </tr>
 </table>
 </body>
 </html>

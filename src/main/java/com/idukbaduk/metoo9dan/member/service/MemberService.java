@@ -33,5 +33,4 @@ public interface MemberService {
     // 임시 비번 변경
     void userPwdModify(Member member, String tempPassword);
 
-<<<<<<< HEAD
 }
