@@ -168,18 +168,18 @@ function validateVerificationCode() {
         }
 
 
-     // 본인 인증 성공 시 호출되는 함수
-     function onVerificationSuccess(userName, userPhone) {
-         // 본인 인증 성공 메시지와 정보를 표시
-         document.getElementById("verificationSuccess").style.display = "block";
-         document.getElementById("userNameInput").textContent = userName;
-         document.getElementById("userPhoneInput").textContent = userPhone;
-
-         // 인증 코드 입력 화면 표시
-         document.getElementById("verifyStep").style.display = "block";
-         // 다음 단계로 이동
-         nextPrev(1);
-     }
+//     // 본인 인증 성공 시 호출되는 함수
+//     function onVerificationSuccess(userName, userPhone) {
+//         // 본인 인증 성공 메시지와 정보를 표시
+//         document.getElementById("verificationSuccess").style.display = "block";
+//         document.getElementById("userNameInput").textContent = userName;
+//         document.getElementById("userPhoneInput").textContent = userPhone;
+//
+//         // 인증 코드 입력 화면 표시
+//         document.getElementById("verifyStep").style.display = "block";
+//         // 다음 단계로 이동
+//         nextPrev(1);
+//     }
 
 // 인증 코드 확인 함수
 let verificationIsSuccessful = false; // Initialize the variable
@@ -204,14 +204,14 @@ function verifyCode() {
                 if (response.success) {
                      alert("본인 인증이 완료되었습니다.");
                       verificationIsSuccessful = true;
-                     nextPrev(1); // 인증 성공 시 다음 단계로 이동
+                     //nextPrev(1); // 인증 성공 시 다음 단계로 이동
                     // 세션에 저장된 이름과 휴대폰 번호 가져오기
                     const userName = response.userName;
                     const userPhone = response.userPhone;
                     console.log("세션저장 이름:",userName);
                     console.log("세션저장 Phone:",userPhone);
                      // 다음 단계로 이동하려면 다음Prev 함수를 호출합니다.
-                    nextPrev(1);
+                    //nextPrev(1);
 
                     // 화면에 이름과 휴대폰 번호 출력
                     document.getElementById("verificationSuccess").style.display = "block";

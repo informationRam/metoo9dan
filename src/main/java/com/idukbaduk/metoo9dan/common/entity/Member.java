@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
+
 
 import javax.management.relation.Role;
 import java.time.LocalDateTime;
@@ -52,6 +52,7 @@ public class Member {
     private Boolean privacyConsent;  //boolean NOT NULL    COMMENT '개인정보동의',
 
     @Column(name="email_consent",columnDefinition = "TINYINT(1)")
+
     private Boolean emailConsent;    //boolean NULL    COMMENT '이메일수신동의',
 
     @Column(name="sms_consent",columnDefinition = "TINYINT(1)")
@@ -63,5 +64,6 @@ public class Member {
     @Column(name="birth")
     private Date birth;             //date NOT NULL "생일"
 
-
+    @Column(name="member_memo")
+    private String memberMemo;      //varchar(300) NULL COMMENT "회원별 메모"
 }
