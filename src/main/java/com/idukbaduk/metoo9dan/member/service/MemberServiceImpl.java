@@ -5,6 +5,7 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.member.exception.DataNotFoundException;
 import com.idukbaduk.metoo9dan.member.repository.EducatorinfoRepository;
 import com.idukbaduk.metoo9dan.member.repository.MemberRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final EducatorinfoRepository educatorInfoRepository;
+    private PasswordEncoder passwordEncoder;
 
     //회원가입 처리 : roled이 educator일때
     @Transactional
@@ -112,10 +114,13 @@ public class MemberServiceImpl implements MemberService {
 
     // 임시 비번 변경
     public void userPwdModify(Member member, String tempPassword){
-       /* member.setPassword(passwordEncoder.encode(tempPassword));*/
+        member.setPassword(passwordEncoder.encode(tempPassword));
         memberRepository.save(member);
     }
 
 
 
 }
+
+
+

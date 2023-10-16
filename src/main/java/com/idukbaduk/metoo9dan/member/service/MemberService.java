@@ -4,8 +4,6 @@ import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
 public interface MemberService {
 
     void createUserWithEducatorInfo(Member member, EducatorInfo educatorInfo);
@@ -35,4 +33,5 @@ public interface MemberService {
     // 임시 비번 변경
     void userPwdModify(Member member, String tempPassword);
 
+<<<<<<< HEAD
 }
