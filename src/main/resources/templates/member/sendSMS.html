@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>인증SMS</title>
+</head>
+<body>
+<div>
+    <h1>회원가입 인증 SMS</h1>
+
+    <form th:action="@{/member/sms/send}" method="post">
+        <table>
+            <tr class="form-group">
+                <td>발송할 전화번호</td>
+                <td>
+                    <input type="text" class="form-control" name="to" placeholder="휴대폰번호르 입력하세요">
+                </td>
+            </tr>
+        </table>
+        <button class="btn btn-default">발송</button>
+    </form>
+
+</div>
+</body>
+</html>
