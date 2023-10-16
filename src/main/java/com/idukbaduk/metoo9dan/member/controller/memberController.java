@@ -61,7 +61,7 @@ public class memberController {
     @PostMapping("/join")
     public String createUser(@Valid UserCreateForm userCreateForm, BindingResult bindingResult, Model model) {
 
-        // userCreateForm 의 양식과 일치하는지 검증하는 작업
+        // userCreateForm 검증 실패시 다시 입력폼
         if (bindingResult.hasErrors()) {
             return "member/signupForm2";
         }
@@ -71,16 +71,17 @@ public class memberController {
         MemberDTO memberDTO = modelMapper.map(userCreateForm, MemberDTO.class);
         memberDTO.setPassword(passwordEncoder.encode(userCreateForm.getPwd1()));
 
+        //비밀번호 일쳐여부 검사
         if (!userCreateForm.getPwd1().equals(userCreateForm.getPwd2())) {
             model.addAttribute("passwordMismatch", true);
             return "member/signupForm2";
         }
-
+        //아이디 중복 검사
         if (memberService.checkmemberIdDuplication(userCreateForm.getMemberId())) {
             model.addAttribute("memberIdDuplicate", true);
             return "member/signupForm2";
         }
-
+        //이메일 중복 검사
         if (memberService.checkEmailDuplication(userCreateForm.getEmail())) {
             model.addAttribute("emailDuplicate", true);
             return "member/signupForm2";
@@ -109,6 +110,7 @@ public class memberController {
     public String searchidform() {
 
         return "/member/forgotAccount";
+
     }
 
 }
