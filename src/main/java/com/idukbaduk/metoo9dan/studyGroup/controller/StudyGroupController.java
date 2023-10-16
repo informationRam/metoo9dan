@@ -47,6 +47,18 @@ public class StudyGroupController {
         model.addAttribute("gameNameList",gameNameList);
         System.out.println("gameNameList="+gameNameList);
 
+/*
+        // max_subscribers 값을 가져오기 위해 gameContent 리스트를 순회
+        for (GameContentsListDTO gameContent : gameContents) {
+            int max_subscribers = gameContent.getMax_subscribers();
+            int appointed_group_num = gameContent.getAppointed_group_num();
+
+            if(max_subscribers==appointed_group_num){
+                MessageDto message = new MessageDto("만들 수 있는 학습그룹 인원이 없습니다", "/studygroup/gameList", RequestMethod.GET, null);
+                return showMessageAndRedirect(message,model);
+            }
+        }
+*/
         return "studyGroup/gameContents_list";
     }
 
