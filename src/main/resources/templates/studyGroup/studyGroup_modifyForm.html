@@ -9,6 +9,7 @@
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h3>[학습 그룹 수정 폼]</h3>
+            <p>[게임 콘텐츠 정보]</p>
             <div>
                 <table class="table">
                     <thead class="table-dark">
@@ -36,6 +37,9 @@
 
             <p>[그룹 상세 정보]</p>
             <p>교육자명 :  <strong><span th:text="${gameInfo.name}"></span></strong></p>
+            <div th:if="${groupNum >= 1}" class="text-danger">
+                그룹에 가입된 학생이 있을 경우 그룹명만 수정 가능합니다.
+            </div>
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
                 <div th:replace="~{form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
@@ -44,30 +48,31 @@
                 </div>
                 <label for="group_size" class="form-label">그룹인원</label>
                 <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="floatingInput" th:field="*{groupSize}"
+                    <input type="number" class="form-control" id="floatingInput" th:readonly="${groupNum >= 1}" th:field="*{groupSize}"
                            th:min="1" th:max="${calculatedValue}" />
                     <label for="floatingInput" th:text="'현재 그룹 인원은 ' + *{groupSize} + '명 입니다.'"></label>
                 </div>
                 <div class="mb-3">
                     <label for="group_start_date" class="form-label">그룹 시작일</label>
-                    <input type="date" id="groupStartDate" name="groupStartDate" th:field="*{groupStartDate}" class="form-control"
+                    <input type="date" id="groupStartDate" name="groupStartDate" th:readonly="${groupNum >= 1}" th:field="*{groupStartDate}" class="form-control"
                            th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
                            th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_finish_date" class="form-label">그룹 종료일</label>
-                    <input type="date"  id="groupFinishDate" name="groupFinishDate" th:field="*{groupFinishDate}" class="form-control"
+                    <input type="date"  id="groupFinishDate" name="groupFinishDate" th:readonly="${groupNum >= 1}" th:field="*{groupFinishDate}" class="form-control"
                            th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
                            th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
                 </div>
                 <div class="mb-3">
                     <label for="group_introduce" class="form-label">그룹 소개글</label>
-                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요."/>
+                    <textarea type="text" th:readonly="${groupNum >= 1}" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요."/>
                 </div>
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
                     <input type="hidden" th:value="${member_no}" class="form-control"/>
                 <div style="display: flex; justify-content: center; align-items: center;">
-                    <input type="submit" value="수정하기" class="btn btn-primary my-2"/>
+                    <input type="submit" value="수정하기" class="btn btn-primary my-2" style="margin-right: 10px;"/>
+                    <input type="button" value="취소하기" class="btn btn-primary my-2" onclick="window.location.href='http://localhost/studygroup/list'"/>
                 </div>
             </form>
             <script th:inline="javascript">
@@ -77,10 +82,19 @@
     </div>
 </div>
 
-
 </html>
 
 <script>
+//--그룹 등록 학생 수가 1명 이상일 때 alert
+/*
+document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
+if (${groupNum} >= 1) {
+    event.preventDefault(); // 폼 제출을 막음
+    alert("그룹에 등록한 학생이 있을 경우 그룹명만 수정 가능합니다.");
+}
+});
+*/
+
 // 그룹 시작일과 종료일 필드를 가져오기
 var groupStartDateInput = document.getElementById("groupStartDate");
 var groupFinishDateInput = document.getElementById("groupFinishDate");

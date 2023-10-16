@@ -135,6 +135,17 @@
 		]]>
     </select>
 
+    <!--학습그룹 등록학생수 가져오기(학습그룹 등록 폼)-->
+    <select id="approved_num" parameterType="int" resultType="int">
+        <![CDATA[
+        SELECT COUNT(gs.member_no) AS approved_num
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s
+        ON gs.group_no=s.group_no
+        WHERE gs.is_approved = '1' AND gs.group_no=#{group_no}
+		]]>
+    </select>
+
     <!--학습그룹 가입-학생(학습그룹 전체리스트)-->
     <select id="GroupJoinList" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
         <![CDATA[
