@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentsRepository extends JpaRepository<Payments, Integer> {
+
+    // 가장 큰 OrderNumber값 가져옴
+    public Integer findMaxOrderNumber();
+
 }

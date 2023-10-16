@@ -32,6 +32,7 @@ public class EducationService {
     private final ResourcesFilesReprository resourcesFilesReprository;
     private final ResourcesFilesService resourcesFilesService;
 
+
     @Transactional
     public EducationalResources save(EducationValidation educationValidation) throws IOException {
         // 파일을 저장하고, 교육 자료를 저장하는 로직을 포함
@@ -40,9 +41,6 @@ public class EducationService {
         return educationalResources1;
 
     }
-
-
-
 
     //교육자료목록조회 (페이징처리)
     public Page<EducationalResources> getList(int page) {
@@ -199,6 +197,13 @@ public class EducationService {
                 resourcesFilesReprository.save(copyResourcesFiles);
             }
         }
+    }
+
+    // gameno값으로 EducationalResources 정보 가져오기
+    public List<EducationalResources> getEducation_togameno(int gameContentNo) {
+        List<EducationalResources> educationalResourcesList = educationalRepository.findByGameContents_GameContentNo(gameContentNo);
+
+            return educationalResourcesList;
     }
 }//class
 

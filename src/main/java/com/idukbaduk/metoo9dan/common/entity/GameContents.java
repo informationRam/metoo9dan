@@ -7,6 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // 게임콘텐츠 - PRIMARY KEY (game_content_no)
 @Entity
@@ -57,5 +58,42 @@ public class GameContents {
 
     @OneToMany(mappedBy = "gameContents", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<EducationalResources> educationalResourcesList = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "GameContents{" +
+                "gameContentNo=" + gameContentNo +
+                ", gameName='" + gameName + '\'' +
+                ", difficulty='" + difficulty + '\'' +
+                ", subscriptionDuration=" + subscriptionDuration +
+                ", maxSubscribers=" + maxSubscribers +
+                ", originalPrice=" + originalPrice +
+                ", discountRate=" + discountRate +
+                ", salePrice=" + salePrice +
+                ", packageDetails='" + packageDetails + '\'' +
+                ", creationDate=" + creationDate +
+                ", status='" + status + '\'' +
+                ", contentType='" + contentType + '\'' +
+                // 게임 콘텐츠에 대한 파일 목록은 toString에 포함하지 않음
+                // ", gameContentFilesList=" + gameContentFilesList +
+                // 교육 자료 목록은 toString에 포함하지 않음
+                // ", educationalResourcesList=" + educationalResourcesList +
+                '}';
+    }
+
+
+    // GameContents 클래스
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameContentNo);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        GameContents other = (GameContents) obj;
+        return Objects.equals(gameContentNo, other.gameContentNo);
+    }
 
 }

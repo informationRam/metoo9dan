@@ -1,13 +1,18 @@
 package com.idukbaduk.metoo9dan.payments.controller;
 
+import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
+import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoApproveResponse;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoPayService;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoReadyResponse;
+import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/payments")
@@ -26,121 +33,67 @@ public class PaymentsController {
     private final GameService gameService;
     private final GameFilesService gameFilesService;
     private final KakaoPayService kakaoPayService;
+    private final PaymentsService paymentsService;
+    private final MemberService memberService;
 
-    //게임컨텐츠 목록조회
-    @GetMapping("/list")
-    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
-/*        Page<GameContents> gamePage = this.gameService.getList(page);
+    // 결제하기 폼
+    @PostMapping("/paymentsform")
+    public String paymentsform(@RequestParam(value = "gameContentNo", required = false) List<Integer> gameContentNo, Model model, HttpSession session) {
+        if (gameContentNo != null && !gameContentNo.isEmpty()) {
+            List<GameContents> selectedGameContents = new ArrayList<>();
 
-        // 게임컨텐츠에 대한 파일 정보를 가져와서 모델에 추가
-        for (GameContents gamecon : gamePage.getContent()) {
-            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
-            gamecon.setGameContentFilesList(gameContentFilesList);
+            int totalSalePrice = 0;
+
+            for (int gameno : gameContentNo) {
+                GameContents gameContents = gameService.getGameContents(gameno);
+                selectedGameContents.add(gameContents);
+                // salePrice의 합계 계산
+                totalSalePrice += (gameContents.getSalePrice());
+                System.out.println("totalSalePrice?" +totalSalePrice);
+            }
+
+            // 세션에 선택한 게임 컨텐츠와 총 판매 가격 저장
+            session.setAttribute("selectedGameContents", selectedGameContents);
+            session.setAttribute("totalSalePrice", totalSalePrice);
+
+            /*model.addAttribute("selectedGameContents", selectedGameContents);
+            model.addAttribute("totalSalePrice", totalSalePrice);*/
         }
-
-        //3.Model
-        model.addAttribute("gameContents", gameContents);
-        model.addAttribute("gamePage", gamePage);*/
-        return "payments/gameList";
+        return "payments/paymentsform";
     }
 
-    //결제하기 폼
-    @GetMapping("/ptest")
-    public String paymentsform(/*KakaopayDTO kakaopayDTO, Model model, */HttpSession session) {
-       // model.addAttribute("KakaopayDTO",kakaopayDTO);
+
+    // 결제하기
+    @PostMapping("/payments")
+    public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session) {
+
+
+        List<GameContents> selectedGameContents = (List<GameContents>) session.getAttribute("selectedGameContents");
+        System.out.println("selectedGameContents?" + selectedGameContents);
+        int totalSalePrice = (int) session.getAttribute("totalSalePrice");
+        System.out.println("totalSalePrice:?" +totalSalePrice);
+        //임시용 ---------- 추후 수정 필 -------------
+        String memberID = "lee123";
+        Member user = memberService.getUser(memberID);
+
+        // paymentMethod 변수에 선택한 결제 방법이 무통장이면
+        if(paymentMethod.equals("directtransfer")){
+            paymentsService.save(selectedGameContents,user,paymentMethod);
+        }
+
         return "payments/ptest";
     }
 
-    @PostMapping("/kakaopay")
-    @ResponseBody
-    public String paymentsformTEST(Model model) {
 
-        try {
-            URL kakaoURl = new URL("https://kapi.kakao.com/v1/payment/ready");
-            HttpURLConnection connection = (HttpURLConnection) kakaoURl.openConnection();   //서버연결
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "KakaoAK 952a7b3082d015dcec08556a07b94b78");  // kakao- admin key
-            connection.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-            connection.setDoOutput(true);       //setDoOutput false가 기본이라 설정이 필요. (서버에 전해줄게 있는지? true)
-            String information = "cid=TC0ONETIME&partner_order_id=partner_order_id&partner_user_id=partner_user_id&partner_user_id=partner_user_id&item_name=초코파이&quantity=1&total_amount=2200&vat_amount=200&tax_free_amount=0&approval_url=http://localhost/payments/success&fail_url=http://localhost/payments/payments/fail&cancel_url=http://localhost/payments/cancel";
-            OutputStream outputStream = connection.getOutputStream();       //값을 준다.
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);   //데이터를 전달한다.
-            dataOutputStream.writeBytes(information); // information의 값을 Byte형 변환 해줌
-            dataOutputStream.close();   //가지고 있는걸 비우면서 전달 하고 닫아준다.
+    //게임컨텐츠 구매 목록조회
+    @GetMapping("/list")
+    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
 
-            int result = connection.getResponseCode(); //결과값
-            InputStream getInput;        // 받을 준비.
-
-            // 결과값이 200이면 통신 ok
-            if (result == 200) {
-                getInput = connection.getInputStream();        //결과값을 받는다.
-            } else {
-                getInput = connection.getErrorStream();      //에러를 받는다.
-            }
-            InputStreamReader inputStreamReader = new InputStreamReader(getInput);  //받아온 값을 읽는다.
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader); // 받아온 byte값을 문자열로 형변환
-            System.out.println("bufferedReader :" + bufferedReader);
-            return bufferedReader.readLine();   //문자열로 형변환을 해주고 찍어낸 후 비워낸다.
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return "";
     }
 
 
-    /*   @PostMapping("/kakaopay")
-    @ResponseBody
-    public String paymentsformTEST() {
-
-        try {
-            URL kakaoURl = new URL("https://kapi.kakao.com/v1/payment/ready");
-            HttpURLConnection connection = (HttpURLConnection) kakaoURl.openConnection();   //서버연결
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "KakaoAK 952a7b3082d015dcec08556a07b94b78");  // kakao- admin key
-            connection.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-            connection.setDoOutput(true);       //setDoOutput false가 기본이라 설정이 필요. (서버에 전해줄게 있는지? true)
-            String information = "cid=TC0ONETIME&partner_order_id=partner_order_id&partner_user_id=partner_user_id&partner_user_id=partner_user_id&item_name=초코파이&quantity=1&total_amount=2200&vat_amount=200&tax_free_amount=0&approval_url=http://localhost/payments/ok&fail_url=http://localhost/payments/payments/fail&cancel_url=http://localhost/payments/cancel";
-            OutputStream outputStream = connection.getOutputStream();       //값을 준다.
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);   //데이터를 전달한다.
-            dataOutputStream.writeBytes(information); // information의 값을 Byte형 변환 해줌
-            dataOutputStream.close();   //가지고 있는걸 비우면서 전달 하고 닫아준다.
-
-            int result = connection.getResponseCode(); //결과값
-            InputStream getInput;        // 받을 준비.
-
-            // 결과값이 200이면 통신 ok
-            if (result == 200) {
-                getInput = connection.getInputStream();        //결과값을 받는다.
-            } else {
-                getInput = connection.getErrorStream();      //에러를 받는다.
-            }
-            InputStreamReader inputStreamReader = new InputStreamReader(getInput);  //받아온 값을 읽는다.
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader); // 받아온 byte값을 문자열로 형변환
-            System.out.println("bufferedReader :" + bufferedReader);
-            return bufferedReader.readLine();   //문자열로 형변환을 해주고 찍어낸 후 비워낸다.
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // -----------------------------
-
-
-    /**
-     * 결제요청
-     */
-   /* @PostMapping("/ready")
-    public ResponseEntity readyToKakaoPay() {
-
-        return kakaoPayService.kakaoPayReady();
-    }
-*/
-
-
-
-    //----------------------
-
+    // 결제 성공시
     @GetMapping("/success")
     public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model) {
         System.out.println("afterPayRequest? " + pgToken);
@@ -149,7 +102,6 @@ public class PaymentsController {
         // 여기에서 game/list.html로 리다이렉트
         return "redirect:/game/list";
     }
-
 
     //결제 취소 할때 보여주는 페이지
     @GetMapping("/cancel")
@@ -162,66 +114,5 @@ public class PaymentsController {
     public String paymentsfail() {
         return "payments/fail";
     }
-
-    /*// 결제 이후
-    @PostMapping("/success")
-    @ResponseBody
-    public String paymentsformok() {
-
-        try {
-            URL kakaoURl = new URL("https://kapi.kakao.com/v1/payment/approve");
-            HttpURLConnection connection = (HttpURLConnection) kakaoURl.openConnection();   //서버연결
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "KakaoAK 952a7b3082d015dcec08556a07b94b78");  // kakao- admin key
-            connection.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-            connection.setDoOutput(true);       //setDoOutput false가 기본이라 설정이 필요. (서버에 전해줄게 있는지? true)
-            String information = "cid=TC0ONETIME&tid=T1234567890123456789&partner_order_id=partner_order_id&partner_user_id=partner_user_id&pg_token=xxxxxxxxxxxxxxxxxxxx";
-            OutputStream outputStream = connection.getOutputStream();       //값을 준다.
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);   //데이터를 전달한다.
-            dataOutputStream.writeBytes(information); // information의 값을 Byte형 변환 해줌
-            dataOutputStream.close();   //가지고 있는걸 비우면서 전달 하고 닫아준다.
-
-            int result = connection.getResponseCode(); //결과값
-            InputStream getInput;        // 받을 준비.
-
-            // 결과값이 200이면 통신 ok
-            if (result == 200) {
-                getInput = connection.getInputStream();        //결과값을 받는다.
-            } else {
-                getInput = connection.getErrorStream();      //에러를 받는다.
-            }
-            InputStreamReader inputStreamReader = new InputStreamReader(getInput);  //받아온 값을 읽는다.
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader); // 받아온 byte값을 문자열로 형변환
-            System.out.println("bufferedReader :" + bufferedReader);
-          //  return bufferedReader.readLine();   //문자열로 형변환을 해주고 찍어낸 후 비워낸다.
-            String s = bufferedReader.readLine();//문자열로 형변환을 해주고 찍어낸 후 비워낸다.
-            System.out.println("s?"+ s);
-            return "payments/success";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-*/
-
-    //결제하기 요청이 들어오면
-  /*  @PostMapping("/kakaopay")
-    public ResponseEntity<String> addpayments() throws JsonProcessingException {
-
-        // Create a JSON response object
-        Map<String, Object> jsonResponse = new HashMap<>();
-        jsonResponse.put("tid", "T1234567890123456789");
-        jsonResponse.put("next_redirect_app_url", "https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/aInfo");
-        // Add other fields as needed
-
-        // Convert the response object to JSON
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(jsonResponse);
-
-        // Return the JSON response
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=UTF-8");
-        return new ResponseEntity<>(json, headers, HttpStatus.OK);
-    }*/
 
 }

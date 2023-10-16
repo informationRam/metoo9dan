@@ -10,4 +10,7 @@ import java.util.List;
 public interface EducationRepository extends JpaRepository<EducationalResources, Integer> {
     // like 사용
     List<EducationalResources> findByResourceNameContains(String ResourceName);
+
+    //게임콘텐츠no 값으로 EducationalResources값 가져오는법
+    List<EducationalResources> findByGameContents_GameContentNo(Integer gameContentNo);
 }

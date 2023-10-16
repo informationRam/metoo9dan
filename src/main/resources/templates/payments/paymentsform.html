@@ -1,67 +1,104 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
-    <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            결제를 해보장</br>
-          <!--  <form id="nado-pay" class="my-3" th:object="${kakaopayDTO}" th:action="@{/payments/add}" method="post" style="margin-left: 30px">
--->
-
-                <h2>주문하실 상품</h2>
-                    <p>구매상품명</p>
-               <span> ~~상품명 넣으세요~~~~</span>
-
-                <h2>구매자 정보</h2>
-                    <p>구매자명</p>
-                    <p>연락처</p>
-                <span> ~주문합계 넣으세요~~~~ <</span>
-
-                <h2>결제 방법 선택하세오</h2>
-                    <input type="radio" value="deposit">무통장</br>
-                    <input type="radio" value="account">계좌이체</br>
-                    <input type="radio" value="pay">카카오페이</br>
-
-        <div class="" id="apibtn">
-            <img src="/image/game/kakao_payment_icon.png" id="paymentIcon">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <div class="row">
+    <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+    <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+    <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+      <form id="nadopayments" class="my-2" th:action="@{|/payments/payments|}" method="post">
+        <div>
+          <table>
+            <thead>
+            <tr>
+              <th>게임명</th>
+              <th>구독 기간</th>
+              <th>최대 구독자 수</th>
+              <th>판매 가격</th>
+              <!-- 추가 필드 헤더 -->
+            </tr>
+            </thead>
+            <tbody>
+          <!--  <tr th:each="gamecon : ${selectedGameContents}">-->
+          <tr th:each="gamecon : ${session.selectedGameContents}">
+            <td th:text="${gamecon.gameName}"></td>
+            <td th:text="${gamecon.subscriptionDuration}"></td>
+            <td th:text="${gamecon.maxSubscribers}"></td>
+            <td th:text="${gamecon.salePrice}"></td>
+          </tr>
+       <!--     <tr th:each="gamecon : ${selectedGameContents}">
+              <td th:text="${gamecon.gameNo}"></td>
+              <td th:text="${gamecon.gameName}"></td>
+              <td th:text="${gamecon.subscriptionDuration}"></td>
+              <td th:text="${gamecon.maxSubscribers}"></td>
+              <td th:text="${gamecon.salePrice}"></td>
+              &lt;!&ndash; 추가 필드 값 &ndash;&gt;
+            </tr>-->
+            <!-- salePrice의 총 합계 계산 -->
+            <tr>
+              <td colspan="3">총 합계: [[${session.totalSalePrice}]]</td>
+              <!--<td th:text="${session.getAttribute('totalSalePrice')}"></td>-->
+              <!-- 추가 필드 합계 출력 -->
+            </tr>
+            </tbody>
+          </table>
         </div>
-                <div>
-                    <button type="submit"></button>
-                </div>
-          <!--  </form>-->
+      </div>
+  </div>
+  <input type="radio" name="paymentMethod" value="bankaccount">계좌이체
+  <input type="radio" name="paymentMethod" value="directtransfer">무통장
+  <div class="mb-3 text-center">
+    <button type="submit" class="btn btn-primary">결제하기</button>
+  </div>
 
-        </div>
-    </div>
-    <script>
-        // 이미지 클릭 이벤트 처리
-               document.getElementById("paymentIcon").addEventListener("click", function() {
-                   // AJAX 요청
-                   var xhr = new XMLHttpRequest();
-                   xhr.open("POST", "/payments/kakaopay", true);
-                   xhr.onreadystatechange = function () {
+<!-- 결제를 시작할 폼 -->
+<form id="payment-form">
+  <label for="item-name">상품명:</label>
+  <input type="text" id="item-name" name="item_name" value="게임명">
+  <br>
+  <label for="total-amount">총 금액:</label>
+  <input type="text" id="total-amount" name="total_amount" value="10000">
+  <br>
+  <button type="submit">결제 시작</button>
+</form>
 
-                       if (xhr.readyState === 4 && xhr.status === 200) {
-                           var response = JSON.parse(xhr.responseText);
-                           console.log("response.next_redirect_pc_url",response.next_redirect_pc_url)    // 받을 정보
-                           var box = response.next_redirect_pc_url;
-                           window.open(box);
-                       }
-                   };
-                   xhr.send();
-               });
+<!-- 결제 성공 시 표시될 메시지 -->
+<div id="success-message" style="display: none;">
+  결제가 성공적으로 완료되었습니다.
+</div>
 
+<script>
+  // 결제 시작 폼 제출 시 처리
+  $('#payment-form').submit(function (event) {
+      event.preventDefault();
 
-              /* Content-type: application/json;charset=UTF-8
-                   {
-                    "tid": "T1234567890123456789",
-                    "next_redirect_app_url": "https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/aInfo",
-                    "next_redirect_mobile_url": "https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/mInfo",
-                    "next_redirect_pc_url": "https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/info",
-                    "android_app_scheme": "kakaotalk://kakaopay/pg?url=https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/order",
-                    "ios_app_scheme": "kakaotalk://kakaopay/pg?url=https://mockup-pg-web.kakao.com/v1/xxxxxxxxxx/order",
-                    "created_at": "2016-11-15T21:18:22"
-                   }
-                    */
-    </script>
+      // 결제 정보를 준비
+      var paymentData = {
+          item_name: $('#item-name').val(),
+          total_amount: $('#total-amount').val()
+      };
+
+      // /ready 엔드포인트로 Ajax POST 요청 보내기
+      $.ajax({
+          url: '/kakaopay/ready',
+          method: 'POST',
+          data: paymentData,
+          success: function (response) {
+              // 카카오페이 페이지로 이동
+              location.href = response.next_redirect_pc_url;
+          },
+          error: function () {
+              alert('결제 준비 중 오류가 발생했습니다.');
+          }
+      });
+  });
+
+  // 결제 성공 시 처리 (이 부분은 실제 카카오페이에서 콜백을 받아 처리)
+  function handlePaymentSuccess(pgToken) {
+      // /success 엔드포인트로 Ajax GET 요청 보내기
+      $.get('/kakaopay/success', { pg_token: pgToken }, function (data) {
+          $('#success-message').show();
+      });
+  }
+</script>
 </div>
 </html>

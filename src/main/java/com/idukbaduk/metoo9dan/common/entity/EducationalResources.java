@@ -7,6 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 //교육자료테이블 - PRIMARY KEY (resource_no)
 @Entity
@@ -60,5 +61,18 @@ public class EducationalResources {
                 ", description='" + description + '\'' +
                 ", creationDate=" + creationDate +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resourceNo);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        EducationalResources other = (EducationalResources) obj;
+        return Objects.equals(resourceNo, other.resourceNo);
     }
 }

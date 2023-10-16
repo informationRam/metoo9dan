@@ -3,7 +3,9 @@ package com.idukbaduk.metoo9dan.game.controller;
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
 import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.service.EducationService;
+import com.idukbaduk.metoo9dan.education.service.ResourcesFilesService;
 import com.idukbaduk.metoo9dan.education.vaildation.EducationValidation;
 import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
@@ -11,6 +13,7 @@ import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -34,6 +37,7 @@ public class GameController {
     private final GameFilesService gameFilesService;
     private final EducationService educationService;
     private GameContents getgameContents;
+    private final ResourcesFilesService resourcesFilesService;
 
     //게임컨텐츠 등록 폼 (교육자료 함께 저장시 교육자료가 update 및 생성된다.)
     @GetMapping("/addForm")
@@ -382,11 +386,39 @@ public class GameController {
         if (fileName != null && !file.isEmpty()) {
             gameFilesService.save(getgameContents, gameValidation);
         }
-
         System.out.println("gameValidation: "+gameValidation);
         // 저장 후 세션에서 데이터 삭제
         session.removeAttribute("gameValidationPage1");
         return "redirect:/game/list";
     }
+
+    //게임컨텐츠 구매 할때 목록조회
+    @GetMapping("/alllist")
+    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
+
+        // 게임컨텐츠 목록 조회
+        Page<GameContents> gamePage = this.gameService.getList(page);
+
+        for (GameContents gamecon : gamePage.getContent()) {
+            // 게임컨텐츠에 대한 파일 정보 가져오기
+            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
+            gamecon.setGameContentFilesList(gameContentFilesList);
+
+            // 게임컨텐츠에 대한 교육자료 정보 가져오기
+            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
+
+            for (EducationalResources educationalResource : education) {
+                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
+                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
+            }
+            gamecon.setEducationalResourcesList(education);
+
+        }
+        model.addAttribute("gamePage", gamePage);
+
+        return "game/allList";
+    }
+
+
 
 }//class

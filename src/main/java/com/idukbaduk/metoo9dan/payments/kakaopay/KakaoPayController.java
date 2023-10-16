@@ -1,13 +1,12 @@
 package com.idukbaduk.metoo9dan.payments.kakaopay;
 
-import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
-import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.education.service.EducationService;
 import com.idukbaduk.metoo9dan.education.vaildation.EducationValidation;
 import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
+import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import java.util.Map;
 public class KakaoPayController {
 
     private final KakaoPayService kakaoPayService;
+    private final PaymentsService paymentsService;
     /**
      * 결제요청
      */
@@ -66,7 +67,7 @@ public class KakaoPayController {
 
 
     @GetMapping("/success")
-    public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model) {
+    public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model, Principal principal) {
         System.out.println("afterPayRequest? " + pgToken);
         KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken);
 

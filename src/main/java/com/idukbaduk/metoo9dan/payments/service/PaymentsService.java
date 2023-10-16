@@ -1,14 +1,15 @@
 package com.idukbaduk.metoo9dan.payments.service;
 
+import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Payments;
 import com.idukbaduk.metoo9dan.payments.reprository.PaymentsRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,56 +23,59 @@ public class PaymentsService {
 
     }
 
-    //결제하기
-    public void buy(){
 
+// OrderNumber의 가장 큰 값을 가져온다.
 
-
-    }
-
-    // kakao 결제하기
-    public String kakaoPayments(){
-        try {
-            URL kakaoURl = new URL("https://kapi.kakao.com/v1/payment/ready");
-            HttpURLConnection connection = (HttpURLConnection) kakaoURl.openConnection();   //서버연결
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization","KakaoAK 952a7b3082d015dcec08556a07b94b78");  // kakao- admin key
-            connection.setRequestProperty("Content-type","application/x-www-form-urlencoded;charset=utf-8");
-            connection.setDoOutput(true);       //setDoOutput false가 기본이라 설정이 필요. (서버에 전해줄게 있는지? true)
-            String information = "cid=TC0ONETIME&partner_order_id=partner_order_id&partner_user_id=partner_user_id&partner_user_id=partner_user_id&item_name=초코파이&quantity=1&total_amount=2200&vat_amount=200&tax_free_amount=0&approval_url=https://developers.kakao.com/success&fail_url=https://developers.kakao.com/fail&cancel_url=https://developers.kakao.com/cancel";
-            OutputStream outputStream = connection.getOutputStream();       //값을 준다.
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);   //데이터를 전달한다.
-            dataOutputStream.writeBytes(information); // information의 값을 Byte형 변환 해줌
-            dataOutputStream.close();   //가지고 있는걸 비우면서 전달 하고 닫아준다.
-
-            int result = connection.getResponseCode(); //결과값
-            InputStream getInput;        // 받을 준비.
-
-            // 결과값이 200이면 통신 ok
-            if(result == 200){
-                getInput =connection.getInputStream();        //결과값을 받는다.
-            }else {
-                getInput = connection.getErrorStream();      //에러를 받는다.
-            }
-            InputStreamReader inputStreamReader = new InputStreamReader(getInput);  //받아온 값을 읽는다.
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader); // 받아온 byte값을 문자열로 형변환
-            return bufferedReader.readLine();   //문자열로 형변환을 해주고 찍어낸 후 비워낸다.
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    // OrderNumber의 가장 큰 값을 가져온다.
+    public int generateOrderNumber() {
+        Integer maxOrderNumber = paymentsRepository.findMaxOrderNumber();
+        if (maxOrderNumber == null) {
+            // 주문 번호를 생성할 데이터가 없다면 1로 시작
+            return 1;
+        } else {
+            // 가장 큰 주문 번호를 찾아서 1을 더함
+            int newOrderNumber = maxOrderNumber + 1;
+            return newOrderNumber;
         }
-
     }
 
 
+    //결제하기
+    public void save(List<GameContents> selectedGameContents, Member member, String paymentMethod){
+        int orderNumber =  generateOrderNumber();
 
-    //결제 내용 저장하기 (DB)
-    public void save(Payments payments){
+        for(GameContents gameContents: selectedGameContents){
+            Payments payments = new Payments();
+            payments.setOrderNumber(orderNumber);
+            payments.setContact(member.getTel());
+            payments.setMethod(paymentMethod);
+            payments.setPaymentDate(LocalDateTime.now());
+            payments.setStatus("Y");
+            payments.setAmount(gameContents.getSalePrice());
+            payments.setDepositorName(member.getName());
+            payments.setGameContents(gameContents);
+            payments.setMember(member);
+            paymentsRepository.save(payments);
+        }
+    }
+
+
+   /* //결제 내용 저장하기 (DB)
+    public void kakaosave(KakaoApproveResponse kakaoApprove){
+*//*
+        Payments payments = new Payments();
+        payments.setOrderNumber();
+        payments.setContact();
+        payments.set;
+
+
+        kakaoApprove.set
+*//*
 
 
         paymentsRepository.save(payments);
     }
-
+*/
 
 
 }

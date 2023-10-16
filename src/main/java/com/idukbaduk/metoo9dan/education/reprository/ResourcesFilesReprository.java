@@ -8,6 +8,10 @@ import java.util.List;
 
 @Repository
 public interface ResourcesFilesReprository extends JpaRepository<ResourcesFiles, Integer> {
+
+    // EducationalResources no 값으로 ResourcesFiles 가져오기
     List<ResourcesFiles> findByEducationalResources_ResourceNo(Integer resourceNo);
+
+
 
 }
