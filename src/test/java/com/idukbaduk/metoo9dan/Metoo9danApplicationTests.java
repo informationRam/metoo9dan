@@ -119,7 +119,7 @@ class Metoo9danApplicationTests {
 		// 교육자 정보 생성
 		Member member = new Member();
 		member.setName("안찌구");
-		member.setTel("010-1234-5678");
+		member.setTel("010-8488-1814");
 		member.setEmail("1235@email.com");
 		member.setMemberId("zzigu");
 		member.setPassword("1234");
@@ -129,7 +129,7 @@ class Metoo9danApplicationTests {
 		member.setPrivacyConsent(true);
 		member.setEmailConsent(true);
 		member.setSmsConsent(true);
-		member.setMemberMemo("회원관리시 메모 남기는 영역입니다");
+		member.setMemberMemo("회원관리시 메모 남기는 용도");
 		// 나머지 필드 설정
 
 		EducatorInfo educatorInfo = new EducatorInfo();
