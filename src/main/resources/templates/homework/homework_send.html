@@ -21,7 +21,7 @@
                             </div>
                         </div>
 
-                            <table class="sendhwTable mt-3">
+                            <table class="sendhwTable mt-3" id="homeworkTable">
                                 <thead>
                                 <tr>
                                     <th></th>
@@ -32,13 +32,15 @@
                                 </tr>
                                 </thead>
                                 <tbody id="homeworkTableBody">
-                                    <tr th:each="hw : ${homeworks}">
+                                    <!-- 숙제 목록 테이블 행 -->
+                                    <tr th:each="hw : ${homeworks}" th:data-hw-id="${hw.homeworkNo}">
                                         <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
                                         <td th:text="${hw.homeworkTitle}"></td>
                                         <td th:text="${hw.homeworkContentPreview}"></td>
                                         <td th:text="${hw.progress} + '레벨'"></td>
                                         <td th:text="${hw.dueDate}"></td>
                                     </tr>
+
                                 </tbody>
                             </table>
                             <div id="paginationContainer" class="d-flex justify-content-center mt-5">
@@ -103,6 +105,21 @@
                     </div>
                 </div>
             </form>
+
+            <!-- 통합 모달창 -->
+            <div id="hw-homeworkDetailModal">
+                <h2 id="modalTitle"></h2>
+                내용<p id="modalContent"></p>
+                진도<p id="modalProgress"></p>
+                메모<p id="modalMemo"></p>
+                기한<p id="modalDueDate"></p>
+                생성일<p id="modalCreateDate"></p>
+            </div>
+
+            <!-- 통합 모달창 끝 -->
+
+            <div id="hw-backdrop"></div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
                 let currentPage = 1;
                 const rowsPerPage = 5;
@@ -335,6 +352,35 @@
                     }
                 }
 
+                    $(document).ready(function() {
+                        // 더블 클릭 이벤트 핸들러
+                        $("#homeworkTable tr").dblclick(function() {
+                            // 숙제 정보를 가져올 때 사용할 숙제 ID를 얻습니다.
+                            var homeworkId = $(this).data('hw-id');
+
+                            // API를 호출하여 숙제 상세 정보를 불러옵니다. API 엔드포인트 및 데이터 형식을 맞게 수정해야 합니다.
+                            $.get("/homework/detail/" + homeworkId, function(data) {
+                                // 더블 클릭 시 모달에 데이터 세팅
+                                $("#modalTitle").html(data.homeworkTitle);
+                                $("#modalContent").html(data.homeworkContent);
+                                $("#modalProgress").text(data.progress);
+                                $("#modalMemo").html(data.homeworkMemo);
+                                $("#modalDueDate").text(data.dueDate);
+                                $("#modalCreateDate").text(data.creationDate);
+
+                                // 모달 표시
+                                $("#hw-homeworkDetailModal, #hw-backdrop").show();
+                            });
+                        });
+
+                        // 모달 및 오버레이 외의 영역 클릭 시 모달 및 오버레이 숨김
+                        $(document).on("click", function(e) {
+                            if ($(e.target).closest("#hw-homeworkDetailModal").length === 0 &&
+                                $(e.target).closest("#homeworkTable").length === 0) {
+                                $("#hw-homeworkDetailModal, #hw-backdrop").hide();
+                            }
+                        });
+                    });
             </script>
 
 

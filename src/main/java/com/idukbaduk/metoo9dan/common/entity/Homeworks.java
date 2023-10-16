@@ -37,7 +37,10 @@ public class Homeworks {
     private LocalDateTime creationDate;        //date  NOT NULL    COMMENT '생성일',
 
     @ManyToOne(fetch = FetchType.LAZY) // 회원 - 다대일 관계
-    @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정
+    @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정,
     private Member member;
+
+    @Column(name="status")
+    private String status;     //text NOT NULL    COMMENT '숙제 내용'
 
 }

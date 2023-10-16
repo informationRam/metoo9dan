@@ -31,44 +31,45 @@ public class HomeworkController {
     private HomeworkService homeworkService;
 
 
-    //숙제 생성 페이지 ****모달창에서 수정/삭제 추가해야함****
+    //숙제 생성 페이지 보여주기
     @GetMapping("/add")
     public String showCreateForm(Model model, HomeworksForm homeworksForm, HomeworksEditForm homeworksEditForm) {
+        //숙제 테이블 list객체
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
         List<HomeworkDTO> homework =homeworkService.findAllHomeworkWithSendStatus("baduk");
         model.addAttribute("homeworkList",homework);
         return "homework/homework_add";
     }
 
-    @GetMapping("/detail/{homeworkId}")
-    public ResponseEntity<HomeworkDTO> getHomeworkDetail(@PathVariable Integer homeworkId) {
-        Homeworks homework=homeworkService.findById(homeworkId);
-
-        HomeworkDTO detail = new HomeworkDTO();
-        detail.setHomeworkTitle(homework.getHomeworkTitle());
-        detail.setHomeworkContent(homework.getHomeworkContent());
-        detail.setProgress(homework.getProgress());
-        detail.setHomeworkMemo(homework.getHomeworkMemo());
-        detail.setDueDate(homework.getDueDate());
-        detail.setCreationDate(homework.getCreationDate());
-
-        //여기서 detail 말고 다른 객체도 생성해서 보내주고싶어
-
-        return ResponseEntity.ok(detail);
-    }
+    //숙제 생성 폼 제출
     @PostMapping("/add")
     public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model, HomeworksEditForm homeworksEditForm) {
+        //유효성 검사
         if (result.hasErrors()) {
             model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus("baduk"));
             model.addAttribute("homeworksEditForm", homeworksEditForm);
             return "homework/homework_add";
         }
+
+        //만든 숙제 저장
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
         Member member = homeworkService.findMemberByMemberId("baduk");
         homeworkService.saveHomework(homeworksForm,member);
         return "redirect:/homework/add";
     }
 
+    //숙제 상세 정보 보내주기
+    @GetMapping("/detail/{homeworkId}")
+    public ResponseEntity<HomeworkDTO> getHomeworkDetail(@PathVariable Integer homeworkId) {
+        Homeworks homework=homeworkService.findById(homeworkId);
+        HomeworkDTO detail = homeworkService.convertToDTO(homework);
+        System.out.println(detail);
+        //HomeworkDTO(homeworkNo=24, homeworkTitle=asd, homeworkContentPreview=asd, homeworkContent=asd, homeworkMemo=dfsd, progress=2, dueDate=2023-10-27 00:00:00.0, creationDate=2023-10-12T16:28:54, isSent=true, homeworkSendList=null)
+        return ResponseEntity.ok(detail);
+    }
+
+
+    //숙제 수정 폼 제출
     @PostMapping("/edit")
     public ResponseEntity<?> editHomework(@Valid HomeworksEditForm homeworksEditForm, BindingResult result, Model model, HomeworksForm homeworksForm) {
         if (result.hasErrors()) {
@@ -80,7 +81,6 @@ public class HomeworkController {
                 String errorMessage = error.getDefaultMessage();
                 errors.put(fieldName, errorMessage);
             });
-                System.out.println(errors);
             // 400 상태 코드와 함께 에러 메시지를 JSON 형태로 반환
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
@@ -90,9 +90,11 @@ public class HomeworkController {
         return ResponseEntity.ok("Homework edited successfully");
     }
 
+    //숙제 삭제
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteHomework(@PathVariable Integer id) {
         try {
+            System.out.println(id);
             homeworkService.deleteHomework(id);
             return new ResponseEntity<>("삭제 성공", HttpStatus.OK);
         } catch(Exception e) {

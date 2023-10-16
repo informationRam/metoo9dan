@@ -88,28 +88,39 @@ public class HomeworkService {
         hw.setDueDate(homework.getDueDate());
         hw.setProgress(homework.getProgress());
         hw.setCreationDate(LocalDateTime.now()); //현재시간으로 설정
+        hw.setStatus("show");
         homeworkRepository.save(hw);
     }
 
+    //숙제 수정
     public void updateHomework(@Valid HomeworksEditForm homeworksEditForm, Homeworks homeworks) {
         homeworks.setHomeworkTitle(homeworksEditForm.getHwTitle());
         homeworks.setHomeworkContent(homeworksEditForm.getHwContent());
         homeworks.setHomeworkMemo(homeworksEditForm.getHwMemo());
         homeworks.setDueDate(homeworksEditForm.getHwDueDate());
         homeworks.setProgress(homeworksEditForm.getHwProgress());
-        //homeworks.getCreationDate(new LocalDateTime.now());
+        homeworks.setCreationDate(LocalDateTime.now());
 
         homeworkRepository.save(homeworks);
     }
+
+    //특정 교육자가 생성한 숙제 중에 삭제되지 않은 숙제 조회 최신순으로 + 전송여부
     public List<HomeworkDTO> findAllHomeworkWithSendStatus(String memberId) {
-        List<Homeworks> homeworks = homeworkRepository.findByMember_MemberIdOrderByCreationDateDesc(memberId);
-        // Convert homeworks list into HomeworkDTO list and check if it has been sent
-        return homeworks.stream().map(hw -> {
-            HomeworkDTO dto = new HomeworkDTO(hw);
-            List<HomeworkSend> sentHomeworks = homeworkSendRepository.findByHomeworks(hw);
-            dto.setSent(!sentHomeworks.isEmpty());
-            return dto;
-        }).collect(Collectors.toList());
+        List<Homeworks> homeworks = homeworkRepository.findByMember_MemberIdAndStatusOrderByCreationDateDesc(memberId, "show");
+
+        return homeworks.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public HomeworkDTO convertToDTO(Homeworks homework) {
+        HomeworkDTO dto = new HomeworkDTO(homework);
+        List<HomeworkSend> sentHomeworks = homeworkSendRepository.findByHomeworks(homework);
+        System.out.println("숙제 전송 내역"+sentHomeworks);
+        System.out.println("참거짓"+!sentHomeworks.isEmpty());
+        dto.setSent(!sentHomeworks.isEmpty());
+        System.out.println(dto.isSent());
+        return dto;
     }
     public List<HomeworkDTO> toHomeworkDTOList(List<Homeworks> homeworks){
         return homeworks.stream().map(hw -> {
@@ -123,8 +134,16 @@ public class HomeworkService {
         return homeworkRepository.findById(id);
     }
 
+    //숙제 삭제
     public void deleteHomework(Integer id) {
-        homeworkRepository.deleteById(id);
+        System.out.println("서비스단 id"+id);
+        Optional<Homeworks> optionalHomeworks =homeworkRepository.findById(id);
+        if(optionalHomeworks.isPresent()){
+            System.out.println("서비스단"+optionalHomeworks.get());
+            Homeworks homeworks=optionalHomeworks.get();
+            homeworks.setStatus("delete");
+            homeworkRepository.save(homeworks);
+        }
     }
 
     public List<HomeworkSend> getHomeworkSendListByhomework(Integer homeworkId) {

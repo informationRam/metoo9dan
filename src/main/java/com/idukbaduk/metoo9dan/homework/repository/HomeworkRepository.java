@@ -14,8 +14,8 @@ import java.util.List;
 @Repository
 public interface HomeworkRepository extends JpaRepository<Homeworks, Integer> {
     //Page<Homeworks> findByMember_MemberIdOrderByCreationDateDesc(String memberId, Pageable pageable);
-    List<Homeworks> findByMember_MemberIdOrderByCreationDateDesc(String memberId);
-    @Query("SELECT h FROM Homeworks h WHERE h.member.memberId = :memberId AND h.dueDate > :currentDate ORDER BY h.creationDate DESC")
+    List<Homeworks> findByMember_MemberIdAndStatusOrderByCreationDateDesc(String memberId, String status);
+    @Query("SELECT h FROM Homeworks h WHERE h.member.memberId = :memberId AND h.dueDate > :currentDate AND h.status = 'show' ORDER BY h.creationDate DESC")
     List<Homeworks> findHomeworksByMemberIdAndDueDateAfter(String memberId, Date currentDate);
 
     List<String> findDistinctHomeworkTitleBy();

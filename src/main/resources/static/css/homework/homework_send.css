@@ -22,3 +22,32 @@
     margin: 10px auto; /* 위 아래 10px의 여백을 주고 좌우는 자동으로 설정하여 중앙 정렬 */
 }
 
+#hw-homeworkDetailModal,
+#hw-backdrop {
+    display: none;
+}
+
+#hw-homeworkDetailModal
+ {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    width: 400px;
+    border-radius: 8px;
+    z-index: 10;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+#hw-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 5;
+}
+
