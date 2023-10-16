@@ -68,6 +68,64 @@
           });
       }
 
+    //유효성 검사
+  function setErrorMessage(element, message) {
+    element.style.color = "red";
+    element.innerText = message;
+}
+
+function clearErrorMessage(element) {
+    element.style.color = "";
+    element.innerText = "";
+}
+
+function validateName() {
+    var nameInput = document.getElementById("memName");
+    var nameError = document.getElementById("name-error-message");
+    var namePattern = /^[A-Za-z가-힣]+$/;
+
+    if (!namePattern.test(nameInput.value)) {
+        setErrorMessage(nameError, "한글/영어만 입력 가능합니다.");
+        nameInput.style.borderColor = "red";
+    } else {
+        clearErrorMessage(nameError);
+        nameInput.style.borderColor = "";
+    }
+}
+
+function validatePhoneNumberAndFormat(input) {
+    var phoneInput = input;
+    var phoneError = document.getElementById("phone-error-message");
+    var phonePattern = /^\d{11}$/;
+
+    // 입력된 값에서 숫자 이외의 문자 제거
+    var phoneNumber = phoneInput.value.replace(/[^0-9]/g, '');
+
+    // 입력 필드에 제거된 문자를 제외한 값 설정
+    phoneInput.value = phoneNumber;
+
+    if (!phonePattern.test(phoneNumber)) {
+        setErrorMessage(phoneError, "휴대폰 형식이 올바르지 않습니다");
+        phoneInput.style.borderColor = "red";
+    } else {
+        clearErrorMessage(phoneError);
+        phoneInput.style.borderColor = "";
+    }
+}
+
+function validateVerificationCode() {
+    var verificationCodeInput = document.getElementById("verificationCode");
+    var verificationCodeError = document.getElementById("verification-code-error-message");
+    var verificationCodePattern = /^\d{6}$/;
+
+    if (!verificationCodePattern.test(verificationCodeInput.value)) {
+        setErrorMessage(verificationCodeError, "인증번호 형식이 올바르지 않습니다");
+        verificationCodeInput.style.borderColor = "red";
+    } else {
+        clearErrorMessage(verificationCodeError);
+        verificationCodeInput.style.borderColor = "";
+    }
+}
 
     //------------------인증문자 발송------------
 // AJAX 요청을 사용하여 서버에 SMS 발송 요청
@@ -110,20 +168,21 @@
         }
 
 
-     // 본인 인증 성공 시 호출되는 함수
-     function onVerificationSuccess(userName, userPhone) {
-         // 본인 인증 성공 메시지와 정보를 표시
-         document.getElementById("verificationSuccess").style.display = "block";
-         document.getElementById("userNameInput").textContent = userName;
-         document.getElementById("userPhoneInput").textContent = userPhone;
-
-         // 인증 코드 입력 화면 표시
-         document.getElementById("verifyStep").style.display = "block";
-         // 다음 단계로 이동
-         nextPrev(1);
-     }
+//     // 본인 인증 성공 시 호출되는 함수
+//     function onVerificationSuccess(userName, userPhone) {
+//         // 본인 인증 성공 메시지와 정보를 표시
+//         document.getElementById("verificationSuccess").style.display = "block";
+//         document.getElementById("userNameInput").textContent = userName;
+//         document.getElementById("userPhoneInput").textContent = userPhone;
+//
+//         // 인증 코드 입력 화면 표시
+//         document.getElementById("verifyStep").style.display = "block";
+//         // 다음 단계로 이동
+//         nextPrev(1);
+//     }
 
 // 인증 코드 확인 함수
+let verificationIsSuccessful = false; // Initialize the variable
 function verifyCode() {
     // 사용자가 입력한 인증 코드 가져오기
     const verificationCode = document.getElementById("verificationCode").value;
@@ -143,23 +202,28 @@ function verifyCode() {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 if (response.success) {
-                    alert("본인 인증이 완료되었습니다.");
-
+                     alert("본인 인증이 완료되었습니다.");
+                      verificationIsSuccessful = true;
+                     //nextPrev(1); // 인증 성공 시 다음 단계로 이동
                     // 세션에 저장된 이름과 휴대폰 번호 가져오기
                     const userName = response.userName;
                     const userPhone = response.userPhone;
                     console.log("세션저장 이름:",userName);
                     console.log("세션저장 Phone:",userPhone);
+                     // 다음 단계로 이동하려면 다음Prev 함수를 호출합니다.
+                    //nextPrev(1);
 
                     // 화면에 이름과 휴대폰 번호 출력
                     document.getElementById("verificationSuccess").style.display = "block";
                     document.getElementById("userNameInput").value = userName;
                     document.getElementById("userPhoneInput").value = userPhone;
                 } else {
-                    alert("인증에 실패했습니다.");
+                    alert("인증을 완료해주세요.");
+                     verificationIsSuccessful = false;
                 }
             } else {
                 alert("인증에 실패했습니다.");
+                 verificationIsSuccessful = false;
             }
         }
     };
@@ -167,34 +231,3 @@ function verifyCode() {
     xhr.send(JSON.stringify(requestData));
 }
 
-
-
-//     // "확인" 버튼 클릭 시 호출되는 함수
-//     function verifyCode() {
-//         const verificationCode = document.getElementById("verificationCode").value;
-//
-//         // AJAX 요청 생성: 입력한 인증 코드를 서버로 전송
-//         const xhr = new XMLHttpRequest();
-//         xhr.open('POST', '/member/verifyCode', true);
-//         xhr.setRequestHeader("Content-Type", "application/json");
-//         xhr.onreadystatechange = function() {
-//             if (xhr.readyState === 4) {
-//                 if (xhr.status === 200) {
-//                     // 본인 인증 성공한 경우
-//                     alert('본인 인증이 성공하였습니다.');
-//                     // 인증 성공 시 다음 단계로 이동하도록 수정 가능
-//                     nextPrev(1);
-//                 } else {
-//                     // 본인 인증 실패한 경우
-//                     alert('본인 인증이 실패하였습니다.');
-//                 }
-//             }
-//         };
-//         xhr.send(JSON.stringify({ verificationCode: verificationCode }));
-//     }
-
-
-
-
-
-//} // window.onload 함수

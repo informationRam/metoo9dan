@@ -2,9 +2,9 @@
 <div th:fragment="sidebar" style="border: 1px solid black;" class="col-2"> <!--class에서 col-2은 빼면 안됨-->
     test 사이드 바
     <ul>
-        <li><a href="#" th:href="@{/member/join}">로그인</a></li>
+        <li><a href="#" th:href="@{/member/login}">로그인</a></li>
         <li><a th:href="@{/}" style="margin:5px;" class="nav-link text-primary">메인(모두)</a></li>
-        <li><a th:href="@{/member/mypage}" style="margin:5px;" class="nav-link text-primary">마이페이지(회원용)</a></li>
+        <li><a th:href="@{/member/mypage/{memberId}}" style="margin:5px;" class="nav-link text-primary">마이페이지(회원용)</a></li>
         <li> <a th:href="@{/edu/studentManage}" style="margin:5px;" class="nav-link text-primary">학생관리(교육자용)</a></li>
         <li> <a th:href="@{/admin/memberManage}" style="margin:5px;" class="nav-link active">회원관리(운영자용)</a></li>
     </ul>

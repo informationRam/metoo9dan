@@ -63,4 +63,5 @@ public class Member {
     @Column(name="birth")
     private Date birth;             //date NOT NULL "생일"
 
+
 }

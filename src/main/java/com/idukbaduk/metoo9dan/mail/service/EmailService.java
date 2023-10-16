@@ -1,6 +1,6 @@
 package com.idukbaduk.metoo9dan.mail.service;
 
-import  com.idukbaduk.metoo9dan.mail.DTO.MailDTO;
+import  com.idukbaduk.metoo9dan.mail.dto.MailDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

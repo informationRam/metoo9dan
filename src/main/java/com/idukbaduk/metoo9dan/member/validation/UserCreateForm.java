@@ -16,7 +16,7 @@ public class UserCreateForm {
 
     private Integer memberNo;
 
-    @Size(min = 2, max = 5)
+    @Size(min = 2, max = 8)
     @NotEmpty(message = "이름은 필수입력입니다.")
     private String name;          //'회원 이름'
 
@@ -62,10 +62,10 @@ public class UserCreateForm {
     private String pwd2;                //'비밀번호'
 
     // EducatorInfo 정보
-    @NotEmpty(message = "소속학원이 위치한 '시도'를 입력해주세요.")
+    @NotEmpty(message = "소속학원이 위치한 '시도'를 선택해주세요.")
     private String sido;         //varchar(20)    NOT NULL    COMMENT '시도',
 
-    @NotEmpty(message = "소속학원이 위치한 '시군구'를 입력해주세요.")
+    @NotEmpty(message = "소속학원이 위치한 '시군구'를 선택해주세요.")
     private String sigungu;      //varchar(20)    NOT NULL    COMMENT '시군구',
 
     @NotEmpty(message = "소속 학원명을 입력해주세요.")

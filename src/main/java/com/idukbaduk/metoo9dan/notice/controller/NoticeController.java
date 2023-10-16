@@ -4,6 +4,8 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
+import com.idukbaduk.metoo9dan.member.service.MemberService;
+import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
 import com.idukbaduk.metoo9dan.notice.service.NoticeFilesService;
@@ -19,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,6 +49,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
     private final NoticeFilesService filesService;
+    private final MemberServiceImpl memberServiceImpl;
 
     @Autowired
     private HttpSession httpSession;
@@ -79,8 +83,12 @@ public class NoticeController {
     }
 
     //공지사항 삭제해줘 요청
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{noticeNo}")
-    public String delete(@PathVariable Integer noticeNo){
+    public String delete(@PathVariable Integer noticeNo,
+                         Principal principal){
+        Member member = memberServiceImpl.getUser(principal.getName());
+        logger.info("member: "+member.toString());
         // 1. 파라미터 받기
         // 2. 비즈니스 로직 처리
         //우선 삭제할 글이 존재하는지 조회하여 확인

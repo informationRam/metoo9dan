@@ -30,19 +30,17 @@
                     <div class="tab-content" id="pills-tabContent">
                         <!-- 로그인 영역 -->
                         <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
-                            <form id="loginForm"  th:action="@{/member/login}" th:object="${loginVaildation}" method="post">
+                            <form id="loginForm"  th:action="@{/member/login}" th:object="${loginValidation}" method="post">
                                 <!-- ID input -->
                                 <div class="form-outline mb-4">
-                                    <input type="text" th:field="*{memberId}" name="memberId" id="memberId" class="form-control" />
+                                    <input type="text" name="memberId" id="memberId" class="form-control" />
                                     <label class="form-label" for="memberId"></label>
-                                    <div th:if="${#fields.hasErrors('memberId')}" th:errors="*{memberId}" class="alert alert-danger"></div>
                                 </div>
 
                                 <!-- Password input -->
                                 <div class="form-outline mb-4">
-                                    <input type="password" th:field="*{password}" name="password" id="loginPassword" class="form-control" />
+                                    <input type="password" name="password" id="loginPassword" class="form-control" />
                                     <label class="form-label" for="loginPassword">비밀번호</label>
-                                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="alert alert-danger"></div>
                                 </div>
 
                                 <!-- 오류시 보여주는 문구 -->
@@ -206,10 +204,14 @@
 
                                                 <!-- 휴대폰 번호와 인증 버튼 -->
                                                 <div class="mb-3">
-                                                    <input class="form-control" type="text" placeholder="이름" oninput="this.className = ''" name="memName" id="memName">
+                                                    <label for="memName" class="form-label">이름</label>
+                                                    <input type="text" class="form-control" placeholder="이름" name="memName" id="memName" oninput="validateName()" required />
+                                                    <span class="error-message" id="name-error-message"></span>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <input type="tel" class="form-control" name="to" placeholder="본인 휴대폰번호를 입력하세요" maxlength="14"  id="to"/>
+                                                    <label for="to" class="form-label">휴대폰 번호</label>
+                                                    <input type="tel" class="form-control" name="to" placeholder="본인 휴대폰번호를 입력하세요" id="to" oninput="validatePhoneNumberAndFormat(this)" required />
+                                                    <span class="error-message" id="phone-error-message"></span>
                                                 </div>
                                                 <button class="btn btn-outline-secondary" onclick="sendVerificationCode()">발송</button>
                                             </div> <!-- authMember 끝 -->
@@ -222,7 +224,8 @@
 
                                                 <!-- 인증 코드 입력란 -->
                                                 <div class="mb-3">
-                                                    <input type="text" class="form-control" placeholder="인증 코드 입력" id="verificationCode">
+                                                    <input type="text" class="form-control" placeholder="인증 코드 입력" id="verificationCode"  oninput="validateVerificationCode()" required>
+                                                    <span class="error-message" id="verification-code-error-message"></span>
                                                 </div>
                                                 <!-- 확인 버튼 -->
                                                 <button class="btn btn-outline-secondary" onclick="verifyCode()">확인</button>
@@ -252,32 +255,39 @@
                                             <div class="mb-3">
                                                 <label for="memberIdInput" class="form-label">아이디</label>
                                                 <div class="input-group">
-                                                    <input type="text"  th:field="*{memberId}" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput" disabled required>
+                                                    <input type="text"  th:field="*{memberId}" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput" readonly required>
                                                     <button type="button" class="btn btn-primary" id="chechMemberId">ID 중복 확인</button>
                                                 </div>
+                                                    <span th:if="${#fields.hasErrors('memberId')}" th:errors="*{memberId}" class="error-message text-danger"></span>
+                                                    <span th:if="${memberIdDuplicate}" class="error-message text-danger">이 아이디는 이미 사용 중입니다. 다른 아이디를 입력하세요.</span>
                                             </div>
 
                                             <!-- 비밀번호 입력란 -->
                                             <div class="mb-3">
                                                 <label for="password" class="form-label">비밀번호</label>
-                                                <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password" disabled >
+                                                <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password" readonly required >
                                             </div>
+                                                <span th:if="${#fields.hasErrors('pwd1')}" th:errors="*{pwd1}" class="error-message text-danger"></span>
                                             <!-- 비밀번호 확인 입력란 -->
                                             <div class="mb-3">
                                                 <label for="confirmPassword" class="form-label">비밀번호 확인</label>
-                                                <input type="password" th:field="*{pwd2}" placeholder="비밀번호와 일치하게 입력하세요" autocomplete="new-password"    oninput="this.className = ''" class="form-control" id="confirmPassword" name="confirmPassword" disabled required>
+                                                <input type="password" th:field="*{pwd2}" placeholder="비밀번호와 일치하게 입력하세요" autocomplete="new-password"    oninput="this.className = ''" class="form-control" id="confirmPassword" name="confirmPassword" readonly required>
                                             </div>
+                                                <span th:if="${#fields.hasErrors('pwd2')}" th:errors="*{pwd2}" class="error-message text-danger"></span>
+                                                <span th:if="${passwordMismatch}" class="error-message text-danger">비밀번호가 일치하지 않습니다.</span>
 
                                             <!-- 생년월일 입력란 -->
                                             <div class="mb-3">
                                                 <label for="birth" class="form-label">생년월일</label>
-                                                <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"  required>
+                                                <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"  readonly required>
                                             </div>
+                                                <span th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" class="error-message text-danger"></span>
 
                                             <!-- 이메일 주소 입력란 -->
                                             <div class="mb-3">
                                                 <label for="email" class="form-label">이메일 주소</label>
-                                                <input type="email"  th:field="*{email}" placeholder="12345@gmail.com" oninput="this.className = ''" class="form-control" id="email" name="email"  disabled required>
+                                                <input type="email"  th:field="*{email}" placeholder="12345@gmail.com" oninput="this.className = ''" class="form-control" id="email" name="email" readonly required>
+                                                <span th:if="${emailDuplicate}" class="error-message text-danger">이 이메일을 이미 사용중인 아이디가 있습니다.</span>
                                             </div>
 
                                             <!-- 성별 -->
@@ -294,6 +304,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="error-message text-danger"></span>
                                             <!-- 수신동의 (이메일 및 SMS 중 선택) -->
                                             <div class="mb-3">
                                                 <label class="form-label d-flex align-items-center">수신 동의 </label>
@@ -318,6 +329,7 @@
                                                     <div class="mb-3">
                                                         <label for="schoolName">소속 학원명:</label>
                                                         <input type="text"  th:field="*{schoolName}" id="schoolName" name="schoolName" class="form-control">
+                                                        <span th:if="${#fields.hasErrors('schoolName')}" th:errors="*{schoolName}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -327,6 +339,7 @@
                                                             <option value="" selected disabled>시도 선택</option>
                                                             <!-- 시도 옵션들을 여기에 추가 -->
                                                         </select>
+                                                        <span th:if="${#fields.hasErrors('sido')}" th:errors="*{sido}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -336,10 +349,10 @@
                                                             <option value="" selected disabled>시군구 선택</option>
                                                             <!-- 시군구 옵션들을 여기에 추가 -->
                                                         </select>
+                                                        <span th:if="${#fields.hasErrors('sigungu')}" th:errors="*{sigungu}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div> <!-- step2_col12끝 -->
                                     </div><!-- step2_row끝 -->
                                 </div> <!-- step2_끝 -->
@@ -347,8 +360,9 @@
                                 <!-- start previous / next buttons -->
                                 <div class="form-footer d-flex">
                                     <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                                    <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+                                    <button type="button" id="nextBtn" onclick="nextPrev(1);  enableInputFields();">Next</button>
                                 </div>
+
                             </form> <!-- SingUpform 형식 끝 -->
                         </div> <!-- 2번째 tab-pane fade -->
                     </div> <!-- tab-content -->
@@ -364,7 +378,18 @@
             registerTab.show();
         });
 
-        //mulitStep-form 작동
+
+
+        // 사용자가 'Next' 버튼을 클릭하면 호출되는 함수
+        function enableInputFields() {
+            document.getElementById("memberIdInput").removeAttribute("readonly");
+            document.getElementById("password").removeAttribute("readonly");
+            document.getElementById("confirmPassword").removeAttribute("readonly");
+            document.getElementById("birth").removeAttribute("readonly");
+            document.getElementById("email").removeAttribute("readonly");
+        }
+
+    //mulitStep-form 작동
 
                  var currentTab = 0; // 현재 탭을 첫 번째 탭(0)으로 설정합니다.
                  showTab(currentTab); // 현재 탭을 표시합니다.
@@ -392,20 +417,27 @@
                  }
 
                  function nextPrev(n) {
-                   var x = document.getElementsByClassName("step");
+                    var x = document.getElementsByClassName("step");
 
-                   if (n == 1 && !validateForm()) return false; // "다음" 버튼을 클릭하고 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
+                    if (n == 1) {
+                        if (!validateForm()) return false; // 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
+                        if (currentTab === 1) { // 두 번째 스텝인 경우
+                            if (!verificationIsSuccessful) { // 인증이 실패한 경우
+                                alert("본인 인증 단계를 완료하세요.");
+                                return false; // 인증이 실패한 경우 다음으로 진행하지 않습니다.
+                            }
+                        }
+                    }
 
-                   x[currentTab].style.display = "none"; // 현재 탭을 숨깁니다.
-                   currentTab = currentTab + n; // 다음 탭 또는 이전 탭으로 이동합니다.
+                    x[currentTab].style.display = "none"; // 현재 탭을 숨깁니다.
+                    currentTab = currentTab + n; // 다음 탭 또는 이전 탭으로 이동합니다.
 
-                  //2번째 step
-                  if (currentTab === x.length - 1) {
-                    var lastStepFormInputs = document.querySelectorAll("#lastStepForm input");
-                    lastStepFormInputs.forEach(function (input) {
-                      input.removeAttribute("disabled");
-                    });
-                  }
+                    if (currentTab === x.length - 1) {
+                        var lastStepFormInputs = document.querySelectorAll("#lastStepForm input");
+                        lastStepFormInputs.forEach(function (input) {
+                            input.removeAttribute("disabled");
+                        });
+                    }
 
                     if (currentTab === x.length) {
                         document.getElementById("signUpForm").submit(); // 마지막 탭이면 폼을 제출합니다.
@@ -413,6 +445,7 @@
                         showTab(currentTab); // 다음 탭을 표시합니다.
                     }
                 }
+
 
 
                  function validateForm() {
@@ -441,11 +474,8 @@
                    }
                    x[n].className += " active"; // 현재 단계에 "active" 클래스를 추가하여 활성화된 단계를 표시합니다.
                  }
-
     </script>
     <script th:src="@{/js/member/AgreenAuth.js}"></script>
-    <!--<script th:src="@{/js/member/educatorSido.js}"></script>-->
-    <!--<script src="/js/member/AgreenAuth.js"></script>-->
     <script src="/js/member/educatorSido.js"></script>
 
 
