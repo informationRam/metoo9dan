@@ -36,7 +36,7 @@
                     <tbody>
                     <tr th:each="groupJoinList, loop : ${groupJoinList}">
                         <td>
-                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${groupJoinList.group_no}" />
+                            <input type="checkbox" class="groupCheckbox" name="selectedGroup" th:value="${groupJoinList.group_no}" th:data-group-to="${groupJoinList.group_TO}"/>
                         </td>
                         <td th:text="${groupJoinList.copy_file_name}"></td>
                         <td th:text="${groupJoinList.group_name}"></td>
@@ -65,12 +65,15 @@
         // 신청 버튼 클릭 시
         document.getElementById("viewButton").addEventListener("click", function () {
             var selectedGroupNo = null;
+            var selectedGroupTO = null;
 
             // 선택된 체크박스 찾기
             var checkboxes = document.querySelectorAll(".groupCheckbox");
             checkboxes.forEach(function (checkbox) {
                 if (checkbox.checked) {
                     selectedGroupNo = checkbox.value;
+                    // 선택된 체크박스의 group_TO 값을 가져옴
+                    selectedGroupTO = parseInt(checkbox.dataset.groupTo);
                     return; // 첫 번째 선택된 체크박스만 처리
                 }
             });
@@ -84,22 +87,28 @@
                                 alert("이미 학습 그룹에 가입되어 있습니다.");
                         }else{
                      if (selectedGroupNo !== null) {
-                        // 선택된 그룹 번호를 사용하여 POST 요청 보내기
-                        fetch("/studygroup/join/" + selectedGroupNo, {
-                            method: "POST",
-                        })
-                        .then(function (response) {
-                            if (response.status === 200) {
-                                alert("그룹에 가입 신청되었습니다.");
-                                // 가입이 성공한 경우, 필요한 동작 수행
-                                //location.reload();
+
+                         if (selectedGroupTO === 0) { // group_TO 값이 0인 경우 alert 창 띄우기
+                                alert("신청할 수 있는 그룹 T/O가 없습니다.");
                             } else {
-                                alert("가입 신청에 실패했습니다. 다시 시도하세요.");
+
+                                // 선택된 그룹 번호를 사용하여 POST 요청 보내기
+                                fetch("/studygroup/join/" + selectedGroupNo, {
+                                    method: "POST",
+                                })
+                                .then(function (response) {
+                                    if (response.status === 200) {
+                                        alert("그룹에 가입 신청되었습니다.");
+                                        // 가입이 성공한 경우, 필요한 동작 수행
+                                        location.reload();
+                                    } else {
+                                        alert("가입 신청에 실패했습니다. 다시 시도하세요.");
+                                    }
+                                })
+                                .catch(function (error) {
+                                    alert("오류가 발생했습니다. 다시 시도하세요.");
+                                });
                             }
-                        })
-                        .catch(function (error) {
-                            alert("오류가 발생했습니다. 다시 시도하세요.");
-                        });
                     } else {
                         alert("그룹을 선택하세요.");
                     }
@@ -121,10 +130,9 @@
                 }
             });
         });
-
     });
 
-    //-------조회하기 버튼----------
+     //-------조회하기 버튼----------
     document.addEventListener("DOMContentLoaded", function () {
          // 체크박스 선택 해제 로직을 함수로 분리
         function applyCheckboxLogic() {
