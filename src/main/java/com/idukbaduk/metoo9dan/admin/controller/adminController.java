@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class adminController {
 
     //회원관리페이지 보여주기
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value="/listMember")
     public String memberManange() throws Exception {
 
-        return "/member/memberList";
+        return "/member/memberManage";
     }
 }

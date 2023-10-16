@@ -64,18 +64,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf().disable()
-            .authorizeHttpRequests()
-                //.requestMatchers( new AntPathRequestMatcher("/member/mypage")).hasRole("STUDENT")
-                .requestMatchers( new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
-                .requestMatchers( new AntPathRequestMatcher("/edu/**")).hasRole("EDUCATOR")
-                .requestMatchers(new AntPathRequestMatcher("/member/join#pills-register")).denyAll() //로그인 후 회원가입접근불가
+        http.csrf().disable();
+        http.authorizeHttpRequests((authorize) -> authorize
+                .requestMatchers("/member/**").authenticated() //로그인 인증받은 회원만 접근가능
+                .requestMatchers("/student/**").hasAuthority("STUDENT")
+                .requestMatchers( "/admin/**").hasAuthority("ADMIN")
+                .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
+                //.requestMatchers(new AntPathRequestMatcher("/member/join#pills-register")).denyAll() //로그인 후 회원가입접근불가
                 //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
                 .anyRequest().permitAll()
+                );
 
-        .and()
-             .formLogin()
+        http.
+             formLogin()
                   .loginPage("/member/login")               // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
                   .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지
                   .permitAll()                              //인증받지 않아도 모두 접근가능:없으면 무한루프생김
