@@ -206,8 +206,8 @@
         <![CDATA[
         SELECT distinct g.game_content_no,g.game_name
         FROM baduk.game_contents g
-        JOIN baduk.study_groups s ON g.game_content_no = s.game_content_no
-        WHERE s.member_no=#{member_no}
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        WHERE p.member_no=#{member_no}
 		]]>
     </select>
 

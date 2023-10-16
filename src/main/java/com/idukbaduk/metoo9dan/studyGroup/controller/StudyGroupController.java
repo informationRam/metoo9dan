@@ -4,6 +4,7 @@ import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.GroupStudents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.StudyGroups;
+import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.studyGroup.dto.*;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GameContentRepository;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GroupRepository;
@@ -19,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.*;
 
 @RequestMapping("/studygroup")
@@ -29,11 +31,14 @@ public class StudyGroupController {
     private final GameContentRepository gameContentRepository;
     private final MemberRepository_studyGroup memberRepositoryStudyGroup;
     private final GroupRepository groupRepository;
+    private final MemberService memberService;
 
     //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
     @GetMapping("/gameList")
-    public String gamelist(Model model){
-        int member_no=1; //로그인 처리하기
+    public String gamelist(Model model, Principal principal){
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         List<GameContentsListDTO> gameContents = studyGroupService.getGameList(member_no);
         model.addAttribute("gameContents",gameContents);
@@ -50,8 +55,10 @@ public class StudyGroupController {
     //게임콘텐츠 조회하기 버튼 엔드포인트
     @GetMapping(value = "/gameListEndpoint", produces = "application/json")
     @ResponseBody
-    public List<GameContentsListDTO> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map) {
-        int member_no=1; //로그인 처리하기
+    public List<GameContentsListDTO> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map,Principal principal) {
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
       /*  String gameContentNoString = String.valueOf("game_content_no"); // 문자열로 추출
         int selectedGameContentNo = Integer.parseInt(gameContentNoString); // 문자열을 정수로 변환
         System.out.println("selectedGameContentNo="+selectedGameContentNo);*/
@@ -71,9 +78,10 @@ public class StudyGroupController {
     //학습 그룹 등록 폼
     @GetMapping("/add/{game_content_no}")
     public String add(Model model,StudyGroupForm studyGroupForm
-                      ,@PathVariable("game_content_no") int game_content_no,Map<String, Integer> map){
-
-        int member_no=1; //로그인 처리하기
+                      ,@PathVariable("game_content_no") int game_content_no,Map<String, Integer> map,Principal principal){
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("game_content_no", game_content_no); // map에 game_content_no 추가
@@ -87,11 +95,13 @@ public class StudyGroupController {
     //학습 그룹 등록 처리
     @PostMapping("/add/{game_content_no}")
     public String studygroupAdd(Model model, @Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,
-                                @PathVariable("game_content_no") int game_content_no,Map<String, Integer> map){
+                                @PathVariable("game_content_no") int game_content_no,Map<String, Integer> map,Principal principal){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
-            //유효성 검사시 게임콘텐츠정보 넘기기
-            int member_no=1; //로그인 처리하기
+            //Principal
+            Member member = memberService.getUser(principal.getName());
+            int member_no = member.getMemberNo();
 
+            //유효성 검사시 게임콘텐츠정보 넘기기
             map.put("member_no", member_no); // map에 member_no 추가
             map.put("game_content_no", game_content_no); // map에 game_content_no 추가
             GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
@@ -99,12 +109,14 @@ public class StudyGroupController {
 
             return "studyGroup/studyGroup_form"; //studyGroup/studyGroup_form문서로 이동
         }
-        int member_no=1; //로그인 처리하기
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
-        Member member = memberRepositoryStudyGroup.findById(member_no).orElse(null);
+        Member member2 = memberRepositoryStudyGroup.findById(member_no).orElse(null);
 
-        studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member);
+        studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member2);
 
         return "redirect:/studygroup/list";
     }
@@ -151,7 +163,7 @@ public class StudyGroupController {
     //학습 그룹 수정 처리
     @PostMapping("/modify/{group_no}")
     public String studygroupModify(Model model,@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
-                                 ,@PathVariable("group_no") int group_no,Map<String, Integer> map){
+                                 ,@PathVariable("group_no") int group_no,Map<String, Integer> map,Principal principal){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
             //유효성 검사시 게임콘텐츠정보 넘기기
             StudyGroups studyGroups = studyGroupService.getGruop(group_no);
@@ -165,12 +177,14 @@ public class StudyGroupController {
 
             return "studyGroup/studyGroup_modifyForm";
         }
-        int member_no=1; //로그인 처리하기
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         model.addAttribute("group_no",group_no);
-        Member member = memberRepositoryStudyGroup.findById(member_no).orElse(null);
+        Member member2 = memberRepositoryStudyGroup.findById(member_no).orElse(null);
         StudyGroups studyGroups = studyGroupService.getGruop(group_no);
-        studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member);
+        studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member2);
         return "redirect:/studygroup/list";
     }
 
@@ -186,8 +200,10 @@ public class StudyGroupController {
 
     //학습 그룹 목록 조회(교육자)
     @GetMapping(value = "/list")
-    public String studygroupList(Model model){
-        int member_no=1; //로그인 처리하기
+    public String studygroupList(Model model,Principal principal){
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         List<StudyGroupsListDTO> studyGroup = studyGroupService.getList(member_no);
         model.addAttribute("studyGroup",studyGroup);
@@ -205,8 +221,10 @@ public class StudyGroupController {
     //학습 그룹 목록 조회 버튼 엔드포인트
     @GetMapping(value = "/listEndpoint", produces = "application/json")
     @ResponseBody
-    public List<StudyGroupsListDTO> studygroupList(@RequestParam Map<String, Integer> map) {
-        int member_no=1; //로그인 처리하기
+    public List<StudyGroupsListDTO> studygroupList(@RequestParam Map<String, Integer> map,Principal principal) {
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         String groupNoString = String.valueOf(map.get("group_no")); // 문자열로 추출
         int selectedGroupNo = Integer.parseInt(groupNoString); // 문자열을 정수로 변환
@@ -224,7 +242,7 @@ public class StudyGroupController {
 
     //학습 그룹 상세 조회(교육자)
     @GetMapping("/detail/{group_no}")
-    public String groupDetail(Model model, @PathVariable("group_no") int group_no){
+    public String groupDetail(Model model, @PathVariable("group_no") int group_no,Principal principal){
         //학습 그룹 멤버 정보
         List<GroupsDetailListDTO> GroupDetail = studyGroupService.getDetailList(group_no);
         //학습 그룹 정보
@@ -236,7 +254,9 @@ public class StudyGroupController {
         model.addAttribute("group_no",group_no);
 
         //학습 그룹 이름 가져오기(SelectBox)
-        int member_no=1; //로그인 처리하기
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
         model.addAttribute("groupNameList",groupNameList);
@@ -248,9 +268,11 @@ public class StudyGroupController {
     //학습 그룹 가입 승인(교육자)
     //학습 그룹 가입 신청 리스트 가져오기
     @GetMapping("/approveList")
-    public String approveList(Model model, @RequestParam Map<String, Integer> map){
-        int member_no=1; //로그인 처리하기
-
+    public String approveList(Model model, @RequestParam Map<String, Integer> map,Principal principal){
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
+        //int member_no=27;
         //학습그룹명 리스트 가져오기
         List<HashMap<String, Object>> groupNameList = studyGroupService.getGroupName(member_no);
         model.addAttribute("groupNameList",groupNameList);
@@ -261,15 +283,15 @@ public class StudyGroupController {
 
         //학습 그룹 정보
         List<GroupsDetailListDTO> GroupInfo = studyGroupService.getGroupInfo(selectedGroupNo);
-        model.addAttribute("GroupInfo",GroupInfo);
+        model.addAttribute("GroupInfo", GroupInfo);
 
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("group_no", selectedGroupNo); // map에 selectedGroupNo 추가
 
         //학습 그룹 가입 신청 학생 리스트
         List<ApproveListDTO> approveList = studyGroupService.getApproveList(map);
-        model.addAttribute("approveList",approveList);
-        System.out.println("approveList="+approveList);
+        model.addAttribute("approveList", approveList);
+        System.out.println("approveList=" + approveList);
         return "studyGroup/studyGroup_approveList";
     }
 
@@ -277,9 +299,11 @@ public class StudyGroupController {
     //학습 그룹 가입 신청 리스트 엔드포인트
     @GetMapping(value = "/approveListEndpoint", produces = "application/json")
     @ResponseBody
-    public ResponseEntity<GroupInfoAndApproveList> approveListEndPoint(@RequestParam Map<String, Integer> map) {
-        int member_no=1; //로그인 처리하기
-
+    public ResponseEntity<GroupInfoAndApproveList> approveListEndPoint(@RequestParam Map<String, Integer> map,Principal principal) {
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
+        //int member_no=27;
         String groupNoString = String.valueOf(map.get("group_no"));
         int selectedGroupNo = Integer.parseInt(groupNoString);
         System.out.println("selectedGroupNo=" + selectedGroupNo);
@@ -337,8 +361,10 @@ public class StudyGroupController {
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
     @GetMapping("/groupJoinList")
-    public String joinList(Model model){
-        int member_no=16; //로그인 처리하기
+    public String joinList(Model model,Principal principal){
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         //학습그룹명 리스트(전체) 가져오기
         List<HashMap<String, Object>> groupNameALL = studyGroupService.getGroupNameALL();
@@ -394,13 +420,15 @@ public class StudyGroupController {
 
     //학습 그룹 가입 신청 처리(학생)
     @PostMapping("/join/{group_no}")
-    public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no){
-        int member_no=16; //로그인 처리하기
+    public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no,Principal principal){
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
-        Member member = memberRepositoryStudyGroup.findById(member_no).orElse(null);
+        Member member2 = memberRepositoryStudyGroup.findById(member_no).orElse(null);
 
         StudyGroups studyGroups = groupRepository.findById(group_no).orElse(null);
-        studyGroupService.groupJoin(studyGroups,member,groupJoinDTO.getApplication_date(),groupJoinDTO.getIs_approved(),groupJoinDTO.getApproved_date());
+        studyGroupService.groupJoin(studyGroups,member2,groupJoinDTO.getApplication_date(),groupJoinDTO.getIs_approved(),groupJoinDTO.getApproved_date());
 
         //학습 그룹 신청 했으면 중복 신청 불가능->학습 그룸 가입 확인으로 이동
 
@@ -411,8 +439,10 @@ public class StudyGroupController {
 
     //학습 그룹 가입 확인(학생)
     @GetMapping("/joinConfirm")
-    public String joinConfirm(Model model){
-        int member_no=16; //로그인 처리하기
+    public String joinConfirm(Model model,Principal principal){
+        //Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
 
         JoinConfirmDTO joinConfirm = studyGroupService.joinConfirm(member_no);
         model.addAttribute("joinConfirm",joinConfirm);
