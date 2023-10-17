@@ -40,6 +40,22 @@
                     </tr>
                     </tbody>
                 </table>
+                <!--페이지네이션-->
+                <div id="paginationContainer">
+                    <nav th:if="${totalCount} > 0">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/studygroup/gameList(page=${currentPage - 1})}">이전</a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/studygroup/gameList(page=${i})}" th:text="${i}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/studygroup/gameList(page=${currentPage + 1})}">다음</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
                 <div style="display: flex; justify-content: center; align-items: center;">
                     <button id="viewButton" class="btn btn-outline-primary">학습 그룹 상세 입력</button>
                 </div>
@@ -103,7 +119,7 @@
     });
 
 
-
+/*
     //-----게임콘텐츠 조회 버튼-------
     document.addEventListener("DOMContentLoaded", function () {
         // 조회하기 버튼 찾기
@@ -196,6 +212,137 @@
                 //alert("게임콘텐츠를 선택하세요.");
             }
         });
-    });
+    });*/
 
+
+// 조회 후 페이지네이션 포함
+    document.addEventListener("DOMContentLoaded", function () {
+
+  // 조회하기 버튼 찾기
+  var searchButton = document.getElementById("searchButton");
+
+  // 결과를 표시할 엘리먼트 찾기
+  var selectGroupResult = document.getElementById("selectGameResult");
+
+  // 조회하기 버튼 클릭 시
+  searchButton.addEventListener("click", function () {
+    var selectedGameContentNo = document.getElementById("selectGameContent").value;
+
+    if (selectedGameContentNo !== "") {
+      fetch('/studygroup/gameListEndpoint?game_content_no=' + selectedGameContentNo)
+        .then(response => response.json())
+        .then(data => {
+          // 표시할 데이터를 가져와서 HTML에 적용
+          updateGameList(data);
+          console.log('data',data);
+
+          // 페이지네이션 UI 생성
+          var paginationContainer = document.getElementById("paginationContainer");
+          paginationContainer.innerHTML = createPaginationUI(data.currentPage, data.totalPages);
+
+          // 각 페이지 번호 버튼에 이벤트 리스너 추가
+          var pageButtons = paginationContainer.querySelectorAll(".page-button");
+          pageButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+              fetch('/studygroup/gameListEndpoint?game_content_no=' + selectedGameContentNo + '&page=' + this.dataset.page)
+                .then(response => response.json())
+                .then(data => updateGameList(data));
+            });
+          });
+        });
+    } else {
+      window.location.href = "/studygroup/gameList";
+    }
+   });
+
+     function updateGameList(data) {
+     console.log('data2',data);
+         var resultHTML = "";
+         if (data && data.length > 0) {
+           resultHTML += "<table class='table' id='selectGroupResult'>";
+           resultHTML += "<thead class='table-dark'>";
+           resultHTML += "<tr>";
+           resultHTML += "<th>선택</th>";
+           resultHTML += "<th>게임콘텐츠명</th>";
+           resultHTML += "<th>학습 시작일</th>";
+           resultHTML += "<th>학습 종료일</th>";
+           resultHTML += "<th>학습 가능 인원</th>";
+           resultHTML += "<th>그룹 지정된 인원</th>";
+           resultHTML += "</tr>";
+           resultHTML += "</thead>";
+
+
+          data.forEach(function (gameContent) {
+
+             var startDate = new Date(gameContent.payment_date);
+             var endDate = new Date(gameContent.subscription_end_date);
+
+             var formattedStartDate =
+               startDate.getFullYear() +
+               "-" +
+               ("0" + (startDate.getMonth() + 1)).slice(-2) +
+               "-" +
+               ("0" + startDate.getDate()).slice(-2);
+
+             var formattedEndDate =
+               endDate.getFullYear() +
+               "-" +
+               ("0" +(endDate.getMonth()+1)).slice(-2)+
+                "-"+
+                 ("0"+endDate.getDate()).slice(-2);
+
+            // 각 게임 콘텐츠마다 행 추가
+            resultHTML +=
+                '<tbody>' +
+                '<tr>' +
+                  '<td>' +
+                    '<input type="checkbox" class="groupCheckbox" name="selectedGame" value="' +
+                    gameContent.game_content_no +
+                    '" />' +
+                  '</td>' +
+                  '<td>' + gameContent.game_name + '</td>' +
+                  '<td>' + formattedStartDate + '</td>' +
+                  '<td>' + formattedEndDate+ '</td>'+
+                   '<td>'+gameContent.max_subscribers+'</td>'+
+                   '<td>'+gameContent.appointed_group_num+'</td>'+
+                '</tr>'+
+                '</tbody>';
+            });
+
+            resultHTML += "</table>";
+         } else {
+           resultHTML = "<p>게임콘텐츠를 선택해주세요.</p>"
+         }
+
+         selectGroupResult.innerHTML = resultHTML;
+       }
+
+
+       function createPaginationUI(currentPage, totalPages) {
+          var totalCount = 1;
+          var totalPages = 1; // 총 페이지 수
+          //var currentPage = 1;
+          var pageSize = 2; // 페이지당 항목 수
+
+         var html = '<nav><ul class="pagination">';
+         // 이전 버튼 생성
+         html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
+         html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
+         html += '</li>';
+
+         // 페이지 번호 버튼 생성
+         for (var i = 1; i <= totalPages; i++) {
+           html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
+           html += '<a class="page-link page-button" href="#" data-page="' + i +'">' + i+ '</a>';
+           html += '</li>';
+          }
+
+          // 다음 버튼 생성
+          html += '<li class="page-item ' +(currentPage === totalPages ? 'disabled' : '')+ '">';
+          html += '<a class="page-link" href="#" data-page="'+(currentPage+1)+'">다음</a>';
+          html += '</li>';
+
+          return html;
+       }
+    });
 </script>
