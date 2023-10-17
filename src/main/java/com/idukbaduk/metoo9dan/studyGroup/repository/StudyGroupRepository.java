@@ -38,8 +38,13 @@ public class StudyGroupRepository {
     }
 
     //학습그룹 등록(게임리스트)
-    public List<GameContentsListDTO> getGameList(int member_no) {
-        return sqlSession.selectList("StudyGroup.GameContentList",member_no);
+    public List<GameContentsListDTO> getGameList(Map<String, Object> map) {
+        return sqlSession.selectList("StudyGroup.GameContentList",map);
+    }
+
+    //게임콘텐츠 리스트 cnt
+    public int getGameListCnt(int member_no){
+        return sqlSession.selectOne("StudyGroup.GameContentListCnt",member_no);
     }
 
     //학습그룹 등록(게임리스트) 조회 버튼

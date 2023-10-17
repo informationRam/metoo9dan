@@ -35,14 +35,29 @@ public class StudyGroupController {
 
     //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
     @GetMapping("/gameList")
-    public String gamelist(Model model, Principal principal){
+    public String gamelist(Model model, Principal principal,Map<String, Object> map,
+                           @RequestParam(value = "page", defaultValue = "1") int currentPage){
         //Principal
         Member member = memberService.getUser(principal.getName());
         int member_no = member.getMemberNo();
 
-        List<GameContentsListDTO> gameContents = studyGroupService.getGameList(member_no);
+        //페이지네이션
+        int pageSize = 2; // 페이지당 보여줄 아이템 개수
+        int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
+        map.put("member_no", member_no);
+        map.put("pageSize", pageSize);
+        map.put("offset", offset);
+
+        int totalCount = studyGroupService.getGameListCnt(member_no); //게임리스트 카운트
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
+
+        List<GameContentsListDTO> gameContents = studyGroupService.getGameList(map);
         model.addAttribute("gameContents",gameContents);
         System.out.println("gameContents="+gameContents);
+
+        model.addAttribute("currentPage",currentPage);
+        model.addAttribute("totalCount",totalCount);
+        model.addAttribute("totalPages",totalPages);
 
         //게임콘텐츠명 리스트 가져오기
         List<HashMap<String, Object>> gameNameList = studyGroupService.getGameName(member_no);
@@ -55,17 +70,28 @@ public class StudyGroupController {
     //게임콘텐츠 조회하기 버튼 엔드포인트
     @GetMapping(value = "/gameListEndpoint", produces = "application/json")
     @ResponseBody
-    public List<GameContentsListDTO> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map,Principal principal) {
+    public List<GameContentsListDTO> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map,Principal principal,
+                                                      @RequestParam(value = "page", defaultValue = "1") int currentPage,Model model) {
         //Principal
         Member member = memberService.getUser(principal.getName());
         int member_no = member.getMemberNo();
-      /*  String gameContentNoString = String.valueOf("game_content_no"); // 문자열로 추출
-        int selectedGameContentNo = Integer.parseInt(gameContentNoString); // 문자열을 정수로 변환
-        System.out.println("selectedGameContentNo="+selectedGameContentNo);*/
 
-        //System.out.println("selectedGameContentNo=" + game_content_no);
+        //페이지네이션
+        int pageSize = 1; // 페이지당 보여줄 아이템 개수
+        int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
+        //map.put("member_no", member_no);
+        map.put("pageSize", pageSize);
+        map.put("offset", offset);
+
+        int totalCount=1; //게임리스트 카운트
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
+
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
+
+        //model.addAttribute("currentPage",currentPage);
+        //model.addAttribute("totalCount",totalCount);
+        //model.addAttribute("totalPages",totalPages);
 
         List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
         //model.addAttribute("gameContents",gameContents);

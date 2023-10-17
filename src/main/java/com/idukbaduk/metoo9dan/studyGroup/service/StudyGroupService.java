@@ -57,8 +57,13 @@ public class StudyGroupService {
     }
 
     //게임콘텐츠 리스트
-    public List<GameContentsListDTO> getGameList(int member_no) {
-        return studyGroupRepository.getGameList(member_no);
+    public List<GameContentsListDTO> getGameList(Map<String, Object> map) {
+        return studyGroupRepository.getGameList(map);
+    }
+
+    //게임콘텐츠 리스트 cnt
+    public int getGameListCnt(int member_no){
+        return studyGroupRepository.getGameListCnt(member_no);
     }
 
     //게임콘텐츠 리스트 조회 버튼
