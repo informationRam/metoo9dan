@@ -1,118 +1,141 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+  <link rel="stylesheet" href="/css/game/paymentsform.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <div class="row">
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
     <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-    <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
- <!--     <form id="nadopayments" class="my-2" th:action="@{|/payments/payments|}" method="post">
-        <div>
-          <table>
-            <thead>
-            <tr>
-              <th>게임명</th>
-              <th>구독 기간</th>
-              <th>최대 구독자 수</th>
-              <th>판매 가격</th>
-              &lt;!&ndash; 추가 필드 헤더 &ndash;&gt;
-            </tr>
-            </thead>
-            <tbody>
-          <tr th:each="gamecon : ${session.selectedGameContents}">
-            <td th:text="${gamecon.gameName}"></td>
-            <td th:text="${gamecon.subscriptionDuration}"></td>
-            <td th:text="${gamecon.maxSubscribers}"></td>
-            <td th:text="${gamecon.salePrice}"></td>
-          </tr>
-       &lt;!&ndash;     <tr th:each="gamecon : ${selectedGameContents}">
-              <td th:text="${gamecon.gameNo}"></td>
-              <td th:text="${gamecon.gameName}"></td>
-              <td th:text="${gamecon.subscriptionDuration}"></td>
-              <td th:text="${gamecon.maxSubscribers}"></td>
-              <td th:text="${gamecon.salePrice}"></td>
-              &lt;!&ndash; 추가 필드 값 &ndash;&gt;
-            </tr>&ndash;&gt;
-            &lt;!&ndash; salePrice의 총 합계 계산 &ndash;&gt;
-            <tr>
-              <td colspan="3">총 합계: [[${session.totalSalePrice}]]</td>
-              &lt;!&ndash;<td th:text="${session.getAttribute('totalSalePrice')}"></td>&ndash;&gt;
-              &lt;!&ndash; 추가 필드 합계 출력 &ndash;&gt;
-            </tr>
-            </tbody>
-          </table>
+      <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <form action="/payments/payments" method="post" id="payment-form">
+          <div class="container my-5">
+            <h1>게임 구매하기</h1>
+            <table class="table table-responsive">
+              <thead>
+              <tr class="text-center">
+                <th style="width: 20%;">게임명</th>
+                <th style="width: 10%;">난이도</th>
+                <th style="width: 10%;">구독 기간</th>
+                <th style="width: 10%;">구독 인원</th>
+                <th style="width: 30%;">패키지내용</th>
+                <th style="width: 10%;">구매 가격</th>
+              </tr>
+              </thead>
+              <tbody class="text-center">
+              <!-- 반복문을 사용하여 구매한 각 상품 표시 -->
+              <tr th:each="gamecon : ${session.selectedGameContents}">
+                <td th:text="${gamecon.gameName}"></td>
+                <td class="game difficulty">
+        <span th:switch="${gamecon.difficulty}">
+          <span th:case="'beginner'">초급</span>
+          <span th:case="'intermediate'">중급</span>
+          <span th:case="'advanced'">고급</span>
+        </span>
+                </td>
+                <td th:text="${gamecon.subscriptionDuration}"></td>
+                <td th:text="${gamecon.maxSubscribers}"></td>
+                <td th:text="${gamecon.packageDetails}"></td>
+                <td class="game salePrice">
+                  <span th:text="${gamecon.salePrice <= 999 ? #numbers.formatInteger(gamecon.salePrice.intValue(), 0, 'COMMA') : #numbers.formatInteger(gamecon.salePrice.intValue(), 3, 'COMMA')}"></span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+            <div class="row mt-4">
+              <div class="col-lg-7">
+                <label class="form-label">결제 수단</label>
+                <div class="form-check">
+                  <input type="radio" name="paymentMethod" id="account" value="account" class="form-check-input" required>
+                  <label for="account" class="form-check-label">계좌이체</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input" required>
+                  <label for="deposit" class="form-check-label">무통장</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input" required>
+                  <label for="pay" class="form-check-label">카카오페이</label>
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <h3 class="mb-3">총 [[${session.selectedGameContents.size()}]] 건,  합계: [[${session.totalSalePrice}]] 원</h3>
+              </div>
+            </div>
+            <div>
+              <div class="d-flex justify-content-center">
+                <input type="hidden" id="item_name" name="item_name" th:value="${session.selectedGameContents.size() > 0 ? session.selectedGameContents[0].gameName + (session.selectedGameContents.size() > 1 ? ' 외 ' + (session.selectedGameContents.size() - 1) + '건' : '') : ''}" />
+                <input type="hidden" id="total-amount" name="total_amount" th:value="${session.totalSalePrice}" />
+            <!--  <button type="submit" class="btn btn-primary mt-3">결제하기</button>-->
+                <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#paymentModal">결제하기</button>
+            </div>
+          </div>
+        </form>
+            <!-- 반품 규정 안내 -->
+        <div class="mt-5 p-3 border rounded bg-light">
+              <h4 class="text">확인해주세요!</h4>
+              <p class="text">- 구매한 상품의 반품 규정을 안내합니다. 구체적인 내용을 여기에 추가하세요.</p>
+            </div>
+      </div>
+
+
+    <!-- 모달 창 정의 -->
+    <!-- 모달 창 정의 -->
+    <div class="modal" id="paymentModal" tabindex="-1" role="dialog">
+    <div class="container mt-5 mb-5 d-flex justify-content-center">
+      <div class="card p-5">
+        <div> <h4 class="heading">Upgrade your plan</h4>
+          <p class="text">Please make the payment to start enjoying all the features of our premium plan as soon as possible</p>
+        </div>
+        <div class="pricing p-3 rounded mt-4 d-flex justify-content-between">
+          <div class="images d-flex flex-row align-items-center">
+            <img src="https://i.imgur.com/S17BrTx.png" class="rounded" width="60">
+            <div class="d-flex flex-column ml-4">
+              <span class="business">Small Business</span>
+              <span class="plan">CHANGE PLAN</span>
+            </div>
+          </div> <!--pricing table-->
+          <div class="d-flex flex-row align-items-center">
+            <sup class="dollar font-weight-bold">$</sup>
+            <span class="amount ml-1 mr-1">8,350</span>
+            <span class="year font-weight-bold">/ year</span>
+          </div> <!-- /pricing table-->
+        </div>
+        <span class="detail mt-5">Payment details</span>
+        <div class="credit rounded mt-4 d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-row align-items-center">
+            <img src="https://i.imgur.com/qHX7vY1.png" class="rounded" width="70">
+            <div class="d-flex flex-column ml-3">
+              <span class="business">Credit Card</span>
+              <span class="plan">1234 XXXX XXXX 2570</span>
+            </div>
+          </div>
+          <div>
+            <input type="text" class="form-control cvv" placeholder="CVC">
+          </div>
+        </div>
+        <div class="credit rounded mt-2 d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-row align-items-center">
+            <img src="https://i.imgur.com/qHX7vY1.png" class="rounded" width="70">
+            <div class="d-flex flex-column ml-3">
+              <span class="business">Credit Card</span>
+              <span class="plan">2344 XXXX XXXX 8880</span>
+            </div>
+          </div>
+          <div>
+            <input type="text" class="form-control cvv" placeholder="CVC">
+          </div>
+        </div> <h6 class="mt-4 text-primary">ADD PAYMENT METHOD</h6>
+        <div class="email mt-2">
+          <input type="text" class="form-control email-text" placeholder="Email Address">
+        </div>
+        <div class="mt-3">
+          <button class="btn btn-primary btn-block payment-button">Proceed to payment <i class="fa fa-long-arrow-right"></i></button>
         </div>
       </div>
-  </div>
-  <input type="radio" name="paymentMethod" value="account">계좌이체
-  <input type="radio" name="paymentMethod" value="deposit">무통장
-  <div class="mb-3 text-center">
-    <button type="submit" class="btn btn-primary">결제하기</button>
-  </div>-->
-
-<!-- 결제를 시작할 폼 -->
-<!--
-<form id="payment-form">
-  <label for="item-name">상품명:</label>
-  <input type="text" id="item-name" name="item_name" value="게임명">
-  <br>
-  <label for="total-amount">총 금액:</label>
-  <input type="text" id="total-amount" name="total_amount" value="10000">
-  <br>
-  <button type="submit">결제 시작</button>
-</form>
--->
-<form action="/payments/payments" method="post" id="payment-form">
-  <div class="container my-5">
-    <h1>구매 상품 목록</h1>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>게임명</th>
-        <th>구독 기간</th>
-        <th>판매 가격</th>
-      </tr>
-      </thead>
-      <tbody>
-      <!-- 반복문을 사용하여 구매한 각 상품 표시 -->
-      <tr th:each="gamecon : ${session.selectedGameContents}">
-        <td th:text="${gamecon.gameName}"></td>
-        <td th:text="${gamecon.subscriptionDuration}"></td>
-        <td th:text="${gamecon.salePrice}"></td>
-      </tr>
-      </tbody>
-    </table>
-    <h3 class="mt-4">총 [[${session.selectedGameContents.size()}]] 건, 합계: [[${session.totalSalePrice}]] 원</h3>
-    <div class="mb-3">
-      <label class="form-label">결제 방법:</label>
-      <div class="form-check">
-        <input type="radio" name="paymentMethod" id="account" value="account" class="form-check-input">
-        <label for="account" class="form-check-label">계좌이체</label>
-      </div>
-      <div class="form-check">
-        <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input">
-        <label for="deposit" class="form-check-label">무통장</label>
-      </div>
-      <div class="form-check">
-        <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input">
-        <label for="pay" class="form-check-label">카카오페이</label>
-      </div>
     </div>
-    <div>
-        <input type="hidden" id="item-name" name="item_name" th:value="${session.selectedGameContents.size() > 0 ? session.selectedGameContents[0].gameName + (session.selectedGameContents.size() > 1 ? ' 외 ' + (session.selectedGameContents.size() - 1) + '건' : '') : ''}" />
-        <input type="hidden" id="total-amount" name="total_amount" th:value="${session.totalSalePrice}" />
-      <button type="submit" class="btn btn-primary mt-3">결제하기</button>
     </div>
-    </form>
-  </div>
 
-
-<!-- 결제 성공 시 표시될 메시지 -->
-<div id="success-message" style="display: none;">
-  결제가 성공적으로 완료되었습니다.
-</div>
-
-
-      <script>
+    <script>
         // 결제 시작 폼 제출 시 처리
         $('#payment-form').submit(function (event) {
           event.preventDefault();
@@ -142,48 +165,25 @@
                 alert('결제 준비 중 오류가 발생했습니다.');
               }
             });
-          } else {
-            // 다른 결제 방법을 선택한 경우, /payments/payments로 폼 전송
-            $('#payment-form').unbind('submit').submit();
-          }
+          } else if (paymentMethod === "deposit") {
+  // deposit (무통장)를 선택한 경우 모달 창을 열어줍니다.
+  $('#accountModal').modal('show');
+
+  // 확인 버튼 클릭 시 폼 제출
+  $('#confirmPayment').click(function() {
+    $('#payment-form').submit();
+  });
+
+  // 취소 버튼 클릭 시 모달 창 닫음
+  $('#accountModal').on('hidden.bs.modal', function (e) {
+
+  });
+} else {
+  // 다른 결제 방법을 선택한 경우, /payments/payments로 폼 전송
+  $('#payment-form').unbind('submit').submit();
+}
         });
       </script>
 
-
-
-<!--      <script>
-  // 결제 시작 폼 제출 시 처리
-  $('#payment-form').submit(function (event) {
-      event.preventDefault();
-
-      // 결제 정보를 준비
-      var paymentData = {
-          item_name: $('#item-name').val(),
-          total_amount: $('#total-amount').val()
-      };
-
-      // /ready 엔드포인트로 Ajax POST 요청 보내기
-      $.ajax({
-          url: '/kakaopay/ready',
-          method: 'POST',
-          data: paymentData,
-          success: function (response) {
-              // 카카오페이 페이지로 이동
-              location.href = response.next_redirect_pc_url;
-          },
-          error: function () {
-              alert('결제 준비 중 오류가 발생했습니다.');
-          }
-      });
-  });
-
-  // 결제 성공 시 처리 (이 부분은 실제 카카오페이에서 콜백을 받아 처리)
-  function handlePaymentSuccess(pgToken) {
-      // /success 엔드포인트로 Ajax GET 요청 보내기
-      $.get('/kakaopay/success', { pg_token: pgToken }, function (data) {
-          $('#success-message').show();
-      });
-  }
-</script>-->
 </div>
 </html>

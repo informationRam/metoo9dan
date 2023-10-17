@@ -89,7 +89,6 @@ public class KakaoPayService {
                 KakaoApproveResponse.class);
         System.out.println("requestEntity2? :"+requestEntity);
 
-
         paymentsService.save(selectedGameContents, member, pay);
 
         return approveResponse;

@@ -39,7 +39,7 @@ https://templatemo.com/tm-579-cyborg-gaming
 
           <!-- ***** Featured Games Start ***** -->
           <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-8" id="nado-header-text">
               <div class="featured-games header-text">
                 <div class="heading-section">
                   <h4><em>이달의 게임</em></h4>
@@ -138,7 +138,7 @@ https://templatemo.com/tm-579-cyborg-gaming
             <div class="col-lg-4">
               <div class="top-streamers">
                 <div class="heading-section">
-                  <h4><em>Top</em> Streamers</h4>
+                  <h4><em>Best</em>Game</h4>
                 </div>
                 <ul>
                   <li>
@@ -172,8 +172,16 @@ https://templatemo.com/tm-579-cyborg-gaming
           <!-- ***** Featured Games End ***** -->
           <div class="gaming-library">
             <div class="col-lg-12">
-              <div class="heading-section">
-                <h4><em>게임 콘텐츠</em> Library</h4>
+              <div class="row">
+                <div class="col">
+                  <h4>게임 콘텐츠</h4>
+                </div>
+                <div class="col">
+                  <div class="input-group">
+                    <input type="text" class="form-control form-control-sm" placeholder="제목을 검색해주세요.">
+                    <button class="btn btn-primary" type="button">검색</button>
+                  </div>
+                </div>
               </div>
               <form id="nadopayment" class="my-2" th:action="@{|/payments/paymentsform|}" method="post">
                 <div class="card-deck">
@@ -188,10 +196,23 @@ https://templatemo.com/tm-579-cyborg-gaming
                         <div class="card-body d-flex justify-content-between align-items-center">
                           <div class="col-lg-10">
                             <h5 class="nado-card-title" th:text="${game.gameName}"></h5>
-                            <p class="card-text" th:text="${game.difficulty}"></p>
+                            <p class="card-text">
+                              <span th:switch="${game.difficulty}">
+                                <span th:case="'beginner'" class="badge bg-success" >초급</span>
+                                <span th:case="'intermediate'" class="badge bg-warning text-dark">중급</span>
+                                <span th:case="'advanced'" class="badge bg-danger">고급</span>
+                              </span>
+                            </p>
                             <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration}"></span></p>
                             <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
-                            <p class="card-text"><strong>내용:</strong> <span th:text="${game.packageDetails}"></span></p>
+                            <p class="card-text">
+                            <span
+                                    th:text="${#strings.length(game.packageDetails) > 50 ? #strings.substring(game.packageDetails, 0, 50) + '...' : game.packageDetails}"
+                                    data-toggle="popover" data-content="${game.packageDetails}"
+                                    data-placement="top"
+                                    data-trigger="hover"
+                            >
+                            </span>
                           </div>
                           <div>
                           <div class="form-check form-check-inline">
@@ -228,7 +249,7 @@ https://templatemo.com/tm-579-cyborg-gaming
       </span>
         </div>
         <span>
-          <button type="submit" class="btn btn-outline-warning">구독하기</button>
+          <button type="submit" class="btn btn-outline-warning" onclick="subscribe()">구독하기</button>
         </span>
         </form>
       </div>
@@ -247,72 +268,68 @@ https://templatemo.com/tm-579-cyborg-gaming
     <script src="/css/game/cyborg/assets/js/tabs.js"></script>
     <script src="/css/game/cyborg/assets/js/popup.js"></script>
     <script src="/css/game/cyborg/assets/js/custom.js"></script>
-
-<!--
     <script>
-      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      <script>
+       function subscribe() {
+         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+         var atLeastOneSelected = false;
 
-      checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-          var selectedGameContentNos = [];
-          checkboxes.forEach(function (cb) {
-            if (cb.checked) {
-              selectedGameContentNos.push(cb.value);
-            }
-          });
+         checkboxes.forEach(function (checkbox) {
+           if (checkbox.checked) {
+             atLeastOneSelected = true;
+           }
+         });
 
-          console.log("Selected Game Content Nos:", selectedGameContentNos);
-        });
-      });
-    </script>
--->
-    <script>
-
-      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-      var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
-      var totalItemsElement = document.getElementById("totalItems"); // 선택한 항목의 수를 표시할 요소
-      var nadoSalePriceElement = document.getElementById("nado-salePrice"); // Sale Price element
-
-      checkboxes.forEach(function (checkbox) {
-          checkbox.addEventListener('change', function () {
-              var selectedValues = [];
-              checkboxes.forEach(function (checkbox) {
-                  if (checkbox.checked) {
-                      var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
-                      if (priceElement) {
-                          selectedValues.push(parseFloat(priceElement.textContent));
-                      }
-                  }
-              });
-
-              // Calculate the total in JavaScript
-              var total = selectedValues.reduce(function (accumulator, currentValue) {
-                  return accumulator + currentValue;
-              }, 0);
-
-              // Update the displayed total
-              if (totalPriceElement) {
-                  totalPriceElement.innerText = total + " 원";
-              }
-
-              // Update the displayed number of selected items
-              if (totalItemsElement) {
-                  totalItemsElement.innerText = selectedValues.length + " 건";
-              }
-
-              if (checkbox.checked) {
-                  alert("상품이 선택되었습니다.");
-              } else {
-                  alert("상품이 취소되었습니다.");
-              }
-          });
-      });
-
+         if (atLeastOneSelected) {
+           document.getElementById("nadopayment").submit();
+         } else {
+           alert("선택한 상품이 없습니다.");
+         }
+       }
     </script>
 
+    </script>
+    <script>
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
+            var totalItemsElement = document.getElementById("totalItems"); // 선택한 항목의 수를 표시할 요소
+            var nadoSalePriceElement = document.getElementById("nado-salePrice"); // Sale Price element
 
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    var selectedValues = [];
+                    checkboxes.forEach(function (checkbox) {
+                        if (checkbox.checked) {
+                            var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
+                            if (priceElement) {
+                                selectedValues.push(parseFloat(priceElement.textContent));
+                            }
+                        }
+                    });
 
+                    // Calculate the total in JavaScript
+                    var total = selectedValues.reduce(function (accumulator, currentValue) {
+                        return accumulator + currentValue;
+                    }, 0);
 
+                    // Update the displayed total
+                    if (totalPriceElement) {
+                        totalPriceElement.innerText = total + " 원";
+                    }
 
+                    // Update the displayed number of selected items
+                    if (totalItemsElement) {
+                        totalItemsElement.innerText = selectedValues.length + " 건";
+                    }
+
+                    if (checkbox.checked) {
+                        alert("상품이 선택되었습니다.");
+                    } else {
+                        alert("선택을 취소했습니다.");
+                    }
+                });
+            });
+
+    </script>
   </div>
 </html>

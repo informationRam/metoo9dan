@@ -31,6 +31,14 @@ Table of contents
     align-items: center;
 }
 
+.short-content::after {
+    content: '...';
+    display: inline;
+}
+
+.card-text:hover .short-content::after {
+    content: '';
+}
 
 
 /* 
@@ -1531,6 +1539,14 @@ Top Streamers Style
 .top-streamers ul li .main-button a {
   padding: 5px 20px;
 }
+
+#nado-header-text {
+  background-color: black; /* 배경색을 검정색으로 설정 */
+  color: white; /* 글자색을 흰색 또는 다른 적절한 색상으로 설정 */
+  /* 기타 스타일 속성을 필요에 따라 추가할 수 있습니다 */
+}
+
+
 
 /* 
 ---------------------------------------------

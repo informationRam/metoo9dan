@@ -8,6 +8,7 @@ import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoApproveResponse;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoPayService;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoReadyResponse;
 import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -55,8 +56,6 @@ public class PaymentsController {
             session.setAttribute("selectedGameContents", selectedGameContents);
             session.setAttribute("totalSalePrice", totalSalePrice);
 
-            /*model.addAttribute("selectedGameContents", selectedGameContents);
-            model.addAttribute("totalSalePrice", totalSalePrice);*/
         }
         return "payments/paymentsform";
     }
@@ -112,7 +111,7 @@ public class PaymentsController {
 
     // 결제 성공시
     @GetMapping("/success")
-    public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model, Principal principal, HttpSession session) {
+    public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model, Principal principal, HttpSession session, HttpServletRequest request) {
         System.out.println("대체 어디로?");
         System.out.println("afterPayRequest? " + pgToken);
 
@@ -127,6 +126,10 @@ public class PaymentsController {
         String pay = "pay";
 
         KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken,member,selectedGameContents,pay);
+
+        // 세션을 종료 (무효화)
+        session = request.getSession();
+        session.invalidate();
 
         // 구매목록으로 redirect
         return "redirect:/payments/list";
