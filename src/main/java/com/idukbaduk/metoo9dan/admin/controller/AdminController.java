@@ -1,17 +1,25 @@
 package com.idukbaduk.metoo9dan.admin.controller;
 
+import com.idukbaduk.metoo9dan.admin.service.EducatorInfoService;
+import com.idukbaduk.metoo9dan.admin.service.memPaymentsService;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.member.dto.EducatorInfoDTO;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
+import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import com.idukbaduk.metoo9dan.common.util.DateTimeUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RequestMapping("/admin")
@@ -20,7 +28,9 @@ import java.util.List;
 public class AdminController {
 
     private final MemberService memberService;
-
+    private final memPaymentsService memPaymentsService;
+    private final EducatorInfoService educatorInfoService;
+    private final ModelMapper modelMapper;
 
     //회원관리페이지 보여주기
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -40,6 +50,63 @@ public class AdminController {
         return "admin/memberList";
     }
 
+    //회원 상세정보 데이터로 보내기
+    @GetMapping("/members/{memberNo}")
+    public ResponseEntity<MemberDTO> getMemberDetails(@PathVariable("memberNo") Integer memberNo) {
+        MemberDTO memberDTO = memberService.getMemberByMemberNo(memberNo);
+        if (memberDTO != null) {
+            return new ResponseEntity<>(memberDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    //교육자 정보 데이터로 보내기
+    @GetMapping("/members/{memberNo}/educatorInfo")
+    public ResponseEntity<EducatorInfoDTO> getEducatorInfoByMemberNo(@PathVariable("memberNo") Integer memberNo) {
+        MemberDTO memberDTO = memberService.getMemberByMemberNo(memberNo);
+
+        // member가 null인 경우나 member의 role이 EDUCATOR가 아닌 경우 교육자 정보를 가져오지 않습니다.
+        if (memberDTO != null && "EDUCATOR".equals(memberDTO.getRole())) {
+            EducatorInfoDTO educatorInfoDTO = educatorInfoService.getEducatorInfoByMemberNo(memberNo);
+
+            if (educatorInfoDTO != null) {
+                return new ResponseEntity<>(educatorInfoDTO, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+
+    //회원 자격(유료/무료회원) 가져오기
+    @GetMapping("/members/{memberNo}/membershipStatus")
+    public ResponseEntity<String> getMembershipStatus(@PathVariable("memberNo") Integer memberNo) {
+        String membershipStatus = memberService.getMembershipStatusByMemberNo(memberNo);
+        if (membershipStatus != null) {
+            return new ResponseEntity<>(membershipStatus, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+    //회원 구매건수 가져오기
+    @GetMapping("/members/{memberNo}/payments")
+    public ResponseEntity<Map<String, Integer>> getMemberPaymentsCount(@PathVariable Integer memberNo) {
+        int paymentCount = memPaymentsService.getPaymentCountByMemberNo(memberNo);
+        Map<String, Integer> response = new HashMap<>();
+        response.put("count", paymentCount);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+////회원정보 업데이트
+//    @PostMapping("/members/{memberNo}/update")
+//    public ResponseEntity<Member> updateMember( @PathVariable Integer memberNo,
+//                                                @RequestBody MemberDTO memberDTO ){
+//        memberService.updateMember(memberNo, memberDTO);
+//        return ResponseEntity.noContent().build();
+//    }
 
 
 }

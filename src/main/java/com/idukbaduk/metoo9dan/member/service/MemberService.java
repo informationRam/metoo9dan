@@ -2,11 +2,17 @@ package com.idukbaduk.metoo9dan.member.service;
 
 import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface MemberService {
+
+    //회원번호로 자격 가져오기
+    String getMembershipStatusByMemberNo(Integer memberNo);
+    //회원번호로 회원 정보 가져오기
+    MemberDTO getMemberByMemberNo(Integer memberNo);
 
     //회원정보전체 조회
     List<Member> getAllMembers();

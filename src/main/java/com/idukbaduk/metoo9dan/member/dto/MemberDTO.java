@@ -26,4 +26,7 @@ public class MemberDTO {
     private Boolean smsConsent;      //boolean NOT NULL    COMMENT 'sms수신동의',
     private String memberMemo;
     private Date birth;
+    private String membershipStatus;
+    // EducatorInfo 정보 추가
+    private EducatorInfoDTO educatorInfo;
 }

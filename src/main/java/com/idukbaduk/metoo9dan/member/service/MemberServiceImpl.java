@@ -1,11 +1,13 @@
 package com.idukbaduk.metoo9dan.member.service;
 
-import com.idukbaduk.metoo9dan.admin.repository.PaymentsRepository;
 import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import com.idukbaduk.metoo9dan.member.exception.DataNotFoundException;
 import com.idukbaduk.metoo9dan.member.repository.EducatorinfoRepository;
 import com.idukbaduk.metoo9dan.member.repository.MemberRepository;
+import com.idukbaduk.metoo9dan.payments.repository.PaymentsRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,27 @@ public class MemberServiceImpl implements MemberService {
     private final PaymentsRepository paymentsRepository;
     private final EducatorinfoRepository educatorInfoRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
-    //회원정보전체 조회
+    @Override
+    //회원 자격 조회(무료/유료)
+    public String getMembershipStatusByMemberNo(Integer memberNo) {
+        boolean isPaidMember = paymentsRepository.existsByMemberMemberNo(memberNo);
+        return isPaidMember ? "유료회원" : "무료회원";
+    }
+
+    //회원번호로 회원정보 조회
+    @Override
+    public MemberDTO getMemberByMemberNo(Integer memberNo) {
+        Member member = memberRepository.findById(memberNo).orElse(null);
+        //entity에 매핑
+        if (member != null) {
+            return modelMapper.map(member, MemberDTO.class);
+        }
+        return null;
+    }
+
+    //회원정보전체 조회 :자격 포함
     @Override
     public List<Member> getAllMembers() {
         List<Member> members = memberRepository.findAll();
@@ -36,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
         return members;
     }
 
-    //회원가입 처리 : roled이 educator일때
+    //회원가입 처리 : role이 educator일때
     @Transactional
     public void createUserWithEducatorInfo(Member member, EducatorInfo educatorInfo) {
 
