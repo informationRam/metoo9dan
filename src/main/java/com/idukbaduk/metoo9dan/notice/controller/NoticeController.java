@@ -158,7 +158,7 @@ public class NoticeController {
         /*if(member.~~~.equals(principal.getName())){
         }*/
         noticeService.delete(notice);
-        //물리적 파일도 삭제하는 로직 추가해야함
+        //물리적 파일도 삭제하는 로직 추가해야함~~~~~~~~~~~~~~~~~~~~
 
         // 3. 모델
         // 4. 뷰
@@ -191,8 +191,7 @@ public class NoticeController {
         }//에러가 없으면, 공지사항 등록 진행
 
         //1. 파라미터 받기
-        //로그인한 사람이 관리자인지 확인하는 코드 필요.
-
+        //로그인한 사람이 관리자인지 확인하는 코드 필요.~~~~~~~~~~~~~~~~
         Member member = memberServiceImpl.getUser(principal.getName());
         logger.info("member: "+member);
 
@@ -279,7 +278,7 @@ public class NoticeController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         String str = sdf.format(date);
-        return str.replace("-", File.separator);
+        return str.replace("-", "/");
     }
 
     //공지사항 수정폼 보여줘 요청
@@ -288,11 +287,13 @@ public class NoticeController {
                                    NoticeForm noticeForm,
                                    //Principal principal,
                                    Model model){
-        //1.파라미터받기
-        //2.비즈니스로직수행
-        Notice notice = noticeService.getNotice(noticeNo);
-        List<NoticeFiles> filesList=filesService.getFiles(notice);
+        //수정하려는 사람이 작성한 사람인지 확인.
 
+        //공지사항 조회
+        Notice notice = noticeService.getNotice(noticeNo);
+        //파일 조회
+        List<NoticeFiles> filesList=filesService.getFiles(notice);
+        //조회된 공지사항의 내용을 수정폼에 세팅
         noticeForm.setNoticeType(notice.getNoticeType());
         noticeForm.setTitle(notice.getNoticeTitle());
         noticeForm.setContent(notice.getNoticeContent());
@@ -318,6 +319,7 @@ public class NoticeController {
     //공지사항 수정 처리해줘 요청
     @PostMapping("/modify/{noticeNo}")
     public String modify(@PathVariable("noticeNo")Integer noticeNo,
+                         @RequestParam("uploadFiles") List<MultipartFile> uploadFiles,
                          @Valid NoticeForm noticeForm, //유효성검사처리를 해주어야함
                          BindingResult bindingResult, //유효성검사의 결과
                          RedirectAttributes redirectAttributes){
@@ -349,9 +351,23 @@ public class NoticeController {
         }
         
         //파일도 수정처리해야함
-        
+        // 등록된 파일 정보를 저장하면됨.
+
         //2.비즈니스로직수행
         noticeService.modify(notice, noticeDTO);
+
+        List<NoticeFileDTO> list = new ArrayList<>();
+        //파일업로드(물리적 폴더에 저장)
+        String uploadFolder = "C:/upload";
+
+        //파일업로드처리(DB NoticeFiles 테이블에 저장)
+        for(MultipartFile multipartFile : uploadFiles){
+            if(!multipartFile.isEmpty()){
+                fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
+            }
+        }//end for
+        noticeService.addFiles(list);
+
         //3.모델
         //4.뷰
         return String.format("redirect:/notice/detail/%d", noticeNo);

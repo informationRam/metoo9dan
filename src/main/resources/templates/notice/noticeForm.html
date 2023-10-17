@@ -52,8 +52,8 @@
                 첨부파일 (파일 1개당 최대 첨부용량: 30MB)
                 <div id="fileInfo" style="border: 1px solid black;"></div>
                 <div class="mb-3">
-                    <label for="formFileMultiple" class="form-label">파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.</label>
-                    <input class="form-control" type="file" id="formFileMultiple" name="uploadFiles" multiple>
+                    <label for="drop-area" class="form-label">파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.</label>
+                    <input class="form-control" type="file" id="drop-area" name="uploadFiles" multiple>
                 </div>
                 <input type="button" onclick="saveForm()" value="게시글 저장" class="btn btn-primary">
             </form>
@@ -64,7 +64,7 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
 <script th:inline="javascript">
 
-    document.getElementById('formFileMultiple').addEventListener('change', handleDrop);
+    document.getElementById('drop-area').addEventListener('change', handleDrop);
 
     function handleDrop(event) {
         event.preventDefault();
@@ -84,6 +84,7 @@
             tag += "<div class='d-flex justify-content-between'>"+
                     "<span>"+fileName+"</span>" +
                     "<span style='float:right;'>"+fileSize+" MB</span>" +
+                    "<span>"+fileSize+" MB</span>" +
                     "</div>";
 
             document.getElementById('fileInfo').insertAdjacentHTML('beforeend', tag);
