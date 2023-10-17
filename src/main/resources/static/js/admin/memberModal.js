@@ -20,14 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
       myModal.show();
     }
 
-//    // 모달 닫기
-//    function closeModal() {
-//      var myModal = new bootstrap.Modal(document.getElementById('memberDetailsModal'));
-//      myModal.hide();
-//    }
+let data;
         //모달 데이터 가져오기
         function openMemberDetailsModal(memberNo) {
             // 모달 내부의 입력 필드 초기화 (예: document.querySelector('#memberName').textContent = '';)
+           document.querySelector('#memberMemo').textContent = '';
+           document.querySelector('#memberName').textContent = '';
+           document.querySelector('#memberBirth').value = '';
+           document.querySelector('#memberTel').value = '';
+           document.querySelector('#memberEmail').value = '';
+           document.querySelector('#sidoDropdown').value = '';
+           document.querySelector('#sigunguDropdown').value = '';
 
             // 모달 열 때 memberId를 저장
              document.querySelector('#editButton').setAttribute('data-memberno', memberNo);
@@ -35,9 +38,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Member 정보 서버에서 가져오기
             fetch(`/admin/members/${memberNo}`) // 적절한 API 엔드포인트 및 메서드를 사용하세요
                 .then(response => response.json())
-                .then(data => {
+                .then(memberData  => {
+                data = memberData;
+                const userRole = data.role;
                     // 데이터를 모달에 채웁니다.
                     document.querySelector('#memberName').textContent = data.name;
+                    document.querySelector('#memberMemo').value = data.memberMemo || '';
+
                     // 생년월일 설정
                     document.querySelector('#memberBirth').value = data.birth || '';
                         // data.birth가 유효한 날짜 문자열인 경우
@@ -76,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             });
 
                     // Role이 Educator일 때만 학교 정보 및 주소 정보를 가져옵니다.
-                  if (data.role === 'EDUCATOR') {
+                  if (userRole === 'EDUCATOR') {
                         //교육자 정보 가져오기
                          fetch(`/admin/members/${memberNo}/educatorInfo`)
                                .then(response => response.json())
@@ -112,45 +119,83 @@ document.addEventListener('DOMContentLoaded', function() {
                                 console.error('결제 정보 가져오기 실패:', error);
                             });
                 })
+
+
+            //모달 데이터 수정값 전송
+            document.querySelector('#editButton').addEventListener('click', function() {
+
+            // 유효성 검사 함수 호출
+               if (validateForm()) {
+               // 모달에서 사용자가 수정한 데이터 가져오기
+                   const memberNo = document.querySelector('#editButton').getAttribute('data-memberno');
+                   const updatedMemberData = {
+                       birth: document.querySelector('#memberBirth').value,
+                       tel: document.querySelector('#memberTel').value,
+                       email: document.querySelector('#memberEmail').value,
+                       memberMemo: document.querySelector('#memberMemo').value,
+                   };
+
+                   // 서버로 수정된 데이터 전송
+                   fetch(`/admin/members/${memberNo}/updateMemberData`, {
+                       method: 'POST',
+                       headers: {'Content-Type': 'application/json',
+                       },
+                       body: JSON.stringify(updatedMemberData),
+                   })
+                       .then(response => {
+                           if (response.ok) {
+                             // Check the user's role
+                               if (data && data.role     === 'EDUCATOR') {
+                                   //MEMBER 데이터 업데이트 성공 & 교육자일 경우 EduInfo 업데이트 수행
+                                    const updatedEducatorData = {
+                                         schoolName : document.querySelector('#memberSchoolName').value,
+                                         sido : document.querySelector('#sidoDropdown').value,
+                                         sigungu : document.querySelector('#sigunguDropdown').value,
+                                    };
+
+                             // 서버로 EducatorInfo 데이터 업데이트 요청 보내기
+                               fetch(`/admin/members/${memberNo}/updateEducatorData`, {
+                                   method: 'POST',
+                                   headers: {
+                                       'Content-Type': 'application/json',
+                                   },
+                                   body: JSON.stringify(updatedEducatorData),
+                               })
+
+                                .then(educatorResponse => {
+                                      if (educatorResponse.ok) {
+                                          // EducatorInfo 데이터 업데이트 성공 시 모달 닫기
+                                          alert("회원정보가 성공적으로 수정되었습니다");
+                                          $('#memberDetailsModal').modal('hide');
+                                      } else {
+                                           alert("교육자 정보 수정 실패");
+                                          console.error('EducatorInfo 데이터 수정 실패');
+                                      }
+                                  })
+                                  .catch(error => {
+                                   alert("교육자 정보 수정 실패");
+                                      console.error('EducatorInfo 데이터 수정 실패:', error);
+                                  });
+                              } else {
+                                    alert("회원정보가 성공적으로 수정되었습니다");
+                                  // 교육자가 아니면 이미 성공, 모달 닫기
+                                  $('#memberDetailsModal').modal('hide');
+
+                              }
+                          } else {
+                              console.error('Member 데이터 수정 실패');
+                               alert("회원정보 수정 실패");
+                          }
+                      })
+                      .catch(error => {
+                      console.error('Member 데이터 수정 실패:', error);
+                           alert("회원정보 수정 실패");
+                      });
+                }
+            });
         }
 
-    //모달 데이터 수정값 전송
-    document.querySelector('#editButton').addEventListener('click', function() {
-       // 모달에서 사용자가 수정한 데이터 가져오기
-           const memberNo = document.querySelector('#editButton').getAttribute('data-memberno');
-           const updatedData = {
-               birth: document.querySelector('#memberBirth').value,
-              // membershipStatus: document.querySelector('#membership').value,
-               tel: document.querySelector('#memberTel').value,
-               email: document.querySelector('#memberEmail').value,
-           };
-           if (document.querySelector('#memberSchoolName')) {
-               updatedData.schoolName = document.querySelector('#memberSchoolName').value;
-               updatedData.sido = document.querySelector('#sidoDropdown').value;
-               updatedData.sigungu = document.querySelector('#sigunguDropdown').value;
-           }
 
-           // 서버로 수정된 데이터 전송
-           fetch(`/admin/members/${memberNo}/update`, {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/json',
-               },
-               body: JSON.stringify(updatedData),
-           })
-               .then(response => {
-                   if (response.ok) {
-                       // 수정 성공 시 모달을 닫고 다시 로드 또는 필요한 작업 수행
-                       $('#memberDetailsModal').modal('hide');
-                       // 여기에 필요한 추가 작업을 수행할 수 있습니다.
-                   } else {
-                       console.error('데이터 수정 실패');
-                   }
-               })
-               .catch(error => {
-                   console.error('데이터 수정 실패:', error);
-               });
-   });
 
 
 
@@ -197,7 +242,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 시도 드롭다운 업데이트
     function populateSidoDropdown(selectedSido) {
-        const sidoDropdown = document.getElementById('sidoDropdown');
         sidoDropdown.innerHTML = '';
 
         const optionAll = document.createElement('option');
@@ -245,4 +289,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
+    //변경 이벤트 리스너
+    sidoDropdown.addEventListener('change', function () {
+        const selectedSido = sidoDropdown.value;
+        // Update the sigunguDropdown based on the selected sido
+        updateSigunguDropdown(selectedSido);
+    });

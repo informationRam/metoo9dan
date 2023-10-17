@@ -27,6 +27,5 @@ public class MemberDTO {
     private String memberMemo;
     private Date birth;
     private String membershipStatus;
-    // EducatorInfo 정보 추가
-    private EducatorInfoDTO educatorInfo;
+
 }

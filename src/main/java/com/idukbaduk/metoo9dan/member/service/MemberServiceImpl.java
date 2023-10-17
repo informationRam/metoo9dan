@@ -27,6 +27,29 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
+    //Member테이블 수정
+    @Override
+    public boolean updateMemberData(Integer memberNo, MemberDTO updatedMemberData) {
+        // Retrieve the Member entity by memberNo
+        Optional<Member> optionalMember = memberRepository.findById(memberNo);
+        System.out.println("멤버테이블 수정 진입");
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            // Update the Member entity with the new data
+            member.setBirth(updatedMemberData.getBirth());
+            member.setTel(updatedMemberData.getTel());
+            member.setEmail(updatedMemberData.getEmail());
+            member.setMemberMemo(updatedMemberData.getMemberMemo());
+
+            // Save the updated Member entity back to the database
+            memberRepository.save(member);
+            System.out.println("멤버테이블 수정 완료");
+            return true;
+        }
+        return false;
+    }
+
+
     @Override
     //회원 자격 조회(무료/유료)
     public String getMembershipStatusByMemberNo(Integer memberNo) {

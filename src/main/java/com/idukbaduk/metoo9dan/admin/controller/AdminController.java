@@ -93,20 +93,39 @@ public class AdminController {
 
     //회원 구매건수 가져오기
     @GetMapping("/members/{memberNo}/payments")
-    public ResponseEntity<Map<String, Integer>> getMemberPaymentsCount(@PathVariable Integer memberNo) {
+    public ResponseEntity<Map<String, Integer>> getMemberPaymentsCount(  @PathVariable("memberNo") Integer memberNo) {
         int paymentCount = memPaymentsService.getPaymentCountByMemberNo(memberNo);
         Map<String, Integer> response = new HashMap<>();
         response.put("count", paymentCount);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-////회원정보 업데이트
-//    @PostMapping("/members/{memberNo}/update")
-//    public ResponseEntity<Member> updateMember( @PathVariable Integer memberNo,
-//                                                @RequestBody MemberDTO memberDTO ){
-//        memberService.updateMember(memberNo, memberDTO);
-//        return ResponseEntity.noContent().build();
-//    }
+    //회원정보 업데이트 - MEMBER 테이블
+    @PostMapping("/members/{memberNo}/updateMemberData")
+    public ResponseEntity<String> updateMember( @PathVariable("memberNo") Integer memberNo,
+                                                @RequestBody MemberDTO updatedMemberData ){
+        boolean memberUpdateSuccess= memberService.updateMemberData(memberNo, updatedMemberData);
+        System.out.println("member 업데이트 진입");
+        if (memberUpdateSuccess) {
+            return new ResponseEntity<>("Member 데이터 수정 성공 ", HttpStatus.OK);
 
+
+        } else {
+            return new ResponseEntity<>("Member 데이터 수정 실패 ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //회원정보 업데이트 - EDUCATOR테이블
+    @PostMapping("/members/{memberNo}/updateEducatorData")
+    public ResponseEntity<String> updateEducator (@PathVariable("memberNo") Integer memberNo,
+                                                  @RequestBody EducatorInfoDTO updatedEducatorData ){
+        boolean educatorUpdateSuccess = educatorInfoService.updateEducatorData(memberNo, updatedEducatorData);
+
+        if (educatorUpdateSuccess) {
+            return new ResponseEntity<>("EducatorInfo 데이터 수정 성공", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("EducatorInfo 데이터 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
