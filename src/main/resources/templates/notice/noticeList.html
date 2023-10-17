@@ -3,8 +3,8 @@
 <div layout:fragment="content" class="container my-3">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:if="${memberRole}==ADMIN" th:replace="~{/notice/manageSidebar::sidebar}"></div>
-        <div th:if="${memberRole}==notAdmin" th:replace="~{/notice/utilSidebar::sidebar}"></div><!--운영자가 아니면 보여주는 사이드바 밑에서 공지등록버튼과 상태 드롭다운은 운영자한테만 보여주어야 함-->
+        <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
+        <div th:replace="~{/notice/utilSidebar::sidebar}"></div><!--운영자가 아니면 보여주는 사이드바 밑에서 공지등록버튼과 상태 드롭다운은 운영자한테만 보여주어야 함-->
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
@@ -70,7 +70,7 @@
                     <tbody class="">
                         <!--관리자가 로그인한 경우, 모든 항목을 조회할 수 있음. th:if="${memberRole}==ADMIN"-->
                         <tr th:each="notice, loop:${noticePage}">
-                            <td th:if="${notice.isImp}==true"><?xml version="1.0" ?><svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12.0004 2.00195C9.86006 2.00195 8.125 3.73701 8.125 5.87732C8.125 8.79606 9.33243 12.4289 9.93776 14.0759C10.2606 14.9542 11.097 15.4995 12.0025 15.4995C12.9057 15.4995 13.7409 14.957 14.0646 14.0809C14.6705 12.4413 15.8757 8.827 15.8757 5.87732C15.8757 3.73701 14.1407 2.00195 12.0004 2.00195Z" fill="#212121"/><path d="M12.0011 17.001C10.6198 17.001 9.5 18.1208 9.5 19.5021C9.5 20.8834 10.6198 22.0032 12.0011 22.0032C13.3825 22.0032 14.5022 20.8834 14.5022 19.5021C14.5022 18.1208 13.3825 17.001 12.0011 17.001Z" fill="#212121"/></svg></td>
+                            <td th:if="${notice.isImp}==true"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#b40e0e}</style><path d="M480 32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9L381.7 53c-48 48-113.1 75-181 75H192 160 64c-35.3 0-64 28.7-64 64v96c0 35.3 28.7 64 64 64l0 128c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32V352l8.7 0c67.9 0 133 27 181 75l43.6 43.6c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V300.4c18.6-8.8 32-32.5 32-60.4s-13.4-51.6-32-60.4V32zm-64 76.7V240 371.3C357.2 317.8 280.5 288 200.7 288H192V192h8.7c79.8 0 156.5-29.8 215.3-83.3z"/></svg></td>
                             <td th:if="${notice.isImp}!=true" th:text="${notice.noticeNo}"></td>
                             <!--<td th:text="${noticePage.getTotalElements - (noticePage.number * noticePage.size) - loop.index}"></td>-->
                             <td th:if="${memberRole}==ADMIN"> <!--운영관리자한테만-->
