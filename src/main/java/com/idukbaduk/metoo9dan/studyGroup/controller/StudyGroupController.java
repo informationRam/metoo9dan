@@ -226,12 +226,27 @@ public class StudyGroupController {
 
     //학습 그룹 목록 조회(교육자)
     @GetMapping(value = "/list")
-    public String studygroupList(Model model,Principal principal){
+    public String studygroupList(Model model,Principal principal,
+                                Map<String, Integer> map,@RequestParam(value = "page", defaultValue = "1") int currentPage){
         //Principal
         Member member = memberService.getUser(principal.getName());
         int member_no = member.getMemberNo();
 
-        List<StudyGroupsListDTO> studyGroup = studyGroupService.getList(member_no);
+        //페이지네이션
+        int pageSize = 5; // 페이지당 보여줄 아이템 개수
+        int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
+        map.put("member_no", member_no);
+        map.put("pageSize", pageSize);
+        map.put("offset", offset);
+
+        int totalCount = studyGroupService. getGroupListCnt(member_no); //게임리스트 카운트
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
+
+        model.addAttribute("currentPage",currentPage);
+        model.addAttribute("totalCount",totalCount);
+        model.addAttribute("totalPages",totalPages);
+
+        List<StudyGroupsListDTO> studyGroup = studyGroupService.getGroupListPage(map);
         model.addAttribute("studyGroup",studyGroup);
         System.out.println("studyGroup="+studyGroup);
 
