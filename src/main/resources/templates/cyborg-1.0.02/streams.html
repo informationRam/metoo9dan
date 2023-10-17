@@ -1,18 +1,15 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <div layout:fragment="content" class="container my-3">
   <link rel="stylesheet" href="/css/game/list.css" />
   <div class="row">
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
     <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-
     <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <!-- <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <title>Cyborg - Awesome HTML5 Template</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/css/game/cyborg.vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -174,38 +171,72 @@ https://templatemo.com/tm-579-cyborg-gaming
           </div>
           <!-- ***** Featured Games End ***** -->
           <div class="gaming-library">
-          <div class="col-lg-12">
-            <div class="heading-section">
-              <h4><em>게임 콘텐츠 </em> Library</h4>
+            <div class="col-lg-12">
+              <div class="heading-section">
+                <h4><em>게임 콘텐츠</em> Library</h4>
+              </div>
+              <form id="nadopayment" class="my-2" th:action="@{|/payments/paymentsform|}" method="post">
+                <div class="card-deck">
+                  <div th:each="game : ${gamePage.content}" class="card mb-3" style="height: 200px;">
+                    <div class="row g-0">
+                      <div class="col-md-4" style="height: 200px;">
+                        <img th:if="${game != null and game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                             th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}"
+                             alt="게임 이미지" class="card-img" style="width: 100%; height: 100%; object-fit: cover;">
+                      </div>
+                      <div class="col-md-8">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                          <div class="col-lg-10">
+                            <h5 class="nado-card-title" th:text="${game.gameName}"></h5>
+                            <p class="card-text" th:text="${game.difficulty}"></p>
+                            <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration}"></span></p>
+                            <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
+                            <p class="card-text"><strong>내용:</strong> <span th:text="${game.packageDetails}"></span></p>
+                          </div>
+                          <div>
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="gameContentNo" id="flexCheckInline" th:value="${game.gameContentNo}">
+                            <label class="form-check-label" for="flexCheckInline"></label>
+                          </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
             </div>
-            <form id="nadopayment" class="my-2" th:action="@{|/payments/paymentsform|}" method="post">
-            <div class="item">
-              <ul th:each="game : ${gamePage.content}">
-              <li  class="templatemo-item">
-                <img th:if="${game != null and game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
-                     th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" alt="" width="100" height="100"  style="border-radius: 10%; object-fit: cover;">>
-              </li>
-<!--                <li><img src="/static/css/game/cyborg/assets/images/game-01.jpg" alt="" class="templatemo-item"></li>-->
-                <li><h4><span th:text="${game.gameName}"></span></h4><span th:text="${game.difficulty}"></span></li>
+                <div class="col-lg-12">
+                  <div class="main-button">
+                    <a href="profile.html">View Your Library</a>
+                  </div>
+                </div>
 
-                <li><h4>구독기간</h4><span th:text="${game.subscriptionDuration}"></span></li>
-                <li><h4>판매가</h4><span th:text="${game.salePrice}"></spanth:text></span></li>
-                <li><h4>내용</h4><span th:text="${game.packageDetails}"></span></li>
-                <li><div class="main-border-button border-no-active"><a href="#">구독하기</a></div></li>
-              </ul>
-            </div>
-          <div class="col-lg-12">
-            <div class="main-button">
-              <a href="profile.html">View Your Library</a>
-            </div>
-          </div>
+
         </div>
-        <!-- ***** Gaming Library End ***** -->
-      </div>
     </div>
   </div>
     </div>
     </div>
+
+    <div class="navbar navbar-expand-lg navbar-light bg-light fixed-bottom" style="border-radius: 10px; width: 67%; height: 60px; margin-top: 0px; margin-right: 300px !important; margin-bottom: 0px; text-align: center; margin-left: 350px !important;">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+      <span>
+        <img src="/image/game/icon-cart.png" style="width: 30px !important;">
+        <span style="margin-right: 20px;">총: <span id="totalItems">건</span></span>
+        <span style="margin-left: 30px !important;">합계: <span id="totalPrice">원</span></span>
+      </span>
+        </div>
+        <span>
+          <button type="submit" class="btn btn-outline-warning">구독하기</button>
+        </span>
+        </form>
+      </div>
+    </div>
+
+
+  </div>
+
     <!-- Scripts -->
     <!-- Bootstrap core JavaScript -->
     <script src="/css/game/cyborg.vendor/jquery/jquery.min.js"></script>
@@ -217,18 +248,71 @@ https://templatemo.com/tm-579-cyborg-gaming
     <script src="/css/game/cyborg/assets/js/popup.js"></script>
     <script src="/css/game/cyborg/assets/js/custom.js"></script>
 
-          <!-- ***** Live Stream End ***** -->
-      <script>
-        $(document).ready(function() {
-          $(".owl-features").owlCarousel({
-            items: 2, // 보이는 항목 수 (2개)
-            margin: 10, // 항목 간의 간격
-            loop: true, // 무한 루프 활성화
-            autoplay: true, // 자동 재생 활성화
-            autoplayTimeout: 3000, // 자동 재생 간격 (3초)
-          });
-        });
-      </script>
+<!--
+    <script>
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
 
-    </div>
+      checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+          var selectedGameContentNos = [];
+          checkboxes.forEach(function (cb) {
+            if (cb.checked) {
+              selectedGameContentNos.push(cb.value);
+            }
+          });
+
+          console.log("Selected Game Content Nos:", selectedGameContentNos);
+        });
+      });
+    </script>
+-->
+    <script>
+
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
+      var totalItemsElement = document.getElementById("totalItems"); // 선택한 항목의 수를 표시할 요소
+      var nadoSalePriceElement = document.getElementById("nado-salePrice"); // Sale Price element
+
+      checkboxes.forEach(function (checkbox) {
+          checkbox.addEventListener('change', function () {
+              var selectedValues = [];
+              checkboxes.forEach(function (checkbox) {
+                  if (checkbox.checked) {
+                      var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
+                      if (priceElement) {
+                          selectedValues.push(parseFloat(priceElement.textContent));
+                      }
+                  }
+              });
+
+              // Calculate the total in JavaScript
+              var total = selectedValues.reduce(function (accumulator, currentValue) {
+                  return accumulator + currentValue;
+              }, 0);
+
+              // Update the displayed total
+              if (totalPriceElement) {
+                  totalPriceElement.innerText = total + " 원";
+              }
+
+              // Update the displayed number of selected items
+              if (totalItemsElement) {
+                  totalItemsElement.innerText = selectedValues.length + " 건";
+              }
+
+              if (checkbox.checked) {
+                  alert("상품이 선택되었습니다.");
+              } else {
+                  alert("상품이 취소되었습니다.");
+              }
+          });
+      });
+
+    </script>
+
+
+
+
+
+  </div>
 </html>

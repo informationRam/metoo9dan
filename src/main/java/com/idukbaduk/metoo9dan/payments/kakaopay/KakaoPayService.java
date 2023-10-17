@@ -1,5 +1,8 @@
 package com.idukbaduk.metoo9dan.payments.kakaopay;
 
+import com.idukbaduk.metoo9dan.common.entity.GameContents;
+import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +12,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -17,6 +22,8 @@ public class KakaoPayService {
         static final String cid = "TC0ONETIME"; // 가맹점 테스트 코드
         static final String admin_Key = "952a7b3082d015dcec08556a07b94b78"; // 공개 조심! 본인 애플리케이션의 어드민 키를 넣어주세요
         private KakaoReadyResponse kakaoReady;
+        private final PaymentsService paymentsService;
+
 
         public KakaoReadyResponse kakaoPayReady(String item_name,String totalAmount) {
             System.out.println("요기?");
@@ -58,7 +65,7 @@ public class KakaoPayService {
     /**
      * 결제 완료 승인
      */
-    public KakaoApproveResponse approveResponse(String pgToken) {
+    public KakaoApproveResponse approveResponse(String pgToken, Member member, List<GameContents> selectedGameContents, String pay) {
 
         System.out.println("approveResponse? :"+pgToken);
         // 카카오 요청
@@ -81,6 +88,9 @@ public class KakaoPayService {
                 requestEntity,
                 KakaoApproveResponse.class);
         System.out.println("requestEntity2? :"+requestEntity);
+
+
+        paymentsService.save(selectedGameContents, member, pay);
 
         return approveResponse;
     }

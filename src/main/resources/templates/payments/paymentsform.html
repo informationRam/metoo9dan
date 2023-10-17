@@ -5,7 +5,7 @@
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
     <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
     <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-      <form id="nadopayments" class="my-2" th:action="@{|/payments/payments|}" method="post">
+ <!--     <form id="nadopayments" class="my-2" th:action="@{|/payments/payments|}" method="post">
         <div>
           <table>
             <thead>
@@ -14,30 +14,29 @@
               <th>구독 기간</th>
               <th>최대 구독자 수</th>
               <th>판매 가격</th>
-              <!-- 추가 필드 헤더 -->
+              &lt;!&ndash; 추가 필드 헤더 &ndash;&gt;
             </tr>
             </thead>
             <tbody>
-          <!--  <tr th:each="gamecon : ${selectedGameContents}">-->
           <tr th:each="gamecon : ${session.selectedGameContents}">
             <td th:text="${gamecon.gameName}"></td>
             <td th:text="${gamecon.subscriptionDuration}"></td>
             <td th:text="${gamecon.maxSubscribers}"></td>
             <td th:text="${gamecon.salePrice}"></td>
           </tr>
-       <!--     <tr th:each="gamecon : ${selectedGameContents}">
+       &lt;!&ndash;     <tr th:each="gamecon : ${selectedGameContents}">
               <td th:text="${gamecon.gameNo}"></td>
               <td th:text="${gamecon.gameName}"></td>
               <td th:text="${gamecon.subscriptionDuration}"></td>
               <td th:text="${gamecon.maxSubscribers}"></td>
               <td th:text="${gamecon.salePrice}"></td>
               &lt;!&ndash; 추가 필드 값 &ndash;&gt;
-            </tr>-->
-            <!-- salePrice의 총 합계 계산 -->
+            </tr>&ndash;&gt;
+            &lt;!&ndash; salePrice의 총 합계 계산 &ndash;&gt;
             <tr>
               <td colspan="3">총 합계: [[${session.totalSalePrice}]]</td>
-              <!--<td th:text="${session.getAttribute('totalSalePrice')}"></td>-->
-              <!-- 추가 필드 합계 출력 -->
+              &lt;!&ndash;<td th:text="${session.getAttribute('totalSalePrice')}"></td>&ndash;&gt;
+              &lt;!&ndash; 추가 필드 합계 출력 &ndash;&gt;
             </tr>
             </tbody>
           </table>
@@ -48,9 +47,10 @@
   <input type="radio" name="paymentMethod" value="deposit">무통장
   <div class="mb-3 text-center">
     <button type="submit" class="btn btn-primary">결제하기</button>
-  </div>
+  </div>-->
 
 <!-- 결제를 시작할 폼 -->
+<!--
 <form id="payment-form">
   <label for="item-name">상품명:</label>
   <input type="text" id="item-name" name="item_name" value="게임명">
@@ -60,13 +60,98 @@
   <br>
   <button type="submit">결제 시작</button>
 </form>
+-->
+<form action="/payments/payments" method="post" id="payment-form">
+  <div class="container my-5">
+    <h1>구매 상품 목록</h1>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>게임명</th>
+        <th>구독 기간</th>
+        <th>판매 가격</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- 반복문을 사용하여 구매한 각 상품 표시 -->
+      <tr th:each="gamecon : ${session.selectedGameContents}">
+        <td th:text="${gamecon.gameName}"></td>
+        <td th:text="${gamecon.subscriptionDuration}"></td>
+        <td th:text="${gamecon.salePrice}"></td>
+      </tr>
+      </tbody>
+    </table>
+    <h3 class="mt-4">총 [[${session.selectedGameContents.size()}]] 건, 합계: [[${session.totalSalePrice}]] 원</h3>
+    <div class="mb-3">
+      <label class="form-label">결제 방법:</label>
+      <div class="form-check">
+        <input type="radio" name="paymentMethod" id="account" value="account" class="form-check-input">
+        <label for="account" class="form-check-label">계좌이체</label>
+      </div>
+      <div class="form-check">
+        <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input">
+        <label for="deposit" class="form-check-label">무통장</label>
+      </div>
+      <div class="form-check">
+        <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input">
+        <label for="pay" class="form-check-label">카카오페이</label>
+      </div>
+    </div>
+    <div>
+        <input type="hidden" id="item-name" name="item_name" th:value="${session.selectedGameContents.size() > 0 ? session.selectedGameContents[0].gameName + (session.selectedGameContents.size() > 1 ? ' 외 ' + (session.selectedGameContents.size() - 1) + '건' : '') : ''}" />
+        <input type="hidden" id="total-amount" name="total_amount" th:value="${session.totalSalePrice}" />
+      <button type="submit" class="btn btn-primary mt-3">결제하기</button>
+    </div>
+    </form>
+  </div>
+
 
 <!-- 결제 성공 시 표시될 메시지 -->
 <div id="success-message" style="display: none;">
   결제가 성공적으로 완료되었습니다.
 </div>
 
-<script>
+
+      <script>
+        // 결제 시작 폼 제출 시 처리
+        $('#payment-form').submit(function (event) {
+          event.preventDefault();
+
+          // 결제 정보를 준비
+          var paymentData = {
+            item_name: $('#item-name').val(),
+            total_amount: $('#total-amount').val()
+          };
+
+          var paymentMethod = $("input[name='paymentMethod']:checked").val(); // 선택된 결제 방법 가져오기
+
+          console.log('paymentMethod', paymentMethod);
+
+          // 여기에 선택된 결제 방법에 따른 처리를 추가합니다.
+          if (paymentMethod === "pay") { // 카카오페이를 선택한 경우
+            // /kakaopay/ready 엔드포인트로 Ajax POST 요청 보내기
+            $.ajax({
+              url: '/kakaopay/ready',
+              method: 'POST',
+              data: paymentData,
+              success: function (response) {
+                // 카카오페이 페이지로 이동
+                location.href = response.next_redirect_pc_url;
+              },
+              error: function () {
+                alert('결제 준비 중 오류가 발생했습니다.');
+              }
+            });
+          } else {
+            // 다른 결제 방법을 선택한 경우, /payments/payments로 폼 전송
+            $('#payment-form').unbind('submit').submit();
+          }
+        });
+      </script>
+
+
+
+<!--      <script>
   // 결제 시작 폼 제출 시 처리
   $('#payment-form').submit(function (event) {
       event.preventDefault();
@@ -99,6 +184,6 @@
           $('#success-message').show();
       });
   }
-</script>
+</script>-->
 </div>
 </html>

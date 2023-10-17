@@ -20,6 +20,19 @@ Table of contents
 09. footer
 
 --------------------------------------------- */
+
+.nado-card-title{
+  color: #000;
+}
+/* CSS for the subscribe button alignment */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+
 /* 
 ---------------------------------------------
 font & reset css
@@ -874,6 +887,7 @@ Gaming Library Style
 --------------------------------------------- 
 */
 
+
 .gaming-library {
   margin-top: 10px;
   padding: 30px;
@@ -896,7 +910,6 @@ Gaming Library Style
   padding-bottom: 0px;
   margin-bottom: 0px;
 }
-
 .gaming-library .item ul li {
   margin-top: 15px;
 }
@@ -907,9 +920,11 @@ Gaming Library Style
 
 .gaming-library .item ul li {
   display: inline-block;
-  width: 17%;
-}
+  */
+/*width: 17%;*//*
 
+   width: 5%;
+}
 .gaming-library .item ul li:first-child {
   width: 110px;
 }
@@ -928,6 +943,7 @@ Gaming Library Style
   color: #fff;
   font-size: 15px;
 }
+
 
 .gaming-library .main-button {
   text-align: center;
@@ -1460,9 +1476,9 @@ Top Streamers Style
 .top-streamers {
   border-radius: 23px;
   background-color: #1f2122;
-  padding: 30px;
+  padding: 20px;
   max-height: 567px;
-  min-height: 567px;
+  /*min-height: 567px;*/
 }
 
 .top-streamers ul li {
@@ -1701,13 +1717,13 @@ body {
   .heading-section h4 {
     font-size: 20px;
   }
-  .gaming-library .item ul li {
+/*  .gaming-library .item ul li {
     width: 48% !important;
   }
   .gaming-library .item ul li:last-child {
     text-align: left;
   }
-  .featured-games {
+  .featured*/-games {
     margin-bottom: 60px;
   }
   .start-stream .item {
@@ -1730,7 +1746,7 @@ body {
     margin-right: 30px;
     border-right: none;
   }
-  .gaming-library .item ul li {
+ /* .gaming-library .item ul li {
     width: 16%;
-  }
+  }*/
 }

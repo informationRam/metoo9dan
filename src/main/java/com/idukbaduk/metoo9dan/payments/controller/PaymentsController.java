@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,12 +112,24 @@ public class PaymentsController {
 
     // 결제 성공시
     @GetMapping("/success")
-    public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model) {
+    public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model, Principal principal, HttpSession session) {
+        System.out.println("대체 어디로?");
         System.out.println("afterPayRequest? " + pgToken);
-        KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken);
 
-        // 여기에서 game/list.html로 리다이렉트
-        return "redirect:/game/list";
+        List<GameContents> selectedGameContents = (List<GameContents>) session.getAttribute("selectedGameContents");
+        System.out.println("selectedGameContents?" + selectedGameContents);
+        int totalSalePrice = (int) session.getAttribute("totalSalePrice");
+        System.out.println("totalSalePrice:?" +totalSalePrice);
+        //임시용 ---------- 추후 수정 필 -------------
+        String memberID = "lee123";
+        Member member = memberService.getUser(memberID);
+
+        String pay = "pay";
+
+        KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken,member,selectedGameContents,pay);
+
+        // 구매목록으로 redirect
+        return "redirect:/payments/list";
     }
 
     //결제 취소 할때 보여주는 페이지

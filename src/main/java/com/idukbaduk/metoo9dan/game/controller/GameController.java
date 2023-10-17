@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -419,7 +420,47 @@ public class GameController {
         return "cyborg-1.0.02/streams";
     }
 
-    //게임컨텐츠 구매 할때 목록조회
+    @PostMapping("/saveSelectedValues")
+    public ResponseEntity<Map<String, Double>> saveSelectedValues(@RequestBody Map<String, String> requestBody, HttpSession session) {
+        String selectedValuesString = requestBody.get("selectedValues");
+        String[] selectedValues = selectedValuesString.split(",");
+
+        Map<String, Double> salePrices = new HashMap<>();
+        List<Integer> selectedValueList = new ArrayList<>();
+
+        // 세션에서 선택한 값을 가져옴
+        List<Integer> sessionSelectedValues = (List<Integer>) session.getAttribute("selectedValues");
+
+        if (sessionSelectedValues == null) {
+            sessionSelectedValues = new ArrayList<>();
+        }
+
+        for (String selectedValue : selectedValues) {
+            int gameContentId = Integer.parseInt(selectedValue);
+
+            // 만약 해당 ID가 이미 선택되어 있는 경우, 이를 제외하고 세션에서도 제거
+            if (sessionSelectedValues.contains(gameContentId)) {
+                sessionSelectedValues.remove(Integer.valueOf(gameContentId));
+            } else {
+                GameContents gameContents = gameService.getGameContents(gameContentId);
+                if (gameContents != null) {
+                    Double salePrice = gameContents.getSalePrice();
+                    salePrices.put("salePrice" + gameContentId, salePrice);
+                    selectedValueList.add(gameContentId);
+                }
+            }
+        }
+
+        // 세션에 선택한 값을 업데이트
+        session.setAttribute("selectedValues", selectedValueList);
+
+        return ResponseEntity.ok(salePrices);
+    }
+
+
+
+
+        //게임컨텐츠 구매 할때 목록조회
     @GetMapping("/testlist")
     public String test(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
 
