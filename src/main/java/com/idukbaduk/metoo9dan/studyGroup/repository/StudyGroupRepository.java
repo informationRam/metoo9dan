@@ -21,6 +21,16 @@ public class StudyGroupRepository {
         return sqlSession.selectList("StudyGroup.StudyGroupList",member_no);
     }
 
+    //학습그룹 리스트(페이지네이션)
+    public List<StudyGroupsListDTO> getGroupListPage(Map<String, Integer> map) {
+        return sqlSession.selectList("StudyGroup.StudyGroupListPage",map);
+    }
+
+    //학습그룹 리스트 Cnt
+    public int getGroupListCnt(int member_no) {
+        return sqlSession.selectOne("StudyGroup.StudyGroupListCnt",member_no);
+    }
+
     //학습그룹 리스트 조회 버튼
     public List<StudyGroupsListDTO> selectGroup(Map<String, Integer> map) {
         return sqlSession.selectList("StudyGroup.GroupSelect",map);
