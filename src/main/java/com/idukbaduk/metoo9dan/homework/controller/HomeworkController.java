@@ -268,9 +268,6 @@ public class HomeworkController {
         //결과로 반환
         return ResponseEntity.ok(submitDTO);
     }
-    //평가하기 페이지
-
-    //평가 저장 페이지
 
     //평가 저장 post
 }
