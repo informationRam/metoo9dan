@@ -7,43 +7,53 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <!-- 제목 드롭다운 -->
-            <select id="titleDropdown">
-                <!-- AJAX로 가져온 게시물 제목이 들어갈 예정 -->
-            </select>
+            <div> <!-- 상단 / 숙제별 숙제 전송 리스트 -->
+                <!-- 제목 드롭다운 -->
+                <div style="width:20%; margin: 12px 20px;">
+                    <div class="dropdown">
+                        <select id="titleDropdown" class="form-select">
+                            <option value="All" selected="selected">All</option>
+                            <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
+                        </select>
+                    </div>
+                </div>
 
-            <!-- 정렬 옵션 -->
-            <select id="sortOrder">
-                <option value="asc">오름차순</option>
-                <option value="desc">내림차순</option>
-            </select>
+                <!-- 정렬 옵션 -->
+                <div style="width:20%; margin: 12px 20px;">
+                    <div class="dropdown">
+                        <select id="sortOrder">
+                            <option value="asc">오름차순</option>
+                            <option value="desc">내림차순</option>
+                        </select>
+                    </div>
+                </div>
 
-            <!-- 결과 테이블 -->
-            <table id="resultTable">
-                <!-- 여기에 결과가 들어갈 예정 -->
-            </table>
+                <!-- 숙제 전송 테이블 -->
+                <table id="hwSendTable">
+                    <!-- 여기에 결과가 들어갈 예정 -->
+                </table>
 
-            <!-- 페이지네이션 -->
-            <div id="pagination">
-                <!-- 여기에 페이지네이션 내용이 들어갈 예정 -->
-            </div>
-
+                <!-- 페이지네이션 -->
+                <div id="pagination">
+                    <!-- 여기에 페이지네이션 내용이 들어갈 예정 -->
+                </div>
+            </div><!-- 상단 끝 -->
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
                 $(document).ready(function() {
-                    // 초기 제목 드롭다운 내용 로드
-                    loadTitles();
-
-                    // 초기 결과 테이블 로드
-                    loadTable();
+                    //초기
+                    loadTable(1);
 
                     // 드롭다운 변경 이벤트
                     $("#titleDropdown").on('change', function() {
+                    console.log("제목 드롭다운 선택");
                         loadTable(1); // 선택 후 첫 페이지 로드
                     });
 
                     // 정렬 이벤트
                     $("#sortOrder").on('change', function() {
-                        loadTable();
+                    console.log("정렬 드롭다운 선택");
+                        loadTable(1);
                     });
 
                     // 페이지네이션 클릭 이벤트
@@ -53,27 +63,12 @@
                         loadTable(page);
                     });
                 });
-
-                function loadTitles() {
-                    $.ajax({
-                        url: '/homework/submit/hw-titles',
-                        type: 'GET',
-                        success: function(response) {
-                            let dropdownContent = "<option value=''>모든 제목</option>";
-                            response.forEach(title => {
-                                dropdownContent += `<option value="${title}">${title}</option>`;
-                            });
-                            $("#titleDropdown").html(dropdownContent);
-                        }
-                    });
-                }
-
+                //상위 테이블 로드
                 function loadTable(page = 1) {
                     let title = $("#titleDropdown").val();
                     let sortOrder = $("#sortOrder").val();
-
                     $.ajax({
-                        url: '/homework/submit/hw-list',
+                        url: '/homework/evaluate/hw-list',
                         type: 'GET',
                         data: {
                             title: title,
@@ -81,23 +76,83 @@
                             page: page
                         },
                         success: function(response) {
-                         // 결과 테이블 갱신
-                            let tableContent = "";
+                            console.log(response);
+
+                            // 결과 테이블 갱신
+                            let tableContent = '<thead><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody>';
                             response.content.forEach(item => {
-                                tableContent += `<tr><td>${item.name}</td><td>${item.details}</td></tr>`;
+                                tableContent += `
+                                    <tr th:data-hw-id="${item.homeworkNo}">
+                                        <td>${item.homeworkTitle}</td>
+                                        <td>${item.homeworkContentPreview}</td>
+                                        <td>${item.currentLevel}</td>
+                                        <td>${item.dueDate}</td>
+                                        <td>${item.sendDate}</td>
+                                    </tr>`;
                             });
-                            $("#resultTable").html(tableContent);
+                            tableContent += '</tbody>';
+                            $('#hwSendTable').html(tableContent);
 
                             // 페이지네이션 갱신
-                            let paginationContent = "";
-                            for(let i = 1; i <= response.totalPages; i++) {
-                                paginationContent += `<a href="#" class="pagination-link" data-page="${i}">${i}</a> `;
+                            let paginationContent = '';
+                            for (let i = 1; i <= response.totalPages; i++) {
+                                paginationContent += `<a href="#" class="pagination-link" data-page="${i}">${i}</a>`;
                             }
-                            $("#pagination").html(paginationContent);
+                            $('#pagination').html(paginationContent);
                         }
                     });
                 }
 
+                // 상위 테이블 로드
+                function loadTable(page = 1) {
+                    let title = $("#titleDropdown").val();
+                    let sortOrder = $("#sortOrder").val();
+                    $.ajax({
+                        url: '/homework/evaluate/hw-list',
+                        type: 'GET',
+                        data: {
+                            title: title,
+                            sort: sortOrder,
+                            page: page
+                        },
+                        success: function(response) {
+                            // 결과 테이블 갱신
+                            let tableContent = '<thead><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody>';
+                                response.content.forEach(item => {
+                                    tableContent += `
+                                    <tr th:data-hw-id="${item.homeworkNo}">
+                                    <td>${item.homeworkTitle}</td>
+                                    <td>${item.homeworkContentPreview}</td>
+                                    <td>${item.currentLevel}</td>
+                                    <td>${item.dueDate}</td>
+                                    <td>${item.sendDate}</td>
+                                    </tr>`;
+                                });
+                            tableContent += '</tbody>';
+                            $('#hwSendTable').html(tableContent);
+
+
+                            // 페이지네이션 갱신
+                            let paginationContent = '';
+                            let endPage = Math.ceil(page / 5.0) * 5;
+                            let startPage = endPage - 4;
+
+                            if (startPage > 1) {
+                                paginationContent += `<a href="#" class="pagination-link" data-page="${startPage - 1}">이전</a>`;
+                            }
+
+                            for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
+                                paginationContent += `<a href="#" class="pagination-link" data-page="${i}">${i}</a>`;
+                            }
+
+                            if (endPage < response.totalPages) {
+                                paginationContent += `<a href="#" class="pagination-link" data-page="${endPage + 1}">다음</a>`;
+                            }
+
+                            $('#pagination').html(paginationContent);
+                        }
+                    });
+                }
             </script>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->

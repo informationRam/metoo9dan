@@ -1,11 +1,8 @@
 package com.idukbaduk.metoo9dan.homework.service;
 
 import com.idukbaduk.metoo9dan.common.entity.*;
+import com.idukbaduk.metoo9dan.homework.domain.*;
 import com.idukbaduk.metoo9dan.homework.validation.HwSubmitForm;
-import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDTO;
 import com.idukbaduk.metoo9dan.homework.repository.*;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksEditForm;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
@@ -13,14 +10,13 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -274,5 +270,41 @@ public class HomeworkService {
 
     public List<String> fetchAllTitles() {
         return homeworkRepository.findDistinctHomeworkTitleBy();
+    }
+
+    public List<Homeworks> findHomeworksByMemberId(String memberId) {
+        return homeworkSendRepository.findHomeworksByMemberId(memberId);
+    }
+
+    public Page<HomeworkSendDTO> findByHomeworks_HomeworkTitleAndHomeworks_Member_MemberId(String title, String memberId, Pageable pageable) {
+        Page<HomeworkSend> homeworkSendPage;
+        if(!title.equals("All")) {
+            homeworkSendPage = homeworkSendRepository.findByMemberIdAndTitle(memberId,title,pageable);
+        } else {
+            homeworkSendPage = homeworkSendRepository.findAllByMemberId(memberId, pageable);
+        }
+        System.out.println(homeworkSendPage);
+        Page<HomeworkSendDTO> homeworksDto = homeworkSendPage.map(HomeworkSendDTO::new);
+        return homeworksDto;
+    }
+
+    public List<HomeworkSend> findAllBySendDateAndHomeworks_HomeworkNo(int homeworkNo, LocalDateTime sendDate) {
+        return homeworkSendRepository.findByHomeworks_HomeworkNoAndSendDate(homeworkNo,sendDate);
+    }
+
+    public List<HwSendSubmitDTO> toSubmitDTO(List<HomeworkSend> homeworkSendList) {
+        List<HwSendSubmitDTO> submitDTO = null;
+        //리스트를 순회하면서 homeworkSend로 homewowrkSubmit을 찾는다
+        for (HomeworkSend hs : homeworkSendList) {
+            Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend_SendNo(hs.getSendNo());
+            if(optionalHomeworkSubmit.isPresent()){
+                HwSendSubmitDTO HwSendSubmitDTO =new HwSendSubmitDTO(hs,optionalHomeworkSubmit.get());
+                submitDTO.add(HwSendSubmitDTO);
+            } else {
+                HwSendSubmitDTO HwSendSubmitDTO =new HwSendSubmitDTO(hs);
+                submitDTO.add(HwSendSubmitDTO);
+            }
+        }
+        return submitDTO;
     }
 }

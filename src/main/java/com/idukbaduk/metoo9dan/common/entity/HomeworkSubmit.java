@@ -2,12 +2,16 @@ package com.idukbaduk.metoo9dan.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 // 숙제제출 테이블 - PRIMARY KEY (homework_submit_no)
 @Entity
 @Data
+@Getter
+@Setter
 @Table(name="homework_submit")
 public class HomeworkSubmit {
 

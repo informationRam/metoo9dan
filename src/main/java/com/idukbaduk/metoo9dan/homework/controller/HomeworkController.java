@@ -1,15 +1,17 @@
 package com.idukbaduk.metoo9dan.homework.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.*;
+import com.idukbaduk.metoo9dan.homework.domain.*;
 import com.idukbaduk.metoo9dan.homework.validation.HwSubmitForm;
-import com.idukbaduk.metoo9dan.homework.domain.GroupStudentDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkDTO;
-import com.idukbaduk.metoo9dan.homework.domain.HomeworkSubmitDetailDTO;
 import com.idukbaduk.metoo9dan.homework.service.HomeworkService;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksEditForm;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,13 +139,27 @@ public class HomeworkController {
         return "redirect:/homework/send";
     }
 
-    //숙제 제출 화면
+    //숙제 초기 화면
     @GetMapping("/submit")
     public String getHomeworkList(HwSubmitForm hwSubmitForm, Model model) {
         //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
         List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
         model.addAttribute("homeworkSend", homeworkSendList);
+        return "homework/homework_student";
+    }
+
+    //구역 전환
+    @GetMapping("/submit/submit")
+    public String loadSubmitHomework(HwSubmitForm hwSubmitForm, Model model) {
+        //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
+        List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
+        model.addAttribute("homeworkSend", homeworkSendList);
         return "homework/homework_submit";
+    }
+
+    @GetMapping("/submit/list")
+    public String loadViewSubmittedHomework() {
+        return "homework/homework_pastHw";
     }
 
     //숙제 더블클릭 시, 전송할 객체
@@ -211,8 +228,46 @@ public class HomeworkController {
             return new ResponseEntity<>("삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    //숙제 평가 보기
+    //숙제 평가
+    @GetMapping("/evaluate")
+    public String evaluateView(Model model){
+        //숙제 전송 리스트의 숙제중에 baduk 아이디로 만들어진 숙제 전송 기록 중에 Homeworks를 리스트로 가져온다
+        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberId("baduk");
+        List<String> distinctTitles = homeworks.stream()
+                .map(Homeworks::getHomeworkTitle)
+                .distinct()
+                .collect(Collectors.toList());
+        model.addAttribute("titles",distinctTitles);
+        return "homework/homework_evaluate";
+    }
+    @GetMapping("/evaluate/hw-list")
+    public ResponseEntity<?> getHomeworks(
+            @RequestParam(defaultValue = "All") String title,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "asc") String sort
+    ) {
+        page=page-1;
+        Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("sendDate").ascending() : Sort.by("sendDate").descending());
+        Page<HomeworkSendDTO> homeworksDto = homeworkService.findByHomeworks_HomeworkTitleAndHomeworks_Member_MemberId(title, "baduk", pageable);
+        return ResponseEntity.ok(homeworksDto);
+    }
 
+
+    @GetMapping("/evaluate/submit-list")
+    public ResponseEntity<?> getHomeworks(/*homeworkNo SendDate SendNo*/
+            @RequestParam int homeworkNo,
+            @RequestParam int sendNo,
+            @RequestParam LocalDateTime sendDate
+    ) {
+        //1. homeworkService찾기
+        List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
+        System.out.println(homeworkSendList);
+        //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
+        List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
+        //결과로 반환
+        return ResponseEntity.ok(submitDTO);
+    }
     //평가하기 페이지
 
     //평가 저장 페이지
