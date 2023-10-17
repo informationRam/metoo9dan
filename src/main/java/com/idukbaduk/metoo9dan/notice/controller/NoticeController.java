@@ -4,7 +4,6 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
-import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
@@ -13,7 +12,6 @@ import com.idukbaduk.metoo9dan.notice.service.NoticeService;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeReplyForm;
 import groovy.util.logging.Log4j2;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -170,7 +167,12 @@ public class NoticeController {
 
     //공지 작성폼 보여줘 요청
     @GetMapping("/add")
-    public String noticeAddForm(NoticeForm noticeForm){
+    public String noticeAddForm(NoticeForm noticeForm,
+                                Model model,
+                                Principal principal){
+        String memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
+        model.addAttribute("memberRole", memberRole);
+
         return "notice/noticeForm";
     }
 
@@ -179,7 +181,9 @@ public class NoticeController {
     public String add(@Valid NoticeForm noticeForm,
                       BindingResult bindingResult,
                       @RequestParam("uploadFiles") List<MultipartFile> uploadFiles,
+                      Principal principal,
                       RedirectAttributes redirectAttributes ){
+
         if(bindingResult.hasErrors()){ //에러가 있으면,
             logger.info("Errors: " +bindingResult);
             return "/notice/noticeForm"; //noticeForm.html로 이동.
@@ -188,9 +192,9 @@ public class NoticeController {
 
         //1. 파라미터 받기
         //로그인한 사람이 관리자인지 확인하는 코드 필요.
-        //임시로 작성자 memberNo1로 설정
-        Member member = new Member();
-        member.setMemberNo(1);
+
+        Member member = memberServiceImpl.getUser(principal.getName());
+        logger.info("member: "+member);
 
         //2. 비즈니스로직 수행
         LocalDateTime today = LocalDateTime.now();
@@ -221,39 +225,12 @@ public class NoticeController {
         List<NoticeFileDTO> list = new ArrayList<>();
         //파일업로드(물리적 폴더에 저장)
         String uploadFolder = "C:/upload";
-        // getFolder(): 년/월/일 폴더 생성
-        String uploadFolderPath = getFolder();
-        File uploadPath = new File(uploadFolder, uploadFolderPath);
-
-        logger.info("uploadPath: "+uploadPath); // C:/upload/yyyy/MM/dd
-
-        if(uploadPath.exists() == false){
-            uploadPath.mkdirs();
-        }
 
         //파일업로드처리(DB NoticeFiles 테이블에 저장)
-        //DTO에 담아 간다
         for(MultipartFile multipartFile : uploadFiles){
-            NoticeFileDTO fileDTO = new NoticeFileDTO(); //DTO객체 생성
-            fileDTO.setNotice(notice); //방금 생성한 공지번호 저장
-
-            String uploadFileName = multipartFile.getOriginalFilename();
-            fileDTO.setOriginFileName(uploadFileName); //원본파일명 저장
-
-            //파일이름 중복방지를 위한 UUID
-            UUID uuid =UUID.randomUUID();
-            uploadFileName = uuid.toString()+"_"+uploadFileName;
-
-            try {
-                File saveFile = new File(uploadPath, uploadFileName);
-                multipartFile.transferTo(saveFile);
-                fileDTO.setUuid(uuid.toString()); //사본파일명 저장
-                fileDTO.setUploadPath(uploadFolderPath+""); //C:/upload이하 파일경로 저장
-                list.add(fileDTO);
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-                redirectAttributes.addFlashAttribute("msg", "공지등록하는 중에 에러 발생");
-            }//end catch
+            if(!multipartFile.isEmpty()){
+                fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
+            }
         }//end for
         noticeService.addFiles(list);
 
@@ -261,6 +238,39 @@ public class NoticeController {
         redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
         //4. 뷰
         return "redirect:/notice/list"; //질문목록조회 요청
+    }
+
+    //파일 업로드를 처리하는 메소드 (물리적 폴더와 파일 생성 및 DB에 저장)
+    private void fileUpload(String uploadFolder, Notice notice, MultipartFile multipartFile, List<NoticeFileDTO> list, RedirectAttributes redirectAttributes) {
+        // getFolder(): 년/월/일 폴더 생성
+        String uploadFolderPath = getFolder();
+        File uploadPath = new File(uploadFolder, uploadFolderPath);
+
+        if(uploadPath.exists() == false){
+            uploadPath.mkdirs();
+        }
+
+        //DTO에 담아 간다
+        NoticeFileDTO fileDTO = new NoticeFileDTO(); //DTO객체 생성
+        fileDTO.setNotice(notice); //방금 생성한 공지번호 저장
+
+        String uploadFileName = multipartFile.getOriginalFilename();
+        fileDTO.setOriginFileName(uploadFileName); //원본파일명 저장
+
+        //파일이름 중복방지를 위한 UUID
+        UUID uuid =UUID.randomUUID();
+        uploadFileName = uuid.toString()+"_"+uploadFileName;
+
+        try {
+            File saveFile = new File(uploadPath, uploadFileName);
+            multipartFile.transferTo(saveFile);
+            fileDTO.setUuid(uuid.toString()); //사본파일명 저장
+            fileDTO.setUploadPath(uploadFolderPath+""); //C:/upload이하 파일경로 저장
+            list.add(fileDTO);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            redirectAttributes.addFlashAttribute("msg", "공지등록하는 중에 에러 발생");
+        }//end catch
     }
 
     //중복된 이름의 파일처리

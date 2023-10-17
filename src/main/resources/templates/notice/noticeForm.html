@@ -18,7 +18,7 @@
 <div layout:fragment="content" class="container my-3">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/notice/manageSidebar::sidebar}" ></div>
+        <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
@@ -61,6 +61,7 @@
     </div><!--row-->
 </div><!--container-->
 <div layout:fragment="script">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
 <script th:inline="javascript">
 
     document.getElementById('formFileMultiple').addEventListener('change', handleDrop);
