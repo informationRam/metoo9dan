@@ -44,6 +44,39 @@
             <div style="display: flex; justify-content: center; align-items: center;">
                 <input id="cancelButton" type="submit" value="학습 그룹 가입 취소" class="btn btn-outline-primary my-2"/>
             </div>
+
+            <p/>
+            <p/>
+            <h3>[학습 그룹 가입 이력]</h3>
+            <table class="table">
+                <thead class="table-dark">
+                <tr>
+                    <th>학습그룹명</th>
+                    <th>게임콘텐츠명</th>
+                    <th>교육자명</th>
+                    <th>학습 구독 기간</th>
+                    <th>가입 요청일</th>
+                    <th>가입 승인일</th>
+                    <th>승인여부</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="joinRecord, loop : ${joinRecord}">
+                    <td th:text="${joinRecord.group_name}"></td>
+                    <td th:text="${joinRecord.game_name}"></td>
+                    <td th:text="${joinRecord.name}"></td>
+                    <td>
+                        <span th:text="${#dates.format(joinRecord.group_start_date,'yyyy-MM-dd')}"></span>
+                        ~
+                        <span th:text="${#dates.format(joinRecord.group_finish_date,'yyyy-MM-dd')}"></span>
+                    </td>
+                    <td th:text="${#dates.format(joinRecord.application_date,'yyyy-MM-dd')}"></td>
+                    <td th:text="${#dates.format(joinRecord.approved_date,'yyyy-MM-dd')}"></td>
+                    <td th:text="${joinRecord.is_approved ? 'O' : 'X'}"></td> <!--true이면 'O'가 출력, false이면 'X'가 출력-->
+                </tr>
+                </tbody>
+            </table>
+
             <style>
                 /* 표의 값들을 가운데 정렬하는 CSS 스타일 */
                 .table td,

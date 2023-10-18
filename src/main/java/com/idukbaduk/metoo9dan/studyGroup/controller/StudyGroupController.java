@@ -445,6 +445,7 @@ public class StudyGroupController {
         model.addAttribute("groupJoinList",groupJoinList);
         System.out.println("groupJoinList="+groupJoinList);
 
+        //가입 신청한 학습 그룹이 있는지 확인(중복신청 불가)
         int ingStudyGroup = studyGroupService.ingStudyGroup(member_no);
         model.addAttribute("ingStudyGroup",ingStudyGroup);
         System.out.println("ingStudyGroup="+ingStudyGroup);
@@ -498,25 +499,28 @@ public class StudyGroupController {
         StudyGroups studyGroups = groupRepository.findById(group_no).orElse(null);
         studyGroupService.groupJoin(studyGroups,member2,groupJoinDTO.getApplication_date(),groupJoinDTO.getIs_approved(),groupJoinDTO.getApproved_date());
 
-        //학습 그룹 신청 했으면 중복 신청 불가능->학습 그룸 가입 확인으로 이동
-
-
         return "redirect:/studygroup/groupJoinList";
     }
 
 
-    //학습 그룹 가입 확인(학생)
+    //학습 그룹 가입 확인&가입 이력 확인(학생)
     @GetMapping("/joinConfirm")
     public String joinConfirm(Model model,Principal principal){
         //Principal
         Member member = memberService.getUser(principal.getName());
         int member_no = member.getMemberNo();
 
+        //가입 확인
         JoinConfirmDTO joinConfirm = studyGroupService.joinConfirm(member_no);
         model.addAttribute("joinConfirm",joinConfirm);
         System.out.println("joinConfirm="+joinConfirm);
 
-        if(joinConfirm==null){
+        //가입 이력 확인
+        List<JoinConfirmDTO> joinRecord = studyGroupService.joinRecord(member_no);
+        model.addAttribute("joinRecord",joinRecord);
+        System.out.println("joinRecord="+joinRecord);
+
+        if(joinConfirm==null&&joinRecord==null){
             //alert창 띄우기
             MessageDto message = new MessageDto("가입 신청된 학습 그룹이 없습니다.", "/studygroup/groupJoinList", RequestMethod.GET, null);
             return showMessageAndRedirect(message,model);

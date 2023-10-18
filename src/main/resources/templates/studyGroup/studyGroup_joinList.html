@@ -16,7 +16,7 @@
                     <label for="selectEducatorName" class="form-label" style="margin-right: 10px;">교육자명:</label>
                     <select name="selectEducatorName" id="selectEducatorName" class="form-select" style="width: 200px; margin-right: 10px;">
                         <option value="">전체</option>
-                        <option th:each="educatorName : ${educatorName}" th:value="${educatorName.member_no}" th:text="${educatorName.name}"></option>
+                        <option th:each="educatorName : ${educatorName}" th:value="${educatorName.member_no}" th:text="${educatorName.name + ' (' + educatorName.school_name + ')'}"></option>
                     </select>
                     <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
                 </div>
