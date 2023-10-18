@@ -275,10 +275,11 @@ public class HomeworkController {
     public ResponseEntity<?> getHomeworks(/*homeworkNo SendDate SendNo*/
             @RequestParam int homeworkNo,
             @RequestParam LocalDateTime sendDate,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "asc") String sort
     ) {
+        page-=1;
         //1. homeworkService찾기
         List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
         System.out.println("1차"+homeworkSendList);
