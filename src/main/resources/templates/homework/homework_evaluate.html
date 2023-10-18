@@ -41,7 +41,7 @@
             <!-- 상단 끝 -->
 
             <!-- 하단 -->
-            <div style="display:none;">
+            <div id="lowerSection" style="display:none;">
                 <div>
                     <!-- 숙제 제출 / 평가 현황 미니 대시보드 -->
                 </div>
@@ -231,6 +231,7 @@
                                 }
 
                                 $('#eval-pagination').html(paginationContent);
+                                $('#lowerSection').css("display", "block");
                             }
                         });
                         });

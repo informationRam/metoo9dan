@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan.homework.repository;
 
 import com.idukbaduk.metoo9dan.common.entity.HomeworkSend;
 import com.idukbaduk.metoo9dan.common.entity.Homeworks;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +17,7 @@ public interface HomeworkRepository extends JpaRepository<Homeworks, Integer> {
     //Page<Homeworks> findByMember_MemberIdOrderByCreationDateDesc(String memberId, Pageable pageable);
     List<Homeworks> findByMember_MemberIdAndStatusOrderByCreationDateDesc(String memberId, String status);
     @Query("SELECT h FROM Homeworks h WHERE h.member.memberId = :memberId AND h.dueDate > :currentDate AND h.status = 'show' ORDER BY h.creationDate DESC")
-    List<Homeworks> findHomeworksByMemberIdAndDueDateAfter(String memberId, Date currentDate);
+    List<Homeworks> findHomeworksByMemberIdAndDueDateAfter(@Param("memberId") String memberId, @Param("currentDate") Date currentDate);
 
     List<String> findDistinctHomeworkTitleBy();
 }

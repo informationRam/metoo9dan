@@ -3,6 +3,7 @@ package com.idukbaduk.metoo9dan.homework.repository;
 import com.idukbaduk.metoo9dan.common.entity.HomeworkSend;
 import com.idukbaduk.metoo9dan.common.entity.Homeworks;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,26 +20,26 @@ public interface HomeworkSendRepository extends JpaRepository<HomeworkSend, Inte
     List<HomeworkSend> findByHomeworks(Homeworks hw);
     List<HomeworkSend> findByHomeworks_HomeworkNo(Integer homeworkNo);
     @Query("SELECT h FROM HomeworkSend h WHERE h.member.memberNo = :memberNo ORDER BY h.sendDate DESC")
-    List<HomeworkSend> findLatestHomeworkSendByMemberNo(Integer memberNo);
+    List<HomeworkSend> findLatestHomeworkSendByMemberNo( @Param("memberNo") Integer memberNo);
 
     boolean existsByHomeworksAndMember(Homeworks homework, Member member);
 
     @Query("SELECT hs FROM HomeworkSend hs WHERE hs.member.memberId = :memberId AND hs.homeworks.dueDate >= CURDATE()")
-    List<HomeworkSend> findByMemberIdAndDueDateAfterCurrentDate(String memberId);
+    List<HomeworkSend> findByMemberIdAndDueDateAfterCurrentDate(@Param("memberId") String memberId);
 
     @Query("SELECT hs FROM HomeworkSend hs WHERE hs.member.memberId = :memberId AND hs.homeworks.dueDate < CURDATE()")
-    List<HomeworkSend> findByMemberIdAndDueDateBeforeCurrentDate(String memberId);
+    List<HomeworkSend> findByMemberIdAndDueDateBeforeCurrentDate(@Param("memberId") String memberId);
 
     Page<HomeworkSend> findByHomeworks_HomeworkTitleContaining(String title, Pageable pageable);
 
     @Query("SELECT hs.homeworks FROM HomeworkSend hs WHERE hs.homeworks.member.memberId = :memberId")
-    List<Homeworks> findHomeworksByMemberId(String memberId);
+    List<Homeworks> findHomeworksByMemberId( @Param("memberId") String memberId);
 
     List<HomeworkSend> findByHomeworks_HomeworkNoAndSendDate(int homeworkNo, LocalDateTime sendDate);
 
     @Query("SELECT hs FROM HomeworkSend hs WHERE hs.homeworks.member.memberId = :memberId")
-    Page<HomeworkSend> findAllByMemberId(String memberId, Pageable pageable);
+    Page<HomeworkSend> findAllByMemberId(@Param("memberId") String memberId,Pageable pageable);
 
     @Query("SELECT hs FROM HomeworkSend hs JOIN hs.homeworks h JOIN h.member m WHERE m.memberId = :memberId AND h.homeworkTitle = :homeworkTitle")
-    Page<HomeworkSend> findByMemberIdAndTitle(String memberId, String homeworkTitle, Pageable pageable);
+    Page<HomeworkSend> findByMemberIdAndTitle(@Param("memberId") String memberId, @Param("homeworkTitle") String homeworkTitle, Pageable pageable);
 }

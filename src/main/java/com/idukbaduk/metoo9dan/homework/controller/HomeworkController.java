@@ -256,7 +256,7 @@ public class HomeworkController {
     @GetMapping("/evaluate/hw-list")
     public ResponseEntity<?> getHomeworks(
             @RequestParam(defaultValue = "All") String title,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "asc") String sort
     ) {
