@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:div="http://www.w3.org/1999/html">
 <div layout:fragment="content" class="container my-3">
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
@@ -12,8 +12,6 @@
                     <th>선택</th>
                     <th>학습그룹명</th>
                     <th>교육자명</th>
-                    <!--<th>그룹 시작일</th>
-                    <th>그룹 종료일</th>-->
                     <th>학습 구독 기간</th>
                     <th>가입 요청일</th>
                     <th>가입 승인일</th>
@@ -21,28 +19,35 @@
                 </tr>
                 </thead>
                 <tbody>
-                <p>게임콘텐츠명 :  <strong><span th:text="${joinConfirm.game_name}"></span></strong></p>
-                <tr th:each="joinConfirm, loop : ${joinConfirm}">
-                    <td>
-                        <input type="checkbox" class="groupCheckbox" name="selectedStudentGroup" th:value="${joinConfirm.group_students_no}" />
-                    </td>
-                    <td th:text="${joinConfirm.group_name}"></td>
-                    <td th:text="${joinConfirm.name}"></td>
-                    <td>
-                        <span th:text="${#dates.format(joinConfirm.group_start_date,'yyyy-MM-dd')}"></span>
-                        ~
-                        <span th:text="${#dates.format(joinConfirm.group_finish_date,'yyyy-MM-dd')}"></span>
-                    </td>
-                    <!--<td th:text="${#dates.format(joinConfirm.group_start_date,'yyyy-MM-dd')}"></td>
-                    <td th:text="${#dates.format(joinConfirm.group_finish_date,'yyyy-MM-dd')}"></td>-->
-                    <td th:text="${#dates.format(joinConfirm.application_date,'yyyy-MM-dd')}"></td>
-                    <td th:text="${#dates.format(joinConfirm.approved_date,'yyyy-MM-dd')}"></td>
-                    <td th:text="${joinConfirm.is_approved ? 'O' : 'X'}"></td> <!--true이면 'O'가 출력, false이면 'X'가 출력-->
-                </tr>
+                <p th:if="${joinConfirm != null}">게임콘텐츠명 : <strong><span th:text="${joinConfirm.game_name}"></span></strong></p>
+                <th:block th:if="${joinConfirm != null and joinConfirm.size() > 0}">
+                    <tr th:each="joinConfirm, loop : ${joinConfirm}">
+                        <td>
+                            <input type="checkbox" class="groupCheckbox" name="selectedStudentGroup" th:value="${joinConfirm.group_students_no}" />
+                        </td>
+                        <td th:text="${joinConfirm.group_name}"></td>
+                        <td th:text="${joinConfirm.name}"></td>
+                        <td>
+                            <span th:text="${#dates.format(joinConfirm.group_start_date,'yyyy-MM-dd')}"></span>
+                            ~
+                            <span th:text="${#dates.format(joinConfirm.group_finish_date,'yyyy-MM-dd')}"></span>
+                        </td>
+                        <td th:text="${#dates.format(joinConfirm.application_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(joinConfirm.approved_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${joinConfirm.is_approved ? 'O' : 'X'}"></td>
+                    </tr>
+                </th:block>
+                <th:block th:unless="${joinConfirm != null and joinConfirm.size() > 0}">
+                    <tr>
+                        <td colspan="7">가입된 학습 그룹이 없습니다.</td>
+                    </tr>
+                </th:block>
                 </tbody>
             </table>
-            <div style="display: flex; justify-content: center; align-items: center;">
-                <input id="cancelButton" type="submit" value="학습 그룹 가입 취소" class="btn btn-outline-primary my-2"/>
+            <div th:if="${joinConfirm != null}">
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <input id="cancelButton" type="submit" value="학습 그룹 가입 취소" class="btn btn-outline-primary my-2"/>
+                </div>
             </div>
 
             <p/>
@@ -61,19 +66,26 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="joinRecord, loop : ${joinRecord}">
-                    <td th:text="${joinRecord.group_name}"></td>
-                    <td th:text="${joinRecord.game_name}"></td>
-                    <td th:text="${joinRecord.name}"></td>
-                    <td>
-                        <span th:text="${#dates.format(joinRecord.group_start_date,'yyyy-MM-dd')}"></span>
-                        ~
-                        <span th:text="${#dates.format(joinRecord.group_finish_date,'yyyy-MM-dd')}"></span>
-                    </td>
-                    <td th:text="${#dates.format(joinRecord.application_date,'yyyy-MM-dd')}"></td>
-                    <td th:text="${#dates.format(joinRecord.approved_date,'yyyy-MM-dd')}"></td>
-                    <td th:text="${joinRecord.is_approved ? 'O' : 'X'}"></td> <!--true이면 'O'가 출력, false이면 'X'가 출력-->
-                </tr>
+                <th:block th:if="${joinConfirm != null and joinRecord.size() > 0}">
+                    <tr th:each="joinRecord, loop : ${joinRecord}">
+                        <td th:text="${joinRecord.group_name}"></td>
+                        <td th:text="${joinRecord.game_name}"></td>
+                        <td th:text="${joinRecord.name}"></td>
+                        <td>
+                            <span th:text="${#dates.format(joinRecord.group_start_date,'yyyy-MM-dd')}"></span>
+                            ~
+                            <span th:text="${#dates.format(joinRecord.group_finish_date,'yyyy-MM-dd')}"></span>
+                        </td>
+                        <td th:text="${#dates.format(joinRecord.application_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(joinRecord.approved_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${joinRecord.is_approved ? 'O' : 'X'}"></td> <!--true이면 'O'가 출력, false이면 'X'가 출력-->
+                    </tr>
+                </th:block>
+                <th:block th:unless="${joinRecord != null and joinRecord.size() > 0}">
+                    <tr>
+                        <td colspan="7">가입된 학습 그룹 이력이 없습니다.</td>
+                    </tr>
+                </th:block>
                 </tbody>
             </table>
 
