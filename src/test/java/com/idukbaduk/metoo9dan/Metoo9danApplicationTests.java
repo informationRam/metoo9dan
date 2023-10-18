@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan;
 
 import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.notice.repository.NoticeRepository;
+import com.idukbaduk.metoo9dan.qna.repository.QuestionRepository;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ class Metoo9danApplicationTests {
 	InfoRepository infoRepository;
 	@Autowired
 	NoticeRepository noticeRepository;
+
+	@Autowired
+	QuestionRepository questionRepository;
 
 	@Autowired
 	GameContentsRepository gameContentsRepository;
@@ -166,6 +170,21 @@ class Metoo9danApplicationTests {
 			notice.setReadCnt(0);
 			notice.setMember(member);
 			noticeRepository.save(notice);
+		}
+	}
+	@Test
+	public void insertQuestion(){
+		Member member = new Member();
+		member.setMemberNo(1);
+		for(int i=0; i<10; i++){
+			LocalDateTime now = LocalDateTime.now();
+			QnaQuestions questions = new QnaQuestions();
+			questions.setQuestionTitle(i+"번째 test제목");
+			questions.setQuestionContent(i+"번째 test내용");
+			questions.setIsAnswered("N");
+			questions.setWriteDate(now);
+			questions.setMember(member);
+			questionRepository.save(questions);
 		}
 	}
 }
