@@ -70,6 +70,16 @@ public void saveIndividual(GameValidation gameValidation) {
         return gameRepository.findAll(pageable);
     }
 
+
+    //게임목록조회 (페이징처리)
+    public Page<GameContents> getallList(String gameName, String packageDetails, int page) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(sorts));
+        return gameRepository.findByGameNameContainingOrPackageDetailsContaining(gameName, packageDetails, pageable);
+    }
+
     // 페이지네이션을 사용하지 않고 모든 게임콘텐츠 조회
     public List<GameContents> getAllGameContents() {
         return gameRepository.findAll(); // 페이지네이션 없이 모든 게임콘텐츠를 가져옵니다.

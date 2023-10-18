@@ -304,18 +304,7 @@ public class GameController {
 
         return "game/page3";
     }
-/*
-    // page3 가격 업데이트 처리
-    @PostMapping("/updateValidation")
-    public String updateGameValidation(@ModelAttribute("gameValidation") @Valid GameValidation updatedValidation, HttpSession session) {
-        GameValidation originalValidation = (GameValidation) session.getAttribute("gameValidationPage1");
-        originalValidation.setOriginal_price(updatedValidation.getOriginal_price());
-        originalValidation.setDiscount_rate(updatedValidation.getDiscount_rate());
-        originalValidation.setSale_price(updatedValidation.getSale_price());
-        session.setAttribute("gameValidationPage1", originalValidation);
-        return "redirect:/game/page3";
-    }
-*/
+
 
     // 저장 처리 로직
     @PostMapping("/save")
@@ -392,6 +381,7 @@ public class GameController {
         session.removeAttribute("gameValidationPage1");
         return "redirect:/game/list";
     }
+/*
 
     //게임컨텐츠 구매 할때 목록조회
     @GetMapping("/alllist")
@@ -416,6 +406,73 @@ public class GameController {
 
         }
         model.addAttribute("gamePage", gamePage);
+
+        return "cyborg-1.0.02/streams";
+    }
+*/
+
+    //게임컨텐츠 구매 할때 목록조회 (페이지네이션)
+    @GetMapping("/alllist")
+    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
+
+        // 게임컨텐츠 목록 조회
+        Page<GameContents> gamePage = this.gameService.getallList(searchText, searchText, page);
+
+        for (GameContents gamecon : gamePage.getContent()) {
+            // 게임컨텐츠에 대한 파일 정보 가져오기
+            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
+            gamecon.setGameContentFilesList(gameContentFilesList);
+
+            // 게임컨텐츠에 대한 교육자료 정보 가져오기
+            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
+
+            for (EducationalResources educationalResource : education) {
+                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
+                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
+            }
+            gamecon.setEducationalResourcesList(education);
+
+        }
+        int startPage =  Math.max(1,gamePage.getPageable().getPageNumber() - 4);
+        int endPage = Math.max(gamePage.getTotalPages(), gamePage.getPageable().getPageNumber() + 4);
+
+        model.addAttribute("gamePage", gamePage);
+        model.addAttribute("startPage",startPage);
+        model.addAttribute("endPage",endPage);
+        model.addAttribute("searchText", searchText);
+
+        return "cyborg-1.0.02/streams";
+    }
+
+
+    //게임컨텐츠 구매 할때 목록조회 (검색기능!)
+    @GetMapping("/searchText")
+    public String gameListsearchText(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
+
+        // 게임컨텐츠 목록 조회
+        Page<GameContents> gamePage = this.gameService.getallList(searchText, searchText, page);
+
+        for (GameContents gamecon : gamePage.getContent()) {
+            // 게임컨텐츠에 대한 파일 정보 가져오기
+            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
+            gamecon.setGameContentFilesList(gameContentFilesList);
+
+            // 게임컨텐츠에 대한 교육자료 정보 가져오기
+            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
+
+            for (EducationalResources educationalResource : education) {
+                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
+                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
+            }
+            gamecon.setEducationalResourcesList(education);
+
+        }
+        int startPage =  Math.max(1,gamePage.getPageable().getPageNumber() - 4);
+        int endPage = Math.max(gamePage.getTotalPages(), gamePage.getPageable().getPageNumber() + 4);
+
+        model.addAttribute("gamePage", gamePage);
+        model.addAttribute("startPage",startPage);
+        model.addAttribute("endPage",endPage);
 
         return "cyborg-1.0.02/streams";
     }

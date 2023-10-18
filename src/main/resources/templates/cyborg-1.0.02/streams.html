@@ -1,6 +1,7 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <div layout:fragment="content" class="container my-3">
   <link rel="stylesheet" href="/css/game/list.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <div class="row">
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
     <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
@@ -178,8 +179,8 @@ https://templatemo.com/tm-579-cyborg-gaming
                 </div>
                 <div class="col">
                   <div class="input-group">
-                    <input type="text" class="form-control form-control-sm" placeholder="제목을 검색해주세요.">
-                    <button class="btn btn-primary" type="button">검색</button>
+                    <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
+                    <button class="btn btn-primary" type="button" onclick="searchGames()">검색</button>
                   </div>
                 </div>
               </div>
@@ -196,7 +197,7 @@ https://templatemo.com/tm-579-cyborg-gaming
                         <div class="card-body d-flex justify-content-between align-items-center">
                           <div class="col-lg-10">
                             <h5 class="nado-card-title" th:text="${game.gameName}"></h5>
-                            <p class="card-text">
+                            <p class="card-text" id="gameList">
                               <span th:switch="${game.difficulty}">
                                 <span th:case="'beginner'" class="badge bg-success" >초급</span>
                                 <span th:case="'intermediate'" class="badge bg-warning text-dark">중급</span>
@@ -225,15 +226,32 @@ https://templatemo.com/tm-579-cyborg-gaming
                     </div>
                   </div>
                 </div>
+              </form>
             </div>
-                <div class="col-lg-12">
-                  <div class="main-button">
-                    <a href="profile.html">View Your Library</a>
-                  </div>
-                </div>
-
-
         </div>
+          <!-- 페이지 네이션 처리 -->
+          <div id="pagination">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+              <!-- 이전 페이지 링크 -->
+              <li class="page-item" th:classappend="${gamePage.pageable.pageNumber == 0} ? 'disabled'">
+                <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber - 1}, searchText=${searchText})}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <!-- 페이지 번호 링크 -->
+              <li class="page-item" th:classappend="${i == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                <a class="page-link" href="#" th:href="@{/game/alllist(page=${i}, searchText=${searchText})}" th:text="${i}">1</a>
+              </li>
+              <!-- 다음 페이지 링크 -->
+              <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">
+                <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber + 1}, searchText=${searchText})}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          </div>
     </div>
   </div>
     </div>
@@ -269,7 +287,6 @@ https://templatemo.com/tm-579-cyborg-gaming
     <script src="/css/game/cyborg/assets/js/popup.js"></script>
     <script src="/css/game/cyborg/assets/js/custom.js"></script>
     <script>
-      <script>
        function subscribe() {
          var checkboxes = document.querySelectorAll('input[type="checkbox"]');
          var atLeastOneSelected = false;
@@ -288,7 +305,6 @@ https://templatemo.com/tm-579-cyborg-gaming
        }
     </script>
 
-    </script>
     <script>
             var checkboxes = document.querySelectorAll('input[type="checkbox"]');
             var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
@@ -331,5 +347,11 @@ https://templatemo.com/tm-579-cyborg-gaming
             });
 
     </script>
+    <script>
+    function searchGames() {
+    var searchText = document.getElementById('searchText').value;
+    window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+    }
+</script>
   </div>
 </html>
