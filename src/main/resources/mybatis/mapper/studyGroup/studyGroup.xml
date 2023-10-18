@@ -262,11 +262,12 @@
 		]]>
     </select>
 
-    <!--학습그룹명 리스트(전체)-->
+    <!--학습그룹명 리스트(기간지나지 않은)-->
     <select id="GroupNameAllList" resultType="hashmap">
         <![CDATA[
         SELECT group_no,group_name
         FROM baduk.study_groups
+		WHERE group_finish_date>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
 		]]>
     </select>
 
@@ -285,12 +286,13 @@
     WHERE s.group_no=#{group_no} AND s.group_finish_date >= CURDATE()
     </select>
 
-    <!--교육자명 리스트(전체)-->
+    <!--교육자명 리스트(기간지나지 않은)-->
     <select id="EducatorNameList" resultType="hashmap">
         <![CDATA[
-        SELECT member_no,name
-        FROM baduk.members
-        WHERE ROLE='educator'
+        SELECT distinct m.member_no,m.name
+        FROM baduk.members m
+        JOIN baduk.study_groups s ON m.member_no=s.member_no
+        WHERE m.role='educator' AND s.group_finish_date>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
 		]]>
     </select>
 

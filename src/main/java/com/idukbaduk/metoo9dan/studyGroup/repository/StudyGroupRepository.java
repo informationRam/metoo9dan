@@ -125,7 +125,8 @@ public class StudyGroupRepository {
 
     //학습 그룹 신청 리스트에서 기본으로 보여질 group_no
     public int basicGroupNo(int member_no){
-        return sqlSession.selectOne("StudyGroup.BasicGroupNo",member_no);
+        Integer result = sqlSession.selectOne("StudyGroup.BasicGroupNo",member_no);
+        return result != null ? result : 0; //result이 null일 때 예외처리
     }
 
     //학습 그룹 가입 확인(학생)
