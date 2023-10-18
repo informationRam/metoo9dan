@@ -125,7 +125,7 @@ let data;
             document.querySelector('#editButton').addEventListener('click', function() {
 
             // 유효성 검사 함수 호출
-               if (validateForm()) {
+           if (validateForm()) {
                // 모달에서 사용자가 수정한 데이터 가져오기
                    const memberNo = document.querySelector('#editButton').getAttribute('data-memberno');
                    const updatedMemberData = {
@@ -191,9 +191,9 @@ let data;
                       console.error('Member 데이터 수정 실패:', error);
                            alert("회원정보 수정 실패");
                       });
-                }
+           }
             });
-        }
+    }
 
 
 
