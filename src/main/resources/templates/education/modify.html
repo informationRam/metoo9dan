@@ -76,9 +76,9 @@
                     썸네일 :
                     <!-- 썸네일 -->
                     <p th:each="file : ${educationValidation.saveThumFile}" th:if="${educationValidation.saveThumFile != null}">
-                        <a th:href="@{|/education/downloadFile/${educationValidation.saveThumFile.fileNo}|}" th:text="${educationValidation.saveThumFile.originFileName}">다운로드</a>
-                        <!-- 컨텐츠 삭제를 위한 hidden input -->
-                        <input type="hidden" th:each="fileNo : ${educationValidation.deletedFiles}" th:name="'deletedFiles[' + ${fileNo} + ']'" th:value="${fileNo}">
+                        <a th:href="@{|/education/downloadFile/${file.fileNo}|}" th:text="${file.originFileName}">다운로드</a>
+                        <!-- 파일 삭제 버튼 -->
+                        <a class="btn btn-sm btn-danger" th:attr="data-fileNo=${file.fileNo}" onclick="deleteFile(event, this.getAttribute('data-fileNo'))">삭제</a>
                     </p>
                 </td>
                 <!-- 수정된 컨텐츠 내용을 전달하기 위한 hidden input -->

@@ -85,9 +85,6 @@ public class ResourcesFilesService {
         }
     }
 
-
-
-
     // 삭제된 파일 처리
     public void deleteFile(List<Integer> deletedFiles) {
         for (Integer fileNo : deletedFiles) {

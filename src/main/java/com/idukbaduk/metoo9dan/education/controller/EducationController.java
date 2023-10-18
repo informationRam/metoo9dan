@@ -1,10 +1,12 @@
 package com.idukbaduk.metoo9dan.education.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
+import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import com.idukbaduk.metoo9dan.education.service.EducationService;
 import com.idukbaduk.metoo9dan.education.service.ResourcesFilesService;
 import com.idukbaduk.metoo9dan.education.vaildation.EducationValidation;
+import com.idukbaduk.metoo9dan.game.service.GameService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -21,7 +23,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/education")
@@ -30,6 +35,7 @@ public class EducationController {
 
     private final EducationService educationService;
     private final ResourcesFilesService resourcesFilesService;
+    private final GameService gameService;
 
     //교육자료 등록 폼
     @GetMapping("/addForm")
@@ -68,8 +74,30 @@ public class EducationController {
 
     //교육자료 목록조회
     @GetMapping("/list")
-    public String educationList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, EducationalResources educationalResources) {
-        Page<EducationalResources> educationPage = this.educationService.getList(page);
+    public String educationList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, EducationalResources educationalResources,@RequestParam(required = false, defaultValue = "") String searchText,@RequestParam(required = false, defaultValue = "") Integer searchGame,@RequestParam(required = false, defaultValue = "") String resourceName) {
+
+        Page<EducationalResources> educationPage;
+
+        System.out.println("resourceName?"+resourceName);
+        if(!resourceName.isEmpty() && !resourceName.equals("")){
+            System.out.println("!!!!!!!!!!!!!!!!! resourceName"+resourceName);
+            educationPage = this.educationService.getresourceName(resourceName,page);
+            System.out.println("!!!!!!!!!!!!!!!!! educationPage"+educationPage.getTotalPages());
+        }
+
+        if (searchText.isEmpty() && searchGame == null) {
+            // 검색어가 비어있을 때 전체 목록을 가져옴
+            educationPage = this.educationService.getList(page);
+        } else if(!searchText.isEmpty() && searchGame == null){
+            // 검색어가 있는 경우 검색 결과를 가져옴
+            educationPage = this.educationService.getresourcecateList(searchText, page);
+        }else if(searchText.isEmpty() && searchGame != null) {
+            educationPage = this.educationService.getFilterGame(searchGame, page);
+        } else {
+            educationPage = this.educationService.getFilteredResources(searchGame,searchText,page);
+        }
+
+
 
         // 교육자료에 대한 파일 정보를 가져와서 모델에 추가
         for (EducationalResources education : educationPage.getContent()) {
@@ -77,7 +105,23 @@ public class EducationController {
             education.setResourcesFilesList(resourcesFilesList);
         }
 
+      /*  List<GameContents> uniqueGameNames = educationPage.getContent().stream()
+                .map(education -> {
+                    GameContents game = new GameContents();
+                    game.setGameContentNo(education.getGameContents() != null ? education.getGameContents().getGameContentNo() : null);
+                    game.setGameName(education.getGameContents() != null ? education.getGameContents().getGameName() : "");
+                    return game;
+                })
+                .filter(game -> game.getGameContentNo() != null) // Filter out objects with null gameContentNo
+                .collect(Collectors.toList());*/
+
+        List<GameContents> uniqueGameNames = new ArrayList<>();
+        for(GameContents game : gameService.getAllGameContents()){
+            uniqueGameNames.add(game);
+        }
         //3.Model
+        System.out.println("다시 ? pageable?"+educationPage);
+        model.addAttribute("uniqueGameNames", uniqueGameNames);
         model.addAttribute("educationPage", educationPage);
         model.addAttribute("educationalResources", educationalResources);
         return "education/list";

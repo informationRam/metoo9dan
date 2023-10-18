@@ -4,6 +4,7 @@ import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
+import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoApproveResponse;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoPayService;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoReadyResponse;
@@ -36,10 +37,51 @@ public class PaymentsController {
     private final KakaoPayService kakaoPayService;
     private final PaymentsService paymentsService;
     private final MemberService memberService;
+    private final MemberServiceImpl memberServicesimpl;
+
 
     // 결제하기 폼
     @PostMapping("/paymentsform")
-    public String paymentsform(@RequestParam(value = "gameContentNo", required = false) List<Integer> gameContentNo, Model model, HttpSession session) {
+    public String paymentsform(@RequestParam("gameContentNos") List<Integer> gameContentNos, Model model, HttpSession session) {
+
+        if(!gameContentNos.isEmpty()){
+            System.out.println("존재함: "+gameContentNos);
+
+        }
+
+
+        if (gameContentNos != null && !gameContentNos.isEmpty()) {
+            List<GameContents> selectedGameContents = new ArrayList<>();
+
+            int totalSalePrice = 0;
+
+            for (int gameno : gameContentNos) {
+                System.out.println("gameno?"+gameno);
+                GameContents gameContents = gameService.getGameContents(gameno);
+                selectedGameContents.add(gameContents);
+                // salePrice의 합계 계산
+                totalSalePrice += (gameContents.getSalePrice());
+                System.out.println("totalSalePrice?" +totalSalePrice);
+            }
+
+            // 세션에 선택한 게임 컨텐츠와 총 판매 가격 저장
+            session.setAttribute("selectedGameContents", selectedGameContents);
+            session.setAttribute("totalSalePrice", totalSalePrice);
+
+        }
+        return "payments/paymentsform";
+    }
+
+
+
+    /* @PostMapping("/paymentsform")
+    public String paymentsform(@RequestParam(value = "gameContentNo", required = false) List<Integer> gameContentNo,  @RequestParam("gameContentNos") List<Integer> gameContentNos,Model model, HttpSession session) {
+
+      if(!gameContentNos.isEmpty()){
+          System.out.println("존재함");
+      }
+
+
         if (gameContentNo != null && !gameContentNo.isEmpty()) {
             List<GameContents> selectedGameContents = new ArrayList<>();
 
@@ -61,7 +103,7 @@ public class PaymentsController {
         return "payments/paymentsform";
     }
 
-
+*/
     // 결제하기
     @PostMapping("/payments")
     @Transactional
@@ -77,8 +119,10 @@ public class PaymentsController {
         // paymentMethod 변수에 선택한 결제 방법이 무통장이면
         if(paymentMethod.equals("deposit")){
             paymentsService.save(selectedGameContents,member,paymentMethod);
+            memberServicesimpl.userUpdate(member);
         }else if(paymentMethod.equals("account")){
             paymentsService.save(selectedGameContents,member,paymentMethod);
+            memberServicesimpl.userUpdate(member);
         }else {
             return "payments/paymentsform";
         }

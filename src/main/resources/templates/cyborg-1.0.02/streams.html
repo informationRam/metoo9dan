@@ -217,8 +217,9 @@ https://templatemo.com/tm-579-cyborg-gaming
                           </div>
                           <div>
                           <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="gameContentNo" id="flexCheckInline" th:value="${game.gameContentNo}">
-                            <label class="form-check-label" for="flexCheckInline"></label>
+                            <input class="form-check-input" type="checkbox" name="gameContentNo" id="checkbox1" th:value="${game.gameContentNo}" data-game-content-no="${game.gameContentNo}">
+                            <input type="hidden" id="hiddenGameContentNos" name="gameContentNos">
+                            <label class="form-check-label" for="checkbox1"></label>
                           </div>
                           </div>
                         </div>
@@ -264,10 +265,13 @@ https://templatemo.com/tm-579-cyborg-gaming
         <img src="/image/game/icon-cart.png" style="width: 30px !important;">
         <span style="margin-right: 20px;">총: <span id="totalItems">건</span></span>
         <span style="margin-left: 30px !important;">합계: <span id="totalPrice">원</span></span>
+        <!-- HTML 코드 내에 버튼 추가 -->
+<button id="clearStorageButton" class="btn btn-danger" onclick="clearLocalStorage()">로컬 스토리지 초기화</button>
+
       </span>
         </div>
         <span>
-          <button type="submit" class="btn btn-outline-warning" onclick="subscribe()">구독하기</button>
+          <button type="submit" class="btn btn-outline-warning" id="subscribeButton" onclick="subscribe()">구독하기</button>
         </span>
         </form>
       </div>
@@ -286,7 +290,7 @@ https://templatemo.com/tm-579-cyborg-gaming
     <script src="/css/game/cyborg/assets/js/tabs.js"></script>
     <script src="/css/game/cyborg/assets/js/popup.js"></script>
     <script src="/css/game/cyborg/assets/js/custom.js"></script>
-    <script>
+<!--    <script>
        function subscribe() {
          var checkboxes = document.querySelectorAll('input[type="checkbox"]');
          var atLeastOneSelected = false;
@@ -303,9 +307,130 @@ https://templatemo.com/tm-579-cyborg-gaming
            alert("선택한 상품이 없습니다.");
          }
        }
+    </script>-->
+    <script>
+      function subscribe() {
+          var hiddenField = document.getElementById("hiddenGameContentNos");
+          var storedValues = JSON.parse(localStorage.getItem("selectedValues"));
+          console.log('storedValues', storedValues);
+
+          // 문자열에서 숫자 배열로 변환
+          var integerValues = storedValues.map(function(value) {
+              return parseInt(value);
+          });
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/payments/paymentsform", true);
+          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // JSON 요청임을 설정
+
+          var data = JSON.stringify(integerValues);
+
+          xhr.send(data);
+
+          // hiddenField.value 설정 및 서버로의 요청 전송은 비동기로 수행되므로 이후 코드를 두어야 합니다.
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4 && xhr.status === 200) {
+                  console.log('서버 응답:', xhr.responseText);
+              }
+          };
+      }
+
+
     </script>
 
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var totalPriceElement = document.getElementById("totalPrice");
+        var totalItemsElement = document.getElementById("totalItems");
+        var selectedPrices = JSON.parse(localStorage.getItem("selectedPrices")) || {};
+        var selectedValues = JSON.parse(localStorage.getItem("selectedValues")) || [];
+
+        checkboxes.forEach(function (checkbox) {
+          var gameContentNo = checkbox.getAttribute("data-game-content-no");
+          console.log('gameContentNo???', gameContentNo);
+          if (selectedValues.includes(parseInt(gameContentNo))) {
+            checkbox.checked = true;
+          }
+
+          checkbox.addEventListener('change', function () {
+            updateTotalPrice();
+          });
+        });
+
+        // Page load: Restore selected prices and update the total
+        updateTotalPrice();
+
+        function updateTotalPrice() {
+          var total = 0;
+          var selectedGameContentNos = [];
+
+          checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+              var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
+              var gameContentNo = checkbox.value;
+
+              if (priceElement && gameContentNo) {
+                var price = parseFloat(priceElement.textContent);
+                selectedPrices[gameContentNo] = price;
+                selectedValues.push(gameContentNo);
+                selectedGameContentNos.push(parseInt(gameContentNo));
+                console.log('gameContentNo', gameContentNo);
+                console.log('selectedValues', selectedValues);
+                console.log('selectedGameContentNos', selectedGameContentNos);
+              } else {
+                delete selectedPrices[gameContentNo];
+                selectedValues = selectedValues.filter(function (value) {
+                  return value !== gameContentNo;
+                });
+              }
+            }
+          });
+
+          // Calculate the total from the selected prices
+          for (var contentNo in selectedPrices) {
+            total += selectedPrices[contentNo];
+          }
+
+          // Update local storage with the selected prices and values
+          localStorage.setItem("selectedPrices", JSON.stringify(selectedPrices));
+          localStorage.setItem("selectedValues", JSON.stringify(selectedValues));
+          localStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+          console.log('selectedValues',JSON.stringify(selectedValues))
+
+
+
+          if (totalPriceElement) {
+            totalPriceElement.innerText = total + " 원";
+          }
+
+          if (totalItemsElement) {
+            var itemsCount = selectedValues.length;
+            totalItemsElement.innerText = itemsCount + " 건";
+          }
+        }
+      });
+    </script>
+
+
+    <script>
+      // 로컬 스토리지 초기화 함수
+      function clearLocalStorage() {
+        if (confirm("로컬 스토리지의 데이터를 모두 삭제하시겠습니까?")) {
+          localStorage.removeItem("selectedPrices");
+           localStorage.removeItem("selectedValues");
+          localStorage.clear(); // 로컬 스토리지 초기화
+          alert("로컬 스토리지가 초기화되었습니다.");
+
+          // 아래 두 줄은 선택한 가격과 건수를 초기화합니다.
+          document.getElementById("totalPrice").innerText = "0 원";
+          document.getElementById("totalItems").innerText = "0 건";
+        }
+      }
+    </script>
+
+
+    <!--<script>
             var checkboxes = document.querySelectorAll('input[type="checkbox"]');
             var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
             var totalItemsElement = document.getElementById("totalItems"); // 선택한 항목의 수를 표시할 요소
@@ -346,11 +471,11 @@ https://templatemo.com/tm-579-cyborg-gaming
                 });
             });
 
-    </script>
+    </script>-->
     <script>
     function searchGames() {
-    var searchText = document.getElementById('searchText').value;
-    window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+      var searchText = document.getElementById('searchText').value;
+      window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
     }
 </script>
   </div>

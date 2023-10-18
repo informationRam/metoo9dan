@@ -2,6 +2,8 @@ package com.idukbaduk.metoo9dan.payments.kakaopay;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.member.service.MemberService;
+import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -23,6 +25,7 @@ public class KakaoPayService {
         static final String admin_Key = "952a7b3082d015dcec08556a07b94b78"; // 공개 조심! 본인 애플리케이션의 어드민 키를 넣어주세요
         private KakaoReadyResponse kakaoReady;
         private final PaymentsService paymentsService;
+        private final MemberServiceImpl memberService;
 
 
         public KakaoReadyResponse kakaoPayReady(String item_name,String totalAmount) {
@@ -90,7 +93,7 @@ public class KakaoPayService {
         System.out.println("requestEntity2? :"+requestEntity);
 
         paymentsService.save(selectedGameContents, member, pay);
-
+        memberService.userUpdate(member);
         return approveResponse;
     }
 

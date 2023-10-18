@@ -413,7 +413,7 @@ public class GameController {
 
     //게임컨텐츠 구매 할때 목록조회 (페이지네이션)
     @GetMapping("/alllist")
-    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
+    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText,@RequestParam(required = false, defaultValue = "") List<Integer> gameContentNo) {
 
         // 게임컨텐츠 목록 조회
         Page<GameContents> gamePage = this.gameService.getallList(searchText, searchText, page);
@@ -433,46 +433,25 @@ public class GameController {
             gamecon.setEducationalResourcesList(education);
 
         }
-        int startPage =  Math.max(1,gamePage.getPageable().getPageNumber() - 4);
-        int endPage = Math.max(gamePage.getTotalPages(), gamePage.getPageable().getPageNumber() + 4);
+        int currentPage = gamePage.getPageable().getPageNumber();
+        int totalPages = gamePage.getTotalPages();
+        int pageRange = 5; // 한 번에 보여줄 페이지 범위
+
+        int startPage = Math.max(0, currentPage - pageRange / 2);
+        int endPage = startPage + pageRange - 1;
+        if (endPage >= totalPages) {
+            endPage = totalPages - 1;
+            startPage = Math.max(0, endPage - pageRange + 1);
+        }
+
+// 페이지 번호에 1을 더해줍니다.
+        startPage += 1;
+        endPage += 1;
 
         model.addAttribute("gamePage", gamePage);
-        model.addAttribute("startPage",startPage);
-        model.addAttribute("endPage",endPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         model.addAttribute("searchText", searchText);
-
-        return "cyborg-1.0.02/streams";
-    }
-
-
-    //게임컨텐츠 구매 할때 목록조회 (검색기능!)
-    @GetMapping("/searchText")
-    public String gameListsearchText(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
-
-        // 게임컨텐츠 목록 조회
-        Page<GameContents> gamePage = this.gameService.getallList(searchText, searchText, page);
-
-        for (GameContents gamecon : gamePage.getContent()) {
-            // 게임컨텐츠에 대한 파일 정보 가져오기
-            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
-            gamecon.setGameContentFilesList(gameContentFilesList);
-
-            // 게임컨텐츠에 대한 교육자료 정보 가져오기
-            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
-
-            for (EducationalResources educationalResource : education) {
-                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
-                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
-            }
-            gamecon.setEducationalResourcesList(education);
-
-        }
-        int startPage =  Math.max(1,gamePage.getPageable().getPageNumber() - 4);
-        int endPage = Math.max(gamePage.getTotalPages(), gamePage.getPageable().getPageNumber() + 4);
-
-        model.addAttribute("gamePage", gamePage);
-        model.addAttribute("startPage",startPage);
-        model.addAttribute("endPage",endPage);
 
         return "cyborg-1.0.02/streams";
     }

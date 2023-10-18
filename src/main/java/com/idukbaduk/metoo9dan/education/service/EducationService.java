@@ -32,7 +32,6 @@ public class EducationService {
     private final ResourcesFilesReprository resourcesFilesReprository;
     private final ResourcesFilesService resourcesFilesService;
 
-
     @Transactional
     public EducationalResources save(EducationValidation educationValidation) throws IOException {
         // 파일을 저장하고, 교육 자료를 저장하는 로직을 포함
@@ -42,7 +41,7 @@ public class EducationService {
 
     }
 
-    //교육자료목록조회 (페이징처리)
+    //교육자료목록조회 ( 전체 페이징처리)
     public Page<EducationalResources> getList(int page) {
 
         List<Sort.Order> sorts = new ArrayList<>();
@@ -50,6 +49,46 @@ public class EducationService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return educationalRepository.findAll(pageable);
     }
+
+    //교육자료목록조회 (교육자료 - 페이징처리)
+    public Page<EducationalResources> getresourcecateList(String resourceCate, int page) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return educationalRepository.findByResourceCate(resourceCate,pageable);
+    }
+
+
+    //교육자료 제목으로 (교육자료 - 페이징처리)
+    public Page<EducationalResources> getresourceName(String resourceName, int page) {
+        System.out.println("resourceName?"+resourceName);
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        System.out.println("pageable?"+pageable);
+
+        return educationalRepository.findByResourceNameContaining(resourceName,pageable);
+    }
+
+
+    //게임, 교육자료를 기준으로 페이지 네이션
+    public Page<EducationalResources> getFilteredResources(Integer gameContentNo, String resourceCate,int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return educationalRepository.findByGameContentsGameContentNoAndResourceCateContaining(gameContentNo, resourceCate, pageable);
+    }
+
+    //게임을 기준으로 페이지 네이션
+    public Page<EducationalResources> getFilterGame(Integer gameContentNo,int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return educationalRepository.findByGameContentsGameContentNo(gameContentNo, pageable);
+    }
+
+
 
     //교육자료목록조회
     public List<EducationalResources> getAllEducation() {

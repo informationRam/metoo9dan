@@ -120,6 +120,16 @@ public class MemberServiceImpl implements MemberService {
 
 
 
+    //회원 '유료회원으로'업데이트 처리
+    @Transactional
+    public void userUpdate(Member member) {
+
+        member.setMembershipStatus("Premium member");
+        memberRepository.save(member);
+    }
+
+
+
 }
 
 
