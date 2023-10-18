@@ -15,10 +15,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.*;
@@ -39,10 +42,20 @@ public class StudyGroupController {
                            @RequestParam(value = "page", defaultValue = "1") int currentPage){
         //Principal
         Member member = memberService.getUser(principal.getName());
-        int member_no = member.getMemberNo();
+        int member_no = member.getMemberNo(); //회원 번호
+        //String role = member.getRole(); //역할
+
+       /* // 현재 사용자의 인증 정보를 가져옴
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 현재 사용자의 권한 중 하나라도 "EDUCATOR"이 아니라면
+        if (!authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("EDUCATOR"))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"권한이 없습니다.");
+        }*/
 
         //페이지네이션
-        int pageSize = 2; // 페이지당 보여줄 아이템 개수
+        int pageSize = 5; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
         map.put("member_no", member_no);
         map.put("pageSize", pageSize);
@@ -142,7 +155,8 @@ public class StudyGroupController {
         GameContents gameContents = gameContentRepository.findById(game_content_no).orElse(null);
         Member member2 = memberRepositoryStudyGroup.findById(member_no).orElse(null);
 
-        studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member2);
+        studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),
+                                studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member2);
 
         return "redirect:/studygroup/list";
     }
@@ -210,7 +224,8 @@ public class StudyGroupController {
         model.addAttribute("group_no",group_no);
         Member member2 = memberRepositoryStudyGroup.findById(member_no).orElse(null);
         StudyGroups studyGroups = studyGroupService.getGruop(group_no);
-        studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member2);
+        studyGroupService.modify(studyGroups,studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),
+                                    studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),member2);
         return "redirect:/studygroup/list";
     }
 
@@ -364,6 +379,18 @@ public class StudyGroupController {
         //GroupInfo,approveList 결과 보내기
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+
+    // 가상의 승인 처리된 데이터 (실제로는 데이터베이스에서 가져와야 함)
+/*    private List<ApproveListDTO> approvedData;
+
+    @GetMapping("/getApprovedData")
+    public ResponseEntity<List<ApproveListDTO>> getApprovedData() {
+        // 승인 처리된 데이터를 가져와서 클라이언트에 반환합니다.
+        // approvedData를 실제 데이터로 채우는 로직을 여기에 구현해야 함.
+        return ResponseEntity.ok(approvedData);
+    }*/
+
 
 
 
