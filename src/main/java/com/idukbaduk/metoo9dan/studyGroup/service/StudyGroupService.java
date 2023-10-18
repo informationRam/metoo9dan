@@ -103,11 +103,15 @@ public class StudyGroupService {
         groupRepository.save(studyGroups);
     }
 
-    //학습그룹 가입신청 리스트
-    public List<GroupJoinListDTO> getGroupJoinList() {
-        return studyGroupRepository.getGroupJoinList();
+    //학습 그룹 가입(학습그룹 리스트 전체)
+    public List<GroupJoinListDTO> getGroupJoinList(Map<String, Integer> map) {
+        return studyGroupRepository.getGroupJoinList(map);
     }
 
+    //학습 그룹 가입(학습그룹 리스트 전체) cnt
+    public int getGroupJoinListCnt() {
+        return studyGroupRepository.getGroupJoinListCnt();
+    }
 
     //학습그룹명 조건 조회(학습 그룹 신청 리스트)
     public List<GroupJoinListDTO> selectNameList(int group_no) {

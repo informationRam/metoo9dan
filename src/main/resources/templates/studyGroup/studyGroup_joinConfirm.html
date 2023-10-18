@@ -34,7 +34,7 @@
                         </td>
                         <td th:text="${#dates.format(joinConfirm.application_date,'yyyy-MM-dd')}"></td>
                         <td th:text="${#dates.format(joinConfirm.approved_date,'yyyy-MM-dd')}"></td>
-                        <td th:text="${joinConfirm.is_approved ? 'O' : 'X'}"></td>
+                        <td th:text="${joinConfirm.is_approved ? 'O' : 'X'}"></td><!--true이면 'O'가 출력, false이면 'X'가 출력-->
                     </tr>
                 </th:block>
                 <th:block th:unless="${joinConfirm != null and #lists.size(joinConfirm) > 0}">
