@@ -50,9 +50,6 @@ public class NoticeController {
     private final NoticeFilesService filesService;
     private final MemberServiceImpl memberServiceImpl;
 
-    @Autowired
-    private HttpSession httpSession;
-
     // 공지사항 등록 메뉴를 누르면 공지사항 목록을 보여줌
     // 페이지네이션 추가
     @GetMapping("/list")

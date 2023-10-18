@@ -9,7 +9,83 @@
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h2>문의사항</h2>
-            model로 memberRole 넘겨받아야 함.
+            <div>
+                <a th:text="|총 게시물 ${questionPage.getTotalElements}개 조회되었습니다.|"></a>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th>작성일</th>
+                            <th>답변여부</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="question, loop:${questionPage}">
+                            <td th:text="${question.questionNo}"></td>
+                            <td th:text="${question.questionTitle}"></td>
+                            <td th:text="${question.member.memberId}"></td>
+                            <td th:text="${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${question.isAnswered}"></td>
+                        </tr>
+                        <tr th:if="${questionPage.isEmpty()}">
+                            <td colspan="5" class="">작성된 문의사항이 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a class="btn btn-primary" th:href="@{/qna/questionAdd}">문의사항 작성</a>
+            페이지네이션 영역
+            <nav th:if="${!questionPage.isEmpty()}">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${startPage <= 5} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?page=${startPage-2}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Prev</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${startPage-2}|}"><span>Prev</span></a>
+                    </li>
+
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(startPage-1, endPage-1)}"
+                        th:classappend="${page == questionPage.number} ? 'active'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?page=${page}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"
+                           th:text="${page+1}"></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${page}|}"
+                           th:text="${page+1}"></a>
+                    </li>
+
+
+                    <li class="page-item" th:classappend="${endPage >= questionPage.totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?page=${endPage}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${endPage}|}"><span>Next</span></a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!--문의사항 검색 영역-->
+            <div>
+                <form>
+                    <select id="searchCategory" name="searchCategory">
+                        <option>제목+내용</option>
+                        <option>제목</option>
+                        <option>내용</option>
+                    </select>
+                    <input type="text" id="keyword" name="keyword">
+                    <input type="submit" value="검색">
+                </form>
+            </div>
+
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->
