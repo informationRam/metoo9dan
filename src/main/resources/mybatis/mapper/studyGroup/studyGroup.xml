@@ -211,8 +211,7 @@
     </select>
 
     <!--학습그룹 가입-학생(학습그룹 전체리스트)-->
-    <select id="GroupJoinList" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        <![CDATA[
+    <select id="GroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
         SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
                  (SELECT COUNT(member_no)
                      FROM baduk.group_students gs
@@ -223,7 +222,19 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
-		]]>
+        <if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!--학습그룹 가입-학생(학습그룹 전체리스트)) cnt-->
+    <select id="GroupJoinListCnt" resultType="int">
+        <![CDATA[
+        SELECT count(s.group_no)
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
+        ]]>
     </select>
 
     <!--학습그룹 신청 리스트-->
@@ -276,17 +287,19 @@
 
     <!--학습그룹명 조건 조회(학습 그룹 신청 리스트)-->
     <select id="SelectNameList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-    SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
-        (SELECT COUNT(member_no)
-            FROM baduk.group_students gs
-            WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
-        s.group_size - (SELECT COUNT(member_no)
-                        FROM baduk.group_students gs
-                        WHERE gs.group_no = s.group_no) AS group_to
-    FROM baduk.study_groups s
-    JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
-    JOIN baduk.members m ON s.member_no=m.member_no
-    WHERE s.group_no=#{group_no} AND s.group_finish_date >= CURDATE()
+        <![CDATA[
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+            (SELECT COUNT(member_no)
+                FROM baduk.group_students gs
+                WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+            s.group_size - (SELECT COUNT(member_no)
+                            FROM baduk.group_students gs
+                            WHERE gs.group_no = s.group_no) AS group_to
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE s.group_no=#{group_no} AND s.group_finish_date >= CURDATE()
+        ]]>
     </select>
 
     <!--교육자명 리스트(기간지나지 않은)-->

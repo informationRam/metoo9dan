@@ -47,6 +47,22 @@
                     </tr>
                     </tbody>
                 </table>
+                <!--페이지네이션-->
+                <div id="paginationContainer">
+                    <nav th:if="${totalCount} > 0">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/studygroup/groupJoinList(page=${currentPage - 1})}">이전</a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/studygroup/groupJoinList(page=${i})}" th:text="${i}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/studygroup/groupJoinList(page=${currentPage + 1})}">다음</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
                 <div style="display: flex; justify-content: right; align-items: center;">
                     <button id="viewButton" class="btn btn-outline-primary">학습 그룹 가입 신청하기</button>
                 </div>
@@ -197,7 +213,7 @@
                 var resultHTML = "";
 
                 if (data && data.length > 0) {
-                    resultHTML = "<table class='table' id='selectGroupResult'>";
+                    resultHTML = "<table class='table' id='dataContainer'>";
                     resultHTML += "<thead class='table-dark'>";
                     resultHTML += "<tr>";
                     resultHTML += "<th>선택</th>";
@@ -214,7 +230,7 @@
                     data.forEach(function (groupJoinList) {
                         resultHTML += "<tr>";
                         resultHTML += "<td>";
-                        resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' />";
+                        resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' data-group-to='" + groupJoinList.group_TO + "'/>";
                         resultHTML += "</td>";
                         resultHTML += "<td>" + groupJoinList.copy_file_name + "</td>";
                         resultHTML += "<td>" + groupJoinList.group_name + "</td>";

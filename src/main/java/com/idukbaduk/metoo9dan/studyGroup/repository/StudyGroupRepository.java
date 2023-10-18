@@ -63,8 +63,13 @@ public class StudyGroupRepository {
     }
 
     //학습 그룹 가입(학습그룹 리스트 전체)
-    public List<GroupJoinListDTO> getGroupJoinList() {
-        return sqlSession.selectList("StudyGroup.GroupJoinList");
+    public List<GroupJoinListDTO> getGroupJoinList(Map<String, Integer> map) {
+        return sqlSession.selectList("StudyGroup.GroupJoinList",map);
+    }
+
+    //학습 그룹 가입(학습그룹 리스트 전체) cnt
+    public int getGroupJoinListCnt() {
+        return sqlSession.selectOne("StudyGroup.GroupJoinListCnt");
     }
 
     //학습그룹명 조건 조회(학습 그룹 신청 리스트)

@@ -429,7 +429,8 @@ public class StudyGroupController {
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
     @GetMapping("/groupJoinList")
-    public String joinList(Model model,Principal principal){
+    public String joinList(Model model,Principal principal,Map<String, Integer> map,
+                           @RequestParam(value = "page", defaultValue = "1") int currentPage){
         //Principal
         Member member = memberService.getUser(principal.getName());
         int member_no = member.getMemberNo();
@@ -441,9 +442,23 @@ public class StudyGroupController {
         List<HashMap<String, Object>> educatorName = studyGroupService.getEducatorName();
         model.addAttribute("educatorName",educatorName);
 
-        List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList();
+
+        //페이지네이션
+        int pageSize = 2; // 페이지당 보여줄 아이템 개수
+        int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
+        map.put("pageSize", pageSize);
+        map.put("offset", offset);
+
+        int totalCount = studyGroupService.getGroupJoinListCnt(); // 학습 그룹 리스트 카운트
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
+        model.addAttribute("currentPage",currentPage);
+        model.addAttribute("totalCount",totalCount);
+        model.addAttribute("totalPages",totalPages);
+
+        List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList(map);
         model.addAttribute("groupJoinList",groupJoinList);
         System.out.println("groupJoinList="+groupJoinList);
+
 
         //가입 신청한 학습 그룹이 있는지 확인(중복신청 불가)
         int ingStudyGroup = studyGroupService.ingStudyGroup(member_no);
