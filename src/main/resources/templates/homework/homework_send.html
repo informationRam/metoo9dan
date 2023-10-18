@@ -21,28 +21,31 @@
                             </div>
                         </div>
 
-                            <table class="sendhwTable mt-3" id="homeworkTable">
-                                <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Homework Title</th>
-                                    <th>Homework Content Preview</th>
-                                    <th>Progress</th>
-                                    <th>Due Date</th>
-                                </tr>
-                                </thead>
-                                <tbody id="homeworkTableBody">
-                                    <!-- 숙제 목록 테이블 행 -->
-                                    <tr th:each="hw : ${homeworks}" th:data-hw-id="${hw.homeworkNo}">
-                                        <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
-                                        <td th:text="${hw.homeworkTitle}"></td>
-                                        <td th:text="${hw.homeworkContentPreview}"></td>
-                                        <td th:text="${hw.progress} + '레벨'"></td>
-                                        <td th:text="${hw.dueDate}"></td>
-                                    </tr>
+                        <table class="sendhwTable mt-3" id="homeworkTable">
+                            <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>숙제명</th>
+                                <th>숙제 내용</th>
+                                <th>게임 컨텐츠명</th>
+                                <th>진도</th>
+                                <th>제출 기한</th>
+                            </tr>
+                            </thead>
+                            <tbody id="homeworkTableBody">
+                            <!-- 숙제 목록 테이블 행 -->
+                            <tr th:each="hw,start : ${homeworks}" th:data-hw-id="${hw.homeworkNo}">
+                                <td th:text="${homeworks.size() - start.count + 1}"></td>
+                                <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
+                                <td th:text="${hw.homeworkTitle}"></td>
+                                <td th:text="${hw.homeworkContentPreview}"></td>
+                                <td th:text="${hw.gameTitle}"></td>
+                                <td th:text="${hw.progress} + '레벨'"></td>
+                                <td th:text="${hw.dueDate}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
 
-                                </tbody>
-                            </table>
                             <div id="paginationContainer" class="d-flex justify-content-center mt-5">
                                 <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
                             </div>
@@ -110,6 +113,7 @@
             <div id="hw-homeworkDetailModal">
                 <h2 id="modalTitle"></h2>
                 내용<p id="modalContent"></p>
+                게임 컨텐츠<p id="modalGameTitle"></p>
                 진도<p id="modalProgress"></p>
                 메모<p id="modalMemo"></p>
                 기한<p id="modalDueDate"></p>
@@ -364,6 +368,7 @@
                                 $("#modalTitle").html(data.homeworkTitle);
                                 $("#modalContent").html(data.homeworkContent);
                                 $("#modalProgress").text(data.progress);
+                                $("#modalGameTitle").text(data.gameTitle);
                                 $("#modalMemo").html(data.homeworkMemo);
                                 $("#modalDueDate").text(data.dueDate);
                                 $("#modalCreateDate").text(data.creationDate);

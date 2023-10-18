@@ -38,4 +38,8 @@ public class HomeworksEditForm {
     @Future(message = "제출기한은 지나간 날짜로 설정하실 수 없습니다")
     @NotNull(message = "제출기한을 입력해주세요")
     private Date hwDueDate;
+
+    @Column(name="game_content_title")
+    @IsNotNone(message = "숙제 내용을 선택해주세요")
+    private String gameTitle;
 }

@@ -37,14 +37,25 @@
                 <div id="pagination">
                     <!-- 여기에 페이지네이션 내용이 들어갈 예정 -->
                 </div>
-            </div><!-- 상단 끝 -->
-            <div>
-                <div><!-- 숙제 제출 / 평가 현황 미니 대시보드 -->
-                </div>
-                <form><!-- 숙제 평가 업데이트 폼 -->
-                    <input type="submit">
+            </div>
+            <!-- 상단 끝 -->
 
-                </form>
+            <!-- 하단 -->
+            <div style="display:none;">
+                <div>
+                    <!-- 숙제 제출 / 평가 현황 미니 대시보드 -->
+
+                </div>
+
+                <div>
+                    <!-- 전송 내역 -->
+                    <form><!-- 숙제 평가 업데이트 폼 -->
+                        <div><!-- 이 카드 부분 반복 -->
+
+                        </div>
+                        <input type="submit">
+                    </form>
+                </div>
             </div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
@@ -123,53 +134,6 @@
                             sort: sortOrder,
                             page: page
                         },
-                        success: function(response) {
-                            // 결과 테이블 갱신
-                            let tableContent = '<thead><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody>';
-                                response.content.forEach(item => {
-                                    tableContent += `
-                                    <tr th:data-hw-id="${item.homeworkNo}">
-                                    <td>${item.homeworkTitle}</td>
-                                    <td>${item.homeworkContentPreview}</td>
-                                    <td>${item.currentLevel}</td>
-                                    <td>${item.dueDate}</td>
-                                    <td>${item.sendDate}</td>
-                                    </tr>`;
-                                });
-                            tableContent += '</tbody>';
-                            $('#hwSendTable').html(tableContent);
-
-
-                            // 페이지네이션 갱신
-                            let paginationContent = '';
-                            let endPage = Math.ceil(page / 5.0) * 5;
-                            let startPage = endPage - 4;
-
-                            if (startPage > 1) {
-                                paginationContent += `<a href="#" class="pagination-link" data-page="${startPage - 1}">이전</a>`;
-                            }
-
-                            for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
-                                paginationContent += `<a href="#" class="pagination-link" data-page="${i}">${i}</a>`;
-                            }
-
-                            if (endPage < response.totalPages) {
-                                paginationContent += `<a href="#" class="pagination-link" data-page="${endPage + 1}">다음</a>`;
-                            }
-
-                            $('#pagination').html(paginationContent);
-                        }
-                    });
-                }
-
-                // 하위 테이블 로드
-                function loadTable(page = 1) {
-                    let title = $("#titleDropdown").val();
-                    let sortOrder = $("#sortOrder").val();
-                    $.ajax({
-                        url: '/homework/evaluate/hw-list',
-                        type: 'GET',
-                        data: {},
                         success: function(response) {
                             // 결과 테이블 갱신
                             let tableContent = '<thead><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody>';

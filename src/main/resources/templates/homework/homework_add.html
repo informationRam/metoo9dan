@@ -22,6 +22,14 @@
                         <span th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}">Invalid Content</span>
                     </div>
                     <div>
+                        <label>게임 콘텐츠명:</label>
+                        <select th:field="*{gameTitle}">
+                            <option th:value="none" th:text="선택하세요"></option>
+                            <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('gameTitle')}" th:errors="*{gameTitle}">Invalid Progress</span>
+                    </div>
+                    <div>
                         <label>숙제 진도:</label>
                         <input type="number" th:field="*{progress}">레벨
                         <span th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}">Invalid Progress</span>
@@ -49,14 +57,16 @@
                         <th onclick="sortTable(0)">No</th>
                         <th onclick="sortTable(1)">숙제 제목</th>
                         <th onclick="sortTable(2)">숙제 내용</th>
-                        <th onclick="sortTable(3)">숙제 진도</th>
-                        <th onclick="sortTable(4)">제출 기한</th>
-                        <th onclick="sortTable(5)">상태</th>
+                        <th onclick="sortTable(3)">게임 컨텐츠명</th>
+                        <th onclick="sortTable(4)">숙제 진도</th>
+                        <th onclick="sortTable(5)">제출 기한</th>
+                        <th onclick="sortTable(6)">상태</th>
                     </tr>
                     <tr th:each="hw, stat : ${homeworkList}" th:data-hw-id="${hw.homeworkNo}">
                         <td th:text="${homeworkList.size() - stat.count + 1}"></td>
                         <td th:text="${hw.homeworkTitle}"></td>
                         <td th:text="${hw.homeworkContentPreview}"></td>
+                        <td th:text="${hw.gameTitle}"></td>
                         <td th:text="${hw.progress}"></td>
                         <td th:text="${#dates.format(hw.dueDate, 'yyyy-MM-dd')}"></td>
                         <td th:text="${hw.sent ? (hw.dueDate > #dates.createNow() ? '제출 진행 중' : '제출 기한 만료') : '전송 기록 없음'}"></td>
@@ -78,6 +88,7 @@
                 <div id="hwDetailCheck">
                     <h2 id="modalTitle"></h2>
                     내용<p id="modalContent"></p>
+                    게임 콘텐츠명<p id="modalGameTitle"></p>
                     진도<p id="modalProgress"></p>
                     메모<p id="modalMemo"></p>
                     기한<p id="modalDueDate"></p>
@@ -99,6 +110,13 @@
                             <label>숙제 내용:</label>
                             <textarea th:field="*{hwContent}" th:id="'editContent'"></textarea>
                             <span id="editContentError" class="error-message"></span>
+                        </div>
+                        <div>
+                            <label>게임 콘텐츠명:</label>
+                            <select th:field="*{gameTitle}">
+                                <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('gameTitle')}" th:errors="*{gameTitle}">Invalid Progress</span>
                         </div>
                         <div>
                             <label>숙제 진도:</label>
@@ -326,6 +344,7 @@
                             $("#modalTitle").html(data.homeworkTitle.replace(/\n/g, '<br>'));
                             $("#modalContent").html(data.homeworkContent.replace(/\n/g, '<br>'));
                             $("#modalProgress").text(data.progress);
+                            $("#modalGameTitle").text(data.gameTitle);
                             $("#modalMemo").html(data.homeworkMemo.replace(/\n/g, '<br>'));
                             $("#modalDueDate").text(formatDate(data.dueDate));
                             $("#modalCreateDate").text(formatDate(data.creationDate));
@@ -362,6 +381,7 @@
                             $("#editNo").val(homeworkId);
                             $("#editTitle").val(data.homeworkTitle);
                             $("#editContent").text(data.homeworkContent);
+                            $("#editGametitle").val(data.gameTitle);
                             $("#editProgress").val(data.progress);
                             $("#editMemo").val(data.homeworkMemo);
                             $("#editDueDate").val(data.dueDate.split("T")[0]);

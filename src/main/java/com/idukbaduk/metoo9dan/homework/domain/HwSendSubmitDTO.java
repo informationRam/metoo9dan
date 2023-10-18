@@ -23,7 +23,7 @@ public class HwSendSubmitDTO {
     private Integer currentLevel;
     private LocalDateTime sendDate;
     private Integer homeworkNo;
-    private String name; //숙제 받은놈
+    private String name; //숙제 받은놈 이름
 
     private Integer homeworkSubmitNo;
     private String submitContentPreview;

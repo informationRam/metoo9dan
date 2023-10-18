@@ -5,15 +5,50 @@
                 <button id="stopButton"></button>
             </div>
 
+            <!-- 숙제 목록 -->
+            <input type="text" id="homeworkSearchInput" onkeyup="searchTable()" placeholder="검색어를 입력하세요..">
+            <table id="homeworkTable">
+                <thead>
+                <tr>
+                    <th>No</th>
+                    <th>숙제 제목</th>
+                    <th>게임 컨텐츠명</th>
+                    <th>진도</th>
+                    <th>제출 기한</th>
+                    <th>제출</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="hs,start : ${homeworkSend}"
+                    th:data-send-no="${hs.sendNo}"
+                    th:class="${hs.isSubmit != 'N' ? 'submitted' : 'not-submitted'}"
+                    ondblclick="loadForm(this)">
+                    <td th:text="${homeworkSend.size() - start.count + 1}"></td>
+                    <td th:text="${hs.homeworks.homeworkTitle}"></td>
+                    <td th:text="${hs.homeworks.gameTitle}"></td>
+                    <td th:text="${hs.homeworks.progress}"></td>
+                    <td th:text="${hs.homeworks.dueDate}"></td>
+                    <td th:text="${hs.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- 페이지네이션 부분 -->
+            <div id="homeworkPagination">
+                <button id="homeworkPrevBtn" onclick="homeworkPrevPage()">이전</button>
+                <div id="homeworkPageNumbers"></div>
+                <button id="homeworkNextBtn" onclick="homeworkNextPage()">다음</button>
+            </div>
+
             <div class="submit-form" style="display:none;">
                 <form id="addForm" th:action="@{/homework/submit/add}" th:object="${hwSubmitForm}" method="post">
                     <div class="book">
                         <div class="cover"></div>
-                        <div class="index"><button type="submit">제출</button></div>
+                        <div class="index"></div>
                         <div class="page left page1"></div>
                         <div class="page left page2"></div>
                         <div class="page left page3">
                             <p>숙제 제목: <span class="homework-title"></span></p>
+                            <p>게임 컨텐츠명: <span class="game-title"></span></p>
                             <p>진도: <span class="progress"></span> 레벨</p>
                             <p>숙제 내용: <span class="homework-content"></span></p>
                             <p>교육자: <span class="member-name"></span></p>
@@ -28,6 +63,7 @@
                                 <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
                                 <span id="homeworkContentError" class="error-message"></span>
                                 <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                                <button type="submit">제출</button>
                         </div>
                     </div>
                 </form>
@@ -37,11 +73,11 @@
                 <div class="book">
                     <div class="cover"></div>
                     <div class="index"></div>
-                    <!-- 지피티야. 이자리에 위에 있는 인덱스 아래 자리에 겹치지 않게 똑같이 생겼는데 색이 빨간색이 인덱스를 추가하고싶다-->
                     <div class="page left page1"></div>
                     <div class="page left page2"></div>
                     <div class="page left page3">
                         <p>숙제 제목: <span class="homework-title"></span></p>
+                        <p>게임컨텐츠명: <span class="game-title"></span>레벨</p>
                         <p>진도: <span class="progress"></span>레벨</p>
                         <p>교육자: <span class="member-name"></span></p>
                         <p>숙제 내용: <span class="homework-content"></span></p>
@@ -59,34 +95,12 @@
                             <span id="homeworkEditContentError" class="error-message"></span>
                             <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
                             <button type="submit">수정</button>
-                            <button type="button" id="deleteBtn">제출 내역 삭제</button>
+                            <button type="button" id="deleteBtn">삭제</button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 숙제 목록 -->
-            <table>
-                <thead>
-                <tr>
-                    <th>숙제 제목</th>
-                    <th>진도</th>
-                    <th>제출 기한</th>
-                    <th>제출</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="homeworkSend : ${homeworkSend}"
-                    th:data-send-no="${homeworkSend.sendNo}"
-                    th:class="${homeworkSend.isSubmit != 'N' ? 'submitted' : 'not-submitted'}"
-                    ondblclick="loadForm(this)">
-                    <td th:text="${homeworkSend.homeworks.homeworkTitle}"></td>
-                    <td th:text="${homeworkSend.homeworks.progress}"></td>
-                    <td th:text="${homeworkSend.homeworks.dueDate}"></td>
-                    <td th:text="${homeworkSend.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
-                </tr>
-                </tbody>
-            </table>
 
             <div id="successModal" class="bs-modal">
                 <div class="bs-modal-dialog">
@@ -95,7 +109,7 @@
                             <h5 class="bs-modal-title">제출 성공!</h5>
                         </div>
                         <div class="bs-modal-body">
-                            <p>~제출 성공~ 나도 9단이 될 수 있다!</p>
+                            <p>~숙제 완료~ 나도 9단이 될 수 있다!</p>
                         </div>
                         <div class="bs-modal-footer">
                             <button id="modalCloseBtn" class="btn-close"></button>
@@ -115,6 +129,152 @@
                  $("#stopButton").trigger("click");
                  }, 5000);
                 }
+
+                let homeworkCurrentPage = 1;
+                const homeworkRowsPerPage = 5;
+
+                function homeworkGetTotalRowCount() {
+                    return $("#homeworkTable tbody tr:not(.filtered-out)").length;
+                }
+
+                function homeworkGetVisibleRowCount() {
+                    return $("#homeworkTable tbody tr:visible").length;
+                }
+
+                function homeworkUpdatePagination() {
+                    let totalRows = homeworkGetTotalRowCount();
+                    homeworkCurrentPage = 1;
+                    homeworkUpdateTableDisplay();
+                }
+
+                function homeworkSearchTable() {
+                    let input, filter, table, tr, td, i, j, found;
+                    input = document.getElementById("homeworkSearchInput");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementById("homeworkTable");
+                    tr = table.getElementsByTagName("tr");
+                    let foundCount = 0;
+
+                    $("#noSearchResult").remove();
+
+                    for (i = 1; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td");
+                        found = false;
+                        for (j = 0; j < td.length; j++) {
+                            if (td[j]) {
+                                if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found) {
+                            $(tr[i]).removeClass("filtered-out");
+                            foundCount++;
+                        } else {
+                            $(tr[i]).addClass("filtered-out");
+                        }
+                    }
+
+                    if (foundCount == 0) {
+                        $("#homeworkTable").hide();
+                        $("#homeworkPagination").hide();
+                        $("#homeworkTable").after('<p id="noSearchResult">검색 결과가 없습니다</p>');
+                    } else {
+                        $("#homeworkTable").show();
+                        $("#homeworkPagination").show();
+                    }
+
+                    homeworkUpdatePagination();
+                }
+
+                function homeworkRenderPagination() {
+                    let totalRows = homeworkGetTotalRowCount();
+                    let totalPages = Math.ceil(totalRows / homeworkRowsPerPage);
+
+                    let startPage = homeworkCurrentPage - 2;
+                    let endPage = homeworkCurrentPage + 2;
+
+                    if (startPage < 1) {
+                        endPage -= (startPage - 1);
+                        startPage = 1;
+                    }
+                    if (endPage > totalPages) {
+                        startPage -= (endPage - totalPages);
+                        endPage = totalPages;
+                    }
+                    startPage = Math.max(1, startPage);
+
+                    let paginationHtml = '';
+                    for (let i = startPage; i <= endPage; i++) {
+                        paginationHtml += `<span class="hw-page-number ${i === homeworkCurrentPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
+                    }
+
+                    $("#homeworkPageNumbers").html(paginationHtml);
+                    $("#homeworkPrevBtn").prop('disabled', homeworkCurrentPage === 1);
+                    $("#homeworkNextBtn").prop('disabled', homeworkCurrentPage === totalPages);
+                }
+
+                function homeworkUpdateTableDisplay() {
+                    let startRow = (homeworkCurrentPage - 1) * homeworkRowsPerPage;
+                    let endRow = startRow + homeworkRowsPerPage - 1;
+
+                    $("#homeworkTable tbody tr").each(function(index, row) {
+                        if (index === 0) {
+                            $(row).show();
+                        } else if ($(row).hasClass("filtered-out")) {
+                            $(row).hide();
+                        } else if (index > startRow && index <= endRow) {
+                            $(row).show();
+                        } else {
+                            $(row).hide();
+                        }
+                    });
+
+                    homeworkRenderPagination();
+                }
+
+                function homeworkPrevPage() {
+                    if(homeworkCurrentPage > 1) {
+                        homeworkCurrentPage--;
+                        homeworkUpdateTableDisplay();
+                    }
+                }
+
+                function homeworkNextPage() {
+                    let totalPages = Math.ceil(homeworkGetTotalRowCount() / homeworkRowsPerPage);
+                    if(homeworkCurrentPage < totalPages) {
+                        homeworkCurrentPage++;
+                        homeworkUpdateTableDisplay();
+                    }
+                }
+
+                $(document).ready(function() {
+                    homeworkUpdateTableDisplay();
+
+                    $("#homeworkPagination").on("click", ".hw-page-number", function() {
+                        homeworkCurrentPage = $(this).data('page');
+                        homeworkUpdateTableDisplay();
+                    });
+
+                    $("#homeworkPrevBtn").click(function() {
+                        if (homeworkCurrentPage > 1) {
+                            homeworkCurrentPage--;
+                            homeworkUpdateTableDisplay();
+                        }
+                    });
+
+                    $("#homeworkNextBtn").click(function() {
+                        let totalRows = homeworkGetTotalRowCount();
+                        if (homeworkCurrentPage < Math.ceil(totalRows / homeworkRowsPerPage)) {
+                            homeworkCurrentPage++;
+                            homeworkUpdateTableDisplay();
+                        }
+                    });
+
+                    homeworkUpdateTableDisplay();
+                });
+
 
               function loadForm(element) {
                   let hwSendNo = element.getAttribute("data-send-no");
@@ -211,8 +371,8 @@
                       type: "POST",
                       data: $(this).serialize(),
                       success: function(response) {
-                          alert("제출한 숙제가 수정되었습니다");
-                          location.reload();
+                          reAction(); // 꽃가루 효과
+                          $("#successModal").show(); // 모달 보이기
                       },
                       error: function(xhr) {
                           let errors = xhr.responseJSON;
@@ -227,23 +387,22 @@
 
                 //삭제 버튼 클릭
                 $("#deleteBtn").click(function(){
-                            let submitId = $(this).data('submit-id');
+                    let submitId = $(this).data('submit-id');
 
-                            if(submitId && confirm("숙제를 삭제하시겠습니까?")) {
-                                $.ajax({
-                                    url: `/homework/submit/delete/${submitId}`,
-                                    type: 'DELETE',
-                                    success: function(response) {
-                                        alert("숙제가 삭제되었습니다")
-                                        location.reload();
-                                    },
-                                    error: function(xhr, status, error) {
-                                        alert('삭제 실패: ' + xhr.responseText);
-                                    }
-                                });
-                            } else {
-                                alert('숙제 제출 ID가 없습니다. 다시 시도해주세요.');
+                  if(submitId && confirm("제출한 내용을 삭제하시겠습니까?")) {
+                    $.ajax({
+                        url: `/homework/submit/delete/${submitId}`,
+                        type: 'DELETE',
+                        success: function(response) {
+                            alert("숙제가 삭제되었습니다")
+                            location.reload();
+                            },
+                        error: function(xhr, status, error) {
+                            alert('삭제 실패: ' + xhr.responseText);
                             }
                         });
-
+                    } else {
+                        alert('숙제 제출 ID가 없습니다. 다시 시도해주세요.');
+                    }
+                });
             </script>

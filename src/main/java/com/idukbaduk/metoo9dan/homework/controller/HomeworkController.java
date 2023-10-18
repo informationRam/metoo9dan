@@ -34,14 +34,16 @@ public class HomeworkController {
     @Autowired
     private HomeworkService homeworkService;
 
-
+    //--생성 페이지-------------------------------------------------------------------------------------------------------
     //숙제 생성 페이지 보여주기
     @GetMapping("/add")
     public String showCreateForm(Model model, HomeworksForm homeworksForm, HomeworksEditForm homeworksEditForm) {
         //숙제 테이블 list객체
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
-        List<HomeworkDTO> homework =homeworkService.findAllHomeworkWithSendStatus("baduk");
+        List<HomeworkDTO> homework =homeworkService.findAllHomeworkWithSendStatus("jung123");
+        List<String> titles = homeworkService.findGameContentTitlesByMemberId("jung123");
         model.addAttribute("homeworkList",homework);
+        model.addAttribute("titles",titles);
         return "homework/homework_add";
     }
 
@@ -50,14 +52,16 @@ public class HomeworkController {
     public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model, HomeworksEditForm homeworksEditForm) {
         //유효성 검사
         if (result.hasErrors()) {
-            model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus("baduk"));
+            model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus("jung123"));
+            List<String> titles = homeworkService.findGameContentTitlesByMemberId("jung123");
             model.addAttribute("homeworksEditForm", homeworksEditForm);
+            model.addAttribute("titles",titles);
             return "homework/homework_add";
         }
 
         //만든 숙제 저장
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
-        Member member = homeworkService.findMemberByMemberId("baduk");
+        Member member = homeworkService.findMemberByMemberId("jung123");
         homeworkService.saveHomework(homeworksForm,member);
         return "redirect:/homework/add";
     }
@@ -67,8 +71,6 @@ public class HomeworkController {
     public ResponseEntity<HomeworkDTO> getHomeworkDetail(@PathVariable Integer homeworkId) {
         Homeworks homework=homeworkService.findById(homeworkId);
         HomeworkDTO detail = homeworkService.convertToDTO(homework);
-        System.out.println(detail);
-        //HomeworkDTO(homeworkNo=24, homeworkTitle=asd, homeworkContentPreview=asd, homeworkContent=asd, homeworkMemo=dfsd, progress=2, dueDate=2023-10-27 00:00:00.0, creationDate=2023-10-12T16:28:54, isSent=true, homeworkSendList=null)
         return ResponseEntity.ok(detail);
     }
 
@@ -106,13 +108,14 @@ public class HomeworkController {
         }
     }
 
+    //--전송 페이지-------------------------------------------------------------------------------------------------------
     @GetMapping("/send")
     public String showSendPage(Model model) {
         //로그인한 아이디로 바꿔야함!!!!!!!!!!!!!!!!!!!!!!
         //멤버 아이디로 생성한 숙제중에 제출기한이 지나지 않은 숙제를 가져옴 이거 디티오에 넣어줘야함(미리보기용)
-        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberIdAndDueDateAfter("baduk");
+        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberIdAndDueDateAfter("jung123");
         List<HomeworkDTO> homeworkDTO = homeworkService.toHomeworkDTOList(homeworks);
-        List<StudyGroups> studyGroups = homeworkService.findStudyGroupsByMemberId("baduk");
+        List<StudyGroups> studyGroups = homeworkService.findStudyGroupsByMemberId("jung123");
 
         List<String> distinctTitles = homeworks.stream()
                 .map(Homeworks::getHomeworkTitle)
@@ -140,6 +143,7 @@ public class HomeworkController {
         return "redirect:/homework/send";
     }
 
+    //--학생 숙제 페이지-------------------------------------------------------------------------------------------------------
     //숙제 초기 화면
     @GetMapping("/submit")
     public String getHomeworkList(HwSubmitForm hwSubmitForm, Model model) {
@@ -149,18 +153,13 @@ public class HomeworkController {
         return "homework/homework_student";
     }
 
-    //구역 전환
+    //구역 전환1
     @GetMapping("/submit/submit")
     public String loadSubmitHomework(HwSubmitForm hwSubmitForm, Model model) {
         //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
         List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
         model.addAttribute("homeworkSend", homeworkSendList);
         return "homework/homework_submit";
-    }
-
-    @GetMapping("/submit/list")
-    public String loadViewSubmittedHomework() {
-        return "homework/homework_pastHw";
     }
 
     //숙제 더블클릭 시, 전송할 객체
@@ -229,11 +228,26 @@ public class HomeworkController {
             return new ResponseEntity<>("삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    //구역 전환2 - 지난 숙제 보기
+    @GetMapping("/submit/list")
+    public String loadViewSubmittedHomework(Model model) {
+        List<HomeworkSend> homeworkSendList = homeworkService.findByMemberIdAndDueDateBeforeCurrentDate("sedol");
+        Map<HomeworkSend,HomeworkSubmit> sendsubmit = new HashMap<>();
+        for(HomeworkSend hs:homeworkSendList){
+            HomeworkSubmit homeworkSubmit = homeworkService.getSubmitBySendNo(hs.getSendNo());
+            sendsubmit.put(hs,homeworkSubmit);
+        }
+        model.addAttribute("SendSubmit",sendsubmit);
+        return "homework/homework_pastHw";
+    }
+    //--평가 페이지-------------------------------------------------------------------------------------------------------
+
     //숙제 평가
     @GetMapping("/evaluate")
     public String evaluateView(Model model){
         //숙제 전송 리스트의 숙제중에 baduk 아이디로 만들어진 숙제 전송 기록 중에 Homeworks를 리스트로 가져온다
-        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberId("baduk");
+        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberId("jung123");
         List<String> distinctTitles = homeworks.stream()
                 .map(Homeworks::getHomeworkTitle)
                 .distinct()
@@ -251,7 +265,7 @@ public class HomeworkController {
     ) {
         page=page-1;
         Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("sendDate").ascending() : Sort.by("sendDate").descending());
-        Page<HomeworkSendDTO> homeworksDto = homeworkService.findByHomeworks_HomeworkTitleAndHomeworks_Member_MemberId(title, "baduk", pageable);
+        Page<HomeworkSendDTO> homeworksDto = homeworkService.findByHomeworks_HomeworkTitleAndHomeworks_Member_MemberId(title, "jung123", pageable);
         return ResponseEntity.ok(homeworksDto);
     }
     //전송 내역
@@ -271,7 +285,7 @@ public class HomeworkController {
     }
 
     //평가 대시보드 내용 - 제출
-    @GetMapping("")
+    @GetMapping("/evaluate/dash-submit")
     public ResponseEntity<?> evalDashboard1(
             @RequestParam int homeworkNo,
             @RequestParam LocalDateTime sendDate
@@ -287,7 +301,7 @@ public class HomeworkController {
     }
 
     //평가 대시보드 내용 - 평가
-    @GetMapping("")
+    @GetMapping("/evaluate/dash-eval")
     public ResponseEntity<?> evalDashboard2(
             @RequestParam int homeworkNo,
             @RequestParam LocalDateTime sendDate
@@ -306,7 +320,7 @@ public class HomeworkController {
             switch(eval) {
                 case "A":
                     aCnt+=1;
-                    break; // 중괄호를 빠져나가라. 안쓰면 금은동메달 다나오고 마지막에 A라고나옴..
+                    break;
                 case "B":
                     bCnt=1;
                     break;

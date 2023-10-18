@@ -16,6 +16,7 @@ public class HomeworkSubmitDetailDTO {
     private String homeworkTitle;
     private String homeworkContent;
     private String memberName;//교육자명
+    private String gameTitle;
     private Integer progress;
     private Date dueDate;
     private String content;

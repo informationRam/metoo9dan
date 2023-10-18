@@ -20,6 +20,7 @@ public class HomeworkDTO {
     private String homeworkContentPreview;
     private String homeworkContent;
     private String homeworkMemo;
+    private String gameTitle;
     private Integer progress;
     private Date dueDate;
     private LocalDateTime creationDate;
@@ -36,6 +37,7 @@ public class HomeworkDTO {
         this.homeworkContent=homeworks.getHomeworkContent();
         this.homeworkMemo=homeworks.getHomeworkMemo();
         this.progress = homeworks.getProgress();
+        this.gameTitle = homeworks.getGameTitle();
         this.dueDate = homeworks.getDueDate();
         this.creationDate=homeworks.getCreationDate();
     }

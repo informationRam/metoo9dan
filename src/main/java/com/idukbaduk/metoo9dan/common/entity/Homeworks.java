@@ -40,6 +40,9 @@ public class Homeworks {
     @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정,
     private Member member;
 
+    @Column(name="game_content_title")
+    private String gameTitle;
+
     @Column(name="status")
     private String status;     //text NOT NULL    COMMENT '숙제 내용'
 

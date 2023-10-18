@@ -35,6 +35,8 @@ public class HomeworkService {
 
     @Autowired
     private HomeworkSubmitRepository homeworkSubmitRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     public List<GroupStudentDTO> getGroupStudentsWithLatestProgress(Integer groupNo) {
         List<GroupStudents> groupStudents = groupStudentsRepository.findByIsApprovedAndStudyGroupsGroupNo(true,groupNo);
@@ -85,6 +87,7 @@ public class HomeworkService {
         hw.setProgress(homework.getProgress());
         hw.setCreationDate(LocalDateTime.now()); //현재시간으로 설정
         hw.setStatus("show");
+        hw.setGameTitle(homework.getGameTitle());
         homeworkRepository.save(hw);
     }
 
@@ -96,6 +99,7 @@ public class HomeworkService {
         homeworks.setDueDate(homeworksEditForm.getHwDueDate());
         homeworks.setProgress(homeworksEditForm.getHwProgress());
         homeworks.setCreationDate(LocalDateTime.now());
+        homeworks.setGameTitle(homeworksEditForm.getGameTitle());
 
         homeworkRepository.save(homeworks);
     }
@@ -167,7 +171,10 @@ public class HomeworkService {
                         homeworkSend.setIsSubmit("N");
                         homeworkSendRepository.save(homeworkSend);
                     } else {
-                        skippedEntries.add("Member ID: " + member + " - Homework ID: " + homework); // 건너뛴 조합 저장
+                        String title =hw.get().getHomeworkTitle();
+                        String name = mem.get().getName();
+
+                        skippedEntries.add("Member ID: " + name + " - Homework ID: " + title); // 건너뛴 조합 저장
                     }
                 }
             }
@@ -178,6 +185,12 @@ public class HomeworkService {
     public List<HomeworkSend> findHomeworkSendByMemberId(String memberId) {
         //제출기한 안끝난 숙제만 가져오기
         return homeworkSendRepository.findByMemberIdAndDueDateAfterCurrentDate(memberId);
+
+    }
+
+    public List<HomeworkSend> findByMemberIdAndDueDateBeforeCurrentDate(String memberId) {
+        //제출기한 끝난 숙제만 가져오기
+        return homeworkSendRepository.findByMemberIdAndDueDateBeforeCurrentDate(memberId);
 
     }
 
@@ -218,6 +231,14 @@ public class HomeworkService {
         }
         System.out.println("dto:"+dto);
         return dto;
+    }
+    public HomeworkSubmit getSubmitBySendNo(Integer sendNo) {
+        Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend_SendNo(sendNo);
+        if(optionalHomeworkSubmit.isPresent()){
+            return optionalHomeworkSubmit.get();
+        } else{
+            return null;
+        }
     }
 
     public Optional<HomeworkSend> getHomeworkSendById(Integer homeworkSendNo) {
@@ -318,5 +339,11 @@ public class HomeworkService {
         }
         System.out.println(homeworkSubmits);
         return homeworkSubmits;
+    }
+
+
+    public List<String> findGameContentTitlesByMemberId(String memberId) {
+        List<String> titles =paymentRepository.findActiveGameContentTitlesByMemberId(memberId);
+        return titles;
     }
 }

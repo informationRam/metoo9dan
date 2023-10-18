@@ -23,8 +23,11 @@ public interface HomeworkSendRepository extends JpaRepository<HomeworkSend, Inte
 
     boolean existsByHomeworksAndMember(Homeworks homework, Member member);
 
-    @Query("SELECT hs FROM HomeworkSend hs WHERE hs.member.memberId = :memberId AND hs.homeworks.dueDate > CURDATE()")
+    @Query("SELECT hs FROM HomeworkSend hs WHERE hs.member.memberId = :memberId AND hs.homeworks.dueDate >= CURDATE()")
     List<HomeworkSend> findByMemberIdAndDueDateAfterCurrentDate(String memberId);
+
+    @Query("SELECT hs FROM HomeworkSend hs WHERE hs.member.memberId = :memberId AND hs.homeworks.dueDate < CURDATE()")
+    List<HomeworkSend> findByMemberIdAndDueDateBeforeCurrentDate(String memberId);
 
     Page<HomeworkSend> findByHomeworks_HomeworkTitleContaining(String title, Pageable pageable);
 
