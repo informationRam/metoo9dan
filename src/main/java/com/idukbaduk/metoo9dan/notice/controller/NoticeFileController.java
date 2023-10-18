@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 @Log4j2
@@ -32,6 +34,7 @@ public class NoticeFileController {
     @ResponseBody
     public ResponseEntity<Resource> download(String fileName){
         Resource resource = new FileSystemResource("C:\\upload\\"+fileName);
+        logger.info("download fileName: "+fileName);
         if(resource.exists()==false){ //존재하지 않으면 에러처리
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -53,25 +56,18 @@ public class NoticeFileController {
     }
 
     @PostMapping(value = "/deleteFile/{fileNo}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<Resource> deleteFile(@PathVariable("fileNo")Integer fileNo){
+    public ResponseEntity<String> deleteFile(@PathVariable("fileNo")Integer fileNo){
         //fileName = 경로/uuid_originName
         logger.info("deleteFile()진입, 삭제하려는 fileNo: "+fileNo);
 
         //해당 파일 조회
         NoticeFiles noticeFiles = filesService.selectFile(fileNo);
-        if(noticeFiles!=null){
-            //해당 파일 삭제
-            //1) 디비삭제
-            filesService.delete(noticeFiles);
 
-            //2) 물리파일삭제~~~~~~~~~~~~~~~
-        }
+        //해당 파일 삭제
+        //1) 디비에서 삭제
+        filesService.deleteOnDB(noticeFiles);
 
-
-        //에러난 경우 에러응답 보내기
-
-        //정상 처리된 경우 응답 보내기
-        return new ResponseEntity<Resource>(HttpStatus.OK);
-
+        //2) 디스크에서 삭제
+        return filesService.deleteOnDisk(noticeFiles);
     }
 }

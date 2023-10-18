@@ -61,9 +61,10 @@ public class NoticeController {
                                 Pageable pageable,
                                 Principal principal
                                 ){
-        String memberRole = null;
         Page<Notice> noticePage = null;
 
+        //memberRole에 따른 사이드바 표출을 위한 model 설정
+        String memberRole = null;
         if(principal != null){
             memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
         }
@@ -134,13 +135,24 @@ public class NoticeController {
     // 상세조회 (+댓글 목록조회 및 작성 폼)
     @GetMapping("/detail/{noticeNo}")
     public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo, NoticeReplyForm noticeReplyForm,
-                                  //Principal principal,
+                                  Principal principal,
                                   Model model){
+        //memberRole에 따른 사이드바 표출을 위한 model 설정
+        String memberRole = null;
+        if(principal != null){
+            memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
+        }
+        logger.info(memberRole);
+        if(principal == null || !memberRole.equalsIgnoreCase("admin")){
+            model.addAttribute("memberRole", "notAdmin");
+        } else {
+            model.addAttribute("memberRole", memberRole);
+        }
 
-        Notice notice = noticeService.getNotice(noticeNo);
-
-        List<NoticeFiles> filesList=filesService.getFiles(notice);
-        List<NoticeReply> noticeReply = noticeService.getNoticeReply(notice);
+        //번호로 공지사항데이터 가져오기
+        Notice notice = noticeService.getNotice(noticeNo); //공지상세조회
+        List<NoticeFiles> filesList=filesService.getFiles(notice); //파일조회
+        List<NoticeReply> noticeReply = noticeService.getNoticeReply(notice); //댓글조회
         model.addAttribute("notice", notice); //공지상세 내용
         model.addAttribute("noticeReply", noticeReply); //공지 댓글 목록
         model.addAttribute("filesList", filesList); //공지 파일 목록
@@ -150,18 +162,19 @@ public class NoticeController {
     //공지사항 삭제해줘 요청
     @GetMapping("/delete/{noticeNo}")
     public String delete(@PathVariable Integer noticeNo){
-        // 1. 파라미터 받기
-        // 2. 비즈니스 로직 처리
-        //우선 삭제할 글이 존재하는지 조회하여 확인
+        //우선 삭제할 글 조회
         Notice notice = noticeService.getNotice(noticeNo);
+        List<NoticeFiles> filesList = filesService.getFiles(notice);
         //댓글 작성자와 로그인한 유저가 같지 않는 경우 BAD_REQUEST 응답처리하는 코드 추가해야함
         /*if(member.~~~.equals(principal.getName())){
         }*/
-        noticeService.delete(notice);
-        //물리적 파일도 삭제하는 로직 추가해야함~~~~~~~~~~~~~~~~~~~~
+        noticeService.delete(notice); //DB에서 cascade되어 댓글과 파일데이터는 지워짐.
 
-        // 3. 모델
-        // 4. 뷰
+        //물리적 파일 삭제
+        for(NoticeFiles file : filesList){
+            filesService.deleteOnDisk(file); //디스크에서 삭제처리
+        }
+
         return "redirect:/notice/list";
     }
 
@@ -231,7 +244,7 @@ public class NoticeController {
                 fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
             }
         }//end for
-        noticeService.addFiles(list);
+        filesService.addFiles(list);
 
         //3. 모델
         redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
@@ -326,7 +339,7 @@ public class NoticeController {
 
         Notice notice = noticeService.getNotice(noticeNo);
 
-        //수정하려는 자와 작성자가 같은 사람인지 확인해야함
+        //수정하려는 자와 작성자가 같은 사람인지 확인해야함~~~~~~~~~
 
         NoticeDTO noticeDTO = new NoticeDTO();
 
@@ -335,7 +348,7 @@ public class NoticeController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime fPostDate = LocalDate.parse(noticeForm.getPostDate(), formatter).atStartOfDay();
 
-        //1.파라미터받기
+        //DTO에 담기
         noticeDTO.setNoticeType(noticeForm.getNoticeType());
         noticeDTO.setNoticeTitle(noticeForm.getTitle());
         noticeDTO.setNoticeContent(noticeForm.getContent());
@@ -352,8 +365,6 @@ public class NoticeController {
         
         //파일도 수정처리해야함
         // 등록된 파일 정보를 저장하면됨.
-
-        //2.비즈니스로직수행
         noticeService.modify(notice, noticeDTO);
 
         List<NoticeFileDTO> list = new ArrayList<>();
@@ -366,7 +377,7 @@ public class NoticeController {
                 fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
             }
         }//end for
-        noticeService.addFiles(list);
+        filesService.addFiles(list);
 
         //3.모델
         //4.뷰
