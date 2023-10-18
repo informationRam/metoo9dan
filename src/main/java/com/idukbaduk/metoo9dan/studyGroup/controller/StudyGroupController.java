@@ -381,19 +381,6 @@ public class StudyGroupController {
     }
 
 
-    // 가상의 승인 처리된 데이터 (실제로는 데이터베이스에서 가져와야 함)
-/*    private List<ApproveListDTO> approvedData;
-
-    @GetMapping("/getApprovedData")
-    public ResponseEntity<List<ApproveListDTO>> getApprovedData() {
-        // 승인 처리된 데이터를 가져와서 클라이언트에 반환합니다.
-        // approvedData를 실제 데이터로 채우는 로직을 여기에 구현해야 함.
-        return ResponseEntity.ok(approvedData);
-    }*/
-
-
-
-
     //학습 그룹 가입 승인 처리(교육자)
     @PostMapping("/updateApprove")
     public String approve(@RequestBody Map<String, List<Integer>> requestData) {
