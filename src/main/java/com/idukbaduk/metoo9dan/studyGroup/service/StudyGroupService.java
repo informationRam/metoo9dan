@@ -166,7 +166,6 @@ public class StudyGroupService {
         return studyGroupRepository.getGameName(member_no);
     }
 
-
     //학습그룹명 리스트(전체) 가져오기
     public List<HashMap<String, Object>> getGroupNameALL(){
         return studyGroupRepository.getGroupNameALL();
@@ -185,6 +184,11 @@ public class StudyGroupService {
     //학습 그룹 가입 확인(학생)
     public JoinConfirmDTO joinConfirm(int member_no) {
         return studyGroupRepository.joinConfirm(member_no);
+    }
+
+    //학습 그룹 가입 이력 확인(학생)
+    public List<JoinConfirmDTO> joinRecord(int member_no) {
+        return studyGroupRepository.joinRecord(member_no);
     }
 
     //학습 그룹 가입 취소(학생)

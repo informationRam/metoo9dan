@@ -134,6 +134,11 @@ public class StudyGroupRepository {
         return sqlSession.selectOne("StudyGroup.JoinConfirm",member_no);
     }
 
+    //학습 그룹 가입 이력 확인(학생)
+    public List<JoinConfirmDTO> joinRecord(int member_no) {
+        return sqlSession.selectList("StudyGroup.JoinRecord",member_no);
+    }
+
     //진행 중 학습 그룹 확인
     public int ingStudyGroup(int member_no) {
         return sqlSession.selectOne("StudyGroup.IngStudyGroup",member_no);

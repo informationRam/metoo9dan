@@ -289,9 +289,10 @@
     <!--교육자명 리스트(기간지나지 않은)-->
     <select id="EducatorNameList" resultType="hashmap">
         <![CDATA[
-        SELECT distinct m.member_no,m.name
+        SELECT distinct m.member_no,m.name,e.school_name
         FROM baduk.members m
         JOIN baduk.study_groups s ON m.member_no=s.member_no
+        JOIN baduk.educator_info e ON m.member_no=e.member_no
         WHERE m.role='educator' AND s.group_finish_date>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
 		]]>
     </select>
@@ -344,7 +345,17 @@
         JOIN baduk.study_groups s ON gs.group_no=s.group_no
         JOIN baduk.game_contents g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
-        WHERE gs.member_no=#{member_no}
+        WHERE gs.member_no=#{member_no} AND s.group_finish_date>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+    </select>
+
+    <!--학습 그룹 이력 확인(학생)-->
+    <select id="JoinRecord" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.JoinConfirmDTO">
+        SELECT gs.group_students_no,g.game_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,gs.application_date,gs.approved_date,gs.is_approved
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s ON gs.group_no=s.group_no
+        JOIN baduk.game_contents g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE gs.member_no=#{member_no} AND DATE_FORMAT(CURDATE(), '%Y-%m-%d')>s.group_finish_date
     </select>
 
     <!--진행 중 학습 그룹 확인-->
