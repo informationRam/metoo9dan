@@ -307,4 +307,16 @@ public class HomeworkService {
         }
         return submitDTO;
     }
+
+    public List<HomeworkSubmit> findSubmitsBySendNo(List<HomeworkSend> homeworkSendList) {
+        List<HomeworkSubmit> homeworkSubmits = null;
+        for(HomeworkSend hs:homeworkSendList){
+            Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend_SendNo(hs.getSendNo());
+            if(optionalHomeworkSubmit.isPresent()){
+                homeworkSubmits.add(optionalHomeworkSubmit.get());
+            }
+        }
+        System.out.println(homeworkSubmits);
+        return homeworkSubmits;
+    }
 }

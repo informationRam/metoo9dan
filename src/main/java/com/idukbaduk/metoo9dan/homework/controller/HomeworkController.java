@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -240,6 +241,7 @@ public class HomeworkController {
         model.addAttribute("titles",distinctTitles);
         return "homework/homework_evaluate";
     }
+    //전송한 숙제 리스트
     @GetMapping("/evaluate/hw-list")
     public ResponseEntity<?> getHomeworks(
             @RequestParam(defaultValue = "All") String title,
@@ -252,8 +254,7 @@ public class HomeworkController {
         Page<HomeworkSendDTO> homeworksDto = homeworkService.findByHomeworks_HomeworkTitleAndHomeworks_Member_MemberId(title, "baduk", pageable);
         return ResponseEntity.ok(homeworksDto);
     }
-
-
+    //전송 내역
     @GetMapping("/evaluate/submit-list")
     public ResponseEntity<?> getHomeworks(/*homeworkNo SendDate SendNo*/
             @RequestParam int homeworkNo,
@@ -269,5 +270,63 @@ public class HomeworkController {
         return ResponseEntity.ok(submitDTO);
     }
 
+    //평가 대시보드 내용 - 제출
+    @GetMapping("")
+    public ResponseEntity<?> evalDashboard1(
+            @RequestParam int homeworkNo,
+            @RequestParam LocalDateTime sendDate
+    ){
+        List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
+        int sendCnt = homeworkSendList.size();
+        List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
+        int submitCnt = homeworkSubmitList.size();
+
+        double submitPercent=(submitCnt/sendCnt)*100;
+
+        return ResponseEntity.ok(submitPercent);
+    }
+
+    //평가 대시보드 내용 - 평가
+    @GetMapping("")
+    public ResponseEntity<?> evalDashboard2(
+            @RequestParam int homeworkNo,
+            @RequestParam LocalDateTime sendDate
+    ){
+        List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
+        int sendCnt = homeworkSendList.size();
+        List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
+        int submitCnt = homeworkSubmitList.size();
+
+        int aCnt = 0;
+        int bCnt = 0;
+        int cCnt = 0;
+        int fCnt = sendCnt-submitCnt;
+        for(HomeworkSubmit homeworkSubmit : homeworkSubmitList){
+            String eval = homeworkSubmit.getEvaluation();
+            switch(eval) {
+                case "A":
+                    aCnt+=1;
+                    break; // 중괄호를 빠져나가라. 안쓰면 금은동메달 다나오고 마지막에 A라고나옴..
+                case "B":
+                    bCnt=1;
+                    break;
+                case "C":
+                    cCnt+=1;
+                    break;
+            }
+        }
+        double aPer=aCnt/submitCnt;
+        double bPer=bCnt/submitCnt;
+        double cPer=cCnt/submitCnt;
+        double fPer=fCnt/submitCnt;
+
+        List<Double> evalPer = new ArrayList<>();
+        evalPer.add(aPer);
+        evalPer.add(bPer);
+        evalPer.add(cPer);
+        evalPer.add(fPer);
+
+        return ResponseEntity.ok(evalPer);
+    }
     //평가 저장 post
 }
