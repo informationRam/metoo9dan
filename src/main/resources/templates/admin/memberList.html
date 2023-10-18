@@ -3,80 +3,85 @@
 <div layout:fragment="content" class="container my-3">
 <!-- Bootstrap 5 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- 약관내용 스타일 적용 -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/member/memberList.css}">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/common/baseSidebar::sidebar}" ></div>
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <!-- 맡은 기능 구현 하시면 됩니다! -->
+
+            <!-- 맡은 기능 구현 하시면 됩니다!  회원관리게시판 시작-->
             <div class="container mt-5">
                 <h1>회원 관리 게시판</h1>
 
-                <!-- 검색 조건 -->
-                <form class="mb-3">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="startDate">가입일자 시작일</label>
-                                    <input type="date" class="form-control" id="startDate">
-                                </div>
-                                <div class="col">
-                                    <label for="endDate">종료일</label>
-                                    <input type="date" class="form-control" id="endDate">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="searchCriteria">회원 검색 기준</label>
-                                    <select class="form-control" id="searchCriteria">
-                                        <option value="id">아이디</option>
-                                        <option value="phone">휴대폰</option>
-                                        <option value="name">이름</option>
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <label for="searchKeyword">검색어</label>
-                                    <input type="text" class="form-control" id="searchKeyword">
+                <div class="container mt-5">
+                    <!-- 검색 조건 영역 -->
+                    <div class="search-container p-3 border border-light rounded">
+                        <form id="searchForm" class="row gy-3">
+                            <!-- 1번째 row: 가입일 -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="startDate" class="form-label">가입일</label>
+                                    <div class="input-group">
+                                        <input type="date" id="startDate" class="form-control">
+                                        <span class="input-group-text">~</span>
+                                        <input type="date" id="endDate" class="form-control">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="memberType">회원 구분</label>
-                                    <select class="form-control" id="memberType">
-                                        <option value="all">전체</option>
+
+                            <!-- 2번째 row: 회원 구분, 회원 자격 -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="memberType" class="form-label">회원 구분</label>
+                                    <select id="memberType" class="form-select">
+                                        <option value="">전체</option>
                                         <option value="EDUCATOR">교육자</option>
                                         <option value="STUDENT">학습자</option>
                                         <option value="NORMAL">일반인</option>
                                         <option value="ADMIN">운영자</option>
                                     </select>
                                 </div>
-                                <div class="col">
-                                    <label for="membershipStatus">자격</label>
-                                    <select class="form-control" id="membershipStatus">
-                                        <option value="all">전체</option>
+                                <div class="col-md-6">
+                                    <label for="memberQualification" class="form-label">회원 자격</label>
+                                    <select id="memberQualification" class="form-select">
+                                        <option value="">자격 선택</option>
                                         <option value="paid">유료회원</option>
                                         <option value="free">무료회원</option>
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary mt-4">조회</button>
-                        </div>
-                    </div>
-                </form>
 
-                <!-- 회원 목록 (Bootstrap 5 테이블) -->
-                <p>총 N건 조회되었습니다</p>
+                            <!-- 3번째 row: 조건검색, 검색어 입력필드 -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="searchCriteria" class="form-label">조건검색</label>
+                                    <select id="searchCriteria" class="form-select">
+                                        <option value="id">아이디</option>
+                                        <option value="phone">휴대폰</option>
+                                        <option value="name">이름</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="searchKeyword" class="form-label">&nbsp;</label>
+                                    <input type="text" id="searchKeyword" class="form-control">
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" id="searchBtn" class="btn btn-primary">검색</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 검색 결과 메시지 -->
+                    <div class="result-message mt-3">
+                        총 <span id="resultCount">N</span>건 조회되었습니다.
+                    </div>
+
+                <!-- 회원 목록 테이블 -->
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover membertable">
+                    <table class="table table-striped table-hover membertable mt-3" id="memberList">
                         <thead>
                         <tr>
                             <th scope="col">
@@ -207,9 +212,14 @@
 
                 <!-- 삭제 버튼 -->
                 <button type="button" class="btn btn-danger float-right" id="deleteMembersButton">선택 회원 삭제</button>
-            </div>
 
 
+                    <!-- 페이지네이션 -->
+                    <div class="pagination d-flex justify-content-center mt-3">
+                        <!-- ... -->
+                    </div>
+                </div> <!-- 회원관리게시판 container 끝 -->
+            </div><!-- 내부 컨테이너 -->
 
             <!-- Bootstrap 5 JS 및 jQuery -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -218,6 +228,9 @@
             <script th:src="@{/js/admin/memberModal.js}"></script>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
+
+
+
 
 </div><!--container-->
 </html>
