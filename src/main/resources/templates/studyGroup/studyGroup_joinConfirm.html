@@ -20,7 +20,7 @@
                 </thead>
                 <tbody>
                 <p th:if="${joinConfirm != null}">게임콘텐츠명 : <strong><span th:text="${joinConfirm.game_name}"></span></strong></p>
-                <th:block th:if="${joinConfirm != null and joinConfirm.size() > 0}">
+                <th:block th:if="${joinConfirm != null and  #lists.size(joinConfirm) > 0}">
                     <tr th:each="joinConfirm, loop : ${joinConfirm}">
                         <td>
                             <input type="checkbox" class="groupCheckbox" name="selectedStudentGroup" th:value="${joinConfirm.group_students_no}" />
@@ -37,7 +37,7 @@
                         <td th:text="${joinConfirm.is_approved ? 'O' : 'X'}"></td>
                     </tr>
                 </th:block>
-                <th:block th:unless="${joinConfirm != null and joinConfirm.size() > 0}">
+                <th:block th:unless="${joinConfirm != null and #lists.size(joinConfirm) > 0}">
                     <tr>
                         <td colspan="7">가입된 학습 그룹이 없습니다.</td>
                     </tr>
@@ -50,6 +50,7 @@
                 </div>
             </div>
 
+            <p/>
             <p/>
             <p/>
             <h3>[학습 그룹 가입 이력]</h3>

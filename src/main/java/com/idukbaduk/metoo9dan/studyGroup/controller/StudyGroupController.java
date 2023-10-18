@@ -520,6 +520,7 @@ public class StudyGroupController {
         model.addAttribute("joinRecord",joinRecord);
         System.out.println("joinRecord="+joinRecord);
 
+        //if(joinConfirm==null&joinRecord.isEmpty()) {
         if(joinConfirm==null&joinRecord.isEmpty()) {
             //alert창 띄우기
             MessageDto message = new MessageDto("가입 신청된 학습 그룹이 없습니다.", "/studygroup/groupJoinList", RequestMethod.GET, null);
