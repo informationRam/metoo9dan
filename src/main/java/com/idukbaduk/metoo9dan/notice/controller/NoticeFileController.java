@@ -55,6 +55,7 @@ public class NoticeFileController {
         return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
     }
 
+    //수정폼에서 첨부파일 삭제
     @PostMapping(value = "/deleteFile/{fileNo}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<String> deleteFile(@PathVariable("fileNo")Integer fileNo){
         //fileName = 경로/uuid_originName

@@ -40,4 +40,18 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 
     //공지 목록 - 관리자 아닌 사람용
     Page<Notice> findByNoticeTypeAndStatus(String noti, String post, Pageable pageable);
+
+    //관리자용 검색
+    @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
+            "AND n.status = :status " +
+            "AND (n.noticeTitle LIKE %:keyword% OR n.noticeContent LIKE %:keyword%)")
+    Page<Notice> findByTitleAndContentForAdmin(@Param("type") String type, @Param("status") String status, @Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
+            "AND n.status = :status " +
+            "AND n.noticeTitle LIKE %:keyword%")
+    Page<Notice> findByTitleForAdmin(@Param("type") String type, @Param("status") String status, @Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
+            "AND n.status = :status " +
+            "AND n.noticeContent LIKE %:keyword%")
+    Page<Notice> findByContentForAdmin(@Param("type") String type, @Param("status") String status, @Param("keyword") String keyword, Pageable pageable);
 }

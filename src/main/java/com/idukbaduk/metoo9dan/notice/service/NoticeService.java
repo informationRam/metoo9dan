@@ -68,7 +68,7 @@ public class NoticeService {
         return noticeRepository.findByNoticeType("faq", pageable);
     }
 
-    /*검색 - 10월15일 작성*/
+    //검색
     public Page<Notice> search(String searchCategory, String keyword, int pageNo, int listSize) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
@@ -83,6 +83,26 @@ public class NoticeService {
                 return searchTitleList;
             case "noticeContent":
                 Page<Notice> searchContentList = noticeRepository.findByNoticeContentContaining(keyword, pageable);
+                return searchContentList;
+        }
+        return null;
+    }
+
+    //검색 - for Admin 모든 항목별로 검색할 수 있어야 함
+    public Page<Notice> searchForAdmin(String noticeType, String status, String searchCategory, String keyword, int pageNo, int listSize) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
+        sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
+        Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
+        switch (searchCategory){
+            case "noticeTitleAndNoticeContent":
+                Page<Notice> noticeList = noticeRepository.findByTitleAndContentForAdmin(noticeType, status, keyword, pageable);
+                return noticeList;
+            case "noticeTitle":
+                Page<Notice> searchTitleList = noticeRepository.findByTitleForAdmin(noticeType, status, keyword, pageable);
+                return searchTitleList;
+            case "noticeContent":
+                Page<Notice> searchContentList = noticeRepository.findByContentForAdmin(noticeType, status, keyword, pageable);
                 return searchContentList;
         }
         return null;
@@ -155,5 +175,6 @@ public class NoticeService {
         notice.setIsImp(noticeDTO.isImp());
         noticeRepository.save(notice);
     }
+
 
 }
