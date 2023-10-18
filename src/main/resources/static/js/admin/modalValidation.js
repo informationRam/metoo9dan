@@ -1,15 +1,28 @@
 // 유효성 검사 함수
 
         function validateForm() {
-                    // 모든 필드에 대한 유효성 검사 수행
+               // 모든 필드의 유효성 검사를 통과하면 true 반환
+               const isMemberBirthValid = validateMemberBirth();
+               const isMemberTelValid = validateMemberTel();
+               const isMemberEmailValid = validateMemberEmail();
+               const isMemberMemoValid = validateMemberMemo();
+               const isSidoDropdownValid = validateSidoDropdown();
+               const isSigunguDropdownValid = validateSigunguDropdown();
+
+               if (!isMemberBirthValid || !isMemberTelValid || !isMemberEmailValid || !isMemberMemoValid || !isSidoDropdownValid || !isSigunguDropdownValid) {
+                   return false;
+               }
+               return true;
+        }
+
                  // 입력 필드
                  const memberBirthInput = document.querySelector('#memberBirth');
                  const memberTelInput = document.querySelector('#memberTel');
                  const memberEmailInput = document.querySelector('#memberEmail');
                  const memberMemoInput = document.querySelector('#memberMemo');
-                 // 시도 드롭다운과 시군구 드롭다운
-                 const sidoDropdown = document.querySelector('#sidoDropdown');
-                 const sigunguDropdown = document.querySelector('#sigunguDropdown');
+//                 // 시도 드롭다운과 시군구 드롭다운
+//                 const sidoDropdown = document.querySelector('#sidoDropdown');
+//                 const sigunguDropdown = document.querySelector('#sigunguDropdown');
 
                // 오류 메시지 엘리먼트
                 const errorMessages = {
@@ -31,8 +44,10 @@
                      const value = memberBirthInput.value;
                      if (!value) {
                          showError(errorMessages.memberBirth, '생년월일을 입력해주세요.');
+                          return false;
                      } else {
                          hideError(errorMessages.memberBirth);
+                           return true;
                      }
                  }
 
@@ -49,10 +64,11 @@
 
                      if (!phonePattern.test(phoneNumber)) {
                          showError(phoneError, '휴대폰 형식이 올바르지 않습니다.');
-                         phoneInput.style.borderColor = 'red';
+                         return false; // 유효성 검사 실패
                      } else {
                          hideError(phoneError);
                          phoneInput.style.borderColor = '';
+                          return true; // 유효성 검사 통과
                      }
                  }
 
@@ -65,8 +81,10 @@
                          showError(errorMessages.memberEmail, '이메일을 입력해주세요.');
                      } else if (!emailRegex.test(value)) {
                          showError(errorMessages.memberEmail, '이메일 형식이 올바르지 않습니다.');
+                          return false;
                      } else {
                          hideError(errorMessages.memberEmail);
+                         return true;
                      }
                  }
 
@@ -77,8 +95,10 @@
                      if (value.length > maxMemoLength) {
                          showError(errorMessages.memberMemo, '300자 이내로 입력해주세요. (현재:'+ value.length +'/300)');
                          memberMemoInput.value = value.substring(0, maxMemoLength); // 300자 초과 입력 방지
+                         return false;
                      } else {
                          hideError(errorMessages.memberMemo);
+                         return true;
                      }
                  }
 
@@ -93,8 +113,10 @@
 
                      if (selectedSido === '') {
                          showError(errorMessages.sidoDropdown, '시도를 선택해주세요.');
+                          return false;
                      } else {
                          hideError(errorMessages.sidoDropdown);
+                         return true;
                      }
                  }
 
@@ -103,24 +125,24 @@
 
                      if (selectedSigungu === '') {
                          showError(errorMessages.sigunguDropdown, '시군구를 선택해주세요.');
+                         return false;
                      } else {
                          hideError(errorMessages.sigunguDropdown);
+                          return true;
                      }
                  }
 
                  function showError(element, message) {
                      element.textContent = message;
                      element.style.display = 'block';
+                     element.style.borderColor  = 'red';
                      element.style.color = 'red';
                  }
 
                  function hideError(element) {
                      element.textContent = '';
-                     element.style.display = 'none';
+                     element.style.display = 'none'; // 오류 메시지 숨김
+                     element.style.borderColor = ''; // 원래의 borderColor로 되돌림
+                     element.style.color = ''; // 원래의 텍스트 색상으로 되돌림
                  }
-            // 모든 필드의 유효성 검사를 통과하면 true 반환
-            if (!validateMemberBirth() || !validateMemberTel() || !validateMemberEmail() || !validateMemberMemo() || !validateSidoDropdown() || !validateSigunguDropdown()) {
-                return false;
-            }
-            return true;
-        }
+

@@ -99,7 +99,14 @@
                                 <input type="checkbox" class="memberCheckbox" th:id="${member.memberNo}" th:checked="${false}">
                             </td>
                             <td th:text="${rowStat.index + 1}">1</td>
-                            <td th:text="${member.role}">회원구분</td>
+                            <td>
+                                <span th:switch="${member.role}">
+                                    <span th:case="EDUCATOR">교육자</span>
+                                    <span th:case="NORMAL">일반</span>
+                                    <span th:case="ADMIN">운영자</span>
+                                    <span th:case="STUDENT">학생</span>
+                                </span>
+                            </td>
                             <td th:text="${member.name}">이름</td>
                             <td th:text="${member.memberId}">아이디</td>
                             <td th:text="${member.tel}">연락처</td>
@@ -129,7 +136,7 @@
                                         <td id="memberName">이름</td>
                                         <th>생년월일</th>
                                         <td>
-                                            <input type="date" class="form-control" id="memberBirth" />
+                                            <input type="date" class="form-control" id="memberBirth" required/>
                                             <div id="memberBirthErrorMessage" class="error-message"></div>
                                         </td>
                                     </tr>
@@ -142,32 +149,32 @@
                                     <tr>
                                         <th>연락처</th>
                                         <td>
-                                            <input type="tel" class="form-control" id="memberTel" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" placeholder="010-1234-5678" />
+                                            <input type="tel" class="form-control" id="memberTel" pattern="[0-9]{2,3}[0-9]{3,4}[0-9]{4}" placeholder="하이픈을(-)을 제외한 번호만 입력하세요" required/>
                                             <div id="memberTelErrorMessage" class="error-message"></div>
                                         </td>
                                         <th>이메일</th>
                                         <td>
-                                            <input type="email" class="form-control" id="memberEmail" />
+                                            <input type="email" class="form-control" id="memberEmail" required />
                                             <div id="memberEmailErrorMessage" class="error-message"></div>
                                         </td>
                                     </tr>
                                     <tr id="schoolAndAddressRow">
                                         <th>소속학원</th>
                                         <td>
-                                            <input type="text" class="form-control" id="memberSchoolName" />
+                                            <input type="text" class="form-control" id="memberSchoolName" required />
                                         </td>
                                         <th>주소</th>
                                         <td>
                                             <div class="form-group">
                                                 <label for="sidoDropdown">시도</label>
-                                                <select class="form-control" id="sidoDropdown">
+                                                <select class="form-control" id="sidoDropdown" required >
                                                     <option value="">시도 선택</option>
                                                 </select>
                                             </div>
                                             <div id="sidoDropdownErrorMessage" class="error-message"></div>
                                             <div class="form-group">
                                                 <label for="sigunguDropdown">시군구</label>
-                                                <select class="form-control" id="sigunguDropdown">
+                                                <select class="form-control" id="sigunguDropdown" required >
                                                     <option value="">시군구 선택</option>
                                                 </select>
                                             </div>

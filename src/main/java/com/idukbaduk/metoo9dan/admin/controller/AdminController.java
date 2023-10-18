@@ -101,7 +101,7 @@ public class AdminController {
     }
 
     //회원정보 업데이트 - MEMBER 테이블
-    @PostMapping("/members/{memberNo}/updateMemberData")
+    @PutMapping ("/members/{memberNo}/updateMemberData")
     public ResponseEntity<String> updateMember( @PathVariable("memberNo") Integer memberNo,
                                                 @RequestBody MemberDTO updatedMemberData ){
         boolean memberUpdateSuccess= memberService.updateMemberData(memberNo, updatedMemberData);
@@ -116,7 +116,7 @@ public class AdminController {
     }
 
     //회원정보 업데이트 - EDUCATOR테이블
-    @PostMapping("/members/{memberNo}/updateEducatorData")
+    @PutMapping ("/members/{memberNo}/updateEducatorData")
     public ResponseEntity<String> updateEducator (@PathVariable("memberNo") Integer memberNo,
                                                   @RequestBody EducatorInfoDTO updatedEducatorData ){
         boolean educatorUpdateSuccess = educatorInfoService.updateEducatorData(memberNo, updatedEducatorData);

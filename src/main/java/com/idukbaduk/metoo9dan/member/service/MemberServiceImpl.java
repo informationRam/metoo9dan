@@ -34,7 +34,7 @@ public class MemberServiceImpl implements MemberService {
         Optional<Member> optionalMember = memberRepository.findById(memberNo);
         System.out.println("멤버테이블 수정 진입");
         if (optionalMember.isPresent()) {
-            Member member = optionalMember.get();
+           Member member = optionalMember.get();
             // Update the Member entity with the new data
             member.setBirth(updatedMemberData.getBirth());
             member.setTel(updatedMemberData.getTel());
