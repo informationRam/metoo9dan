@@ -144,18 +144,6 @@ public class NoticeService {
         noticeRepository.delete(notice);
     }
 
-    //첨부파일 저장처리
-    public void addFiles(List<NoticeFileDTO> list) {
-        for (int i = 0; i < list.size(); i++) {
-            NoticeFiles noticeFiles = new NoticeFiles();
-            noticeFiles.setNotice(list.get(i).getNotice());
-            noticeFiles.setOriginFileName(list.get(i).getOriginFileName());
-            noticeFiles.setCopyFileName(list.get(i).getUuid());
-            noticeFiles.setFileUrl(list.get(i).getUploadPath());
-            filesRepository.save(noticeFiles);
-        }
-    }
-
     //공지사항 수정처리
     public void modify(Notice notice, NoticeDTO noticeDTO) {
         notice.setNoticeType(noticeDTO.getNoticeType());
