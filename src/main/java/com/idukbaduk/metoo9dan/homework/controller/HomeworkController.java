@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/homework")
@@ -114,10 +113,13 @@ public class HomeworkController {
         List<HomeworkDTO> homeworkDTO = homeworkService.toHomeworkDTOList(homeworks);
         List<StudyGroups> studyGroups = homeworkService.findStudyGroupsByMemberId("jung123");
 
-        List<String> distinctTitles = homeworks.stream()
-                .map(Homeworks::getHomeworkTitle)
-                .distinct()
-                .collect(Collectors.toList());
+        List<String> distinctTitles = new ArrayList<>();
+        for (Homeworks homework : homeworks) {
+            String title = homework.getHomeworkTitle();
+            if (!distinctTitles.contains(title)) {
+                distinctTitles.add(title);
+            }
+        }
         model.addAttribute("homeworks", homeworkDTO);
         model.addAttribute("studyGroups", studyGroups);
         model.addAttribute("distinctHomeworkTitles",distinctTitles);
@@ -245,10 +247,13 @@ public class HomeworkController {
     public String evaluateView(Model model){
         //숙제 전송 리스트의 숙제중에 baduk 아이디로 만들어진 숙제 전송 기록 중에 Homeworks를 리스트로 가져온다
         List<Homeworks> homeworks = homeworkService.findHomeworksByMemberId("jung123");
-        List<String> distinctTitles = homeworks.stream()
-                .map(Homeworks::getHomeworkTitle)
-                .distinct()
-                .collect(Collectors.toList());
+        List<String> distinctTitles = new ArrayList<>();
+        for (Homeworks homework : homeworks) {
+            String title = homework.getHomeworkTitle();
+            if (!distinctTitles.contains(title)) {
+                distinctTitles.add(title);
+            }
+        }
         model.addAttribute("titles",distinctTitles);
         return "homework/homework_evaluate";
     }

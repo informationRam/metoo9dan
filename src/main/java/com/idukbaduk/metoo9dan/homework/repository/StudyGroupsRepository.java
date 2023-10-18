@@ -12,5 +12,5 @@ import java.util.List;
 @Repository
 public interface StudyGroupsRepository extends JpaRepository<StudyGroups, Integer> {
     @Query("SELECT s FROM StudyGroups s WHERE s.member.memberId = :memberId")
-    List<StudyGroups> findStudyGroupsByMemberId(@Param("memberId")String memberId);
+    List<StudyGroups> findStudyGroupsByMemberId(@Param("memberId") String memberId);
 }

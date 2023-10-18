@@ -108,9 +108,13 @@ public class HomeworkService {
     public List<HomeworkDTO> findAllHomeworkWithSendStatus(String memberId) {
         List<Homeworks> homeworks = homeworkRepository.findByMember_MemberIdAndStatusOrderByCreationDateDesc(memberId, "show");
 
-        return homeworks.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<HomeworkDTO> dtos = new ArrayList<>();
+        for (Homeworks homework : homeworks) {
+            HomeworkDTO dto = convertToDTO(homework);
+            dtos.add(dto);
+        }
+        return dtos;
+
     }
 
     public HomeworkDTO convertToDTO(Homeworks homework) {
