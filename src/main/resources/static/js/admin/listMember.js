@@ -56,10 +56,36 @@
         }
         //검색 결과 view에 출력
          function displayResults(members) {
-             let table = document.getElementById('memberList');
+            //테이블 변수 선언
+              let table = document.getElementById('memberList');
+              let tbody = table.querySelector('tbody');
              // TODO: 테이블의 기존 데이터 삭제
-             members.forEach(member => {
+              while (tbody.firstChild) {
+                     tbody.removeChild(tbody.firstChild);
+                 }
                  // TODO: 테이블에 각 회원 정보를 추가하는 로직
+                 members.forEach(member => {
+                   let row = tbody.insertRow(-1); // -1은 마지막 행에 추가
+                         let cell1 = row.insertCell(0);
+                         cell1.innerHTML = `<input type="checkbox" class="memberCheckbox" id="${member.memberNo}" checked="false">`;
+                         let cell2 = row.insertCell(1);
+                         cell2.textContent = ''; // 넘버링은 서버에서 받아오므로 빈 문자열로 남겨둠
+                         let cell3 = row.insertCell(2);
+                         cell3.textContent = member.role; // 회원구분
+                         let cell4 = row.insertCell(3);
+                         cell4.textContent = member.name;
+                         let cell5 = row.insertCell(4);
+                         cell5.textContent = member.memberId;
+                         let cell6 = row.insertCell(5);
+                         cell6.textContent = member.tel;
+                         let cell7 = row.insertCell(6);
+                         cell7.textContent = member.email;
+                         let cell8 = row.insertCell(7);
+                         cell8.textContent = member.membershipStatus;
+                         let cell9 = row.insertCell(8);
+                         cell9.textContent = ''; // 가입일자는 서버에서 받아오므로 빈 문자열로 남겨둠
+                     });
+                 }
              });
          }
 
