@@ -314,10 +314,11 @@ public class HomeworkService {
     }
 
     public List<HwSendSubmitDTO> toSubmitDTO(List<HomeworkSend> homeworkSendList) {
-        List<HwSendSubmitDTO> submitDTO = null;
+        List<HwSendSubmitDTO> submitDTO = new ArrayList<>();
         //리스트를 순회하면서 homeworkSend로 homewowrkSubmit을 찾는다
         for (HomeworkSend hs : homeworkSendList) {
-            Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend_SendNo(hs.getSendNo());
+            Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend(hs);
+            System.out.println(optionalHomeworkSubmit);
             if(optionalHomeworkSubmit.isPresent()){
                 HwSendSubmitDTO HwSendSubmitDTO =new HwSendSubmitDTO(hs,optionalHomeworkSubmit.get());
                 submitDTO.add(HwSendSubmitDTO);

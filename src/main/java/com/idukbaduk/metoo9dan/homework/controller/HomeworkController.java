@@ -8,10 +8,7 @@ import com.idukbaduk.metoo9dan.homework.validation.HomeworksEditForm;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -272,23 +269,28 @@ public class HomeworkController {
     @GetMapping("/evaluate/submit-list")
     public ResponseEntity<?> getHomeworks(/*homeworkNo SendDate SendNo*/
             @RequestParam int homeworkNo,
-            @RequestParam int sendNo,
-            @RequestParam LocalDateTime sendDate
+            @RequestParam LocalDateTime sendDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "asc") String sort
     ) {
         //1. homeworkService찾기
         List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
-        System.out.println(homeworkSendList);
+        System.out.println("1차"+homeworkSendList);
         //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
         List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
+        //페이지네이션
+        Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("dueDate").ascending() : Sort.by("dueDate").descending());
+        Page<HwSendSubmitDTO> submitDTOPage = new PageImpl<>(submitDTO, pageable, submitDTO.size());
         //결과로 반환
-        return ResponseEntity.ok(submitDTO);
+        return ResponseEntity.ok(submitDTOPage);
     }
 
     //평가 대시보드 내용 - 제출
-    @GetMapping("/evaluate/dash-submit")
+    @GetMapping("/evaluate/dash-submit/{homeworkNo}/{sendDate}")
     public ResponseEntity<?> evalDashboard1(
-            @RequestParam int homeworkNo,
-            @RequestParam LocalDateTime sendDate
+            @PathVariable int homeworkNo,
+            @PathVariable LocalDateTime sendDate
     ){
         List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
         int sendCnt = homeworkSendList.size();
@@ -301,10 +303,10 @@ public class HomeworkController {
     }
 
     //평가 대시보드 내용 - 평가
-    @GetMapping("/evaluate/dash-eval")
+    @GetMapping("/evaluate/dash-eval/{homeworkNo}/{sendDate}")
     public ResponseEntity<?> evalDashboard2(
-            @RequestParam int homeworkNo,
-            @RequestParam LocalDateTime sendDate
+            @PathVariable int homeworkNo,
+            @PathVariable LocalDateTime sendDate
     ){
         List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
         int sendCnt = homeworkSendList.size();

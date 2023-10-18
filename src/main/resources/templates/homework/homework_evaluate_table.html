@@ -1,0 +1,145 @@
+<div class="card">
+    <div>
+        <span th:text="${item.name}"></span>
+        <span th:text="${item.homeworkTitle}"></span>
+        <span th:text="${item.homeworkContent}"></span>
+        <span th:text="${item.gameTitle}"></span>
+        <span th:text="${item.dueDate}"></span>
+        <span th:text="${item.sendNo}"></span>
+        <span th:text="${item.currentLevel}"></span>
+        <span th:text="${item.sendDate}"></span>
+        <span th:text="${item.homeworkNo}"></span>
+    </div>
+    <hr/>
+
+    <!-- 조건: item.homeworkSubmitNo가 0이 아니고 item.dueDate가 지났다면 -->
+    <div th:if="${item.homeworkSubmitNo != 0 and item.dueDate.isBefore(#dates.createNow())}">
+        <div>
+            <span th:text="${item.homeworkSubmitNo}"></span>
+            <span th:text="${item.submitContentPreview}"></span>
+            <span th:text="${item.submitContent}"></span>
+            <span th:text="${item.additionalQuestionsPreview}"></span>
+            <span th:text="${item.additionalQuestions}"></span>
+            <span th:text="${item.submitDate}"></span>
+            <span th:text="${item.evaluation}"></span>
+        </div>
+        <div class="dropdown">
+            <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                <option value="F" selected="selected">선택해주세요</option>
+                <option value="A">우수</option>
+                <option value="B">보통</option>
+                <option value="C">미흡</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 조건: item.homeworkSubmitNo가 0이고 item.dueDate가 아직 지나지 않았다면 -->
+    <div th:if="${item.homeworkSubmitNo == 0 and item.dueDate.isAfter(#dates.createNow())}">
+        <div>제출된 숙제가 없습니다</div>
+        <button>전송 취소</button>
+    </div>
+
+    <input type="submit">
+</div>
+
+<script>
+                    $(document).ready(function() {
+                        // 더블 클릭 이벤트 핸들러
+                        $("#hwSendTable").on("dblclick", "tr", function() {
+                            // 숙제 번호와 sendDate를 가져온다 ->복합키로 검색 예정
+                            var homeworkNo = $(this).data('hw-id');
+                            var sendDate = $(this).data('send-date');
+
+                            $.ajax({
+                            url: '/homework/evaluate/hw-list',
+                            type: 'GET',
+                            data: {
+                                homeworkNo: homeworkNo,
+                                sendDate: sendDate,
+                                page: page
+                            },
+                            success: function(response) {
+                                // 결과 카드 갱신
+                                let tableContent = '';
+                                    response.content.forEach(item => {
+                                        tableContent += `
+                                            <div>
+                                                <div>
+                                                    <span th:text="${item.name}"></span>
+                                                    <span th:text="${item.homeworkTitle}"></span>
+                                                    <span th:text="${item.homeworkContent}"></span>
+                                                    <span th:text="${item.gameTitle}"></span>
+                                                    <span th:text="${item.dueDate}"></span>
+                                                    <span th:text="${item.sendNo}"></span>
+                                                    <span th:text="${item.currentLevel}"></span>
+                                                    <span th:text="${item.sendDate}"></span>
+                                                    <span th:text="${item.homeworkNo}"></span>
+                                                </div>
+                                                <hr/>
+
+                                                <!-- 조건: item.homeworkSubmitNo가 0이 아니고 item.dueDate가 지났다면 -->
+                                                <div th:if="${item.homeworkSubmitNo != 0 and item.dueDate.isBefore(#dates.createNow())}">
+                                                    <div>
+                                                        <span th:text="${item.homeworkSubmitNo}"></span>
+                                                        <span th:text="${item.submitContentPreview}"></span>
+                                                        <span th:text="${item.submitContent}"></span>
+                                                        <span th:text="${item.additionalQuestionsPreview}"></span>
+                                                        <span th:text="${item.additionalQuestions}"></span>
+                                                        <span th:text="${item.submitDate}"></span>
+                                                        <span th:text="${item.evaluation}"></span>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                            <option value="F" selected="selected">선택해주세요</option>
+                                                            <option value="A">우수</option>
+                                                            <option value="B">보통</option>
+                                                            <option value="C">미흡</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 조건: item.homeworkSubmitNo가 0이고 item.dueDate가 아직 지나지 않았다면 -->
+                                                <div th:if="${item.homeworkSubmitNo == 0 and item.dueDate.isAfter(#dates.createNow())}">
+                                                    <div>제출된 숙제가 없습니다</div>
+                                                    <button>전송 취소</button>
+                                                </div>
+
+                                                <input type="submit">
+                                            </div>
+                                        `;
+                                    });
+                                $('#evaluationCard').html(tableContent);
+
+                                // 페이지네이션 갱신
+                                let paginationContent = '';
+                                let endPage = Math.ceil(page / 5.0) * 5;
+                                let startPage = endPage - 4;
+
+                                if (startPage > 1) {
+                                    paginationContent += `<a href="#" class="pagination-link" data-page="${startPage - 1}">이전</a>`;
+                                }
+
+                                for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
+                                    paginationContent += `<a href="#" class="pagination-link" data-page="${i}">${i}</a>`;
+                                }
+
+                                if (endPage < response.totalPages) {
+                                    paginationContent += `<a href="#" class="pagination-link" data-page="${endPage + 1}">다음</a>`;
+                                }
+
+                                $('#eval-pagination').html(paginationContent);
+                            }
+                        });
+
+                            $.get("/evaluate/dash-submit/" + homeworkNo + "/" + sendDate, function(data) {
+                                // 제출률 차트 그리기
+                                console.log(data);
+                            });
+
+                          $.get("/evaluate/dash-eval/" + homeworkNo + "/" + sendDate, function(data) {
+                                // 평가 차트 그리기
+                                console.log(data);
+                            });
+                        });
+                    });
+</script>

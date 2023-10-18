@@ -44,16 +44,16 @@
             <div style="display:none;">
                 <div>
                     <!-- 숙제 제출 / 평가 현황 미니 대시보드 -->
-
                 </div>
 
                 <div>
                     <!-- 전송 내역 -->
                     <form><!-- 숙제 평가 업데이트 폼 -->
-                        <div><!-- 이 카드 부분 반복 -->
-
+                        <div id="evaluationCard">
                         </div>
-                        <input type="submit">
+                        <div id="eval-pagination">
+                            <!-- 여기에 페이지네이션 내용이 들어갈 예정 -->
+                        </div>
                     </form>
                 </div>
             </div>
@@ -82,45 +82,6 @@
                         loadTable(page);
                     });
                 });
-                //상위 테이블 로드
-                function loadTable(page = 1) {
-                    let title = $("#titleDropdown").val();
-                    let sortOrder = $("#sortOrder").val();
-                    $.ajax({
-                        url: '/homework/evaluate/hw-list',
-                        type: 'GET',
-                        data: {
-                            title: title,
-                            sort: sortOrder,
-                            page: page
-                        },
-                        success: function(response) {
-                            console.log(response);
-
-                            // 결과 테이블 갱신
-                            let tableContent = '<thead><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody>';
-                            response.content.forEach(item => {
-                                tableContent += `
-                                    <tr th:data-hw-id="${item.homeworkNo}">
-                                        <td>${item.homeworkTitle}</td>
-                                        <td>${item.homeworkContentPreview}</td>
-                                        <td>${item.currentLevel}</td>
-                                        <td>${item.dueDate}</td>
-                                        <td>${item.sendDate}</td>
-                                    </tr>`;
-                            });
-                            tableContent += '</tbody>';
-                            $('#hwSendTable').html(tableContent);
-
-                            // 페이지네이션 갱신
-                            let paginationContent = '';
-                            for (let i = 1; i <= response.totalPages; i++) {
-                                paginationContent += `<a href="#" class="pagination-link" data-page="${i}">${i}</a>`;
-                            }
-                            $('#pagination').html(paginationContent);
-                        }
-                    });
-                }
 
                 // 상위 테이블 로드
                 function loadTable(page = 1) {
@@ -139,7 +100,7 @@
                             let tableContent = '<thead><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody>';
                                 response.content.forEach(item => {
                                     tableContent += `
-                                    <tr th:data-hw-id="${item.homeworkNo}">
+                                    <tr data-hw-id="${item.homeworkNo}" data-send-date="${item.sendDate}">
                                     <td>${item.homeworkTitle}</td>
                                     <td>${item.homeworkContentPreview}</td>
                                     <td>${item.currentLevel}</td>
@@ -172,6 +133,209 @@
                         }
                     });
                 }
+
+                // -----------------------------------------------------------------------------------
+                let currentPageSub = 1;    // 하위 테이블의 현재 페이지
+
+                $(document).ready(function() {
+                    // 더블 클릭 이벤트 핸들러
+                    $("#hwSendTable").on("dblclick", "tr", function() {
+                    console.log($(this).data('hw-id'), $(this).data('send-date'));
+                        // 숙제 번호와 sendDate를 가져온다 ->복합키로 검색 예정
+                        var homeworkNo = $(this).data('hw-id');
+                        var sendDate = $(this).data('send-date');
+
+                        $.ajax({
+                            url: '/homework/evaluate/submit-list',
+                            type: 'GET',
+                            data: {
+                                homeworkNo: homeworkNo,
+                                sendDate: sendDate,
+                                page: currentPageSub  // 여기를 수정했습니다.
+                            },
+                            success: function(response) {
+                            console.log(response.content);
+                                // 결과 카드 갱신
+                                let tableContent = '';
+                                    response.content.forEach(item => {
+                                        let currentDate = new Date();
+                                        tableContent += `
+                                            <div>
+                                                <div>
+                                                    <span>${item.name}</span>
+                                                    <span>${item.homeworkTitle}</span>
+                                                    <span>${item.homeworkContent}</span>
+                                                    <span>${item.gameTitle}</span>
+                                                    <span>${item.dueDate}</span>
+                                                    <span>${item.sendNo}</span>
+                                                    <span>${item.currentLevel}</span>
+                                                    <span>${item.sendDate}</span>
+                                                    <span>${item.homeworkNo}</span>
+                                                </div>
+                                                <hr/>
+                                        `;
+
+                                        if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) < currentDate) {
+                                            tableContent += `
+                                                <div>
+                                                    <span>${item.homeworkSubmitNo}</span>
+                                                    <span>${item.submitContentPreview}</span>
+                                                    <span>${item.submitContent}</span>
+                                                    <span>${item.additionalQuestionsPreview}</span>
+                                                    <span>${item.additionalQuestions}</span>
+                                                    <span>${item.submitDate}</span>
+                                                    <span>${item.evaluation}</span>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                        <option value="F" selected="selected">선택해주세요</option>
+                                                        <option value="A">우수</option>
+                                                        <option value="B">보통</option>
+                                                        <option value="C">미흡</option>
+                                                    </select>
+                                                </div>
+                                            `;
+                                        } else if(item.homeworkSubmitNo === 0 && new Date(item.dueDate) > currentDate) {
+                                            tableContent += `
+                                                <div>제출된 숙제가 없습니다</div>
+                                                <button>전송 취소</button>
+                                            `;
+                                        }
+
+                                        tableContent += `
+                                                <input type="submit">
+                                            </div>
+                                        `;
+                                    });
+                                $('#evaluationCard').html(tableContent);
+
+                                // 페이지네이션 갱신
+                                let paginationContent = '';
+                                let endPage = Math.ceil((response.number + 1) / 5.0) * 5; // '+1'은 현재 페이지 번호가 0부터 시작하기 때문입니다.
+                                let startPage = endPage - 4;
+
+                                if (startPage > 1) {
+                                    paginationContent += `<a href="#" class="pagination-link-sub" data-page="${startPage - 1}">이전</a>`;
+                                }
+
+                                for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
+                                    if (i === response.number + 1) {
+                                        paginationContent += `<span class="current-page">${i}</span>`; // 현재 페이지를 강조합니다.
+                                    } else {
+                                        paginationContent += `<a href="#" class="pagination-link-sub" data-page="${i}">${i}</a>`;
+                                    }
+                                }
+
+                                if (endPage < response.totalPages) {
+                                    paginationContent += `<a href="#" class="pagination-link-sub" data-page="${endPage + 1}">다음</a>`;
+                                }
+
+                                $('#eval-pagination').html(paginationContent);
+                            }
+                        });
+                        });
+                    });
+                    // 페이지네이션 링크 클릭 이벤트 핸들러
+                    $(document).on("click", ".pagination-link-sub", function(e) {
+                        e.preventDefault(); // 기본 링크 동작을 방지합니다.
+
+                        currentPageSub = $(this).data('page'); // 클릭한 페이지 번호를 할당합니다.
+
+                        // 더블 클릭 이벤트에서 사용한 로직을 재사용하여 데이터를 가져옵니다.
+                        // 여기서는 가장 최근에 더블 클릭된 row의 데이터를 사용하게 됩니다.
+                        // 이를 위해 선택된 row의 데이터를 전역 변수에 저장하는 방식으로 접근합니다.
+                        var homeworkNo = $("#hwSendTable").find("tr.selected").data('hw-id');
+                        var sendDate = $("#hwSendTable").find("tr.selected").data('send-date');
+
+                        $.ajax({
+                            url: '/homework/evaluate/hw-list',
+                            type: 'GET',
+                            data: {
+                                homeworkNo: homeworkNo,
+                                sendDate: sendDate,
+                                page: currentPageSub
+                            },
+                            success: function(response) {
+                            // 결과 카드 갱신
+                                let tableContent = '';
+                                    response.content.forEach(item => {
+                                        let currentDate = new Date();
+                                        tableContent += `
+                                            <div>
+                                                <div>
+                                                    <span>${item.name}</span>
+                                                    <span>${item.homeworkTitle}</span>
+                                                    <span>${item.homeworkContent}</span>
+                                                    <span>${item.gameTitle}</span>
+                                                    <span>${item.dueDate}</span>
+                                                    <span>${item.sendNo}</span>
+                                                    <span>${item.currentLevel}</span>
+                                                    <span>${item.sendDate}</span>
+                                                    <span>${item.homeworkNo}</span>
+                                                </div>
+                                                <hr/>
+                                        `;
+
+                                        if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) < currentDate) {
+                                            tableContent += `
+                                                <div>
+                                                    <span>${item.homeworkSubmitNo}</span>
+                                                    <span>${item.submitContentPreview}</span>
+                                                    <span>${item.submitContent}</span>
+                                                    <span>${item.additionalQuestionsPreview}</span>
+                                                    <span>${item.additionalQuestions}</span>
+                                                    <span>${item.submitDate}</span>
+                                                    <span>${item.evaluation}</span>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                        <option value="F" selected="selected">선택해주세요</option>
+                                                        <option value="A">우수</option>
+                                                        <option value="B">보통</option>
+                                                        <option value="C">미흡</option>
+                                                    </select>
+                                                </div>
+                                            `;
+                                        } else if(item.homeworkSubmitNo === 0 && new Date(item.dueDate) > currentDate) {
+                                            tableContent += `
+                                                <div>제출된 숙제가 없습니다</div>
+                                                <button>전송 취소</button>
+                                            `;
+                                        }
+
+                                        tableContent += `
+                                                <input type="submit">
+                                            </div>
+                                        `;
+                                    });
+                                $('#evaluationCard').html(tableContent);
+
+                                // 페이지네이션 갱신
+                                let paginationContent = '';
+                                let endPage = Math.ceil((response.number + 1) / 5.0) * 5; // '+1'은 현재 페이지 번호가 0부터 시작하기 때문입니다.
+                                let startPage = endPage - 4;
+
+                                if (startPage > 1) {
+                                    paginationContent += `<a href="#" class="pagination-link-sub" data-page="${startPage - 1}">이전</a>`;
+                                }
+
+                                for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
+                                    if (i === response.number + 1) {
+                                        paginationContent += `<span class="current-page">${i}</span>`; // 현재 페이지를 강조합니다.
+                                    } else {
+                                        paginationContent += `<a href="#" class="pagination-link-sub" data-page="${i}">${i}</a>`;
+                                    }
+                                }
+
+                                if (endPage < response.totalPages) {
+                                    paginationContent += `<a href="#" class="pagination-link-sub" data-page="${endPage + 1}">다음</a>`;
+                                }
+
+                                $('#eval-pagination').html(paginationContent);
+                            }
+                        });
+                    });
+
             </script>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->

@@ -20,6 +20,7 @@ public class HwSendSubmitDTO {
     private Date dueDate;
 
     private Integer sendNo;
+    private String gameTitle; //숙제 받은놈 이름
     private Integer currentLevel;
     private LocalDateTime sendDate;
     private Integer homeworkNo;
@@ -36,18 +37,28 @@ public class HwSendSubmitDTO {
     public HwSendSubmitDTO(HomeworkSend homeworkSend) {
         this.homeworkTitle = homeworkSend.getHomeworks().getHomeworkTitle();
         this.homeworkContent = homeworkSend.getHomeworks().getHomeworkContent();
+        this.gameTitle = homeworkSend.getHomeworks().getGameTitle();
         this.dueDate = homeworkSend.getHomeworks().getDueDate();
         this.sendNo = homeworkSend.getSendNo();
         this.currentLevel = homeworkSend.getCurrentLevel();
         this.sendDate = homeworkSend.getSendDate();
         this.homeworkNo = homeworkSend.getHomeworks().getHomeworkNo();
         this.name = homeworkSend.getMember().getName();
+
+        this.homeworkSubmitNo = 0;
+        this.submitContentPreview = "";
+        this.submitContent = "";
+        this.additionalQuestionsPreview = "";
+        this.additionalQuestions = "";
+        this.submitDate = LocalDateTime.now();
+        this.evaluation = "C";
     }
     public HwSendSubmitDTO(HomeworkSend homeworkSend, HomeworkSubmit homeworkSubmit) {
         this.homeworkTitle = homeworkSend.getHomeworks().getHomeworkTitle();
         this.homeworkContent = homeworkSend.getHomeworks().getHomeworkContent();
         this.dueDate = homeworkSend.getHomeworks().getDueDate();
         this.sendNo = homeworkSend.getSendNo();
+        this.gameTitle = homeworkSend.getHomeworks().getGameTitle();
         this.currentLevel = homeworkSend.getCurrentLevel();
         this.sendDate = homeworkSend.getSendDate();
         this.homeworkNo = homeworkSend.getHomeworks().getHomeworkNo();
