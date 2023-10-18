@@ -55,7 +55,7 @@ public class StudyGroupController {
         }*/
 
         //페이지네이션
-        int pageSize = 5; // 페이지당 보여줄 아이템 개수
+        int pageSize = 10; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
         map.put("member_no", member_no);
         map.put("pageSize", pageSize);
@@ -90,7 +90,7 @@ public class StudyGroupController {
         int member_no = member.getMemberNo();
 
         //페이지네이션
-        int pageSize = 1; // 페이지당 보여줄 아이템 개수
+        int pageSize = 10; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
         //map.put("member_no", member_no);
         map.put("pageSize", pageSize);
