@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,35 +64,34 @@ public class PaymentsController {
 
     // 결제하기
     @PostMapping("/payments")
-    public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session) {
+    @Transactional
+    public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session,Principal principal) {
 
         List<GameContents> selectedGameContents = (List<GameContents>) session.getAttribute("selectedGameContents");
         System.out.println("selectedGameContents?" + selectedGameContents);
         int totalSalePrice = (int) session.getAttribute("totalSalePrice");
         System.out.println("totalSalePrice:?" +totalSalePrice);
-        //임시용 ---------- 추후 수정 필 -------------
-        String memberID = "lee123";
-        Member user = memberService.getUser(memberID);
+        Member member = memberService.getUser(principal.getName());
+
 
         // paymentMethod 변수에 선택한 결제 방법이 무통장이면
         if(paymentMethod.equals("deposit")){
-            paymentsService.save(selectedGameContents,user,paymentMethod);
+            paymentsService.save(selectedGameContents,member,paymentMethod);
+        }else if(paymentMethod.equals("account")){
+            paymentsService.save(selectedGameContents,member,paymentMethod);
+        }else {
+            return "payments/paymentsform";
         }
-
-        return "payments/list";
+        return "redirect:/payments/list";
     }
 
 
     //게임컨텐츠 구매 목록조회
     @GetMapping("/list")
-    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
+    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,Principal principal) {
 
-        //임시용 ---------- 추후 수정 필 -------------
-        String memberID = "lee123";
-        Member user = memberService.getUser(memberID);
-
-
-        List<Payments> payments = paymentsService.paymentsList(user.getMemberNo());
+        Member member = memberService.getUser(principal.getName());
+        List<Payments> payments = paymentsService.paymentsList(member.getMemberNo());
 
         // Create a list to store the associated GameContents
         List<GameContents> gameContentsList = new ArrayList<>();
@@ -112,19 +112,12 @@ public class PaymentsController {
     // 결제 성공시
     @GetMapping("/success")
     public String afterPayRequest(@RequestParam("pg_token") String pgToken, Model model, Principal principal, HttpSession session, HttpServletRequest request) {
-        System.out.println("대체 어디로?");
-        System.out.println("afterPayRequest? " + pgToken);
 
         List<GameContents> selectedGameContents = (List<GameContents>) session.getAttribute("selectedGameContents");
-        System.out.println("selectedGameContents?" + selectedGameContents);
         int totalSalePrice = (int) session.getAttribute("totalSalePrice");
-        System.out.println("totalSalePrice:?" +totalSalePrice);
-        //임시용 ---------- 추후 수정 필 -------------
-        String memberID = "lee123";
-        Member member = memberService.getUser(memberID);
 
+        Member member = memberService.getUser(principal.getName());
         String pay = "pay";
-
         KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken,member,selectedGameContents,pay);
 
         // 세션을 종료 (무효화)
