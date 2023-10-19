@@ -149,15 +149,6 @@ public class HomeworkController {
         //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
         List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
         model.addAttribute("homeworkSend", homeworkSendList);
-        return "homework/homework_student";
-    }
-
-    //구역 전환1
-    @GetMapping("/submit/submit")
-    public String loadSubmitHomework(HwSubmitForm hwSubmitForm, Model model) {
-        //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
-        List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
-        model.addAttribute("homeworkSend", homeworkSendList);
         return "homework/homework_submit";
     }
 
@@ -227,8 +218,6 @@ public class HomeworkController {
             return new ResponseEntity<>("삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    //구역 전환2 - 지난 숙제 보기
     @GetMapping("/submit/list")
     public String loadViewSubmittedHomework(Model model) {
         List<HomeworkSend> homeworkSendList = homeworkService.findByMemberIdAndDueDateBeforeCurrentDate("sedol");
