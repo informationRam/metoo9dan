@@ -8,51 +8,74 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <div>
-                <h2>숙제 생성</h2>
-                <form th:action="@{/homework/add}" th:object="${homeworksForm}" method="post">
-                    <div>
-                        <label>숙제 제목:</label>
-                        <input type="text" th:field="*{homeworkTitle}">
-                        <span th:if="${#fields.hasErrors('homeworkTitle')}" th:errors="*{homeworkTitle}">Invalid Title</span>
+            <div class="mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>숙제 생성</h2>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{/homework/add}" th:object="${homeworksForm}" method="post">
+                                    <div class="mb-3">
+                                        <label for="homeworkTitle" class="form-label">숙제 제목:</label>
+                                        <input type="text" class="form-control" id="homeworkTitle" th:field="*{homeworkTitle}">
+                                        <div th:if="${#fields.hasErrors('homeworkTitle')}" th:errors="*{homeworkTitle}" class="text-danger">Invalid Title</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="homeworkContent" class="form-label">숙제 내용:</label>
+                                        <textarea class="form-control" id="homeworkContent" th:field="*{homeworkContent}"></textarea>
+                                        <div th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}" class="text-danger">Invalid Content</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="gameTitle" class="form-label">게임 콘텐츠명:</label>
+                                        <select class="form-control" id="gameTitle" th:field="*{gameTitle}">
+                                            <option th:value="none" th:text="선택하세요"></option>
+                                            <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
+                                        </select>
+                                        <div th:if="${#fields.hasErrors('gameTitle')}" th:errors="*{gameTitle}" class="text-danger">Invalid Progress</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="progress" class="form-label">숙제 진도:</label>
+                                        <input type="number" class="form-control" id="progress" th:field="*{progress}">
+                                        <span class="ms-2">레벨</span>
+                                        <div th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}" class="text-danger">Invalid Progress</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="dueDate" class="form-label">제출 기한:</label>
+                                        <input type="date" class="form-control" id="dueDate" th:field="*{dueDate}">
+                                        <div th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}" class="text-danger">Invalid Date</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="homeworkMemo" class="form-label">숙제 메모:</label>
+                                        <textarea class="form-control" id="homeworkMemo" th:field="*{homeworkMemo}"></textarea>
+                                        <div th:if="${#fields.hasErrors('homeworkMemo')}" th:errors="*{homeworkMemo}" class="text-danger">Invalid Memo</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <button type="submit" class="btn btn-primary">숙제 등록</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label>숙제 내용:</label>
-                        <textarea th:field="*{homeworkContent}"></textarea>
-                        <span th:if="${#fields.hasErrors('homeworkContent')}" th:errors="*{homeworkContent}">Invalid Content</span>
-                    </div>
-                    <div>
-                        <label>게임 콘텐츠명:</label>
-                        <select th:field="*{gameTitle}">
-                            <option th:value="none" th:text="선택하세요"></option>
-                            <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('gameTitle')}" th:errors="*{gameTitle}">Invalid Progress</span>
-                    </div>
-                    <div>
-                        <label>숙제 진도:</label>
-                        <input type="number" th:field="*{progress}">레벨
-                        <span th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}">Invalid Progress</span>
-                    </div>
-                    <div>
-                        <label>제출 기한:</label>
-                        <input type="date" th:field="*{dueDate}">
-                        <span th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">Invalid Date</span>
-                    </div>
-                    <div>
-                        <label>숙제 메모:</label>
-                        <textarea th:field="*{homeworkMemo}"></textarea>
-                        <span th:if="${#fields.hasErrors('homeworkMemo')}" th:errors="*{homeworkMemo}">Invalid Memo</span>
-                    </div>
-                    <div>
-                        <button type="submit">숙제 등록</button>
-                    </div>
-                </form>
+                </div>
             </div>
 
-            <div class="baduk-board">
-                <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="검색어를 입력하세요">
-                <table id="homeworkTable">
+            <!-- 검색 입력창 -->
+            <div class="baduk-board mb-4">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="searchInput" onkeyup="searchTable()" placeholder="검색어를 입력하세요">
+                </div>
+
+                <!-- 테이블 -->
+                <table class="table table-hover" id="homeworkTable">
+                    <thead>
                     <tr>
                         <th onclick="sortTable(0)">No</th>
                         <th onclick="sortTable(1)">숙제 제목</th>
@@ -62,6 +85,8 @@
                         <th onclick="sortTable(5)">제출 기한</th>
                         <th onclick="sortTable(6)">상태</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     <tr th:each="hw, stat : ${homeworkList}" th:data-hw-id="${hw.homeworkNo}">
                         <td th:text="${homeworkList.size() - stat.count + 1}"></td>
                         <td th:text="${hw.homeworkTitle}"></td>
@@ -71,69 +96,118 @@
                         <td th:text="${#dates.format(hw.dueDate, 'yyyy-MM-dd')}"></td>
                         <td th:text="${hw.sent ? (hw.dueDate > #dates.createNow() ? '제출 진행 중' : '제출 기한 만료') : '전송 기록 없음'}"></td>
                     </tr>
-                    <!-- 목록이 없을 때의 메시지를 추가합니다. -->
+                    <!-- 목록이 없을 때의 메시지 -->
                     <tr th:if="${homeworkList == null or homeworkList.size() == 0}">
                         <td colspan="6">등록된 숙제가 없습니다.</td>
                     </tr>
+                    </tbody>
                 </table>
-                <div id="hw-pagination">
-                    <button id="prevBtn">&laquo;</button>
-                    <div id="pageNumbers"></div>
-                    <button id="nextBtn">&raquo;</button>
+
+                <!-- 페이징 -->
+                <div id="hw-pagination" class="d-flex justify-content-center mt-3">
+                    <ul class="pagination">
+                        <li class="page-item" id="prevBtn">
+                            <a class="page-link" href="#">&laquo;</a>
+                        </li>
+                        <li class="page-item" id="pageNumbers">
+                            <!-- 페이지네이션 번호가 여기에 추가될 것입니다 -->
+                        </li>
+                        <li class="page-item" id="nextBtn">
+                            <a class="page-link" href="#">&raquo;</a>
+                        </li>
+                    </ul>
                 </div>
+
             </div>
 
             <!-- 통합 모달창 -->
-            <div id="hw-homeworkDetailModal">
+            <div id="hw-homeworkDetailModal" class="modal-lg">
+                <!--여기서 부터는 모달 안 내용은 건들지 말고-->
                 <div id="hwDetailCheck">
-                    <h2 id="modalTitle"></h2>
-                    내용<p id="modalContent"></p>
-                    게임 콘텐츠명<p id="modalGameTitle"></p>
-                    진도<p id="modalProgress"></p>
-                    메모<p id="modalMemo"></p>
-                    기한<p id="modalDueDate"></p>
-                    생성일<p id="modalCreateDate"></p>
-                    <button id="editBtn">수정</button>
-                    <button id="deleteBtn">삭제</button>
+                    <div class="modal-header">
+                        <h2 id="modalTitle" class="modal-title"></h2>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-3">내용:</div>
+                            <div class="col-md-9">
+                                <p id="modalContent"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">게임 콘텐츠명:</div>
+                            <div class="col-md-9">
+                                <p id="modalGameTitle"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">진도:</div>
+                            <div class="col-md-9">
+                                <p id="modalProgress"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">메모:</div>
+                            <div class="col-md-9">
+                                <p id="modalMemo"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">기한:</div>
+                            <div class="col-md-9">
+                                <p id="modalDueDate"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">생성일:</div>
+                            <div class="col-md-9">
+                                <p id="modalCreateDate"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button id="editBtn" class="btn btn-primary">수정</button>
+                    <button id="deleteBtn" class="btn btn-danger">삭제</button>
+                    </div>
                 </div>
 
                 <div id="hwEdit" style="display:none;">
-                    <h2>숙제 수정</h2>
+                    <h2 class="mb-4">숙제 수정</h2>
                     <form id="editForm" th:action="@{/homework/edit}" th:object="${homeworksEditForm}" method="post">
-                        <input type="hidden" th:field="*{hwNo}" th:id="'editNo'">
-                        <div>
-                            <label>숙제 제목:</label>
-                            <input type="text" th:field="*{hwTitle}" th:id="'editTitle'"></input>
+                        <input type="hidden" th:field="*{hwNo}" id="editNo">
+                        <div class="mb-3">
+                            <label for="editTitle" class="form-label">숙제 제목:</label>
+                            <input type="text" class="form-control" th:field="*{hwTitle}" id="editTitle">
                             <span id="editTitleError" class="error-message"></span>
                         </div>
-                        <div>
-                            <label>숙제 내용:</label>
-                            <textarea th:field="*{hwContent}" th:id="'editContent'"></textarea>
+                        <div class="mb-3">
+                            <label for="editContent" class="form-label">숙제 내용:</label>
+                            <textarea class="form-control" th:field="*{hwContent}" id="editContent"></textarea>
                             <span id="editContentError" class="error-message"></span>
                         </div>
-                        <div>
-                            <label>게임 콘텐츠명:</label>
-                            <select th:field="*{gameTitle}">
+                        <div class="mb-3">
+                            <label for="editGameTitle" class="form-label">게임 콘텐츠명:</label>
+                            <select class="form-select" th:field="*{gameTitle}" id="editGameTitle">
                                 <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
                             </select>
-                            <span th:if="${#fields.hasErrors('gameTitle')}" th:errors="*{gameTitle}">Invalid Progress</span>
+                            <span th:if="${#fields.hasErrors('gameTitle')}" th:errors="*{gameTitle}" class="error-message">Invalid Progress</span>
                         </div>
-                        <div>
-                            <label>숙제 진도:</label>
-                            <input type="number" th:field="*{hwProgress}" th:id="'editProgress'"></input>
+                        <div class="mb-3">
+                            <label for="editProgress" class="form-label">숙제 진도:</label>
+                            <input type="number" class="form-control" th:field="*{hwProgress}" id="editProgress">
                             <span id="editProgressError" class="error-message"></span>
                         </div>
-                        <div>
-                            <label>제출 기한:</label>
-                            <input type="date" th:field="*{hwDueDate}" th:id="'editDueDate'"></input>
+                        <div class="mb-3">
+                            <label for="editDueDate" class="form-label">제출 기한:</label>
+                            <input type="date" class="form-control" th:field="*{hwDueDate}" id="editDueDate">
                             <span id="editDueDateError" class="error-message"></span>
                         </div>
-                        <div>
-                            <label>숙제 메모:</label>
-                            <textarea th:field="*{hwMemo}" th:id="'editMemo'"></textarea>
+                        <div class="mb-3">
+                            <label for="editMemo" class="form-label">숙제 메모:</label>
+                            <textarea class="form-control" th:field="*{hwMemo}" id="editMemo"></textarea>
                             <span id="editMemoError" class="error-message"></span>
                         </div>
-                        <button type="submit">저장</button>
+                        <button type="submit" class="btn btn-primary">저장</button>
                     </form>
                 </div>
             </div>
@@ -158,7 +232,6 @@
                     currentPage = 1; // reset to first page after search/sort
                     updateTableDisplay();
                 }
-
             function searchTable() {
                 var input, filter, table, tr, td, i, j, found;
                 input = document.getElementById("searchInput");
@@ -209,7 +282,7 @@
                     var table, rows, switching, i, x, y, shouldSwitch;
                     table = document.getElementById("homeworkTable");
                     switching = true;
-                    if (columnIndex === 0 || columnIndex === 3) { // 'No' 열일 경우 숫자로 비교
+                    if (columnIndex === 0 || columnIndex === 4) { // 'No' 열일 경우 숫자로 비교
                     while (switching) {
                         switching = false;
                         rows = table.rows;
@@ -280,14 +353,13 @@
 
                     let paginationHtml = '';
                     for (let i = startPage; i <= endPage; i++) {
-                        paginationHtml += `<span class="hw-page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
+                        paginationHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link hw-page-number" data-page="${i}" href="#">${i}</a></li>`;
                     }
 
                     $("#pageNumbers").html(paginationHtml);
                     $("#prevBtn").prop('disabled', currentPage === 1);
                     $("#nextBtn").prop('disabled', currentPage === totalPages);
                 }
-
                 function updateTableDisplay() {
                     let startRow = (currentPage - 1) * rowsPerPage + 1;
                     let endRow = startRow + rowsPerPage;
@@ -306,8 +378,6 @@
 
                     renderPagination();
                 }
-
-
                 $(document).ready(function() {
                     totalRows = $("#homeworkTable tr").length - 1; // 헤더 제외
 
@@ -315,24 +385,20 @@
                         currentPage = $(this).data('page');
                         updateTableDisplay();
                     });
-
                     $("#prevBtn").click(function() {
                         if (currentPage > 1) {
                             currentPage--;
                             updateTableDisplay();
                         }
                     });
-
                     $("#nextBtn").click(function() {
                         if (currentPage < Math.ceil(totalRows / rowsPerPage)) {
                             currentPage++;
                             updateTableDisplay();
                         }
                     });
-
                     updateTableDisplay();
                 });
-
                 $(document).ready(function() {
                     // 더블 클릭 이벤트 핸들러
                     $("#homeworkTable tr").dblclick(function() {
@@ -369,7 +435,6 @@
                         $("#editBtn").prop('disabled', true);
                         $("#deleteBtn").prop('disabled', true);
                     });
-
                     // 수정 버튼 클릭 이벤트 핸들러
                     $("#editBtn").click(function() {
                         // 숙제 ID를 얻어옵니다.
@@ -391,7 +456,6 @@
                             $("#hwEdit").show();
                         });
                     });
-
                     $("#deleteBtn").click(function(){
                         let homeworkId = $(this).data('hw-id');
 
@@ -411,7 +475,6 @@
                             alert('숙제 ID가 없습니다. 다시 시도해주세요.');
                         }
                     });
-
                     // 모달 및 오버레이 외의 영역 클릭 시 모달 및 오버레이 숨김
                     $(document).on("click", function(e) {
                         if ($(e.target).closest("#hw-homeworkDetailModal").length === 0 &&
@@ -423,7 +486,6 @@
                     });
 
                 });
-
                 $("#editForm").submit(function(e) {
                     e.preventDefault();
 
@@ -460,8 +522,6 @@
                         }
                     });
                 });
-
-
             </script>
 
         </div><!--콘텐츠영역끝-->

@@ -29,5 +29,11 @@
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 5;
 }
-
+/* 페이지네이션 번호를 수평으로 정렬*/
+#pageNumbers {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
 
