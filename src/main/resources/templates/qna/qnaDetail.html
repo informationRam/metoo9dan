@@ -13,8 +13,8 @@
                 <div>
                     <div id="questionHeader"> <!--글상세 헤더정보-->
                         <div>
-                            <span th:if="${question.isAnswered}==0" class="badge rounded-pill text-bg-secondary">답변대기</span>
-                            <span th:unless="${question.isAnswered}==0" class="badge rounded-pill text-bg-primary">답변완료</span>
+                            <span th:if="${question.isAnswered}==false" class="badge rounded-pill text-bg-secondary">답변대기</span>
+                            <span th:unless="${question.isAnswered}==false" class="badge rounded-pill text-bg-primary">답변완료</span>
                             <h4 th:text="${question.questionTitle}" style="display: inline;">제목</h4>
                         </div>
                         <a th:text="|작성자: ${question.member.memberId}|">작성자</a>
@@ -33,8 +33,8 @@
                     <div th:text="${question.questionContent}">내용</div>
                     <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
                     <div>
-                        <a th:href="@{|/qna/question/modify/${noticeNo}|}" class="btn btn-secondary">수정</a>
-                        <a href="javascript:void(0);" th:data-uri="@{|/qna/question/delete/${question.questionNo}|}"
+                        <a th:href="@{|/qna/questionModify/${questionNo}|}" class="btn btn-secondary">수정</a>
+                        <a href="javascript:void(0);" th:data-uri="@{|/qna/delete/${question.questionNo}|}"
                            class="delete btn btn-outline-danger"
                            th:text="삭제">
                         </a>
@@ -52,9 +52,29 @@
                         답변 삭제 가능.
                     </div>
                 </div>
-
+            </div>
 
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->
+<div layout:fragment="script">
+    <script th:inline="javascript">
+        if([[${msg}]]!=null){
+            alert([[${msg}]]);
+        }
+        /** 삭제 버튼 클릭시 호출*/
+        const delElements = document.getElementsByClassName("delete");
+        //배열객체로 바꿔주자. form태그 안에 delElements가 있을테니 걔를 찾아라. 각각의 요소마다 동작 구현을 해줄거임.
+        Array.from(delElements).forEach( function(element){ //익명함수, 당장 실행할거임
+            element.addEventListener( "click", function(){
+                if(confirm("정말 삭제하시겠습니까?")){ //확인 클릭시,
+                    location.href=this.dataset.uri;
+                    /*click이벤트가 발생하는 요소(this=a)의 속성(data-uri)에 접근하여 location객체의 href속성값으로 적용해라.
+                      왜냐, 현재 브라우저의 url를 바꿔야하기 때문에.
+                      (.dataset-uri)==(location.href="/question/delete/${question.id}";)*/
+                };
+            });
+        });
+    </script>
+</div>
 </html>

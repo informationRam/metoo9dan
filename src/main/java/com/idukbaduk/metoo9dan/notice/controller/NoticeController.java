@@ -207,8 +207,7 @@ public class NoticeController {
 
         //로그인한 사람이 관리자인지 확인하는 코드 필요.~~~~~~~~~~~~~~~~
         Member member = memberServiceImpl.getUser(principal.getName());
-        String memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
-        model.addAttribute("memberRole", memberRole);
+        model.addAttribute("memberRole", member.getRole());
 
         LocalDateTime today = LocalDateTime.now();
         //문자열로 받은 postDate를 LocalDateTime으로 변환.
@@ -241,12 +240,12 @@ public class NoticeController {
         //파일업로드처리(DB NoticeFiles 테이블에 저장)
         for(MultipartFile multipartFile : uploadFiles) {
             if (!multipartFile.isEmpty()) {
-                if (!fileSizeOk(multipartFile) || !fileTypeOk(multipartFile)) {
+                if (!filesService.fileSizeOk(multipartFile) || !filesService.fileTypeOk(multipartFile)) {
                     model.addAttribute("msg","파일을 업로드할 수 없습니다. 파일 확장자와 사이즈를 확인하세요.");
                     return "notice/noticeForm"; //noticeForm.html로 이동.
                 }
             }
-            fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
+            filesService.fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
         }//파일 없으면,
         filesService.addFiles(list);
 
@@ -254,23 +253,6 @@ public class NoticeController {
         return "redirect:/notice/list"; //질문목록조회 요청
     }
 
-    //파일사이즈확인
-    private boolean fileSizeOk(MultipartFile multipartFile){
-        int maxSize = 31457280; //30MB
-        logger.info("fileSize: " +multipartFile.getSize());
-        if(multipartFile.getSize() > maxSize){
-            return false;
-        }
-        return true;
-    }
-
-    //파일확장자확인
-    private boolean fileTypeOk(MultipartFile multipartFile){
-        if(!multipartFile.getContentType().contains("image")){
-            return false;
-        }
-        return true;
-    }
 
     //공지사항 수정폼 보여줘 요청
     @GetMapping("/modify/{noticeNo}")
@@ -314,7 +296,7 @@ public class NoticeController {
                          Principal principal, Model model){
 
         String memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
-        model.addAttribute("memberRole", memberRole);
+        model.addAttribute("memberRole", memberRole); //없어도 될듯?
 
         if(bindingResult.hasErrors()){ //에러가 있으면,
             logger.info("Errors: " +bindingResult);
@@ -358,7 +340,7 @@ public class NoticeController {
         //파일업로드처리(DB NoticeFiles 테이블에 저장)
         for(MultipartFile multipartFile : uploadFiles) {
             if (!multipartFile.isEmpty()) {
-                if (!fileSizeOk(multipartFile) || !fileTypeOk(multipartFile)) {
+                if (!filesService.fileSizeOk(multipartFile) || !filesService.fileTypeOk(multipartFile)) {
                     model.addAttribute("msg","파일을 업로드할 수 없습니다. 파일 확장자와 사이즈를 확인하세요.");
                     if(notice.getStatus().equals("not_post")) {
                         LocalDateTime postDate =notice.getPostDate();
@@ -373,7 +355,7 @@ public class NoticeController {
                     model.addAttribute("filesList", filesList); //공지 파일 목록
                     return "notice/noticeModifyForm"; //noticeModifyForm.html로 이동.
                 }
-                fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
+                filesService.fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
             }
         }//파일 없으면,
         filesService.addFiles(list);
@@ -428,45 +410,5 @@ public class NoticeController {
         return "notice/faqList";
     }
 
-    //파일 업로드를 처리하는 메소드 (물리적 폴더와 파일 생성 및 DB에 저장)
-    private void fileUpload(String uploadFolder, Notice notice, MultipartFile multipartFile, List<NoticeFileDTO> list, RedirectAttributes redirectAttributes) {
-        // getFolder(): 년/월/일 폴더 생성
-        String uploadFolderPath = getFolder();
-        File uploadPath = new File(uploadFolder, uploadFolderPath);
-        if(uploadPath.exists() == false){
-            uploadPath.mkdirs();
-        }
-
-        //DTO에 담아 간다
-        NoticeFileDTO fileDTO = new NoticeFileDTO(); //DTO객체 생성
-        fileDTO.setNotice(notice); //방금 생성한 공지번호 저장
-
-        String uploadFileName = multipartFile.getOriginalFilename();
-        fileDTO.setOriginFileName(uploadFileName); //원본파일명 저장
-
-        //파일이름 중복방지를 위한 UUID
-        UUID uuid =UUID.randomUUID();
-        uploadFileName = uuid.toString()+"_"+uploadFileName;
-
-        try {
-            File saveFile = new File(uploadPath, uploadFileName);
-            multipartFile.transferTo(saveFile);
-            fileDTO.setUuid(uuid.toString()); //사본파일명 저장
-            fileDTO.setUploadPath(uploadFolderPath+""); //C:/upload이하 파일경로 저장
-            list.add(fileDTO);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            redirectAttributes.addFlashAttribute("msg", "공지등록하는 중에 에러 발생");
-        }//end catch
-    }
-
-    //중복된 이름의 파일처리
-    //년/월/일 폴더 생성
-    private String getFolder(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        String str = sdf.format(date);
-        return str.replace("-", "/");
-    }
 
 }
