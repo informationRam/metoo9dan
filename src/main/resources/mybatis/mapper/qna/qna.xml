@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qna">
+    <select id="getAnswersByQuestionNo" resultType="com.idukbaduk.metoo9dan.qna.dto.AnswerDTOforBatis" parameterType="int">
+        SELECT answer_no, question_no, answer_content, answer_title, write_date, member_no
+        FROM qna_answers
+        WHERE question_no = #{question_no}
+    </select>
+
+    <select id="getAnswers" resultType="com.idukbaduk.metoo9dan.common.entity.QnaAnswers" parameterType="int">
+        <![CDATA[
+        SELECT answer_no, question_no, answer_content, answer_title, write_date, member_no
+        FROM qna_answers
+        WHERE question_no = #{question_no}
+        ]]>
+    </select>
+</mapper>
