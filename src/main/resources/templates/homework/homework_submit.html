@@ -54,7 +54,7 @@
                 <form id="addForm" th:action="@{/homework/submit/add}" th:object="${hwSubmitForm}" method="post">
                     <div class="book">
                         <div class="cover"></div>
-                        <div class="index"></div>
+                        <div class="index submitIndex"><i class="bi bi-x close-icon" style="cursor: pointer;"></i></div>
                         <div class="page left page1"></div>
                         <div class="page left page2"></div>
                         <div class="page left page3">
@@ -114,30 +114,61 @@
             <div class="edit-form" style="display:none;">
                 <div class="book">
                     <div class="cover"></div>
-                    <div class="index"></div>
+                    <div class="index editIndex"><i class="bi bi-x close-icon" style="cursor: pointer;"></i></div>
                     <div class="page left page1"></div>
                     <div class="page left page2"></div>
                     <div class="page left page3">
-                        <p>숙제 제목: <span class="homework-title"></span></p>
-                        <p>게임컨텐츠명: <span class="game-title"></span>레벨</p>
-                        <p>진도: <span class="progress"></span>레벨</p>
-                        <p>교육자: <span class="member-name"></span></p>
-                        <p>숙제 내용: <span class="homework-content"></span></p>
-                        <p>제출 기한: <span class="due-date"></span></p>
+                        <div class="homework-details">
+                            <div class="detail-item">
+                                <label>숙제 제목:</label>
+                                <span class="homework-title"></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>게임컨텐츠명:</label>
+                                <span class="game-title"></span><span class="level-label">레벨</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>진도:</label>
+                                <span class="progress"></span><span class="level-label">레벨</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>교육자:</label>
+                                <span class="member-name"></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>숙제 내용:</label>
+                                <span class="homework-content"></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>제출 기한:</label>
+                                <span class="due-date"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="page right page1"></div>
                     <div class="page right page2"></div>
                     <div class="page right page3">
                         <form id="editForm" th:action="@{/homework/submit/edit}" th:object="${hwSubmitForm}" method="post">
-                            <p>진도: <span class="currentLevel"></span>레벨</p>
-                            <input type="hidden" name="homeworkNo"/>
-                            <input type="hidden" name="homeworkSubmitNo"/>
-                            <input type="hidden" name="sendNo"/>
-                            <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
-                            <span id="homeworkEditContentError" class="error-message"></span>
-                            <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
-                            <button type="submit">수정</button>
-                            <button type="button" id="deleteBtn">삭제</button>
+                            <div class="homework-submission">
+                                <div class="detail-item">
+                                    <label>진도:</label>
+                                    <span class="currentLevel"></span><span class="level-label">레벨</span>
+                                </div>
+                                <input type="hidden" name="homeworkNo"/>
+                                <input type="hidden" name="homeworkSubmitNo"/>
+                                <input type="hidden" name="sendNo"/>
+                                <div class="text-area-container">
+                                    <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                                    <span id="homeworkEditContentError" class="error-message"></span>
+                                </div>
+                                <div class="text-area-container">
+                                    <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                                </div>
+                                <div class="submit-button-container">
+                                    <button type="submit">수정</button>
+                                    <button type="button" id="deleteBtn">삭제</button>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -322,7 +353,7 @@
 
               function loadForm(element) {
                   let hwSendNo = element.getAttribute("data-send-no");
-                  let isSubmitted = element.classList.contains("submitted");
+                  let isSubmitted = element.classList.contains("table-success");
 
                   fetch(`/homework/submit/detail/${hwSendNo}`)
                       .then(response => response.json())
@@ -352,16 +383,24 @@
                               document.querySelector(".edit-form textarea[name='homeworkContent']").value = data.content;
                               document.querySelector(".edit-form textarea[name='additionalQuestion']").value = data.additionalQuestion;
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = data.homeworkSubmitNo;
-                              document.querySelector(".submit-form").style.display = 'none';
-                              document.querySelector(".edit-form").style.display = 'block';
                               $("#deleteBtn").data('submit-id', data.homeworkSubmitNo);
+                              document.querySelector(".submit-form").style.display = 'none';
+                            $(".edit-form").addClass('animate__animated animate__zoomIn').show();
+                            // 애니메이션 효과 종료 후 클래스 제거
+                            $(".edit-form").one('animationend', () => {
+                                $(".edit-form").removeClass('animate__animated animate__zoomIn');
+                            });
                           } else {
                               // 제출 폼 초기화 및 표시
                               document.querySelector(".submit-form textarea[name='homeworkContent']").value = '';
                               document.querySelector(".submit-form textarea[name='additionalQuestion']").value = '';
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = '';
                               document.querySelector(".edit-form").style.display = 'none';
-                              document.querySelector(".submit-form").style.display = 'block';
+                            $(".submit-form").addClass('animate__animated animate__zoomIn').show();
+                            // 애니메이션 효과 종료 후 클래스 제거
+                            $(".submit-form").one('animationend', () => {
+                                $(".submit-form").removeClass('animate__animated animate__zoomIn');
+                            });
                           }
                       })
                       .catch(error => {
@@ -374,6 +413,21 @@
               $(document).ready(function() {
                     $("#modalCloseBtn").click(function() {
                         location.reload(); // 페이지 리로드
+                    });
+
+                   $('.editIndex').click(function() {
+                        $('.edit-form').addClass('animate__animated animate__zoomOut');
+
+                        $(".edit-form").one('animationend', function() {
+                            $('.edit-form').hide().removeClass('animate__animated animate__zoomOut');
+                        });
+
+                   $('.submitIndex').click(function() {
+                        $('.submit-form').addClass('animate__animated animate__zoomOut');
+
+                        $(".submit-form").one('animationend', function() {
+                            $('.submit-form').hide().removeClass('animate__animated animate__zoomOut');
+                        });
                     });
                 });
 
