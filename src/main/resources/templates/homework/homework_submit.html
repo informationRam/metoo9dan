@@ -85,7 +85,7 @@
                                 </div>
                                 <div class="detail-item">
                                     <label>진도:</label>
-                                    <span class="progress"></span> 레벨
+                                    <span class="my-progress"></span> 레벨
                                 </div>
                                 <div class="detail-item">
                                     <label>숙제 내용:</label>
@@ -141,11 +141,11 @@
                             </div>
                             <div class="detail-item">
                                 <label>게임컨텐츠명:</label>
-                                <span class="game-title"></span><span class="level-label">레벨</span>
+                                <span class="game-title"></span>
                             </div>
                             <div class="detail-item">
                                 <label>진도:</label>
-                                <span class="progress"></span><span class="level-label">레벨</span>
+                                <span class="my-progress"></span>레벨
                             </div>
                             <div class="detail-item">
                                 <label>교육자:</label>
@@ -168,7 +168,7 @@
                             <div class="homework-submission">
                                 <div class="detail-item">
                                     <label>진도:</label>
-                                    <span class="currentLevel"></span><span class="level-label">레벨</span>
+                                    <span class="currentLevel"></span>레벨
                                 </div>
                                 <input type="hidden" name="homeworkNo"/>
                                 <input type="hidden" name="homeworkSubmitNo"/>
@@ -383,12 +383,14 @@
                           document.querySelector(".submit-form span.homework-title").textContent = data.homeworkTitle;
                           document.querySelector(".submit-form span.homework-content").textContent = data.homeworkContent;
                           document.querySelector(".submit-form span.member-name").textContent = data.memberName;
-                          document.querySelector(".submit-form span.progress").textContent = data.progress;
+                          document.querySelector(".submit-form span.gameTitle").textContent = data.gamTitle;
+                          document.querySelector(".submit-form span.my-progress").textContent = data.progress;
                           document.querySelector(".submit-form span.due-date").textContent = data.dueDate;
                           document.querySelector(".edit-form span.homework-title").textContent = data.homeworkTitle;
                           document.querySelector(".edit-form span.homework-content").textContent = data.homeworkContent;
                           document.querySelector(".edit-form span.member-name").textContent = data.memberName;
-                          document.querySelector(".edit-form span.progress").textContent = data.progress;
+                          document.querySelector(".edit-form span.gameTitle").textContent = data.gameTitle;
+                          document.querySelector(".edit-form span.my-progress").textContent = data.progress;
                           document.querySelector(".edit-form span.due-date").textContent = data.dueDate;
 
                           document.querySelector(".edit-form span.currentLevel").textContent = data.progress;

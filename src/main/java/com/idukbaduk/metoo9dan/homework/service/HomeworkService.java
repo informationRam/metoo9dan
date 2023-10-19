@@ -222,6 +222,7 @@ public class HomeworkService {
             dto.setHomeworkContent(homeworks.getHomeworkContent());
             dto.setMemberName(homeworks.getMember().getName());
             dto.setProgress(homeworks.getProgress());
+            dto.setGameTitle(homeworks.getGameTitle());
             dto.setDueDate(homeworks.getDueDate());
             dto.setSendNo(optionalHomeworkSend.get().getSendNo());
         }
