@@ -1,0 +1,124 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="styleLink" >
+    <style>
+        #drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #drop-area.highlight {
+            border-color: #2185d0;
+        }
+    </style>
+</div>
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
+        <div th:replace="~{/notice/utilSidebar::sidebar}"></div>
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h2>문의사항 게시글 등록</h2>
+            <form id="questionForm" th:object="${questionForm}" th:action="@{|/qna/questionAdd|}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{writeDate}">
+                <label for="title">제목</label>
+                <input type="text" th:field="*{title}" placeholder="제목을 입력하세요" class="form-control">
+                <label for="content" class="col-form-label">내용</label>
+                <textarea th:field="*{content}" rows="6" placeholder="내용을 입력하세요" class="form-control p-2"></textarea>
+
+                첨부파일 (파일 1개당 최대 첨부용량: 30MB / 이미지 파일만 업로드 가능)
+                <div id="fileInfo" style="border: 1px solid black;">
+                    <p>현재 첨부된 파일 정보</p>
+                </div>
+                <div class="mb-3">
+                    <label for="drop-area" class="form-label">파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.
+                        <input class="form-control" type="file" id="drop-area" name="uploadFiles" accept="image/*" multiple>
+                    </label>
+                </div>
+                <input type="button" onclick="saveForm()" value="게시글 저장" class="btn btn-primary">
+            </form>
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+<div layout:fragment="script">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
+    <script th:inline="javascript">
+        if([[${msg}]]!=null){
+            alert([[${msg}]]);
+        }
+
+       document.getElementById('drop-area').addEventListener('change', handleDrop);
+
+       function handleDrop(event) {
+            var fileInfo = document.getElementById('fileInfo');
+            //fileInfo 핸들드랍 영역을 초기화 시키기
+            removeAllChildNods(fileInfo);
+
+           event.preventDefault();
+
+           var files = event.target.files; // input 요소에서 files 속성 직접 사용
+           var fileList = []; // 파일 정보를 담아 둘 배열
+
+           // 파일 처리 로직을 여기에 추가
+           for (var i = 0; i < files.length; i++) {
+               console.log('첨부된 파일:', files[i]);
+               var tag = "";
+               var f = files[i];
+               fileList.push(f);
+               var fileName = f.name;
+               var fileSize = f.size / 1024 / 1024;
+               fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
+               tag += "<div class='d-flex justify-content-between'>"+
+                       "<span>"+fileName+"</span>" +
+                       "<span style='float:right;'>"+fileSize+" MB</span>" +
+                       "</div>";
+
+               document.getElementById('fileInfo').insertAdjacentHTML('beforeend', tag);
+           }
+
+       }
+
+        // fileInfo 목록의 자식 Element를 제거하는 함수입니다
+        function removeAllChildNods(el) {
+           while (el.hasChildNodes()) {
+               el.removeChild (el.lastChild);
+           }
+        }
+
+
+       // 폼 저장 및 제출
+       function saveForm() {
+           if(checkForm()){ //유효성검사 마쳤으면,
+               var today = /*[[${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}]]*/ '';
+               document.getElementById("writeDate").value = today;
+               document.getElementById("questionForm").submit(); // 폼 제출
+           }
+       }
+
+       // 폼 유효성검사
+       function checkForm() {
+           // 제목 유효성 검사
+           var title = document.getElementById("title").value;
+           if (title.trim() === "") {
+               alert("제목을 입력하세요.");
+               return false;
+           }
+
+           // 내용 유효성 검사
+           var content = document.getElementById("content").value;
+           if (content.trim() === "") {
+               alert("내용을 입력하세요.");
+               return false;
+           }
+
+           return true;
+       }
+
+    </script>
+</div>
+</html>

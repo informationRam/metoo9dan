@@ -202,7 +202,7 @@ public class NoticeController {
 
         if(bindingResult.hasErrors()){ //에러가 있으면,
             logger.info("Errors: " +bindingResult);
-            return "/notice/noticeForm"; //noticeForm.html로 이동.
+            return "notice/noticeForm"; //noticeForm.html로 이동.
         }//에러가 없으면, 공지사항 등록 진행
 
         //로그인한 사람이 관리자인지 확인하는 코드 필요.~~~~~~~~~~~~~~~~
@@ -254,6 +254,7 @@ public class NoticeController {
         return "redirect:/notice/list"; //질문목록조회 요청
     }
 
+    //파일사이즈확인
     private boolean fileSizeOk(MultipartFile multipartFile){
         int maxSize = 31457280; //30MB
         logger.info("fileSize: " +multipartFile.getSize());
@@ -262,6 +263,8 @@ public class NoticeController {
         }
         return true;
     }
+
+    //파일확장자확인
     private boolean fileTypeOk(MultipartFile multipartFile){
         if(!multipartFile.getContentType().contains("image")){
             return false;
