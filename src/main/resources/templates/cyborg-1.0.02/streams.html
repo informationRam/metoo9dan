@@ -232,28 +232,30 @@ https://templatemo.com/tm-579-cyborg-gaming
         </div>
           <!-- 페이지 네이션 처리 -->
           <div id="pagination">
-          <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-              <!-- 이전 페이지 링크 -->
-              <li class="page-item" th:classappend="${gamePage.pageable.pageNumber == 0} ? 'disabled'">
-                <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber - 1}, searchText=${searchText})}" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <!-- 페이지 번호 링크 -->
-              <li class="page-item" th:classappend="${i == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
-                <a class="page-link" href="#" th:href="@{/game/alllist(page=${i}, searchText=${searchText})}" th:text="${i}">1</a>
-              </li>
-              <!-- 다음 페이지 링크 -->
-              <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">
-                <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber + 1}, searchText=${searchText})}" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+                <!-- 이전 페이지 링크 -->
+                <li class="page-item" th:classappend="${gamePage.pageable.pageNumber == 0} ? 'disabled'">
+                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber - 1}, searchText=${searchText})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <!-- 페이지 번호 링크 -->
+                <!-- Page Number Links (Adjust for 1-based numbering) -->
+                <li class="page-item" th:classappend="${i - 1 == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${i - 1}, searchText=${searchText})}" th:text="${i}"></a>
+                </li>
+                <!-- 다음 페이지 링크 -->
+                <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">
+                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber + 1}, searchText=${searchText})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
           </div>
-    </div>
+
+        </div>
   </div>
     </div>
     </div>
