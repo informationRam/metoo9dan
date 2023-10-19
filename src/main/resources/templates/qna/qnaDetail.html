@@ -31,8 +31,9 @@
                         </label>
                     </div>
                     <div th:text="${question.questionContent}">내용</div>
-                    <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
-                    <div>
+                    <!--작성자만 수정삭제 버튼 보임-->
+                    <div th:if="${question.member!=null and #authentication.getPrincipal().getUsername()==question.member.memberId}"
+                         sec:authorize="isAuthenticated()">
                         <a th:href="@{|/qna/questionModify/${questionNo}|}" class="btn btn-secondary">수정</a>
                         <a href="javascript:void(0);" th:data-uri="@{|/qna/delete/${question.questionNo}|}"
                            class="delete btn btn-outline-danger"
@@ -40,16 +41,26 @@
                         </a>
                     </div>
                 </div>
-                <div>
-                    답변작성영역 관리자만
-                    <form>
-
-                    </form>
-                </div>
-                <div>
-                    답변 내역 출력 영역
-                    <div>
-                        답변 삭제 가능.
+                <hr/>
+                <!--답변작성영역 관리자만-->
+                <form id="answerForm" th:object="${answerForm}" th:action="@{|/answer/add/${question.questionNo}|}" method="post">
+<!--                    <div th:replace="~{form_errors::formErrorsFragment}"></div>-->
+                    <div class="">
+                        <input type="text" th:field="*{title}" placeholder="답변 제목을 입력하세요" class="form-control">
+                        <textarea th:field="*{content}" rows="4" class="form-control" placeholder="답변 내용을 입력하세요"></textarea>
+                        <input type="submit" value="답변 등록" class="btn btn-primary">
+                    </div>
+                </form>
+<!--            답변 내역 출력 영역-->
+                <div class="card" th:each="answer : ${question.qnaAnswers}">
+                    <h5 class="card-header" th:text="${answer.answerTitle}"></h5>
+                    <div class="card-body">
+                        <a class="badge rounded-pill text-bg-primary" th:text="${answer.member.memberId}"></a>
+                        <a class="card-subtitle text-body-secondary" th:text="|답변일시: ${#temporals.format(answer.writeDate, 'yyyy-MM-dd HH:mm')}|"></a>
+                        <p class="card-text" th:text="${answer.answerContent}"></p>
+                        <div>
+                            <a th:href="@{#}" class="btn btn-sm btn-danger">only삭제</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -62,6 +73,8 @@
         if([[${msg}]]!=null){
             alert([[${msg}]]);
         }
+        alert([[${answer}]]);
+
         /** 삭제 버튼 클릭시 호출*/
         const delElements = document.getElementsByClassName("delete");
         //배열객체로 바꿔주자. form태그 안에 delElements가 있을테니 걔를 찾아라. 각각의 요소마다 동작 구현을 해줄거임.

@@ -1,17 +1,17 @@
 package com.idukbaduk.metoo9dan.qna.controller;
 
-import com.idukbaduk.metoo9dan.common.entity.Member;
-import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
-import com.idukbaduk.metoo9dan.common.entity.QnaQuestions;
-import com.idukbaduk.metoo9dan.common.entity.QuestionFiles;
+import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.notice.controller.NoticeController;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
 import com.idukbaduk.metoo9dan.notice.validation.NoticeForm;
+import com.idukbaduk.metoo9dan.qna.dto.AnswerDTOforBatis;
 import com.idukbaduk.metoo9dan.qna.dto.QuestionDTO;
 import com.idukbaduk.metoo9dan.qna.dto.QuestionFileDTO;
+import com.idukbaduk.metoo9dan.qna.service.AnswerService;
 import com.idukbaduk.metoo9dan.qna.service.QuestionFilesService;
 import com.idukbaduk.metoo9dan.qna.service.QuestionService;
+import com.idukbaduk.metoo9dan.qna.validation.AnswerForm;
 import com.idukbaduk.metoo9dan.qna.validation.QuestionForm;
 import groovy.util.logging.Log4j2;
 import jakarta.validation.Valid;
@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
@@ -28,12 +29,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Log4j2
 @RequestMapping("/qna")
@@ -46,6 +47,7 @@ public class QuestionController {
     private final MemberServiceImpl memberServiceImpl;
     private final QuestionService questionService;
     private final QuestionFilesService filesService;
+    private final AnswerService answerService;
 
     //method
     /*관리자아닌사람.
@@ -69,7 +71,6 @@ public class QuestionController {
         } else {
             model.addAttribute("memberRole", memberRole);
         }
-
         Page<QnaQuestions> questionPage = questionService.getList(pageNo);
         logger.info("questionPage: " + questionPage);
         int endPage = (int) (Math.ceil((pageNo + 1) / 5.0)) * 5; //5의 배수
@@ -87,10 +88,25 @@ public class QuestionController {
     }
 
     /*상세조회 요청*/
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/detail/{questionNo}")
-    public String getQuestionDetail(@PathVariable Integer questionNo,
+    public String getQuestionDetail(@PathVariable("questionNo") Integer questionNo,
+                                    AnswerForm answerForm,
                                     Principal principal,
-                                    Model model) {
+                                    Model model,
+                                    RedirectAttributes redirectAttributes) {
+        Member member = memberServiceImpl.getUser(principal.getName());
+        logger.info("로그인한 member: "+member);
+        QnaQuestions questions = questionService.getQuestion(questionNo);
+        logger.info("questionNo?: "+questionNo);
+        logger.info("questions: "+questions);
+        //본인이 작성한 글이거나 관리자여야 열람이 가능함.
+        // 관리자가 아니고, 본인이 작성한 글이 아닐 때는 열람할 수 없음
+        if(!member.getRole().equalsIgnoreCase("admin") && !questions.getMember().equals(member)){
+            redirectAttributes.addFlashAttribute("msg", "해당 게시글을 조회할 권한이 없습니다.");
+            return "redirect:/qna/list";
+        }
+
         //memberRole에 따른 사이드바 표출을 위한 model 설정
         String memberRole = null;
         if (principal != null) {
@@ -102,13 +118,15 @@ public class QuestionController {
         } else {
             model.addAttribute("memberRole", memberRole);
         }
-        //게시글 상세 조회
-        QnaQuestions questions = questionService.getQuestion(questionNo);
         //파일도 조회할 수 있어야 함.
         List<QuestionFiles> filesList = filesService.getFiles(questions);
         //답변도 조회할 수 있어야 함.
+        //List<QnaAnswers> answers = answerService.getAnswers(questions);
+        QnaAnswers answers = answerService.getAnswers(questions);
+
         //답변폼은 관리자만 볼 수 있어야 함.
         model.addAttribute("question", questions);
+        model.addAttribute("answer", answers);
         model.addAttribute("filesList", filesList);
         return "qna/qnaDetail";
     }
@@ -187,7 +205,6 @@ public class QuestionController {
             return "qna/questionForm"; //questionForm.html로 이동.
         }//에러가 없으면, 공지사항 등록 진행
 
-        //1.파라미터받기
         //로그인정보확인
         Member member = memberServiceImpl.getUser(principal.getName());
         //관리자 아닌 사람만.
@@ -196,7 +213,6 @@ public class QuestionController {
             return "redirect:/qna/list"; //목록조회로 튕겨내기
         }
 
-        //2.비즈니스로직수행
         //유효성검사를 마친 Form 데이터를 DTO에 담기
         QuestionDTO questionDTO = new QuestionDTO();
         questionDTO.setQuestionTitle(questionForm.getTitle());
@@ -224,12 +240,8 @@ public class QuestionController {
         }//파일 없으면,
         filesService.addFiles(list);
 
-
-        //3.모델
         redirectAttributes.addFlashAttribute("msg", "문의사항이 등록되었습니다.");
-        //뷰
 
-        //return null;
         return String.format("redirect:/qna/detail/%d", question.getQuestionNo()); //상세조회로 이동
     }
 

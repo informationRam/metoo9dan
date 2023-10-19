@@ -138,7 +138,8 @@ public class NoticeController {
 
     // 상세조회 (+댓글 목록조회 및 작성 폼)
     @GetMapping("/detail/{noticeNo}")
-    public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo, NoticeReplyForm noticeReplyForm,
+    public String getNoticeDetail(@PathVariable("noticeNo")Integer noticeNo,
+                                  NoticeReplyForm noticeReplyForm,
                                   Principal principal, Model model){
 
         //memberRole에 따른 사이드바 표출을 위한 model 설정
@@ -160,7 +161,7 @@ public class NoticeController {
         List<NoticeFiles> filesList=filesService.getFiles(notice); //파일조회
         List<NoticeReply> noticeReply = noticeService.getNoticeReply(notice); //댓글조회
         model.addAttribute("notice", notice); //공지상세 내용
-        model.addAttribute("noticeReply", noticeReply); //공지 댓글 목록
+        //model.addAttribute("noticeReply", noticeReply); //공지 댓글 목록
         model.addAttribute("filesList", filesList); //공지 파일 목록
         return "notice/noticeDetail";
     }
