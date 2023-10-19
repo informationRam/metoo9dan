@@ -135,18 +135,17 @@ public class PaymentsController {
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,Principal principal) {
 
         Member member = memberService.getUser(principal.getName());
-        List<Payments> payments = paymentsService.paymentsList(member.getMemberNo());
+        //List<Payments> payments = paymentsService.paymentsList(member.getMemberNo());
 
         // Create a list to store the associated GameContents
         List<GameContents> gameContentsList = new ArrayList<>();
 
-        // Iterate through the payments list and retrieve GameContents for each payment
-        for (Payments payment : payments) {
+       /* for (Payments payment : payments) {
             GameContents gameContentsForPayment = paymentsService.getGameContentsForPayment(payment);
             gameContentsList.add(gameContentsForPayment);
         }
 
-        model.addAttribute("payments", payments);
+        model.addAttribute("payments", payments);*/
         model.addAttribute("gameContentsList", gameContentsList);
 
         return "payments/list";

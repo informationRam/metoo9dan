@@ -13,14 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +45,7 @@ public class EducationService {
         return educationalRepository.findAll(pageable);
     }
 
-    //교육자료목록조회 (교육자료 - 페이징처리)
+    //교육자료목록조회 (교육자료로 검색 - 페이징처리)
     public Page<EducationalResources> getresourcecateList(String resourceCate, int page) {
 
         List<Sort.Order> sorts = new ArrayList<>();
@@ -65,8 +60,11 @@ public class EducationService {
         System.out.println("resourceName?"+resourceName);
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+
+        System.out.println("sorts?"+sorts);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         System.out.println("pageable?"+pageable);
+
 
         return educationalRepository.findByResourceNameContaining(resourceName,pageable);
     }
@@ -122,16 +120,19 @@ public class EducationService {
         }
     }
 
-
     //resourceNo 주면 Contents값 전체 조회
     public EducationalResources getEducation(int resourceNo){
         EducationalResources educationalResources = educationalRepository.findById(resourceNo).orElse(null);
         if (educationalResources != null) {
-            educationalResources.setResourcesFilesList(resourcesFilesService.getResourcesFilesByResourceNo(resourceNo));
+            educationalResources.setResourcesFilesList(resourcesFilesService.getFile(resourceNo));
         }
         return educationalResources;
     }
 
+    public List<EducationalResources> getEducationDistinct() {
+        List<EducationalResources> uniqueResources = educationalRepository.findResourcesWithUniqueResourceNames();
+        return uniqueResources;
+    }
     //EducationalResources -> EducationVaildation으로 변경
     public EducationValidation toEducationValidation(EducationalResources education) {
         EducationValidation educationValidation = new EducationValidation();
@@ -143,14 +144,11 @@ public class EducationService {
         educationValidation.setDescription(education.getDescription());
 
         // 이미 업로드된 이미지 파일 목록을 가져와서 EducationVaildation에 설정
-        List<ResourcesFiles> resourcesFilesList = resourcesFilesService.getResourcesFilesByResourceNo(education.getResourceNo());
-        educationValidation.setBoardFileList(resourcesFilesList);
+        ResourcesFiles resourcesFilesList = resourcesFilesService.getFile(education.getResourceNo());
 
-        for(ResourcesFiles file : resourcesFilesList){
-            if(file != null){
-                educationValidation.setSaveThumFile(file);
-            }
-        }
+        educationValidation.setSaveThumFile(resourcesFilesList);
+        educationValidation.setSaveboardFile(resourcesFilesList);
+
         return educationValidation;
     }
 
@@ -174,15 +172,11 @@ public class EducationService {
     public void delete(EducationalResources education) {
         educationalRepository.delete(education);
 
-        List<ResourcesFiles> byEducationalResourcesResourceNo = resourcesFilesReprository.findByEducationalResources_ResourceNo(education.getResourceNo());
+        ResourcesFiles byEducationalResourcesResourceNo = resourcesFilesReprository.findByEducationalResources_ResourceNo(education.getResourceNo());
         System.out.println("byEducationalResourcesResourceNo?:" + byEducationalResourcesResourceNo);
 
-        if (byEducationalResourcesResourceNo != null && !byEducationalResourcesResourceNo.isEmpty()) {
-            List<Integer> deletedFiles = new ArrayList<>(); // 리스트를 초기화하고 선언
-            for (ResourcesFiles deletedFileList : byEducationalResourcesResourceNo) {
-                deletedFiles.add(deletedFileList.getFileNo()); // 파일 번호를 리스트에 추가
-            }
-            resourcesFilesService.deleteFile(deletedFiles); // 삭제 서비스로 전달
+        if (byEducationalResourcesResourceNo != null && !byEducationalResourcesResourceNo.equals("")) {
+                resourcesFilesService.alldeleteFile(byEducationalResourcesResourceNo); // 삭제 서비스로 전달
         }
     }
 
@@ -225,17 +219,16 @@ public class EducationService {
         educationalRepository.save(copy_education);   //교육자료를 저장
 
         EducationalResources educationalResources1 = educationalRepository.findById(copy_education.getResourceNo()).get();
-        List<ResourcesFiles> ori_resourcesfiles = resourcesFilesService.getResourcesFilesByResourceNo(ori_education.getResource_no());
+        ResourcesFiles ori_resourcesfiles = resourcesFilesService.getFile(ori_education.getResource_no());
         //파일이 있다면 (DB에 파일 정보만 저장처리한다.)
-        if(!ori_resourcesfiles.equals(null) || !ori_resourcesfiles.isEmpty()){
-            for(ResourcesFiles resourcesFiles : ori_resourcesfiles){
+        if(!ori_resourcesfiles.equals(null) || !ori_resourcesfiles.equals("")){
                 ResourcesFiles copyResourcesFiles = new ResourcesFiles(); // DB에 이미지 제목 복사처리
-                copyResourcesFiles.setOriginFileName(resourcesFiles.getOriginFileName());
-                copyResourcesFiles.setCopyFileName(resourcesFiles.getCopyFileName());
+                copyResourcesFiles.setOriginFileName(ori_resourcesfiles.getOriginFileName());
+                copyResourcesFiles.setCopyFileName(ori_resourcesfiles.getCopyFileName());
                 copyResourcesFiles.setEducationalResources(copy_education);
                 resourcesFilesReprository.save(copyResourcesFiles);
             }
-        }
+
     }
 
     // gameno값으로 EducationalResources 정보 가져오기

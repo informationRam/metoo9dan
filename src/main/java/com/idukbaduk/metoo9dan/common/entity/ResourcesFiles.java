@@ -29,7 +29,7 @@ public class ResourcesFiles {
     @Column(name="file_url")
     private String fileUrl;         //text  NULL    COMMENT '자료url',
 
-    @ManyToOne(fetch = FetchType.LAZY) // 다대일 관계
+    @OneToOne(fetch = FetchType.LAZY) // 다대일 관계
     @JoinColumn(name = "resource_no", referencedColumnName = "resource_no") // 외래 키 설정
     private EducationalResources educationalResources;
 

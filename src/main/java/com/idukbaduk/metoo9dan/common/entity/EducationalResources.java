@@ -45,8 +45,8 @@ public class EducationalResources {
     @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no") // 외래 키 설정
     private GameContents gameContents;
 
-    @OneToMany(mappedBy = "educationalResources", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ResourcesFiles> resourcesFilesList = new ArrayList<>();
+    @OneToOne(mappedBy = "educationalResources", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private ResourcesFiles resourcesFilesList;
 
     //재귀 방지 gameContents를 출력하지 않도록 함.
     @Override

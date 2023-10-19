@@ -46,7 +46,9 @@ public class GameController {
 
         List<EducationalResources> educationalResources = new ArrayList<>();
 
-        List<EducationalResources> allEducation = educationService.getAllEducation();
+     /*   List<EducationalResources> allEducation = educationService.getAllEducation();*/
+
+        List<EducationalResources> allEducation = educationService.getEducationDistinct();
         session.setAttribute("educationalResources", educationalResources);
         model.addAttribute("allEducation", allEducation);
         model.addAttribute("gameValidation", gameValidation);
@@ -62,12 +64,10 @@ public class GameController {
             List<EducationalResources> allEducation;
 
         if(searchKeyword.equals("all")){
-            System.out.println("여결와야지?");
             allEducation = educationService.getAllEducation();
             System.out.println("allEducation?:" +allEducation);
             return allEducation;
         }else {
-            System.out.println("여길?");
             allEducation = educationService.search(searchKeyword);
 
             if (allEducation == null) {
@@ -160,6 +160,54 @@ public class GameController {
         model.addAttribute("gameList", allGameContents);
         return "sb-admin-7.0.4/tables";
     }
+
+    //게임콘텐츠 목록조회
+    @GetMapping("/list2")
+    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
+
+        // 게임컨텐츠 목록 조회
+        Page<GameContents> gamePage = this.gameService.gameSearch(searchText, searchText, page);
+
+        for (GameContents gamecon : gamePage.getContent()) {
+            // 게임컨텐츠에 대한 파일 정보 가져오기
+            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
+            gamecon.setGameContentFilesList(gameContentFilesList);
+
+            // 게임컨텐츠에 대한 교육자료 정보 가져오기
+            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
+
+            for (EducationalResources educationalResource : education) {
+                ResourcesFiles resourcesFilesByResourceNo = resourcesFilesService.getFile(educationalResource.getResourceNo());
+                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
+            }
+            gamecon.setEducationalResourcesList(education);
+
+        }
+        int currentPage = gamePage.getPageable().getPageNumber();
+        int totalPages = gamePage.getTotalPages();
+        int pageRange = 5; // 한 번에 보여줄 페이지 범위
+
+        int startPage = Math.max(0, currentPage - pageRange / 2);
+        int endPage = startPage + pageRange - 1;
+        if (endPage >= totalPages) {
+            endPage = totalPages - 1;
+            startPage = Math.max(0, endPage - pageRange + 1);
+        }
+
+        // 페이지 번호에 1을 더해줍니다.
+        startPage += 1;
+        endPage += 1;
+
+
+
+
+        model.addAttribute("gamePage", gamePage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("searchText", searchText);
+        return "game/list";
+    }
+
 
     // 게임 상세조회
     @GetMapping("/detail/{gameContentNo}")
@@ -427,7 +475,7 @@ public class GameController {
             List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
 
             for (EducationalResources educationalResource : education) {
-                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
+                ResourcesFiles resourcesFilesByResourceNo = resourcesFilesService.getFile(educationalResource.getResourceNo());
                 educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
             }
             gamecon.setEducationalResourcesList(education);

@@ -25,11 +25,11 @@ public class EducationValidation {
 
     private String description;      //'자료내용'
 
-    private List<MultipartFile> boardFile;  //  교육자료파일저장시 필요
+    private MultipartFile boardFile;  //  교육자료파일저장시 필요
 
     private MultipartFile thumFile;  //  썸네일파일저장시 필요
 
-    private List<ResourcesFiles> boardFileList; // 이미 업로드된 이미지 파일 목록
+    private ResourcesFiles saveboardFile; // 이미 업로드된 이미지 파일 목록
 
     private List<Integer> deletedFiles;   // 삭제된 파일 목록
 

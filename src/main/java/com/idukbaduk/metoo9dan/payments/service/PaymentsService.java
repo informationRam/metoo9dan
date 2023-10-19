@@ -8,9 +8,14 @@ import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.payments.reprository.PaymentsRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,12 +28,15 @@ public class PaymentsService {
     private EntityManager entityManager;
 
     // 구매한 게임컨텐츠에 대한 정보를 가져온다.
-    public List<Payments> paymentsList(Integer memberNo){
 
-        List<Payments> paymentsList = paymentsRepository.findByMemberMemberNo(memberNo);
-        return paymentsList;
+    public Page<Payments> paymentsList(Integer memberNo,int page) {
 
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return paymentsRepository.findByMemberMemberNo(memberNo, pageable);
     }
+
 
 
 // OrderNumber의 가장 큰 값을 가져온다.
@@ -72,6 +80,15 @@ public class PaymentsService {
     }
 
 
+
+    //목록조회 (페이징처리)
+    public Page<Payments> getPay(int page) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return paymentsRepository.findAll(pageable);
+    }
 
 
    /* //결제 내용 저장하기 (DB)

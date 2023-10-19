@@ -47,7 +47,6 @@ public class GameService {
     }
 
 
-
 @Transactional
 public void saveIndividual(GameValidation gameValidation) {
         // gameValidation.setContent_type("individual");
@@ -68,6 +67,14 @@ public void saveIndividual(GameValidation gameValidation) {
         sorts.add(Sort.Order.desc("creationDate"));     //등록일순
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return gameRepository.findAll(pageable);
+    }
+
+    //게임이름으로 조회 (페이징처리)
+    public Page<GameContents> gameSearch(String gameName, String packageDetails,int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return gameRepository.findByGameNameContainingOrPackageDetailsContaining(gameName,packageDetails,pageable);
     }
 
 

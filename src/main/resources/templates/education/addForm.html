@@ -65,7 +65,7 @@
                 <div class="mb-5 row">
                     <label for="boardFile" class="col-sm-2 col-form-label">교육자료파일</label>
                     <div class="col-sm-5">
-                        <input class="form-control" type="file" th:field="*{boardFile}" multiple onchange="displayFileName2(this, 'boardFileName')">
+                        <input class="form-control" type="file" th:field="*{boardFile}" onchange="displayFileName2(this, 'boardFileName')">
                         <div id="boardFileName"></div>
                     </div>
                 </div>
