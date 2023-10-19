@@ -1,7 +1,7 @@
 package com.idukbaduk.metoo9dan.admin.controller;
 
 import com.idukbaduk.metoo9dan.admin.service.EducatorInfoService;
-import com.idukbaduk.metoo9dan.admin.service.memPaymentsService;
+import com.idukbaduk.metoo9dan.admin.service.MemPaymentsService;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.member.dto.EducatorInfoDTO;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class AdminController {
 
     private final MemberService memberService;
-    private final memPaymentsService memPaymentsService;
+    private final MemPaymentsService memPaymentsService;
     private final EducatorInfoService educatorInfoService;
     private final ModelMapper modelMapper;
 

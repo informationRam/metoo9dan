@@ -49,7 +49,6 @@ public class MemberServiceImpl implements MemberService {
         return false;
     }
 
-
     @Override
     //회원 자격 조회(무료/유료)
     public String getMembershipStatusByMemberNo(Integer memberNo) {

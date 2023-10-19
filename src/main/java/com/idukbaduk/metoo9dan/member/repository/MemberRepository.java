@@ -2,15 +2,21 @@ package com.idukbaduk.metoo9dan.member.repository;
 
 
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 
+    //다양한 검색조건으로 회원정보 가져오기
+//    List<Member> findByCriteria(String startDate, String endDate, String memberType, String membershipStatus, String searchCriteria, String searchKeyword, Pageable pageable);
     //아이디로 값 찾기
     Optional<Member> findByMemberId(String memberId);
 
@@ -26,5 +32,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     //비밀번호 찾기 - 아이디 && 이메일주소
     Optional<Member> findBymemberIdAndEmail(String memberId, String email);
 
-
+    //다중검색처리하기
+    Page<Member> findAll(Specification<Member> spec, Pageable pageable);
 }

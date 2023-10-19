@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
-public class memPaymentsService {
+public class MemPaymentsService {
 
     private final PaymentsRepository paymentsRepository;
     private final ModelMapper modelMapper;

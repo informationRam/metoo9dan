@@ -44,11 +44,11 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="memberQualification" class="form-label">회원 자격</label>
-                                    <select id="memberQualification" class="form-select">
+                                    <label for="membershipStatus" class="form-label">회원 자격</label>
+                                    <select id="membershipStatus" class="form-select">
                                         <option value="">자격 선택</option>
-                                        <option value="paid">유료회원</option>
-                                        <option value="free">무료회원</option>
+                                        <option value="유료회원">유료회원</option>
+                                        <option value="무료회원">무료회원</option>
                                     </select>
                                 </div>
                             </div>
@@ -98,7 +98,10 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <!-- Thymeleaf 반복문을 이용하여 회원 목록 데이터 표시 -->
+                      <!--  &lt;!&ndash; Thymeleaf 반복문을 이용하여 회원 목록 데이터 표시 &ndash;&gt;
+                        <tr th:if="${#lists.isEmpty(members)}">
+                            <td colspan="9">검색 결과가 없습니다.</td>
+                        </tr>-->
                         <tr th:each="member, rowStat : ${members}">
                             <td>
                                 <input type="checkbox" class="memberCheckbox" th:id="${member.memberNo}" th:checked="${false}">
@@ -216,8 +219,17 @@
 
                     <!-- 페이지네이션 -->
                     <div class="pagination d-flex justify-content-center mt-3">
-                        <!-- ... -->
+                        <ul class="pagination">
+<!--                            <li class="page-item">-->
+<!--                                <a class="page-link" href="#" id="previousPage">이전</a>-->
+<!--                            </li>-->
+<!--                            &lt;!&ndash; 여기에 숫자 버튼을 동적으로 추가할 것입니다. &ndash;&gt;-->
+<!--                            <li class="page-item">-->
+<!--                                <a class="page-link" href="#" id="nextPage">다음</a>-->
+<!--                            </li>-->
+                        </ul>
                     </div>
+
                 </div> <!-- 회원관리게시판 container 끝 -->
             </div><!-- 내부 컨테이너 -->
 
