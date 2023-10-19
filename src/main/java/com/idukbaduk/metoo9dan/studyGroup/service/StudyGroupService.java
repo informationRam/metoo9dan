@@ -81,6 +81,11 @@ public class StudyGroupService {
         return studyGroupRepository.selectGame(map);
     }
 
+    //학습그룹 등록(게임리스트) 조회 cnt
+    public int selectGameCnt() {
+        return studyGroupRepository.selectGameCnt();
+    }
+
     //학습그룹 삭제
     public void delete(StudyGroups studyGroups) {
         groupRepository.delete(studyGroups);
