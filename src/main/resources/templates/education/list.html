@@ -77,22 +77,25 @@
                         </span>
                     </td>
                     <!-- 패키지유형 -->
-                    <td class="education-gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : ''}" data-game-contents="${education.gameContents != null ? education.gameContents.gameName : ''}"></td>
+                    <td class="education-gameContents"
+                        th:text="${education.gameContents != null ? education.gameContents.gameName : ''}"
+                        data-game-contents="${education.gameContents != null ? education.gameContents.gameName : ''}">
+                    </td>
                     <!-- 등록일 (수정하면 날짜 변경) -->
                     <td class="education date">
                         <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
                     </td>
                      <!-- 액션 -->
                     <!-- Modify your Thymeleaf template to conditionally render the delete button -->
-                    <td class="education-actions">
-                        <a th:href="@{|/education/modify/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1" id="nadomodi">수정</a>
 
-                        <!-- Conditionally render the delete button -->
-                        <a href="javascript:void(0);"
-                           th:data-uri="@{|/education/delete/${education.resourceNo}|}"
-                           class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()" th:text="삭제">삭제</a>
+                    <!-- 취소 버튼, 수정 버튼 추가 -->
+                    <td class="education-actions" th:if="${education.gameContents == null}">
+                        <!-- 수정 버튼 -->
+                        <a th:href="@{|/education/modify/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1" id="modifyButton">수정</a>
+                        <!-- 취소 버튼 -->
+                        <a th:href="@{|/education/delete/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1" id="cancelButton" onclick="confirmCancel(event)">삭제</a>
+
                     </td>
-
                 </tbody>
             </table>
             <!--  등록하기 -->
@@ -128,15 +131,19 @@
 
             </div>
         </div>
-<div layout:fragment="script">
- <script th:inline="javascript">
-     var gameContentsValue = [[${education}]];
-        alert('값이 없습니다.',gameContentsValue);
 
+<script>
+function confirmCancel(event) {
 
+    if (confirm("삭제하시겠습니까?")) {
+        // 확인을 클릭하면 URL로 이동
+        window.location.href = event.target.getAttribute('href');
+    } else {
 
-    </script>
-            <script>
+        event.preventDefault();
+    }
+}
+</script>
 
                     document.addEventListener("DOMContentLoaded", function() {
                         const queryString = window.location.search;
@@ -322,7 +329,6 @@
             }
         }
       </script>-->
-</div>
 
 </div>
 </html>
