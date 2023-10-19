@@ -58,18 +58,32 @@ public class GameFilesService {
             gameContentsFileRepository.save(gameContentFiles);
         }
     }
-    public void deleteFile(Integer fileNo) {
-        GameContentFiles gameContentFiles = gameContentsFileRepository.findById(fileNo).get();
-        // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
 
-        String filePath = "/Users/ryuahn/Desktop/baduk/education/" + gameContentFiles.getCopyFileName();
-        File file = new File(filePath);
-        if (file.exists() && file.isFile()) {
-            file.delete(); // 파일을 삭제
-        }
-        // 데이터베이스에서 파일 정보를 삭제
-        gameContentsFileRepository.delete(gameContentFiles);
+
+    // 파일 삭제로직
+    public void deleteFile(GameContents gameContents) {
+
+        List<GameContentFiles> byGameContentsGameContentNo = gameContentsFileRepository.findByGameContents_GameContentNo(gameContents.getGameContentNo());
+       for(GameContentFiles gameContentFile : byGameContentsGameContentNo){
+
+           GameContentFiles gameContentFiles = gameContentsFileRepository.findById(gameContentFile.getFileNo()).get();
+           // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
+
+           String filePath = fileUrl + gameContentFiles.getCopyFileName();
+           File file = new File(filePath);
+           if (file.exists() && file.isFile()) {
+               file.delete(); // 파일을 삭제
+           }
+           // 데이터베이스에서 파일 정보를 삭제
+           gameContentsFileRepository.delete(gameContentFiles);
+
+       }
     }
+
+
+
+
+
 }
 
 

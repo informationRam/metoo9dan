@@ -96,4 +96,8 @@ public class GameContents {
         return Objects.equals(gameContentNo, other.gameContentNo);
     }
 
+    @OneToMany(mappedBy = "gameContents", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Payments> paymentsList = new ArrayList<>();
+
+
 }

@@ -46,7 +46,6 @@ public class GameService {
         return gameValidation;
     }
 
-
 @Transactional
 public void saveIndividual(GameValidation gameValidation) {
         // gameValidation.setContent_type("individual");
@@ -128,7 +127,8 @@ public void saveIndividual(GameValidation gameValidation) {
 
     //게임 컨텐츠 삭제
     public void delete(GameContents gameContents) {
-        gameContents.setStatus("N");
-        gameRepository.save(gameContents);  //게시글상태를 'N'으로 변경한다.
+        if(gameContents != null){
+            gameRepository.delete(gameContents);
+        }
     }
 }

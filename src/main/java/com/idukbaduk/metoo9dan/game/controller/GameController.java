@@ -244,8 +244,9 @@ public class GameController {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"권한이 없습니다.");
 //        }
         GameContents gameContents = gameService.getGameContents(gameContentNo);
+        gameFilesService.deleteFile(gameContents);
         gameService.delete(gameContents);
-        return "redirect:/game/list";    //목록으로이동
+        return "redirect:/game/list2";    //목록으로이동
     }
 
     //  삭제하기
