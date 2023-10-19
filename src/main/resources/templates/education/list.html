@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+`<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
@@ -6,30 +6,30 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
 
-            <div class="mb-3 row">
-                <label for="difficulty" class="col-sm-2 col-form-label">자료구분</label>
-                <div class="col-sm-3">
+            <div class="row">
+                <div class="mb-3 col-12 col-md-4">
+                    <label for="difficulty" class="form-label">자료구분</label>
                     <select id="searchText" class="form-select" onchange="searchGames()">
                         <option value="">-- 선택해주세요 --</option>
                         <option value="tutorial">튜토리얼</option>
                         <option value="lecture">교육영상</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="mb-3 row">
-                <label for="searchGame" class="col-sm-2 col-form-label">게임콘텐츠명</label>
-                <div class="col-sm-3">
+                <div class="mb-3 col-12 col-md-4">
+                    <label for="searchGame" class="form-label">게임콘텐츠명</label>
                     <select id="searchGameContent" class="form-select" onchange="searchGameContents()">
                         <option value="">-- 선택해주세요 --</option>
                         <option th:each="game : ${uniqueGameNames}" th:value="${game.gameContentNo}" th:text="${game.gameName}"></option>
                     </select>
                 </div>
-            </div>
 
-            <div class="input-group">
-                <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
-                <button class="btn btn-primary" type="button" onclick="searchresourceName()">검색</button>
+                <div class="mb-3 col-12 col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
+                        <button class="btn btn-primary" type="button" onclick="searchresourceName()">검색</button>
+                    </div>
+                </div>
             </div>
 
             <table class="table table-bordered">
@@ -100,10 +100,11 @@
             </table>
             <!--  등록하기 -->
           <!--  <div sec:authorize="hasRole('ROLE_ADMIN')" class="text-end ms-auto">-->
+            <div class="my-3 text-center"> <!-- Center the button -->
                 <a th:href="@{/education/addForm}" class="btn btn-outline-danger">작성하기</a>
-        <!--    </div>-->
+            </div>
             <!-- 페이지 네이션 처리 -->
-            <div id="pagination">
+            <div id="pagination" class="mt-4">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
                         <!-- Previous Page Link -->
@@ -140,7 +141,63 @@ function confirmCancel(event) {
         event.preventDefault();
     }
 }
+
+    // 페이지네이션처리
+
+    // 페이지 로드 시 URL 쿼리 파라미터에서 검색 조건을 읽어와서 필드에 설정
+    document.addEventListener("DOMContentLoaded", function() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        const searchText = urlParams.get("searchText") || "";
+        const searchGame = urlParams.get("searchGame") || "";
+        const resourceName = urlParams.get("resourceName") || "";
+
+        // 검색 텍스트 필드 설정
+        const searchTextDropdown = document.getElementById('searchText');
+        searchTextDropdown.value = searchText;
+
+        // 게임 선택 필드 설정
+        const searchGameDropdown = document.getElementById('searchGameContent');
+        searchGameDropdown.value = searchGame;
+
+        // 자료 이름 입력 필드 설정
+        document.getElementById('resourceName').value = resourceName;
+    });
+
+    // 검색 버튼 클릭 시 URL 업데이트
+    function searchResources() {
+        const searchText = document.getElementById('searchText').value || "";
+        const searchGame = document.getElementById('searchGameContent').value || "";
+        const resourceName = document.getElementById('resourceName').value || "";
+
+        const queryString = `/education/list?page=0&searchText=${searchText}&searchGame=${searchGame}&resourceName=${resourceName}`;
+        window.location.href = queryString;
+    }
+
+    // 자료구분 필드 변경 시 페이지네이션 처리
+    function searchGames() {
+        searchResources();
+    }
+
+    // 게임콘텐츠명 필드 변경 시 페이지네이션 처리
+    function searchGameContents() {
+        searchResources();
+    }
 </script>
+
+
+
+
+  <!--  </script>
+
+
+
+
+
+
+
+
                     document.addEventListener("DOMContentLoaded", function() {
                         const queryString = window.location.search;
                         const urlParams = new URLSearchParams(queryString);
@@ -204,34 +261,6 @@ function confirmCancel(event) {
       }
 
         </script>
-
-
-
-        <!--  <script th:inline="javascript">
-          // 버튼에 클릭 이벤트 연결
-        var getGameContentsButton = document.getElementById('getGameContentsButton');
-        getGameContentsButton.addEventListener('click', getGameContents);
-
-
-        function deleteItem(button) {
-                //var gameContents = button.parentElement.previousElementSibling.getAttribute("data-game-contents");
-                //console.log("gameContents:", gameContents);
-
-                  var educationGameContentsElement = document.querySelector('.education-gameContents');
-                var gameContentsValue = educationGameContentsElement.textContent;
-                console.log("gameContents:", gameContentsValue);
-
-
-                if (gameContents !== '-') {
-                    alert("패키지에 포함되어 있어 삭제가 불가능합니다.");
-                } else {
-                    if (confirm("삭제하시겠습니까?")) {
-                        location.href = button.getAttribute("data-uri");
-                    }
-                }
-            }
-          </script>-->
-
 
     <script>
 
@@ -297,34 +326,6 @@ function confirmCancel(event) {
            console.log('window.location.href',window.location.href)
   }
 
-    </script>
-
-
-
-    <!--  <script th:inline="javascript">
-      // 버튼에 클릭 이벤트 연결
-    var getGameContentsButton = document.getElementById('getGameContentsButton');
-    getGameContentsButton.addEventListener('click', getGameContents);
-
-
-    function deleteItem(button) {
-            //var gameContents = button.parentElement.previousElementSibling.getAttribute("data-game-contents");
-            //console.log("gameContents:", gameContents);
-
-              var educationGameContentsElement = document.querySelector('.education-gameContents');
-            var gameContentsValue = educationGameContentsElement.textContent;
-            console.log("gameContents:", gameContentsValue);
-
-
-            if (gameContents !== '-') {
-                alert("패키지에 포함되어 있어 삭제가 불가능합니다.");
-            } else {
-                if (confirm("삭제하시겠습니까?")) {
-                    location.href = button.getAttribute("data-uri");
-                }
-            }
-        }
-      </script>-->
-
+    </script>-->
 </div>
-</html>
+</html>`

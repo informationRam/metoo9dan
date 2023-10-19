@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan.education.vaildation;
 
 import com.idukbaduk.metoo9dan.common.entity.ResourcesFiles;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +26,10 @@ public class EducationValidation {
 
     private String description;      //'자료내용'
 
+    @NotNull(message = "파일을 선택해주세요.")
     private MultipartFile boardFile;  //  교육자료파일저장시 필요
 
+    @NotNull(message = "파일을 선택해주세요.")
     private MultipartFile thumFile;  //  썸네일파일저장시 필요
 
     private ResourcesFiles saveboardFile; // 이미 업로드된 이미지 파일 목록

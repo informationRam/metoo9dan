@@ -57,16 +57,18 @@
                 <div class="mb-5 row">
                     <label for="thumFileInput" class="col-sm-2 col-form-label">썸네일</label>
                     <div class="col-sm-5">
-                        <input class="form-control" type="file" th:field="*{thumFile}" onchange="displayFileName(this, 'thumFileName')">
+                        <input class="form-control" type="file" th:field="*{thumFile}" onchange="displayFileName(this, 'thumFileName')" required>
                         <div id="thumFileName"></div>
+                        <span th:if="${#fields.hasErrors('thumFile')}" th:errors="*{thumFile}" class="error-message text-danger"></span>
                     </div>
                 </div>
                 <!-- 교육자료 파일 -->
                 <div class="mb-5 row">
                     <label for="boardFile" class="col-sm-2 col-form-label">교육자료파일</label>
                     <div class="col-sm-5">
-                        <input class="form-control" type="file" th:field="*{boardFile}" onchange="displayFileName2(this, 'boardFileName')">
+                        <input class="form-control" type="file" th:field="*{boardFile}" onchange="displayFileName2(this, 'boardFileName')" required>
                         <div id="boardFileName"></div>
+                        <span th:if="${#fields.hasErrors('boardFile')}" th:errors="*{boardFile}" class="error-message text-danger"></span>
                     </div>
                 </div>
                 <div class="mb-3 text-center">

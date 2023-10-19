@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -37,6 +38,7 @@ public class EducationController {
 
     //교육자료 등록 폼
     @GetMapping("/addForm")
+
     public String educationAddForm(EducationValidation educationVaildation, Model model) {
         model.addAttribute("educationVaildation", educationVaildation);
         return "education/addForm";
@@ -44,6 +46,7 @@ public class EducationController {
 
     //교육자료 등록 처리
     @PostMapping("/add")
+
     public String educationAdd(@ModelAttribute("educationVaildation") @Valid EducationValidation educationValidation,
                                BindingResult bindingResult, @RequestParam("boardFile") MultipartFile file,
                                @RequestParam("thumFile") MultipartFile thumFile,
@@ -53,6 +56,7 @@ public class EducationController {
             model.addAttribute("educationValidation", educationValidation);
             return "education/addForm";
         }
+
         // 업로드된 파일의 확장자 확인
         MultipartFile fileName = educationValidation.getBoardFile();
 
