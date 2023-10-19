@@ -57,19 +57,22 @@ public class NoticeFilesService {
 
     //DB에서 삭제
     public void deleteOnDB(NoticeFiles noticeFiles) {
+        logger.info("fileService진입. deleteOnDB진행");
         filesRepository.delete(noticeFiles);
+        logger.info("fileService진입. deleteOnDB성공");
     }
 
     //디스크에서 삭제
     // fileName = 경로/uuid_originName
     public ResponseEntity<String> deleteOnDisk(NoticeFiles noticeFiles) {
         String fileName = noticeFiles.getFileUrl()+"/"+noticeFiles.getCopyFileName()+"_"+noticeFiles.getOriginFileName();
-        logger.info("upload폴더에 저장된 fileName: "+fileName);
+        logger.info("deleteOnDist진입. upload폴더에 저장된 fileName: "+fileName);
 
         File file;
         try{
             file = new File("C:\\upload\\"+ URLDecoder.decode(fileName, "UTF-8"));
             file.delete();
+            logger.info("Dist에 있는 파일 삭제완료");
         } catch (UnsupportedEncodingException e){
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
