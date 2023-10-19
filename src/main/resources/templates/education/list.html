@@ -113,8 +113,8 @@
                             </a>
                         </li>
                         <!-- Page Number Links -->
-                        <li class="page-item" th:classappend="${page == educationPage.number} ? 'active'" th:each="page : ${#numbers.sequence(startPage, endPage)}">
-                            <a class="page-link" href="#" th:href="@{/education/list(page=${page}, searchText=${searchText}, searchGame=${searchGame}, resourceName=${resourceName})}" th:text="${page}"></a>
+                        <li class="page-item" th:classappend="${page == educationPage.number + 1} ? 'active'" th:each="page : ${#numbers.sequence(startPage, endPage)}">
+                            <a class="page-link" href="#" th:href="@{/education/list(page=${page - 1}, searchText=${searchText}, searchGame=${searchGame}, resourceName=${resourceName})}" th:text="${page}"></a>
                         </li>
                         <!-- Next Page Link -->
                         <li class="page-item" th:classappend="${educationPage.last} ? 'disabled'">
