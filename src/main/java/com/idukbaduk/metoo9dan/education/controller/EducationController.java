@@ -121,6 +121,26 @@ public class EducationController {
         }
 
 
+        int currentPage = educationPage.getPageable().getPageNumber();
+        int totalPages = educationPage.getTotalPages();
+        int pageRange = 5; // 한 번에 보여줄 페이지 범위
+
+        int startPage = Math.max(0, currentPage - pageRange / 2);
+        int endPage = startPage + pageRange - 1;
+        if (endPage >= totalPages) {
+            endPage = totalPages - 1;
+            startPage = Math.max(0, endPage - pageRange + 1);
+        }
+
+// 페이지 번호에 1을 더해줍니다.
+        startPage += 1;
+        endPage += 1;
+
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("searchText", searchText);
+
         //3.Model
         System.out.println("다시 ? pageable?"+educationPage);
         model.addAttribute("uniqueGameNames", uniqueGameNames);
@@ -141,8 +161,6 @@ public class EducationController {
 
 
     }
-
-
 
 
     //수정처리
