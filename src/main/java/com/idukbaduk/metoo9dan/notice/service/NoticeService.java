@@ -66,7 +66,7 @@ public class NoticeService {
         return noticeRepository.findByNoticeType("faq", pageable);
     }
 
-    //검색
+    //검색 -일반인용검색 여기서 예약글은 검색안되게 제한해야할듯~~~~~~~~~~~~
     public Page<Notice> search(String searchCategory, String keyword, int pageNo, int listSize) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.

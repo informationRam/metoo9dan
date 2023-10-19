@@ -102,7 +102,7 @@
                     <li class="page-item" th:classappend="${startPage <= 5} ? 'disabled'">
                         <a class="page-link"
                            th:if="${keyword}!=null"
-                           th:href="@{|?page=${startPage-2}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Prev</span></a>
+                           th:href="@{|?noticeType=${noticeType}&page=${startPage-2}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Prev</span></a>
                         <a class="page-link"
                            th:if="${keyword}==null"
                            th:href="@{|?page=${startPage-2}|}"><span>Prev</span></a>
@@ -113,7 +113,7 @@
                         th:classappend="${page == noticePage.number} ? 'active'">
                         <a class="page-link"
                            th:if="${keyword}!=null"
-                           th:href="@{|?page=${page}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"
+                           th:href="@{|?noticeType=${noticeType}&page=${page}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"
                            th:text="${page+1}"></a>
                         <a class="page-link"
                            th:if="${keyword}==null"
@@ -123,9 +123,10 @@
 
                     <!-- 다음  &=${}-->
                     <li class="page-item" th:classappend="${endPage >= noticePage.totalPages} ? 'disabled'">
+                        <!--조건 추가해야함. 멤버롤이 어드민이면 이거, 아니면 status고정으로??-->
                         <a class="page-link"
                            th:if="${keyword}!=null"
-                           th:href="@{|?page=${endPage}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
+                           th:href="@{|?noticeType=${noticeType}&page=${endPage}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
                         <a class="page-link"
                            th:if="${keyword}==null"
                            th:href="@{|?page=${endPage}|}"><span>Next</span></a>
