@@ -1,6 +1,8 @@
 <!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/homework/homework_eval.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
@@ -161,44 +163,108 @@
                                         let currentDate = new Date();
                                         tableContent += `
                                             <div>
-                                                <div>
-                                                    <span>${item.name}</span>
-                                                    <span>${item.homeworkTitle}</span>
-                                                    <span>${item.homeworkContent}</span>
-                                                    <span>${item.gameTitle}</span>
-                                                    <span>${item.dueDate}</span>
-                                                    <span>${item.sendNo}</span>
-                                                    <span>${item.currentLevel}</span>
-                                                    <span>${item.sendDate}</span>
-                                                    <span>${item.homeworkNo}</span>
-                                                </div>
-                                                <hr/>
+<div class="cute-card">
+    <div class="item-row">
+        <i class="fa fa-user"></i> <span>${item.name}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-book"></i> <span>${item.homeworkTitle}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-pencil"></i> <span>${item.homeworkContent}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-gamepad"></i> <span>${item.gameTitle}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-calendar"></i> <span>${item.dueDate}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-paper-plane"></i> <span>${item.sendNo}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-star"></i> <span>${item.currentLevel}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-clock-o"></i> <span>${item.sendDate}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-list"></i> <span>${item.homeworkNo}</span>
+    </div>
+<hr class="cute-hr"/>
                                         `;
 
                                         if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) < currentDate) {
                                             tableContent += `
-                                                <div>
-                                                    <span>${item.homeworkSubmitNo}</span>
-                                                    <span>${item.submitContentPreview}</span>
-                                                    <span>${item.submitContent}</span>
-                                                    <span>${item.additionalQuestionsPreview}</span>
-                                                    <span>${item.additionalQuestions}</span>
-                                                    <span>${item.submitDate}</span>
-                                                    <span>${item.evaluation}</span>
-                                                </div>
-                                                <div class="dropdown">
-                                                    <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
-                                                        <option value="F" selected="selected">선택해주세요</option>
-                                                        <option value="A">우수</option>
-                                                        <option value="B">보통</option>
-                                                        <option value="C">미흡</option>
-                                                    </select>
-                                                </div>
+                                               <div class="cute-card-submit">
+    <div class="item-row">
+        <i class="fa fa-list-ol"></i> <span>${item.homeworkSubmitNo}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-eye"></i> <span>${item.submitContentPreview}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-file-alt"></i> <span>${item.submitContent}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-question-circle"></i> <span>${item.additionalQuestionsPreview}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-comments"></i> <span>${item.additionalQuestions}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-calendar-check"></i> <span>${item.submitDate}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-star-half-alt"></i> <span>${item.evaluation}</span>
+    </div>
+</div>
+<div class="dropdown cute-dropdown">
+    <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+        <option value="F" selected="selected">선택해주세요</option>
+        <option value="A">우수</option>
+        <option value="B">보통</option>
+        <option value="C">미흡</option>
+    </select>
+</div>
+</div>
                                             `;
                                         } else if(item.homeworkSubmitNo === 0 && new Date(item.dueDate) > currentDate) {
                                             tableContent += `
-                                                <div>제출된 숙제가 없습니다</div>
-                                                <button>전송 취소</button>
+<div class="no-submission-wrapper">
+    <div class="no-submission-message">제출된 숙제가 없습니다</div>
+    <button class="cancel-btn">전송 취소</button>
+</div>
+
+                                            `;
+                                        } else if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) <= currentDate){
+                                            tableContent += `
+    <div class="item-row">
+        <i class="fa fa-list-ol"></i> <span>${item.homeworkSubmitNo}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-eye"></i> <span>${item.submitContentPreview}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-file-alt"></i> <span>${item.submitContent}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-question-circle"></i> <span>${item.additionalQuestionsPreview}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-comments"></i> <span>${item.additionalQuestions}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-calendar-check"></i> <span>${item.submitDate}</span>
+    </div>
+    <div class="item-row">
+        <i class="fa fa-star-half-alt"></i> <span>${item.evaluation}</span>
+    </div>
+</div>
+<div class="no-submission-wrapper">
+    <div class="no-submission-message">아직 평가 기간이 되지 않았습니다</div>
+</div>
+</div>
                                             `;
                                         }
 
