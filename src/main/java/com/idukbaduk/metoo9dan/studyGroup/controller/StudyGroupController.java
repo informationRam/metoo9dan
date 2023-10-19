@@ -79,7 +79,7 @@ public class StudyGroupController {
 
         return "studyGroup/gameContents_list";
     }
-
+/*
     //게임콘텐츠 조회하기 버튼 엔드포인트
     @GetMapping(value = "/gameListEndpoint", produces = "application/json")
     @ResponseBody
@@ -96,7 +96,7 @@ public class StudyGroupController {
         map.put("pageSize", pageSize);
         map.put("offset", offset);
 
-        int totalCount=1; //게임리스트 카운트
+        int totalCount=studyGroupService.selectGameCnt(); //게임리스트 조회 카운트
         int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
 
         map.put("member_no", member_no); // map에 member_no 추가
@@ -110,6 +110,37 @@ public class StudyGroupController {
         //model.addAttribute("gameContents",gameContents);
         System.out.println("엔드포인트gameContents="+gameContents);
         return gameContents;
+    }*/
+
+    @GetMapping(value = "/gameListEndpoint", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map, Principal principal,
+                                                @RequestParam(value = "page", defaultValue = "1") int currentPage, Model model) {
+        // Principal
+        Member member = memberService.getUser(principal.getName());
+        int member_no = member.getMemberNo();
+
+        // 페이지네이션
+        int pageSize = 10; // 페이지당 보여줄 아이템 개수
+        int offset = (currentPage - 1) * pageSize; // 페이지 시작 위치
+        map.put("pageSize", pageSize);
+        map.put("offset", offset);
+
+        int totalCount = studyGroupService.selectGameCnt(); // 게임리스트 조회 카운트
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지
+
+        map.put("member_no", member_no); // map에 member_no 추가
+        map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
+
+        List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
+
+        // JSON 응답 데이터 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("gameContents", gameContents);
+        response.put("currentPage", currentPage);
+        response.put("totalPages", totalPages);
+
+        return response;
     }
 
 

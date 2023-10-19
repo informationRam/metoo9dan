@@ -181,6 +181,23 @@
         </if>
     </select>
 
+    <select id="SelectGameListCnt" parameterType="int"  resultType="int">
+        <![CDATA[
+        SELECT count(g.game_content_no)
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        LEFT JOIN (
+            SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
+            FROM baduk.study_groups
+            WHERE member_no = 20
+            GROUP BY game_content_no, member_no
+        ) s ON g.game_content_no = s.game_content_no
+        WHERE p.member_no = 20  AND p.status='complete' AND g.game_content_no=60
+            AND DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY)>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+        ]]>
+    </select>
+
+
     <!--게임콘텐츠 정보 가져오기(학습그룹 등록 폼)-->
     <select id="GameContentInfo" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         <![CDATA[

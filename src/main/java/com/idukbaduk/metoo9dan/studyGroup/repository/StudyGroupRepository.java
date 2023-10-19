@@ -62,6 +62,11 @@ public class StudyGroupRepository {
         return sqlSession.selectList("StudyGroup.SelectGameList",map);
     }
 
+    //학습그룹 등록(게임리스트) 조회 cnt
+    public int selectGameCnt() {
+        return sqlSession.selectOne("StudyGroup.SelectGameListCnt");
+    }
+
     //학습 그룹 가입(학습그룹 리스트 전체)
     public List<GroupJoinListDTO> getGroupJoinList(Map<String, Integer> map) {
         return sqlSession.selectList("StudyGroup.GroupJoinList",map);
