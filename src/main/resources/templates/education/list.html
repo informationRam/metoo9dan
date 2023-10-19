@@ -6,42 +6,43 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
 
+            <div class="mb-3 col-12 col-md-9">
             <div class="row">
-                <div class="mb-3 col-12 col-md-4">
+                <div class="mb-3 col-12 col-md-3">
                     <label for="difficulty" class="form-label">자료구분</label>
-                    <select id="searchText" class="form-select" onchange="searchGames()">
+                    <select id="searchText" class="form-select form-select-sm w-auto" onchange="searchGames()">
                         <option value="">-- 선택해주세요 --</option>
                         <option value="tutorial">튜토리얼</option>
                         <option value="lecture">교육영상</option>
                     </select>
                 </div>
 
-                <div class="mb-3 col-12 col-md-4">
+                <div class="mb-3 col-12 col-md-3">
                     <label for="searchGame" class="form-label">게임콘텐츠명</label>
-                    <select id="searchGameContent" class="form-select" onchange="searchGameContents()">
+                    <select id="searchGameContent" class="form-select form-select-sm w-auto" onchange="searchGameContents()">
                         <option value="">-- 선택해주세요 --</option>
                         <option th:each="game : ${uniqueGameNames}" th:value="${game.gameContentNo}" th:text="${game.gameName}"></option>
                     </select>
                 </div>
 
-                <div class="mb-3 col-12 col-md-4">
+                <div class="mb-3 col-12 col-md-3">
                     <div class="input-group">
                         <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
                         <button class="btn btn-primary" type="button" onclick="searchresourceName()">검색</button>
                     </div>
                 </div>
             </div>
-
+            </div>
             <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th scope="col">No.</th>
-                    <th scope="col">교육자료명</th>
-                    <th scope="col">자료구분</th>
-                    <th scope="col">자료유형</th>
-                    <th scope="col">서비스구분</th>
-                    <th scope="col">패키지상태</th>
-                    <th scope="col" colspan="2">등록일</th>
+                    <th scope="col" class="text-center">No.</th>
+                    <th scope="col" class="text-center">교육자료</th>
+                    <th scope="col" class="text-center">자료구분</th>
+                    <th scope="col" class="text-center">자료유형</th>
+                    <th scope="col" class="text-center">서비스구분</th>
+                    <th scope="col" class="text-center">패키지상태</th>
+                    <th scope="col" class="text-center" colspan="2">등록일</th>
                 </tr>
                 </thead>
                 <tbody class="table-light">
@@ -50,8 +51,13 @@
                     <td class="education no"
                         th:text="${educationPage.getTotalElements() - (educationPage.getNumber() * educationPage.getSize()) - loop.index}"></td>
                     <!-- 교육자료 제목 -->
-                    <td class="education title">
-                        <a th:href="@{|/education/detail/${education.resourceNo}|}" th:text="${education.resourceName}"></a>
+                    <td class="education title w-25">
+                        <a th:href="@{|/education/detail/${education.resourceNo}|}" th:text="${education.resourceName}" class="text-decoration-none text-dark"></a>
+                        <div class="col-md-4" style="height: 100px; width: 150px; overflow: hidden;">
+                            <img th:if="${education != null and education.resourcesFilesList != null and not #lists.isEmpty(education.resourcesFilesList)}"
+                                 th:src="@{|/upload/education/${education.resourcesFilesList.thumOriginCopyName}|}"
+                                 alt="교육자료 이미지" class="card-img" style="width: 100%; height: auto; object-fit: cover;">
+                        </div>
                     </td>
                     <!-- 자료구분 -->
                     <td class="education resourceCate">

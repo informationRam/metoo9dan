@@ -29,6 +29,10 @@ public interface EducationRepository extends JpaRepository<EducationalResources,
     Page<EducationalResources> findByGameContentsGameContentNoAndResourceCateContaining(Integer gameContentNo, String resourceCate, Pageable pageable);
     @Query("SELECT DISTINCT e FROM EducationalResources e")
     List<EducationalResources> findResourcesWithUniqueResourceNames();
+
+    // ResourceName중복 제거
+    @Query("SELECT e FROM EducationalResources e WHERE e.resourceName IS NOT NULL GROUP BY e.resourceName")
+    List<EducationalResources> findDistinctByResourceNameIsNotNull();
 }
 
 

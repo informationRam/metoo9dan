@@ -101,8 +101,8 @@
                             </a>
                         </li>
                         <!-- 페이지 번호 링크 -->
-                        <li class="page-item" th:classappend="${i == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
-                            <a class="page-link" href="#" th:href="@{/game/list2(page=${i}, searchText=${searchText})}" th:text="${i}">1</a>
+                        <li class="page-item" th:classappend="${i - 1 == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                            <a class="page-link" href="#" th:href="@{/game/list2(page=${i - 1}, searchText=${searchText})}" th:text="${i}"></a>
                         </li>
                         <!-- 다음 페이지 링크 -->
                         <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">

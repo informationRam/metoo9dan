@@ -1,14 +1,17 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
-<div layout:fragment="content" class="sb-nav-fixed">
+ <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+        <div layout:fragment="content" class="container my-3">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js"></script>
+            <!-- Include Popper.js -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+            <!-- Popper.js -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/js/src/tooltip.js"></script>
+            <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+            <div class="row">
+                <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+                <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+                <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
 
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-    <div id="layoutSidenav">
-    <div th:replace="~{/game/gameSidebar::sidebar}"></div>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js"></script>
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-fluid">
                     <h1 class="mt-4">게임콘텐츠 등록</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="index.html">운영마당</a></li>
@@ -56,7 +59,7 @@
                                 <!-- 구독가능인원 -->
                                 <div class="mb-3 row">
                                     <label for="max_subscribers" class="col-sm-3 col-form-label">구독가능인원</label>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-6">
                                         <select th:field="*{max_subscribers}" class="form-select">
                                             <option value="1">-- 인원 선택 --</option>
                                             <option value="10">10명</option>
@@ -92,14 +95,15 @@
                                     <label for="discount_rate" class="col-sm-2 col-form-label">할인율</label>
                                     <div class="col-sm-7">
                                         <div class="input-group"> <!-- Input 그룹을 사용하여 입력 필드와 % 기호를 함께 표시 -->
-                                            <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate">
+                                            <input type="text" th:field="*{discount_rate}" class="form-control" id="discount_rate" readonly>
                                             <span class="input-group-text">%</span> <!-- Input 그룹의 추가 텍스트로 % 기호를 추가 -->
                                         </div>
-                                       <!-- <small class="text-muted ms-2">적용 버튼을 눌러 판매가를 적용하세요.</small><br>
-                                        <span th:if="${#fields.hasErrors('discount_rate')}" th:errors="*{discount_rate}" class="error-message text-danger small"></span>-->
                                     </div>
                                     <div class="col-sm-3">
-                                        <button type="button" class="btn btn-primary" onclick="calculateSalePrice()">적용</button>
+                                        <!-- 할인율 팝오버 버튼 추가 -->
+                                       <!-- <button tabindex="0" class="btn btn-lg btn-danger ms-2" role="button" data-bs-toggle="popover" data-bs-trigger="click" title="할인율 설명" data-bs-html="true" data-bs-content="내용을 입력하세요." id="discountPopover">?</button>-->
+                                        <button tabindex="0" class="btn btn-lg btn-danger ms-2" role="button" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover" data-bs-placement="top" title="할인율 설명" data-bs-content="내용을 입력하세요.">?</button>
+
                                     </div>
                                 </div>
                                 <!-- 판매가 -->
@@ -124,317 +128,318 @@
                                     <label for="boardFile" class="col-sm-2 col-form-label">썸네일</label>
                                     <!--   <input class="form-control" type="file" th:field="*{origin_file_name}">-->
                                     <div class="col-sm-5" style="padding-left: 0px">
-                                        <input class="form-control" type="file" th:field="*{boardFile}" multiple>
+                                        <input class="form-control" type="file" th:field="*{boardFile}" multiple required>
                                     </div>
                                 </div>
-                        <!-- Modal 교육자료리스트 선택-->
-                                <div class="modal fade" id="educationModal" name="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true" style="display:hidden;">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content" id="modal-content">
-                                            <!-- 모달 헤더 -->
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="educationModalLabel">교육자료목록</h5>
-                                                <!-- 검색 상자 추가 -->
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" placeholder="교육자료명 검색" id="searchInput">
-                                                    <button class="btn btn-outline-secondary" type="button" id="searchButton">검색</button>
+                                    <!-- Modal 교육자료리스트 선택-->
+                                    <div class="modal fade" id="educationModal" name="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true" style="display:hidden;">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content" id="modal-content">
+                                                <!-- 모달 헤더 -->
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="educationModalLabel">교육자료목록</h5>
                                                 </div>
-                                            </div>
-                                            <div class="modal-body">
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>선택</th>
-                                                        <th scope="col">교육자료명</th>
-                                                        <th scope="col">자료구분</th>
-                                                        <th scope="col">자료유형</th>
-                                                        <th scope="col">서비스구분</th>
-                                                        <th scope="col">패키지상태</th>
-                                                        <th scope="col" colspan="2">등록일</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody class="table-light" id="educationlist">
-                                                    <tr th:each="education : ${allEducation}">
-                                                        <!-- 선택하기 -->
-                                                        <td class="custom-checkbox-label">
-                                                            <input type="checkbox" class="form-check-input" name="selectedValues" th:value="${education.resourceNo}">
-                                                            <span class="custom-checkbox-indicator"></span>
-                                                            <!-- 교육자료 제목 -->
-                                                        <td class="education title" th:text="${education.resourceName}"></td>
-                                                        <!-- 자료구분 -->
-                                                        <td class="education resourceCate">
+                                                <div class="modal-body">
+                                                    <!-- Create a row with two columns -->
+                                                    <div class="row">
+                                                        <div class="col-sm-9">
+                                                            <input type="text" class="form-control" placeholder="교육자료명 검색" id="searchInput">
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <button class="btn btn-outline-secondary" type="button" id="searchButton">검색</button>
+                                                        </div>
+                                                    </div>
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>선택</th>
+                                                            <th scope="col">교육자료명</th>
+                                                            <th scope="col">자료구분</th>
+                                                            <th scope="col">자료유형</th>
+                                                            <th scope="col">서비스구분</th>
+                                                            <th scope="col" colspan="2">등록일</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody class="table-light" id="educationlist">
+                                                        <tr th:each="education : ${allEducation}">
+                                                            <!-- 선택하기 -->
+                                                            <td class="custom-checkbox-label">
+                                                                <input type="checkbox" class="form-check-input" name="selectedValues" th:value="${education.resourceNo}">
+                                                                <span class="custom-checkbox-indicator"></span>
+                                                                <!-- 교육자료 제목 -->
+                                                            <td class="education title" th:text="${education.resourceName}"></td>
+                                                            <!-- 자료구분 -->
+                                                            <td class="education resourceCate">
                                                     <span th:switch="${education.resourceCate}">
                                                         <span th:case="tutorial">튜토리얼</span>
                                                         <span th:case="lecture">교육영상</span>
                                                     </span>
-                                                        </td>
-                                                        <!-- 자료유형 -->
-                                                        <td class="education fileType">
+                                                            </td>
+                                                            <!-- 자료유형 -->
+                                                            <td class="education fileType">
                                                    <span th:switch="${education.fileType}">
                                                         <span th:case="'image'">이미지</span>
                                                         <span th:case="'video'">동영상</span>
                                                         <span th:case="'image/video'">이미지/동영상</span>
                                                         <span th:case="'ect'">기타</span>
                                                     </span>
-                                                        </td>
-                                                        <!-- 서비스구분 -->
-                                                        <td class="education serviceType">
+                                                            </td>
+                                                            <!-- 서비스구분 -->
+                                                            <td class="education serviceType">
                                                      <span th:switch="${education.serviceType}">
                                                         <span th:case="full">유료</span>
                                                         <span th:case=="short">무료</span>
                                                     </span>
-                                                        </td>
-                                                        <!-- 패키지유형 -->
-                                                        <td class="education-gameContents" th:text="${education.gameContents != null ? education.gameContents.gameName : '-'}" data-game-contents="${education.gameContents != null ? education.gameContents.gameName : '-'}"></td>
-                                                        <!-- 등록일 (수정하면 날짜 변경) -->
-                                                        <td class="education date">
-                                                            <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
-                                                        </td>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="mb-3 text-center">
-                                                <button type="button" class="btn btn-secondary" onclick="submitSelected()">선택하기</button>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                                            </td>
+                                                            <!-- 등록일 (수정하면 날짜 변경) -->
+                                                            <td class="education date">
+                                                                <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
+                                                            </td>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="mb-3 text-center">
+                                                    <button type="button" id="submitSelectedButton" class="btn btn-secondary" data-bs-dismiss="modal" onclick="submitSelected()">선택하기</button>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
+                                    </div>
                                 </div>
-                            </div>
                         </div>
                         <input type="hidden" id="selectedValues" name="selectedValues" value="">
 
                         <!--<input type="hidden" id="selectedValues" name="selectedValues" th:value="${selectedValues}" th:if="${selectedValues != null and !selectedValues.isEmpty()}">-->
                         <div class="mb-3 text-center">
-                        <button type="submit" class="btn btn-primary" id="insert">전체 등록하기</button>
-                    </div>
+                            <button type="submit" class="btn btn-primary" id="insert">전체 등록하기</button>
+                        </div>
                     </form>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
+            </div>
     <script>
-        function addCommas(inputElement) {
-            // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.
-            var value = inputElement.value.replace(/,/g, ''); // 입력된 콤마를 제거
-            value = parseFloat(value).toLocaleString('en-US');
-            inputElement.value = value;
-        }
-
-        function formatPrice(price) {
-            // 콤마가 추가된 값을 콤마를 제거하고 부동 소수점 숫자로 변환합니다.
-            return parseFloat(price.toString().replace(/,/g, ''));
-        }
-
-        function calculateSalePrice() {
-            var originalPrice = formatPrice(document.getElementById('original_price').value);
-            var discountRate = parseFloat(document.getElementById('discount_rate').value);
-
-            if (!isNaN(originalPrice) && !isNaN(discountRate)) {
-                var salePrice = originalPrice * (1 - discountRate / 100);
-
-                // 판매가를 소수점 첫 번째 자리에서 반올림하고, 부동 소수점 숫자로 변환한 후 콤마를 추가하여 표시합니다.
-                var roundedSalePrice = Math.round(salePrice);
-                document.getElementById('sale_price').value = roundedSalePrice.toLocaleString('en-US');
-            }
-        }
-
-    function prepareForm() {
-        // 폼을 제출하기 전에 콤마를 제거하고 숫자 값으로 판매가 필드를 업데이트합니다.
-        var salePriceInput = document.getElementById('sale_price');
-        salePriceInput.value = salePriceInput.value.replace(/,/g, ''); // 판매가 필드에서 콤마 제거
-
-         var originalpriceInput = document.getElementById('original_price');
-           originalpriceInput.value = originalpriceInput.value.replace(/,/g, ''); // 정가 필드에서 콤마 제거
-    }
-
-    // 모달 js
-    document.getElementById('openEducationButton').addEventListener('click', function () {
-        // 검색어 입력란에서 검색어 값을 가져오기 위한 전역 변수
-        var searchInput = '';
-        var myModal = new bootstrap.Modal(document.getElementById('educationModal'));
-        myModal.show();
-    });
-
- // 검색 버튼 이벤트 처리
-        document.getElementById('searchButton').addEventListener('click', function () {
-         // 검색어 값을 가져오기
-         searchInput = document.getElementById('searchInput').value.trim(); // 검색어 값 가져오고 양 끝 공백 제거
-        // 검색어가 비어있거나 null인 경우 null 값으로 설정
-        if (searchInput === '') {
-            searchInput = 'all';
-        }
-            var modalTextElement = document.getElementById('educationlist');
-            console.log("검색어: ", searchInput);
-
-            loadText();
+        // 팝오버를 초기화합니다.
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl);
         });
 
-function loadText() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/game/search', true);
-
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-    // searchKeyword 값을 전송
-    var params = 'searchKeyword=' + searchInput;
-
-    xhr.onload = function () {
-        console.log("3: ", this.status);
-        if (this.status == 200) {
-            console.log(this.responseText);
-            // JSON 응답 파싱
-            var responseJson = JSON.parse(this.responseText);
-            console.log("responseJson? : ", responseJson);
-            var modalTextElement = document.getElementById('educationlist');
-            console.log("educationlist? : ", document.getElementById('educationlist'));
-
-            modalTextElement.innerHTML = '';
-
-            responseJson.forEach(function (education) {
-                var newRow = modalTextElement.insertRow();
-                var cell1 = newRow.insertCell(0);
-                var cell2 = newRow.insertCell(1);
-                var cell3 = newRow.insertCell(2);
-                var cell4 = newRow.insertCell(3);
-                var cell5 = newRow.insertCell(4);
-                var cell6 = newRow.insertCell(5);
-                var cell7 = newRow.insertCell(6);
-
-                cell1.innerHTML = '<input type="checkbox" class="form-check-input" value="' + education.resourceNo + '">';
-                cell2.innerText = education.resourceName;
-                cell3.innerText = education.resourceCate;
-                cell4.innerText = education.fileType;
-                cell5.innerText = education.serviceType;
-                cell6.innerText = (education.gameContents != null) ? education.gameContents.gameName : '-';
-                cell7.innerText = new Date(education.creationDate).toLocaleString();
-            });
-    } else {
-        // 오류 처리
-        console.error('서버에서 오류가 발생했습니다.');
-    }
-};
-
-// 요청을 전송합니다.
-xhr.send(params);
-}
-
-//모달 닫기
-document.getElementById('close-area').addEventListener('click', function () {
-    var myModal = new bootstrap.Modal(document.getElementById('educationModal'));
-    myModal.hide();
-});
 
 
-// 할인율 계산
- function calculateDiscount(maxSubscribers, subscriptionDuration, selectedResourceCount) {
-        // 초기 할인율은 0으로 시작
-        var discountRate = 0;
 
-          // 조건을 충족하는 경우에만 할인율 계산
-       if (maxSubscribers !== '1' && subscriptionDuration !== '1' && selectedResourceCount > 0 ) {
 
-        // max_subscribers 조건에 따른 할인 계산
-        if (maxSubscribers == 10) {
-            discountRate += 5;
-        } else if (maxSubscribers == 20) {
-            discountRate += 10;
-        } else if (maxSubscribers == 30) {
-            discountRate += 15;
-        } else if (maxSubscribers == 40) {
-            discountRate += 20;
-        } else if (maxSubscribers == 50) {
-            discountRate += 25;
+
+               function addCommas(inputElement) {
+                   // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.
+                   var value = inputElement.value.replace(/,/g, ''); // 입력된 콤마를 제거
+                   value = parseFloat(value).toLocaleString('en-US');
+                   inputElement.value = value;
+               }
+
+               function formatPrice(price) {
+                   // 콤마가 추가된 값을 콤마를 제거하고 부동 소수점 숫자로 변환합니다.
+                   return parseFloat(price.toString().replace(/,/g, ''));
+               }
+
+               function calculateSalePrice() {
+                   var originalPrice = formatPrice(document.getElementById('original_price').value);
+                   var discountRate = parseFloat(document.getElementById('discount_rate').value);
+
+                   if (!isNaN(originalPrice) && !isNaN(discountRate)) {
+                       var salePrice = originalPrice * (1 - discountRate / 100);
+
+                       // 판매가를 소수점 첫 번째 자리에서 반올림하고, 부동 소수점 숫자로 변환한 후 콤마를 추가하여 표시합니다.
+                       var roundedSalePrice = Math.round(salePrice);
+                       document.getElementById('sale_price').value = roundedSalePrice.toLocaleString('en-US');
+                   }
+               }
+
+           function prepareForm() {
+               // 폼을 제출하기 전에 콤마를 제거하고 숫자 값으로 판매가 필드를 업데이트합니다.
+               var salePriceInput = document.getElementById('sale_price');
+               salePriceInput.value = salePriceInput.value.replace(/,/g, ''); // 판매가 필드에서 콤마 제거
+
+                var originalpriceInput = document.getElementById('original_price');
+                  originalpriceInput.value = originalpriceInput.value.replace(/,/g, ''); // 정가 필드에서 콤마 제거
+           }
+
+           // 모달 js
+           document.getElementById('openEducationButton').addEventListener('click', function () {
+               // 검색어 입력란에서 검색어 값을 가져오기 위한 전역 변수
+               var searchInput = '';
+               var myModal = new bootstrap.Modal(document.getElementById('educationModal'));
+               myModal.show();
+           });
+
+        // 검색 버튼 이벤트 처리
+               document.getElementById('searchButton').addEventListener('click', function () {
+                // 검색어 값을 가져오기
+                searchInput = document.getElementById('searchInput').value.trim(); // 검색어 값 가져오고 양 끝 공백 제거
+               // 검색어가 비어있거나 null인 경우 null 값으로 설정
+               if (searchInput === '') {
+                   searchInput = 'all';
+               }
+                   var modalTextElement = document.getElementById('educationlist');
+                   console.log("검색어: ", searchInput);
+
+                   loadText();
+               });
+
+        function loadText() {
+           var xhr = new XMLHttpRequest();
+           xhr.open('POST', '/game/search', true);
+
+           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+           // searchKeyword 값을 전송
+           var params = 'searchKeyword=' + searchInput;
+
+           xhr.onload = function () {
+               console.log("3: ", this.status);
+               if (this.status == 200) {
+                   console.log(this.responseText);
+                   // JSON 응답 파싱
+                   var responseJson = JSON.parse(this.responseText);
+                   console.log("responseJson? : ", responseJson);
+                   var modalTextElement = document.getElementById('educationlist');
+                   console.log("educationlist? : ", document.getElementById('educationlist'));
+                   responseJson.forEach(function (education) {
+                       var newRow = modalTextElement.insertRow();
+                       var cell1 = newRow.insertCell(0);
+                       var cell2 = newRow.insertCell(1);
+                       var cell4 = newRow.insertCell(3);
+                       var cell5 = newRow.insertCell(4);
+                       var cell6 = newRow.insertCell(5);
+                       var cell7 = newRow.insertCell(6);
+
+                       cell1.innerHTML = '<input type="checkbox" class="form-check-input" value="' + education.resourceNo + '">';
+                       cell2.innerText = education.resourceName;
+                       cell3.innerText = education.resourceCate;
+                       cell4.innerText = education.fileType;
+                       cell5.innerText = education.serviceType;
+                       cell6.innerText = (education.gameContents != null) ? education.gameContents.gameName : '-';
+                       cell7.innerText = new Date(education.creationDate).toLocaleString();
+                   });
+           } else {
+               // 오류 처리
+               console.error('서버에서 오류가 발생했습니다.');
+           }
+        };
+
+        // 요청을 전송합니다.
+        xhr.send(params);
         }
 
-        // subscription_duration 조건에 따른 할인 계산
-        if (subscriptionDuration == 30) {
-            discountRate += 5;
-        } else if (subscriptionDuration == 60) {
-            discountRate += 10;
-        } else if (subscriptionDuration == 90) {
-            discountRate += 15;
+
+        // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
+        // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
+        document.querySelector("select[name='max_subscribers']").addEventListener('change', updateDiscountRate);
+        document.querySelector("select[name='subscription_duration']").addEventListener('change', updateDiscountRate);
+
+        // 교육 자료 체크박스 변경 이벤트 핸들러 등록
+        document.querySelectorAll('.form-check-input').forEach(function (checkbox) {
+           checkbox.addEventListener('change', function () {
+               updateDiscountRate(); // 선택한 교육 자료 개수가 변경될 때 할인율 업데이트
+           });
+        });
+
+        // 선택한 교육 자료 개수 계산 함수
+        function getSelectedResourceCount() {
+           var selectedCheckboxes = document.querySelectorAll('.form-check-input:checked');
+           return selectedCheckboxes.length;
         }
 
-        // education.resourceNo 개수 조건에 따른 할인 계산
-        if (selectedResourceCount === 1) {
-            discountRate += 5;
-        } else if (selectedResourceCount === 2) {
-            discountRate += 10;
-        } else if (selectedResourceCount === 3) {
-            discountRate += 15;
-        } else if (selectedResourceCount === 4) {
-            discountRate += 20;
-        } else if (selectedResourceCount === 5) {
-            discountRate += 25;
+        // 할인율 계산 함수
+        function calculateDiscount(maxSubscribers, subscriptionDuration, selectedResourceCount) {
+           // 초기 할인율은 0으로 시작
+           var discountRate = 0;
+
+           // 조건을 충족하는 경우에만 할인율 계산
+           if (maxSubscribers !== '1' && subscriptionDuration !== '1' && selectedResourceCount > 0) {
+               // max_subscribers 조건에 따른 할인 계산
+               if (maxSubscribers == 10) {
+                   discountRate += 5;
+               } else if (maxSubscribers == 20) {
+                   discountRate += 10;
+               } else if (maxSubscribers == 30) {
+                   discountRate += 15;
+               } else if (maxSubscribers == 40) {
+                   discountRate += 20;
+               } else if (maxSubscribers == 50) {
+                   discountRate += 25;
+               }
+
+               // subscription_duration 조건에 따른 할인 계산
+               if (subscriptionDuration == 30) {
+                   discountRate += 5;
+               } else if (subscriptionDuration == 60) {
+                   discountRate += 10;
+               } else if (subscriptionDuration == 90) {
+                   discountRate += 15;
+               }
+
+               // 선택한 교육 자료 개수 조건에 따른 할인 계산
+               if (selectedResourceCount === 1) {
+                   discountRate += 5;
+               } else if (selectedResourceCount === 2) {
+                   discountRate += 10;
+               } else if (selectedResourceCount === 3) {
+                   discountRate += 15;
+               } else if (selectedResourceCount === 4) {
+                   discountRate += 20;
+               } else if (selectedResourceCount === 5) {
+                   discountRate += 25;
+               }
+
+               // 최대 할인율을 50%로 제한
+               if (discountRate > 50) {
+                   discountRate = 50;
+               }
+           }
+
+           return discountRate;
         }
 
-        // 최대 할인율을 50%로 제한
-        if (discountRate > 50) {
-            discountRate = 50;
+        // 할인율을 업데이트하는 함수
+        function updateDiscountRate() {
+           var maxSubscribers = document.querySelector("select[name='max_subscribers']").value;
+           var subscriptionDuration = document.querySelector("select[name='subscription_duration']").value;
+           var selectedResourceCount = getSelectedResourceCount();
+
+           // 할인율 계산 함수를 호출하여 할인율을 얻습니다
+           var discountRate = calculateDiscount(maxSubscribers, subscriptionDuration, selectedResourceCount);
+
+           // 할인율 입력란 업데이트
+           document.querySelector("input[name='discount_rate']").value = discountRate;
+
+           // 판매가 업데이트
+           updateSalePrice();
         }
-    } else {
-        discountRate = 0;
-    }
-    return discountRate;
-}
 
-    // 할인율을 업데이트하는 함수
-    function updateDiscountRate() {
-        var maxSubscribers = document.querySelector("select[name='max_subscribers']").value;
-        var subscriptionDuration = document.querySelector("select[name='subscription_duration']").value;
-        var selectedResourceCount = getSelectedResourceCount(); // 이 함수를 구현해야 합니다.
+// 정가 입력란에 입력 값이 변경될 때 판매가를 업데이트
+        document.querySelector("input[name='original_price']").addEventListener('input', updateSalePrice);
+// 판매가를 업데이트하는 함수
+        function updateSalePrice() {
+           var originalPrice = formatPrice(document.querySelector("input[name='original_price']").value);
+           var discountRate = parseFloat(document.querySelector("input[name='discount_rate']").value);
 
-        // 할인율 계산 함수를 호출하여 할인율을 얻습니다.
-        var discountRate = calculateDiscount(maxSubscribers, subscriptionDuration, selectedResourceCount);
+           if (!isNaN(originalPrice) && !isNaN(discountRate)) {
+               var salePrice = originalPrice * (1 - discountRate / 100);
 
-        // 할인율 입력란 업데이트
-        document.querySelector("input[name='discount_rate']").value = discountRate;
+// 판매가를 소수점 첫 번째 자리에서 반올림하고, 부동 소수점 숫자로 변환한 후 콤마를 추가하여 표시합니다.
+               var roundedSalePrice = Math.round(salePrice);
+               document.querySelector("input[name='sale_price']").value = roundedSalePrice.toLocaleString('en-US');
+           }
+        }
 
-        // 판매가 업데이트
+// 초기 판매가 업데이트
         updateSalePrice();
-    }
 
-    // 판매가를 업데이트하는 함수
-    function updateSalePrice() {
-        var originalPrice = formatPrice(document.querySelector("input[name='original_price']").value);
-        var discountRate = parseFloat(document.querySelector("input[name='discount_rate']").value);
-
-        if (!isNaN(originalPrice) && !isNaN(discountRate)) {
-            var salePrice = originalPrice * (1 - discountRate / 100);
-
-            // 판매가를 소수점 첫 번째 자리에서 반올림하고, 부동 소수점 숫자로 변환한 후 콤마를 추가하여 표시합니다.
-            var roundedSalePrice = Math.round(salePrice);
-            document.querySelector("input[name='sale_price']").value = roundedSalePrice.toLocaleString('en-US');
-        }
-    }
-
-    // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
-    document.querySelector("select[name='max_subscribers']").addEventListener('change', updateDiscountRate);
-    document.querySelector("select[name='subscription_duration']").addEventListener('change', updateDiscountRate);
-
-    // 처음 페이지 로딩시 할인율과 판매가 업데이트
-    updateDiscountRate();
-
-    // 교육 자료 체크박스 변경 이벤트 핸들러 등록
-    document.querySelectorAll('.form-check-input').forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-            updateDiscountRate(); // 선택한 교육 자료 개수가 변경될 때 할인율 업데이트
-        });
-    });
-
-    // 선택한 교육 자료 개수 계산 함수 (이 함수는 선택한 자료의 개수를 반환해야 합니다)
-    function getSelectedResourceCount() {
-        var selectedCheckboxes = document.querySelectorAll('.form-check-input:checked');
-        return selectedCheckboxes.length;
-    }
     </script>
     <script th:inline="javascript">
-        // JavaScript 코드
 
      // 선택한 교육 자료 번호를 저장할 배열
      var selectedResourceNos = [];
@@ -468,16 +473,11 @@ document.getElementById('close-area').addEventListener('click', function () {
     selectedValuesInput.value = '';
 }
 
-function closeModal() {
-    var educationModal = new bootstrap.Modal(document.getElementById('educationModal'));
-    educationModal.hide();
-}
-
 
      // 선택한 자료 번호 배열을 서버로 보내는 예시 함수
-     function submitSelected() {
-         var selectedValuesInput = document.getElementById('selectedValues');
-         var selectedResourceNos = selectedValuesInput.value;
+   function submitSelected() {
+        var selectedValuesInput = document.getElementById('selectedValues');
+        var selectedResourceNos = selectedValuesInput.value;
 
          // 여기서는 콘솔에 출력하는 예시
          console.log("Selected Resource Nos:", selectedResourceNos);
@@ -487,6 +487,10 @@ function closeModal() {
         closeModal();
         clearSelectedValues();
      }
+function closeModal() {
+    var educationModal = new bootstrap.Modal(document.getElementById('educationModal'));
+    educationModal.hide();
+}
 
     </script>
 </div>

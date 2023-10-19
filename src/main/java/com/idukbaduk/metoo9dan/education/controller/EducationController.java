@@ -87,12 +87,7 @@ public class EducationController {
         System.out.println("searchText?"+searchText);
         System.out.println("searchGame?"+searchGame);
         System.out.println("resourceName?"+resourceName);
-/*        if (searchGame == null) {
-            // Handle the case where searchGame is null or not provided
-            // You can set a default value or perform some other logic
-            // For example, you can set it to 0 (assuming 0 is a valid value in your context)
-            searchGame = Integer.valueOf("");
-        }*/
+
         if (searchGame == null && searchText.isEmpty() && resourceName.isEmpty()) {
             // 검색어가 비어있을 때 전체 목록을 가져옴
             searchText= "";
@@ -123,7 +118,6 @@ public class EducationController {
         for(GameContents game : gameService.getAllGameContents()){
             uniqueGameNames.add(game);
         }
-
 
         int currentPage = educationPage.getPageable().getPageNumber();
         int totalPages = educationPage.getTotalPages();

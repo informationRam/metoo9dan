@@ -48,7 +48,13 @@ public class GameController {
 
      /*   List<EducationalResources> allEducation = educationService.getAllEducation();*/
 
-        List<EducationalResources> allEducation = educationService.getEducationDistinct();
+        List<EducationalResources> allEducation = educationService.getDistinct();
+        // 교육자료에 대한 파일 정보를 가져와서 모델에 추가
+        for (EducationalResources education : allEducation) {
+            ResourcesFiles resourcesFilesList = resourcesFilesService.getFile(education.getResourceNo());
+            education.setResourcesFilesList(resourcesFilesList);
+        }
+
         session.setAttribute("educationalResources", educationalResources);
         model.addAttribute("allEducation", allEducation);
         model.addAttribute("gameValidation", gameValidation);
@@ -64,7 +70,7 @@ public class GameController {
             List<EducationalResources> allEducation;
 
         if(searchKeyword.equals("all")){
-            allEducation = educationService.getAllEducation();
+            allEducation = educationService.getDistinct();
             System.out.println("allEducation?:" +allEducation);
             return allEducation;
         }else {
@@ -197,9 +203,6 @@ public class GameController {
         // 페이지 번호에 1을 더해줍니다.
         startPage += 1;
         endPage += 1;
-
-
-
 
         model.addAttribute("gamePage", gamePage);
         model.addAttribute("startPage", startPage);
