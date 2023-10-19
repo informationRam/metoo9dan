@@ -352,4 +352,11 @@ public class HomeworkService {
         List<String> titles =paymentRepository.findActiveGameContentTitlesByMemberId(memberId);
         return titles;
     }
+
+    public void deleteHomeworkSend(Integer sendNo) {
+        Optional<HomeworkSend> optionalHomeworkSend = homeworkSendRepository.findById(sendNo);
+        if(optionalHomeworkSend.isPresent()){
+            homeworkSendRepository.delete(optionalHomeworkSend.get());
+        }
+    }
 }

@@ -1,0 +1,61 @@
+.cute-card, .cute-card-submit {
+    padding: 20px;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    background-color: #fff8e1; /* 노랑색 톤의 배경색 */
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.item-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.item-row i {
+    margin-right: 10px;
+    color: #ffb300; /* 노란색 아이콘 */
+}
+
+.cute-hr {
+    border-top: 1px dashed #ffb300; /* 노란색 점선 */
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.cute-dropdown {
+    margin-top: 10px;
+}
+
+.no-submission-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #fffde7; /* 더 연한 노랑색 배경 */
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    margin: 15px 0;
+}
+
+.no-submission-message {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.cancel-btn {
+    background-color: #ff8f00; /* 노랑색과 어울리는 주황색 */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+    background-color: #ff6f00; /* 조금 더 진한 주황색 */
+}

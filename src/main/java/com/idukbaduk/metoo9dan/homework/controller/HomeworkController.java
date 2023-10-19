@@ -141,6 +141,21 @@ public class HomeworkController {
         redirectAttributes.addFlashAttribute("successMessage", "숙제가 전송되었습니다");
         return "redirect:/homework/send";
     }
+    
+    @DeleteMapping("homework/send/cancel/{sendNo}")
+    public ResponseEntity<Map<String, Boolean>> sendCancel(@PathVariable Integer sendNo) {
+        try {
+            homeworkService.deleteHomeworkSend(sendNo);
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("success", true);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            // 에러 핸들링
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("success", false);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     //--학생 숙제 페이지-------------------------------------------------------------------------------------------------------
     //숙제 초기 화면
@@ -339,5 +354,9 @@ public class HomeworkController {
 
         return ResponseEntity.ok(evalPer);
     }
-    //평가 저장 post
+    //
+
+    //평가 조회 화면
+
+    //평가 내용 전달
 }

@@ -51,11 +51,9 @@
                 <div>
                     <!-- 전송 내역 -->
                     <form><!-- 숙제 평가 업데이트 폼 -->
-                        <div id="evaluationCard">
-                        </div>
-                        <div id="eval-pagination">
-                            <!-- 여기에 페이지네이션 내용이 들어갈 예정 -->
-                        </div>
+                        <div id="evaluationCard"></div>
+                        <div id="eval-pagination"></div>
+                        <input type="submit">
                     </form>
                 </div>
             </div>
@@ -218,7 +216,6 @@
     <div class="item-row">
         <i class="fa fa-star-half-alt"></i> <span>${item.evaluation}</span>
     </div>
-</div>
 <div class="dropdown cute-dropdown">
     <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
         <option value="F" selected="selected">선택해주세요</option>
@@ -233,7 +230,8 @@
                                             tableContent += `
 <div class="no-submission-wrapper">
     <div class="no-submission-message">제출된 숙제가 없습니다</div>
-    <button class="cancel-btn">전송 취소</button>
+    <button class="cancel-btn" data-sendno="${item.sendNo}">전송 취소</button>
+</div>
 </div>
 
                                             `;
@@ -268,10 +266,6 @@
                                             `;
                                         }
 
-                                        tableContent += `
-                                                <input type="submit">
-                                            </div>
-                                        `;
                                     });
                                 $('#evaluationCard').html(tableContent);
 
@@ -402,6 +396,25 @@
                             }
                         });
                     });
+
+                document.querySelector(".cancel-btn").addEventListener("click", function() {
+                    var sendNo = this.getAttribute("data-sendno");
+
+                    var confirmation = confirm("전송을 취소하시겠습니까?");
+
+                    if (confirmation) {
+                        fetch(`/homework/send/cancel/${sendNo}`, {
+                            method: "DELETE",
+                        }).then(response => response.json()).then(data => {
+                            if (data.success) { // 예: 서버에서 { success: true } 라는 응답을 보냈다고 가정
+                                alert("숙제가 성공적으로 삭제되었습니다.");
+                                location.reload();
+                            } else {
+                                alert("숙제 삭제에 실패하였습니다. 다시 시도해주세요.");
+                            }
+                        });
+                    }
+                });
 
             </script>
         </div><!--콘텐츠영역끝-->
