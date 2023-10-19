@@ -5,39 +5,50 @@
                 <button id="stopButton"></button>
             </div>
 
-            <!-- 숙제 목록 -->
-            <input type="text" id="homeworkSearchInput" onkeyup="searchTable()" placeholder="검색어를 입력하세요..">
-            <table id="homeworkTable">
-                <thead>
-                <tr>
-                    <th>No</th>
-                    <th>숙제 제목</th>
-                    <th>게임 컨텐츠명</th>
-                    <th>진도</th>
-                    <th>제출 기한</th>
-                    <th>제출</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="hs,start : ${homeworkSend}"
-                    th:data-send-no="${hs.sendNo}"
-                    th:class="${hs.isSubmit != 'N' ? 'submitted' : 'not-submitted'}"
-                    ondblclick="loadForm(this)">
-                    <td th:text="${homeworkSend.size() - start.count + 1}"></td>
-                    <td th:text="${hs.homeworks.homeworkTitle}"></td>
-                    <td th:text="${hs.homeworks.gameTitle}"></td>
-                    <td th:text="${hs.homeworks.progress}"></td>
-                    <td th:text="${hs.homeworks.dueDate}"></td>
-                    <td th:text="${hs.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
-                </tr>
-                </tbody>
-            </table>
-            <!-- 페이지네이션 부분 -->
-            <div id="homeworkPagination">
-                <button id="homeworkPrevBtn" onclick="homeworkPrevPage()">이전</button>
-                <div id="homeworkPageNumbers"></div>
-                <button id="homeworkNextBtn" onclick="homeworkNextPage()">다음</button>
+            <div class="container mt-4">
+                <!-- 숙제 목록 -->
+                <input type="text" id="homeworkSearchInput" onkeyup="homeworkSearchTable()" class="form-control mb-3" placeholder="검색어를 입력하세요..">
+                <table class="table table-hover" id="homeworkTable">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>No</th>
+                        <th>숙제 제목</th>
+                        <th>게임 컨텐츠명</th>
+                        <th>진도</th>
+                        <th>제출 기한</th>
+                        <th>제출</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="hs,start : ${homeworkSend}"
+                        th:data-send-no="${hs.sendNo}"
+                        th:class="${hs.isSubmit != 'N' ? 'table-success' : 'table-warning'}"
+                        ondblclick="loadForm(this)">
+                        <td th:text="${homeworkSend.size() - start.count + 1}"></td>
+                        <td th:text="${hs.homeworks.homeworkTitle}"></td>
+                        <td th:text="${hs.homeworks.gameTitle}"></td>
+                        <td th:text="${hs.homeworks.progress}"></td>
+                        <td th:text="${hs.homeworks.dueDate}"></td>
+                        <td th:text="${hs.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!-- 페이지네이션 부분 -->
+                <div id="hw-homeworkPagination" class="d-flex justify-content-center mt-3">
+                    <ul class="pagination">
+                        <li class="page-item" id="homeworkPrevBtn">
+                            <a class="page-link" href="#">이전</a>
+                        </li>
+                        <li class="page-item" id="homeworkPageNumbers">
+                            <!-- 페이지네이션 번호가 여기에 추가될 것입니다 -->
+                        </li>
+                        <li class="page-item" id="homeworkNextBtn">
+                            <a class="page-link" href="#">다음</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
+
 
             <div class="submit-form" style="display:none;">
                 <form id="addForm" th:action="@{/homework/submit/add}" th:object="${hwSubmitForm}" method="post">
@@ -47,23 +58,54 @@
                         <div class="page left page1"></div>
                         <div class="page left page2"></div>
                         <div class="page left page3">
-                            <p>숙제 제목: <span class="homework-title"></span></p>
-                            <p>게임 컨텐츠명: <span class="game-title"></span></p>
-                            <p>진도: <span class="progress"></span> 레벨</p>
-                            <p>숙제 내용: <span class="homework-content"></span></p>
-                            <p>교육자: <span class="member-name"></span></p>
-                            <p>제출 기한: <span class="due-date"></span></p>
+                            <div class="homework-details">
+                                <div class="detail-item">
+                                    <label>숙제 제목:</label>
+                                    <span class="homework-title"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>게임 컨텐츠명:</label>
+                                    <span class="game-title"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>진도:</label>
+                                    <span class="progress"></span> 레벨
+                                </div>
+                                <div class="detail-item">
+                                    <label>숙제 내용:</label>
+                                    <span class="homework-content"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>교육자:</label>
+                                    <span class="member-name"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>제출 기한:</label>
+                                    <span class="due-date"></span>
+                                </div>
+                            </div>
                         </div>
                         <div class="page right page1"></div>
                         <div class="page right page2"></div>
                         <div class="page right page3">
-                                <p>진도: <span class="currentLevel"></span> 레벨</p>
+                            <div class="homework-submission">
+                                <div class="detail-item">
+                                    <label>진도:</label>
+                                    <span class="currentLevel"></span> 레벨
+                                </div>
                                 <input type="hidden" name="homeworkNo"/>
                                 <input type="hidden" name="sendNo"/>
-                                <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
-                                <span id="homeworkContentError" class="error-message"></span>
-                                <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
-                                <button type="submit">제출</button>
+                                <div class="text-area-container">
+                                    <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                                    <span id="homeworkContentError" class="error-message"></span>
+                                </div>
+                                <div class="text-area-container">
+                                    <textarea name="additionalQuestion" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                                </div>
+                                <div class="submit-button-container">
+                                    <button type="submit">제출</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -207,7 +249,9 @@
 
                     let paginationHtml = '';
                     for (let i = startPage; i <= endPage; i++) {
-                        paginationHtml += `<span class="hw-page-number ${i === homeworkCurrentPage ? 'active' : ''}" data-page="${i}">${i}</span>`;
+
+
+                     paginationHtml += `<li class="page-item ${i === homeworkCurrentPage ? 'active' : ''}"><a class="page-link hw-page-number" data-page="${i}" href="#">${i}</a></li>`;
                     }
 
                     $("#homeworkPageNumbers").html(paginationHtml);
@@ -252,7 +296,7 @@
                 $(document).ready(function() {
                     homeworkUpdateTableDisplay();
 
-                    $("#homeworkPagination").on("click", ".hw-page-number", function() {
+                    $("#homeworkPageNumbers").on("click", ".hw-page-number", function() {
                         homeworkCurrentPage = $(this).data('page');
                         homeworkUpdateTableDisplay();
                     });
