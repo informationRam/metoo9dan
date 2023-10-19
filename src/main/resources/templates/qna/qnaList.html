@@ -29,8 +29,8 @@
                             <td th:text="${question.member.memberId}"></td>
                             <td th:text="${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}"></td>
                             <td>
-                                <a th:if="${question.isAnswered}==0" class="badge rounded-pill text-bg-secondary">답변대기</a>
-                                <a th:unless="${question.isAnswered}==0" class="badge rounded-pill text-bg-primary">답변완료</a>
+                                <a th:if="${question.isAnswered}==false" class="badge rounded-pill text-bg-secondary">답변대기</a>
+                                <a th:unless="${question.isAnswered}==false" class="badge rounded-pill text-bg-primary">답변완료</a>
                             </td>
                         </tr>
                         <tr th:if="${questionPage.isEmpty()}">
@@ -91,4 +91,12 @@
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->
+<div layout:fragment="script">
+<script th:inline="javascript">
+    if([[${msg}]]!=null){
+        alert([[${msg}]]);
+    }
+</script>
+</div>
+
 </html>

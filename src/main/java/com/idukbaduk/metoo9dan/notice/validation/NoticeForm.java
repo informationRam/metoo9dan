@@ -17,11 +17,12 @@ public class NoticeForm {
     @NotEmpty
     private String noticeType;          //공지 타입(공지사항, 자주묻는질문)
 
-    @NotEmpty(message = "은 필수 입력사항입니다.")
+    @NotEmpty(message = "제목은 필수 입력사항입니다.")
     @Size(max=255)
     private String title; //제목
 
     @NotEmpty
+    @NotEmpty(message = "내용은 필수 입력사항입니다.")
     private String content; //내용
 
     private String postDate; //게시일
