@@ -315,7 +315,7 @@ public class NoticeController {
 
         if(bindingResult.hasErrors()){ //에러가 있으면,
             logger.info("Errors: " +bindingResult);
-            return "/notice/noticeModifyForm"; //noticeModifyForm.html로 이동.
+            return "notice/noticeModifyForm"; //noticeModifyForm.html로 이동.
         }//에러가 없으면, 공지사항 등록 진행
 
         Notice notice = noticeService.getNotice(noticeNo);
@@ -370,8 +370,8 @@ public class NoticeController {
                     model.addAttribute("filesList", filesList); //공지 파일 목록
                     return "notice/noticeModifyForm"; //noticeModifyForm.html로 이동.
                 }
+                fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
             }
-            fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
         }//파일 없으면,
         filesService.addFiles(list);
 
