@@ -4,6 +4,7 @@ import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.QnaQuestions;
 import com.idukbaduk.metoo9dan.notice.controller.NoticeController;
 import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
+import com.idukbaduk.metoo9dan.qna.dto.QuestionDTO;
 import com.idukbaduk.metoo9dan.qna.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -69,4 +70,29 @@ public class QuestionService {
         }
         return null;
     }
+
+    //질문 등록처리
+    public QnaQuestions add(QuestionDTO questionDTO) {
+        QnaQuestions questions = new QnaQuestions();
+        questions.setQuestionTitle(questionDTO.getQuestionTitle());
+        questions.setQuestionContent(questionDTO.getQuestionContent());
+        questions.setWriteDate(questionDTO.getWriteDate());
+        questions.setMember(questionDTO.getMember());
+        questions.setIsAnswered(questionDTO.getIsAnswered());
+        return questionRepository.save(questions);
+    }
+
+    //질문 수정처리
+    public void modify(QnaQuestions questions, QuestionDTO questionDTO) {
+        questions.setQuestionTitle(questionDTO.getQuestionTitle());
+        questions.setQuestionContent(questionDTO.getQuestionContent());
+        questionRepository.save(questions);
+    }
+
+    //질문 삭제처리
+    public void delete(QnaQuestions questions) {
+        questionRepository.delete(questions);
+    }
+
+
 }
