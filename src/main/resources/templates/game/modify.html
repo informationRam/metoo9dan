@@ -27,7 +27,7 @@
                         <li class="breadcrumb-item active">게임콘텐츠 등록</li>
                     </ol>
                     <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-                    <form id="gameadd" class="my-3" th:object="${gameValidation}" th:action="@{/game/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data" onsubmit="prepareForm()">
+                    <form id="gameModify" class="my-3" th:object="${gameValidation}" th:action="@{|/game/modify/${gameContentNo}|}" method="post" style="margin-left: 30px" enctype="multipart/form-data" onsubmit="prepareForm()">
 
                         <div class="row">
                             <!-- Left-side content -->
@@ -36,7 +36,7 @@
                                 <div class="mb-3 row">
                                     <label for="game_name" class="col-sm-3 col-form-label">게임콘텐츠명</label>
                                     <div class="col-sm-7">
-                                        <input type="text" th:field="*{game_name}" class="form-control">
+                                        <input type="text" th:field="*{game_name}" class="form-control" value="${gameValidation.game_name}">
                                         <span th:if="${#fields.hasErrors('game_name')}" th:errors="*{game_name}" class="error-message text-danger small"></span>
                                     </div>
                                 </div>
@@ -44,7 +44,7 @@
                                 <div class="mb-3 row">
                                     <label for="difficulty" class="col-sm-3 col-form-label">학습난이도</label>
                                     <div class="col-sm-4">
-                                        <select th:field="*{difficulty}" class="form-select">
+                                        <select th:field="*{difficulty}" class="form-select" value="${gameValidation.difficulty}">
                                             <option value="beginner">초급</option>
                                             <option value="intermediate">중급</option>
                                             <option value="advanced">고급</option>
@@ -56,7 +56,7 @@
                                 <div class="mb-3 row">
                                     <label for="subscription_duration" class="col-sm-3 col-form-label">구독기간</label>
                                     <div class="col-sm-6">
-                                        <select th:field="*{subscription_duration}" class="form-select">
+                                        <select th:field="*{subscription_duration}" class="form-select" value="${gameValidation.subscription_duration}">
                                             <option value="1">-- 구독기간 선택 --</option>
                                             <option value="30">30일</option>
                                             <option value="60">60일</option>
@@ -69,7 +69,7 @@
                                 <div class="mb-3 row">
                                     <label for="max_subscribers" class="col-sm-3 col-form-label">구독가능인원</label>
                                     <div class="col-sm-6">
-                                        <select th:field="*{max_subscribers}" class="form-select">
+                                        <select th:field="*{max_subscribers}" class="form-select" value="${gameValidation.max_subscribers}">
                                             <option value="1">-- 인원 선택 --</option>
                                             <option value="10">10명</option>
                                             <option value="20">20명</option>
@@ -84,10 +84,17 @@
                                     <label for="openEducationButton" class="col-sm-3 col-form-label">패키지</label>
                                     <div class="col-sm-6">
                                         <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#educationModal" id="openEducationButton">
-                                            패키지생성
+                                            패키지 생성
                                         </button>
                                         <!-- 모달에서 선택한 값을 보여줌 -->
                                         <div id="selectedValuesDisplay"></div>
+                                        <!-- 기존에 선택한 교육자료 리스트를 보여줌 -->
+                                        <strong>선택된 교육자료</strong>
+                                        <div id="nado-selectEducationList">
+                                            <ol th:each="educationList, iterStat : ${selectEducation}" class="list-unstyled mb-2">
+                                                <li><span th:text="${iterStat.count + '. '}" class="mr-1"></span><span th:text="${educationList.resourceName}"></span></li>
+                                            </ol>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -96,7 +103,7 @@
                                 <div class="mb-3 row">
                                     <label for="original_price" class="col-sm-2 col-form-label">정가</label>
                                     <div class="col-sm-7">
-                                        <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
+                                        <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)" value="${gameValidation.original_price}">
                                         <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
                                     </div>
                                 </div>
@@ -153,22 +160,29 @@
                                     <div class="mb-3 row">
                                         <label for="package_details" class="col-sm-2 col-form-label">패키지내용</label>
                                         <div class="col-sm-10" style="padding-left: 0px">
-                                            <textarea class="form-control" th:field="*{package_details}" rows="8" placeholder="내용을 입력해주세요."></textarea>
+                                            <textarea class="form-control" th:field="*{package_details}" rows="8" placeholder="내용을 입력해주세요." value="${gameValidation.package_details}"></textarea>
                                         </div>
                                 </div>
-                                <!-- 파일 업로드 -->
                                     <!-- 파일 업로드 -->
                                     <div class="mb-2 row">
                                         <label for="boardFile" class="col-sm-2 col-form-label">썸네일</label>
                                         <div class="col-sm-7" style="padding-left: 0px">
-                                            <input class="form-control" type="file" th:field="*{boardFile}" multiple required>
+                                            <input class="form-control" type="file" th:field="*{boardFile}" multiple>
                                         </div>
                                     </div>
                                     <div class="mb-3 row">
                                         <div class="col-sm-2"></div>
                                         <div class="col-sm-7">
                                             <ul id="fileList"></ul>
+                                            <div th:if="${gameValidation.saveboardFile.originFileName != null}">
+                                                <!-- 파일 다운로드 링크 생성 -->
+                                                <a th:href="@{|/game/downloadFile/${gameValidation.saveboardFile.fileNo}|}" th:text="${gameValidation.saveboardFile.originFileName}" />
+                                                <button class="btn btn-sm btn-danger" th:attr="data-fileNo=2" onclick="deleteFile(event, 2); return false;">Delete</button>
+                                            </div>
                                         </div>
+                                    </div>
+
+                                    <!-- Files for Deletion -->
                                     </div>
                                     <!-- Modal 교육자료리스트 선택-->
                                     <div class="modal fade" id="educationModal" name="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true" style="display:hidden;">
@@ -253,7 +267,7 @@
 
                         <!--<input type="hidden" id="selectedValues" name="selectedValues" th:value="${selectedValues}" th:if="${selectedValues != null and !selectedValues.isEmpty()}">-->
                         <div class="mb-3 text-center">
-                            <button type="submit" class="btn btn-primary" id="insert">전체 등록하기</button>
+                            <button type="submit" class="btn btn-primary" id="insert">수정등록</button>
                         </div>
                     </form>
                     </div>
@@ -266,7 +280,6 @@
                     return new bootstrap.Popover(popoverTriggerEl);
                 });
             </script>
-
 
             <script>
 

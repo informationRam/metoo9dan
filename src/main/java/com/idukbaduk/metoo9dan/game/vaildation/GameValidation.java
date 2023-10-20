@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.game.vaildation;
 
+import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,11 +20,11 @@ public class GameValidation {
     @NotEmpty(message = "난이도를 선택해주세요.")
     private String difficulty;             //'난이도'
 
-    @Min(value = 1, message = "최소값은 1 이상이어야 합니다.")
+    @Min(value = 9, message = "최소값은 30 이상이어야 합니다.")
     @NotNull(message = "구독기간은 필수 입니다.")
     private Integer subscription_duration;  //'구독기간'
 
-    @Min(value = 1, message = "최소값은 1 이상이어야 합니다.")
+    @Min(value = 9, message = "최소값은 10 이상이어야 합니다.")
     @NotNull(message = "구독인원은 필수 입니다.")
     private Integer max_subscribers;        //'구독 인원'
 
@@ -48,7 +49,7 @@ public class GameValidation {
 
     private List<MultipartFile> boardFile;  //  파일저장시 필요
 
-    private List<MultipartFile> boardFileList;  // 이미 업로드된 이미지 파일 목록
+    private GameContentFiles saveboardFile;  // 이미 업로드된 이미지 파일 목록
 
     private String origin_file_name;  //'원본파일명'
 

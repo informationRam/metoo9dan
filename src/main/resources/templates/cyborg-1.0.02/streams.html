@@ -241,7 +241,6 @@ https://templatemo.com/tm-579-cyborg-gaming
                   </a>
                 </li>
                 <!-- 페이지 번호 링크 -->
-                <!-- Page Number Links (Adjust for 1-based numbering) -->
                 <li class="page-item" th:classappend="${i - 1 == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
                   <a class="page-link" href="#" th:href="@{/game/alllist(page=${i - 1}, searchText=${searchText})}" th:text="${i}"></a>
                 </li>
@@ -254,7 +253,6 @@ https://templatemo.com/tm-579-cyborg-gaming
               </ul>
             </nav>
           </div>
-
         </div>
   </div>
     </div>
@@ -281,7 +279,7 @@ https://templatemo.com/tm-579-cyborg-gaming
 
 
   </div>
-
+  </div>
     <!-- Scripts -->
     <!-- Bootstrap core JavaScript -->
     <script src="/css/game/cyborg.vendor/jquery/jquery.min.js"></script>
@@ -312,30 +310,25 @@ https://templatemo.com/tm-579-cyborg-gaming
     </script>-->
     <script>
       function subscribe() {
-          var hiddenField = document.getElementById("hiddenGameContentNos");
-          var storedValues = JSON.parse(localStorage.getItem("selectedValues"));
-          console.log('storedValues', storedValues);
+     var hiddenField = document.getElementById("hiddenGameContentNos");
+     var storedValues = JSON.parse(sessionStorage.getItem("selectedValues"));
+     console.log('storedValues', storedValues);
 
-          // 문자열에서 숫자 배열로 변환
-          var integerValues = storedValues.map(function(value) {
-              return parseInt(value);
-          });
+     var xhr = new XMLHttpRequest();
+     xhr.open("POST", "/payments/paymentsform", true);
+     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-          var xhr = new XMLHttpRequest();
-          xhr.open("POST", "/payments/paymentsform", true);
-          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // JSON 요청임을 설정
+     var data = JSON.stringify(storedValues); // Change this line to use storedValues
 
-          var data = JSON.stringify(integerValues);
+     xhr.send(data);
 
-          xhr.send(data);
+     xhr.onreadystatechange = function() {
+         if (xhr.readyState === 4 && xhr.status === 200) {
+             console.log('서버 응답:', xhr.responseText);
+         }
+     };
+ }
 
-          // hiddenField.value 설정 및 서버로의 요청 전송은 비동기로 수행되므로 이후 코드를 두어야 합니다.
-          xhr.onreadystatechange = function() {
-              if (xhr.readyState === 4 && xhr.status === 200) {
-                  console.log('서버 응답:', xhr.responseText);
-              }
-          };
-      }
 
 
     </script>
@@ -363,73 +356,82 @@ https://templatemo.com/tm-579-cyborg-gaming
         // Page load: Restore selected prices and update the total
         updateTotalPrice();
 
-        function updateTotalPrice() {
-          var total = 0;
-          var selectedGameContentNos = [];
+       function updateTotalPrice() {
+    var total = 0;
+    var selectedGameContentNos = [];
 
-          checkboxes.forEach(function (checkbox) {
-            if (checkbox.checked) {
-              var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
-              var gameContentNo = checkbox.value;
+    checkboxes.forEach(function (checkbox) {
+    if (checkbox.checked) {
+      var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
+      var gameContentNo = checkbox.value;
 
-              if (priceElement && gameContentNo) {
-                var price = parseFloat(priceElement.textContent);
-                selectedPrices[gameContentNo] = price;
-                selectedValues.push(gameContentNo);
-                selectedGameContentNos.push(parseInt(gameContentNo));
-                console.log('gameContentNo', gameContentNo);
-                console.log('selectedValues', selectedValues);
-                console.log('selectedGameContentNos', selectedGameContentNos);
-              } else {
-                delete selectedPrices[gameContentNo];
-                selectedValues = selectedValues.filter(function (value) {
-                  return value !== gameContentNo;
-                });
-              }
-            }
-          });
-
-          // Calculate the total from the selected prices
-          for (var contentNo in selectedPrices) {
-            total += selectedPrices[contentNo];
-          }
-
-          // Update local storage with the selected prices and values
-          localStorage.setItem("selectedPrices", JSON.stringify(selectedPrices));
-          localStorage.setItem("selectedValues", JSON.stringify(selectedValues));
-          localStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
-          console.log('selectedValues',JSON.stringify(selectedValues))
-
-
-
-          if (totalPriceElement) {
-            totalPriceElement.innerText = total + " 원";
-          }
-
-          if (totalItemsElement) {
-            var itemsCount = selectedValues.length;
-            totalItemsElement.innerText = itemsCount + " 건";
-          }
-        }
-      });
-    </script>
-
-
-    <script>
-      // 로컬 스토리지 초기화 함수
-      function clearLocalStorage() {
-        if (confirm("로컬 스토리지의 데이터를 모두 삭제하시겠습니까?")) {
-          localStorage.removeItem("selectedPrices");
-           localStorage.removeItem("selectedValues");
-          localStorage.clear(); // 로컬 스토리지 초기화
-          alert("로컬 스토리지가 초기화되었습니다.");
-
-          // 아래 두 줄은 선택한 가격과 건수를 초기화합니다.
-          document.getElementById("totalPrice").innerText = "0 원";
-          document.getElementById("totalItems").innerText = "0 건";
-        }
+      if (priceElement && gameContentNo) {
+        var price = parseFloat(priceElement.textContent);
+        selectedPrices[gameContentNo] = price;
+        selectedValues.push(gameContentNo);
+        selectedGameContentNos.push(parseInt(gameContentNo));
+        console.log('gameContentNo', gameContentNo);
+        console.log('selectedValues', selectedValues);
+        console.log('selectedGameContentNos', selectedGameContentNos);
+      } else {
+        delete selectedPrices[gameContentNo];
+        selectedValues = selectedValues.filter(function (value) {
+          return value !== gameContentNo;
+        });
       }
+    }
+  });
+
+  // Calculate the total from the selected prices
+  for (var contentNo in selectedPrices) {
+    total += selectedPrices[contentNo];
+  }
+
+  // Update session storage with the selected prices and values
+  sessionStorage.setItem("selectedPrices", JSON.stringify(selectedPrices));
+  sessionStorage.setItem("selectedValues", JSON.stringify(selectedValues));
+  sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+  console.log('selectedValues', JSON.stringify(selectedValues));
+
+  if (totalPriceElement) {
+    totalPriceElement.innerText = total + " 원";
+  }
+
+  if (totalItemsElement) {
+    var itemsCount = selectedValues.length;
+    totalItemsElement.innerText = itemsCount + " 건";
+  }
+
+
+</script>
+  <script>
+  // Define a function to clear session storage
+    function clearSessionStorage() {
+        if (confirm("세션 스토리지의 데이터를 모두 삭제하시겠습니까?")) {
+            sessionStorage.removeItem("selectedPrices");
+            sessionStorage.removeItem("selectedValues");
+            sessionStorage.clear(); // Session storage initialization
+            alert("세션 스토리지가 초기화되었습니다.");
+
+            // Update the displayed total and item count
+            if (totalPriceElement) {
+                totalPriceElement.innerText = "0 원";
+            }
+
+            if (totalItemsElement) {
+                totalItemsElement.innerText = "0 건";
+            }
+        }
+    }
     </script>
+  <script>
+    // Define a function to search games
+    function searchGames() {
+        var searchText = document.getElementById('searchText').value;
+        window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+    }
+  </script>
+
 
 
     <!--<script>
@@ -474,11 +476,8 @@ https://templatemo.com/tm-579-cyborg-gaming
             });
 
     </script>-->
-    <script>
-    function searchGames() {
-      var searchText = document.getElementById('searchText').value;
-      window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
-    }
-</script>
-  </div>
+
+
+
+</div>
 </html>

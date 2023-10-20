@@ -1,9 +1,6 @@
 package com.idukbaduk.metoo9dan.game.service;
 
-import com.idukbaduk.metoo9dan.common.entity.EducationalResources;
-import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
-import com.idukbaduk.metoo9dan.common.entity.Payments;
+import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.game.reprository.GameContentsFileRepository;
 import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
 import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
@@ -106,6 +103,14 @@ public void saveIndividual(GameValidation gameValidation) {
         gameValidation.setOriginal_price(gameContents.getOriginalPrice());
         gameValidation.setDiscount_rate(gameContents.getDiscountRate());
         gameValidation.setSale_price(gameContents.getSalePrice());
+        gameValidation.setPackage_details(gameContents.getPackageDetails());
+        // 이미 업로드된 이미지 파일 목록을 가져와서 EducationVaildation에 설정
+        List<GameContentFiles> gameContentFiles = gameFilesService.getGameFilesByGameContentNo(gameContents.getGameContentNo());
+
+        for(GameContentFiles gameContentFiles1 : gameContentFiles){
+            gameValidation.setSaveboardFile(gameContentFiles1);
+        }
+
         return gameValidation;
     }
 
@@ -131,4 +136,22 @@ public void saveIndividual(GameValidation gameValidation) {
             gameRepository.delete(gameContents);
         }
     }
+
+    public GameContents modify(GameContents gameContents, GameValidation gameValidation) {
+        // 필요한 필드를 업데이트
+        gameContents.setGameName(gameValidation.getGame_name());
+        gameContents.setDifficulty(gameValidation.getDifficulty());
+        gameContents.setSubscriptionDuration(gameValidation.getSubscription_duration());
+        gameContents.setMaxSubscribers(gameValidation.getMax_subscribers());
+        gameContents.setOriginalPrice(gameValidation.getOriginal_price());
+        gameContents.setDiscountRate(gameValidation.getDiscount_rate());
+        gameContents.setSalePrice(gameValidation.getSale_price());
+        gameContents.setPackageDetails(gameValidation.getPackage_details());
+        gameContents.setCreationDate(LocalDateTime.now());
+
+        // 수정된 교육 자료 저장
+        GameContents saveGameContents = gameRepository.save(gameContents);
+        return saveGameContents;
+    }
+
 }

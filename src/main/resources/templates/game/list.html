@@ -77,7 +77,7 @@
                     <!-- 액션 -->
                     <!-- 액션 -->
                     <td>
-                        <a th:href="@{/game/edit/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-primary btn-sm mx-1">Edit</a>
                         <span th:unless="${game.paymentsList.isEmpty()}">Edit</span> <!-- 결제내역이 있는 경우 수정 버튼 비활성화 -->
                     </td>
                     <td>

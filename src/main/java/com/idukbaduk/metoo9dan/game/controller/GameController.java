@@ -13,11 +13,14 @@ import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -222,15 +225,88 @@ public class GameController {
         return "game/detailForm";
     }
 
-    // 게임콘텐츠 수정폼
-    @GetMapping("/modify/{gameContentNo}")
-    public String gameModify(@PathVariable Integer gameContentNo, Model model) {
-        GameContents gameContents = gameService.getGameContents(gameContentNo);
-        GameValidation gameValidation = gameService.getContentValidation(gameContents);
 
-        model.addAttribute("gameVaildation", gameValidation);
-        return "game/detailForm";
+    //게임콘텐츠 수정폼
+    @GetMapping("/modify/{gameContentNo}")
+    public String gameModify(@PathVariable Integer gameContentNo, Model model,HttpSession session) {
+        GameContents gameContents = gameService.getGameContents(gameContentNo);
+        GameValidation gameValidation = gameService.getContentValidation(gameContents);    // Validation사용
+
+        List<EducationalResources> educationalResources = new ArrayList<>();
+        List<EducationalResources> allEducation = educationService.getDistinct();
+
+        // 교육자료에 대한 파일 정보를 가져와서 모델에 추가
+        for (EducationalResources education : allEducation) {
+            ResourcesFiles resourcesFilesList = resourcesFilesService.getFile(education.getResourceNo());
+            education.setResourcesFilesList(resourcesFilesList);
+        }
+
+        //게임컨텐츠값으로 선택된 EducationalResources정보를 가져온다.
+        List<EducationalResources> selectEducation = educationService.getEducation_togameno(gameContents.getGameContentNo());
+
+        session.setAttribute("educationalResources", educationalResources);
+        model.addAttribute("allEducation", allEducation);
+        model.addAttribute("gameValidation", gameValidation);
+        model.addAttribute("selectEducation", selectEducation);
+
+        return "game/modify";
     }
+
+
+    //수정처리
+    @PostMapping("/modify/{gameContentNo}")
+    public String modifyGame(@PathVariable Integer gameContentNo, @ModelAttribute("gameValidation") GameValidation gameValidation, @RequestParam MultiValueMap<String, String> params, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
+
+        // 1. 삭제된 파일 처리
+        List<String> deletedFiles = params.get("deletedFiles");
+        System.out.println("deletedFiles?" + deletedFiles);
+
+        if (deletedFiles != null && !deletedFiles.isEmpty() && "2".equals(deletedFiles.get(0))) {
+            gameFilesService.deleteFile(gameContentNo);
+        }
+
+        // 2. 수정된 컨텐츠 내용 처리
+        GameContents gameContents = gameService.getGameContents(gameContentNo);
+        if (gameContents != null) {
+            GameContents modify = gameService.modify(gameContents, gameValidation);
+
+            // 업로드된 파일의 확장자 확인
+            MultipartFile fileName = gameValidation.getBoardFile().get(0);
+
+            //파일이 존재하면 처리한다.
+            try {
+                if (fileName != null && !fileName.isEmpty()) {
+                    gameFilesService.save(getgameContents, gameValidation);
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to save educational resources: " + e.getMessage());
+            }
+            return "redirect:/game/list2";
+        }
+        return "redirect:/gmae/list2";
+    }
+
+
+    // 파일 다운로드 요청 처리
+    @GetMapping("/downloadFile/{fileNo}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Integer fileNo) {
+        // 파일을 서버에서 가져오는 로직을 구현하고 Resource 객체를 생성
+        GameContentFiles fileByFileNo = gameFilesService.getFileByFileNo(fileNo);
+        System.out.println("fileNo?"+fileNo);
+        try {
+            if (fileByFileNo != null) {
+                return gameFilesService.downloadFile(fileByFileNo, fileByFileNo.getCopyFileName());
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            // 파일을 읽을 수 없는 경우 에러 응답을 보냅니다.
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
     //  삭제하기
     @GetMapping("/delete/{gameContentNo}")
@@ -244,7 +320,7 @@ public class GameController {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"권한이 없습니다.");
 //        }
         GameContents gameContents = gameService.getGameContents(gameContentNo);
-        gameFilesService.deleteFile(gameContents);
+        gameFilesService.deleteFile(gameContents.getGameContentNo());
         gameService.delete(gameContents);
         return "redirect:/game/list2";    //목록으로이동
     }
@@ -258,7 +334,7 @@ public class GameController {
     // ----------------- 테스트 --------------------!
 
 
-    // page 1
+ /*   // page 1
     @GetMapping("/page1")
     public String getPage1(Model model) {
         model.addAttribute("gameValidation", new GameValidation());
@@ -290,10 +366,10 @@ public class GameController {
     public String getPage2(@ModelAttribute("gameValidation") GameValidation gameValidation, Model model) {
         List<EducationalResources> allEducation = educationService.getAllEducation();
 
-       /* model.addAttribute("gameValidation",gameValidation);*/
+       *//* model.addAttribute("gameValidation",gameValidation);*//*
         model.addAttribute("allEducation", allEducation);
         return "game/page2";
-    }
+    }*/
 
     // 게임등록 폼에서 교육자료 선택
     @Transactional(readOnly = true)
@@ -324,6 +400,7 @@ public class GameController {
         return response;
     }
 
+/*
     //page2
     @PostMapping("/page2")
     public String handlePage2Post(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult,
@@ -345,17 +422,20 @@ public class GameController {
     public String getPage3(Model model,HttpSession session) {
 
         // 세션에서 정보를 가져옵니다.
-       /* List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
+       */
+/* List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
         List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
         GameValidation gameValidation = (GameValidation) session.getAttribute("gameValidation");
 
         // 모델에 추가하여 뷰로 전달합니다.
         model.addAttribute("educationalResources", educationalResources);
         model.addAttribute("originFileNames", originFileNames);
-        model.addAttribute("gameValidation", gameValidation);*/
+        model.addAttribute("gameValidation", gameValidation);*//*
+
 
         return "game/page3";
     }
+*/
 
 
     // 저장 처리 로직
@@ -548,7 +628,7 @@ public class GameController {
 
 
 
-        //게임컨텐츠 구매 할때 목록조회
+//게임컨텐츠 구매 할때 목록조회
     @GetMapping("/testlist")
     public String test(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
 

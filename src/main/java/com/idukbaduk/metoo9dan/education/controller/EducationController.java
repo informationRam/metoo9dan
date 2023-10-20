@@ -149,7 +149,7 @@ public class EducationController {
 
     //수정하기 폼
     @GetMapping("/modify/{resourceNo}")
-    public String userUpdateForm(@PathVariable Integer resourceNo, Model model) {
+    public String modifyForm(@PathVariable Integer resourceNo, Model model) {
         EducationalResources education = educationService.getEducation(resourceNo);
         EducationValidation educationValidation = educationService.toEducationValidation(education);    // Validation사용
         model.addAttribute("educationValidation", educationValidation);

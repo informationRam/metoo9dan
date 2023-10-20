@@ -40,7 +40,7 @@
                     <div class="mb-3 row">
                         <label for="max_subscribers" class="col-sm-2 col-form-label">구독가능인원</label>
                         <div class="col-sm-3">
-                            <select th:field="*{service_type}" class="form-select" value="${educationValidation.service_type}">
+                            <select th:field="*{service_type}" class="form-select" th:value="${educationValidation.service_type}">
                                 <option value="full">유료</option>
                                 <option value="short">무료</option>
                             </select>
@@ -50,7 +50,7 @@
                 <div class="mb-3 row">
                     <label for="description" class="col-sm-2 col-form-label">패키지내용</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요." value="${educationValidation.description}"></textarea>
+                        <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요." th:value="${educationValidation.description}"></textarea>
                     </div>
                 </div>
 
@@ -77,8 +77,6 @@
                         <button class="btn btn-sm btn-danger" th:attr="data-fileNo=2" onclick="deleteFile(event, 2); return false;">Delete</button>
                     </div>
                 </div>
-
-
                 <!-- 수정된 컨텐츠 내용을 전달하기 위한 hidden input -->
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary">수정하기</button>
