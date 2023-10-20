@@ -47,16 +47,8 @@ public class QuestionController {
     private final MemberServiceImpl memberServiceImpl;
     private final QuestionService questionService;
     private final QuestionFilesService filesService;
-    private final AnswerService answerService;
 
-    //method
-    /*관리자아닌사람.
-     * 자기가 작성한 문의사항만 목록조회할 수 있어야 함.
-     * 요청주소를 따로 만들지? service단에서 불러오는 페이지를 제한할지?*/
-
-
-    /* 관리자용
-     * 문의사항 목록 보여줘 요청
+    /* 문의사항 목록 보여줘 요청
      * model로 memberRole 넘겨주어야 함.*/
     @GetMapping("/list")
     @PreAuthorize("isAuthenticated()")
@@ -135,7 +127,7 @@ public class QuestionController {
      * listSize는 10으로 고정.*/
     @GetMapping("/search")
     @PreAuthorize("isAuthenticated()")
-    public String searchQna(Model model, Principal principal, Pageable pageable,
+    public String searchQna(Model model, Principal principal,
                             @RequestParam(value = "page", defaultValue = "0") int pageNo,
                             String searchCategory, String keyword) {
         logger.info("searchQna진입");

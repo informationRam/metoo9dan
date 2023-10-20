@@ -30,7 +30,7 @@
                             </a>
                         </label>
                     </div>
-                    <div th:text="${question.questionContent}">내용</div>
+                    <div th:text="${question.questionContent}" style="white-space: pre;">내용</div>
                     <!--작성자만 수정삭제 버튼 보임-->
                     <div th:if="${question.member!=null and #authentication.getPrincipal().getUsername()==question.member.memberId}"
                          sec:authorize="isAuthenticated()">
@@ -58,7 +58,7 @@
                     <div class="card-body">
                         <a class="badge rounded-pill text-bg-primary" th:text="${answer.member.memberId}"></a>
                         <a class="card-subtitle text-body-secondary" th:text="|답변일시: ${#temporals.format(answer.writeDate, 'yyyy-MM-dd HH:mm')}|"></a>
-                        <p class="card-text" th:text="${answer.answerContent}"></p>
+                        <p class="card-text" th:text="${answer.answerContent}" style="white-space: pre;"></p>
                         <div>
                             <a th:href="@{|/answer/delete/${answer.answerNo}|}" class="btn btn-sm btn-danger">답변 삭제</a>
                         </div>
