@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.admin.controller;
 
+import com.idukbaduk.metoo9dan.admin.dto.DeleteMembersRequest;
 import com.idukbaduk.metoo9dan.admin.service.EducatorInfoService;
 import com.idukbaduk.metoo9dan.admin.service.MemPaymentsService;
 import com.idukbaduk.metoo9dan.common.entity.Member;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.idukbaduk.metoo9dan.common.util.DateTimeUtils;
@@ -127,5 +129,28 @@ public class AdminController {
             return new ResponseEntity<>("EducatorInfo 데이터 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    //회원 단일 삭제 - 모달
+    @Transactional
+    @DeleteMapping("/{memberNo}/delete")
+    public ResponseEntity<String> deleteMember(@PathVariable("memberNo") Integer memberNo) {
+        memberService.deleteMemberByMemberNo(memberNo);
+        return new ResponseEntity<>("Member deleted successfully", HttpStatus.OK);
+    }
 
+    //회원 다중선택 삭제
+    @PostMapping("/deleteMembers")
+    public ResponseEntity<String> deleteSelectedMembers(@RequestBody DeleteMembersRequest deleteDTO) {
+
+        try {
+            // 클라이언트로부터 받아온 회원 번호들의 리스트
+            List<Integer> memberNos = deleteDTO.getMemberNos();
+            // 해당 회원들을 삭제하는 서비스 메서드 호출
+            memberService.deleteAllMembers(memberNos);
+            // 삭제가 성공적으로 수행되면 OK 상태와 메시지 전송
+            return new ResponseEntity<>("회원 삭제가 완료되었습니다.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 삭제 중 오류가 발생했습니다.");
+        }
+    }
 }

@@ -1,25 +1,88 @@
 //검색조건 이벤트 , 체크박스 이벤트 처리
 
 //체크박스 선택 이벤트
-        document.addEventListener("DOMContentLoaded", function() {
-            // 전체 선택 체크박스 클릭 시 모든 체크박스 선택/해제
-            const selectAllCheckbox = document.getElementById("selectAllCheckbox");
-            const memberCheckboxes = document.querySelectorAll(".memberCheckbox");
+     document.addEventListener("DOMContentLoaded", function() {
+         // 전체 선택 체크박스 클릭 시 모든 체크박스 선택/해제
+         const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+         const memberCheckboxes = document.querySelectorAll(".memberCheckbox");
 
-            selectAllCheckbox.addEventListener("change", function() {
-                memberCheckboxes.forEach(function(checkbox) {
-                    checkbox.checked = selectAllCheckbox.checked;
-                });
-            });
+         selectAllCheckbox.addEventListener("change", function() {
+             memberCheckboxes.forEach(function(checkbox) {
+                 checkbox.checked = selectAllCheckbox.checked;
+             });
+         });
 
-            // 개별 체크박스 클릭 시 전체 선택 체크박스 업데이트
-            memberCheckboxes.forEach(function(checkbox) {
-                checkbox.addEventListener("change", function() {
-                    const allChecked = [...memberCheckboxes].every(checkbox => checkbox.checked);
-                    selectAllCheckbox.checked = allChecked;
+         // 개별 체크박스 클릭 시 전체 선택 체크박스 업데이트
+         memberCheckboxes.forEach(function(checkbox) {
+             checkbox.addEventListener("change", function() {
+                 const allChecked = [...memberCheckboxes].every(checkbox => checkbox.checked);
+                 selectAllCheckbox.checked = allChecked;
+             });
+         });
+
+         // 삭제 버튼 클릭 이벤트
+         const deleteButton = document.getElementById("deleteMembersButton");
+         deleteButton.addEventListener("click", function() {
+             // 선택한 회원의 memberNo 값을 추적
+             const selectedMembers = [];
+             memberCheckboxes.forEach(function(checkbox) {
+                 if (checkbox.checked) {
+                     const memberNo = checkbox.id; // 체크박스의 id 속성으로 memberNo 값을 가져옵니다.
+                     selectedMembers.push(memberNo);
+                 }
+             });
+
+             if (selectedMembers.length === 0) {
+                 alert("선택한 회원이 없습니다.");
+             } else {
+                 // 삭제 여부를 묻는 경고창 표시
+                 const confirmation = confirm("선택한 회원을 삭제하시겠습니까?");
+                 if (confirmation) {
+                   // 서버로 선택한 회원 삭제 요청 보내기
+                     deleteSelectedMembers(selectedMembers); // 예시 함수 이름, 실제로 구현해야 함
+                 }
+             }
+         });
+
+
+        // 선택한 회원 삭제 함수 예시 (서버에 삭제 요청을 보내도록 구현)
+        function deleteSelectedMembers(selectedMembers) {
+            // selectedMembers 배열을 서버에 전송하여 선택한 회원 삭제 요청을 보냅니다.
+             console.log('선택한 회원 목록:', selectedMembers); // 확인용 로그
+             // 서버로 삭제 요청을 보낼 URL 및 데이터를 설정
+                const deleteUrl = '/admin/deleteMembers'; // 삭제 요청을 처리할 서버의 엔드포인트 URL
+                const requestData = {
+                    memberNos: selectedMembers // 선택한 회원들의 memberNo 배열
+                };
+            // 서버에서 요청 처리 후, 페이지를 갱신하거나 삭제된 회원 목록을 업데이트합니다.
+              // 서버에 POST 요청으로 데이터 전송
+                fetch(deleteUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text(); //서버에서 보낸 성패여부 응답 받기
+                })
+                .then(data => {
+                    console.log('삭제 성공', data);
+                    // 삭제가 성공했을 때 알림창 띄우기
+                    window.alert('삭제가 완료되었습니다.');
+                  // 알림창을 닫으면 페이지를 다시 로드
+                    window.location.reload();
+
+                })
+                .catch(error => {
+                    console.error('삭제 실패:', error);
                 });
-            });
-        });
+        }
+    })
+
 
 //검색버튼 이벤트
         document.getElementById('searchBtn').addEventListener('click', function(event){
@@ -50,8 +113,9 @@
         totalElements: 전체 데이터 수
         totalPages: 전체 페이지 수
         number: 현재 페이지 번호 (0부터 시작)*/
-         function fetchSearchResults() {
+         function fetchSearchResults(pageNumber=1) {
              let params = getSearchParams();
+             params.page = pageNumber; //받아온 페이지 번호 사용
              let queryString = new URLSearchParams(params).toString();
              console.log(params); // 검색조건 확인
 
@@ -70,7 +134,7 @@
                     } else {
                         // 검색 결과가 있는 경우 데이터 표시 및 페이지네이션 생성
                         displayResults(data.content);
-                        generatePagination(data.totalElements);
+                        generatePagination(data.totalPages,pageNumber); // 현재페이지 번호 넘겨준다
                     }
                 })
                 .catch(error => {
@@ -154,140 +218,68 @@
              }
          }
 
-  // 페이지네이션 생성 함수
-  function generatePagination(currentPage, totalPages) {
-      let paginationContainer = document.querySelector('.pagination ul');
-      paginationContainer.innerHTML = ''; // 기존 페이지네이션 아이템들을 초기화합니다.
+// 현재 페이지네이션 범위를 저장할 변수
+        let currentStartPage = 1;
+// 페이지네이션 생성
+        function generatePagination(totalElements) {
+            const totalPage = Math.ceil(totalElements / 15);
+            const paginationContainer = document.querySelector('.pagination ul');
+            paginationContainer.innerHTML = ''; // 기존 페이지네이션 삭제
 
-      const maxButtons = 3; // 최대 보여질 숫자 버튼 개수
-      const halfMaxButtons = Math.floor(maxButtons / 2); // 반 개수
 
-      // 이전 버튼 생성
-      const previousButton = document.createElement('li');
-      previousButton.classList.add('page-item');
-      const previousLink = document.createElement('a');
-      previousLink.classList.add('page-link');
-      previousLink.href = '#';
-      previousLink.textContent = '이전';
-      previousButton.appendChild(previousLink);
-      paginationContainer.appendChild(previousButton);
+            // 이전 버튼
+            const prevLi = document.createElement('li');
+            prevLi.classList.add('page-item');
+            const prevButton = document.createElement('a');
+            prevButton.classList.add('page-link');
+            prevButton.textContent = '이전';
+            prevButton.addEventListener('click', () => {
+                if (currentStartPage > 1) {
+                    currentStartPage -= 4;
+                    generatePagination(totalElements);
+                    fetchSearchResults();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
+                }
+            });
+            prevLi.appendChild(prevButton);
+            paginationContainer.appendChild(prevLi);
 
-      // 숫자 버튼 생성
-      for (let i = currentPage - halfMaxButtons; i <= currentPage + halfMaxButtons; i++) {
-          if (i >= 1 && i <= totalPages) {
-              const pageButton = document.createElement('li');
-              pageButton.classList.add('page-item');
-              if (i === currentPage) {
-                  pageButton.classList.add('active');
+              // 숫자 버튼
+              for (let i = 0; i < 4; i++) {
+                  if (currentStartPage + i > totalPage) break;  // 전체 페이지 수를 초과하면 생성 중단
+
+                  const pageLi = document.createElement('li');
+                  pageLi.classList.add('page-item');
+                  const pageButton = document.createElement('a');
+                  pageButton.classList.add('page-link');
+                  pageButton.textContent = currentStartPage + i;
+                  pageButton.addEventListener('click', () => {
+                      let params = getSearchParams();
+                      params.page = currentStartPage + i;
+                      fetchSearchResults();  // 선택한 페이지에 해당하는 검색 결과를 가져옴
+                  });
+                  pageLi.appendChild(pageButton);
+                  paginationContainer.appendChild(pageLi);
               }
-              const pageLink = document.createElement('a');
-              pageLink.classList.add('page-link');
-              pageLink.href = '#';
-              pageLink.textContent = i;
-              pageButton.appendChild(pageLink);
-              paginationContainer.appendChild(pageButton);
 
-              // 페이지 번호를 클릭할 때 데이터를 로드하는 이벤트 핸들러 추가
-              pageLink.addEventListener('click', function() {
-                  changePage(i);
-              });
-          }
-      }
-
-      // 다음 버튼 생성
-      const nextButton = document.createElement('li');
-      nextButton.classList.add('page-item');
-      const nextLink = document.createElement('a');
-      nextLink.classList.add('page-link');
-      nextLink.href = '#';
-      nextLink.textContent = '다음';
-      nextButton.appendChild(nextLink);
-      paginationContainer.appendChild(nextButton);
-
-      // 이전 버튼을 클릭할 때 이전 페이지의 데이터 로드
-      previousLink.addEventListener('click', function() {
-          if (currentPage > 1) {
-              changePage(currentPage - 1);
-          }
-      });
-
-      // 다음 버튼을 클릭할 때 다음 페이지의 데이터 로드
-      nextLink.addEventListener('click', function() {
-          if (currentPage < totalPages) {
-              changePage(currentPage + 1);
-          }
-      });
-  }
-
-  // 페이지 변경시 검색 결과 갱신
-  function changePage(pageNumber) {
-      let params = getSearchParams();
-      params.page = pageNumber;
-      let queryString = new URLSearchParams(params).toString();
-
-      fetch(`/admin/search?${queryString}`)
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error('Network response was not ok');
-              }
-              return response.json();
-          })
-          .then(data => {
-              // 데이터를 표시하는 로직 추가
-              displayResults(data.content);
-              // 페이지네이션 업데이트
-              generatePagination(pageNumber, data.totalPages);
-          })
-          .catch(error => {
-              console.error('Error fetching data:', error);
-          });
-  }
+                // 다음 버튼
+                const nextLi = document.createElement('li');
+                nextLi.classList.add('page-item');
+                const nextButton = document.createElement('a');
+                nextButton.classList.add('page-link');
+                nextButton.textContent = '다음';
+                nextButton.addEventListener('click', () => {
+                    if (currentStartPage + 4 <= totalPage) {
+                        currentStartPage += 4;
+                        generatePagination(totalElements);
+                        fetchSearchResults();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
+                    }
+                });
+                nextLi.appendChild(nextButton);
+                paginationContainer.appendChild(nextLi);
+        }
 
 
 
-//        function generatePagination(totalCount) {
-//            let totalPages = Math.ceil(totalCount / 15);
-//            let paginationContainer = document.querySelector('.pagination ul');
-//            paginationContainer.innerHTML = ''; // 기존 페이지네이션 아이템들을 초기화합니다.
-//
-//            //검색결과 없으면 빈 페이지네이션 표시
-//            if (totalPages === 0) {
-//                paginationContainer.innerHTML = '검색 결과가 없습니다.';
-//            } else {
-//                   let previousButton = createPaginationButton('이전', currentPage - 1);
-//                   if (currentPage > 1) {
-//                       paginationContainer.appendChild(previousButton);
-//                   }
-//                   for (let i = 1; i <= totalPages; i++) {
-//                           let pageListItem = createPaginationButton(i, i);
-//                           if (i === currentPage) {
-//                               pageListItem.classList.add('active');
-//                           }
-//                           paginationContainer.appendChild(pageListItem);
-//                           }
-//                for (let i = 1; i <= totalPages; i++) {
-//                           let pageListItem = document.createElement('li');
-//                           let pageLink = document.createElement('a');
-//                           pageListItem.classList.add('page-item');
-//                           pageLink.classList.add('page-link');
-//                           pageLink.innerText = i;
-//
-//                           pageLink.addEventListener('click', function() {
-//                               changePage(i);
-//                               // 현재 페이지에 "active" 클래스 추가
-//                               let activePage = document.querySelector('.pagination .page-item.active');
-//                               if (activePage) {
-//                                   activePage.classList.remove('active');
-//                               }
-//                               pageListItem.classList.add('active');
-//                           });
-//
-//                           pageListItem.appendChild(pageLink);
-//                           paginationContainer.appendChild(pageListItem);
-//                }
-//            }
-//        }
-//
 //        //페이지 변경시 검색결과 갱신
 //        function changePage(pageNumber) {
 //            let params = getSearchParams();
@@ -299,8 +291,4 @@
 //            .then(data => {
 //                displayResults(data.members);
 //            });
-//        }
-
-
-
-
+//

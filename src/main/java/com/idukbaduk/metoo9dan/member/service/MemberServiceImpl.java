@@ -8,6 +8,8 @@ import com.idukbaduk.metoo9dan.member.repository.EducatorinfoRepository;
 import com.idukbaduk.metoo9dan.member.repository.MemberRepository;
 import com.idukbaduk.metoo9dan.payments.repository.PaymentsRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,25 @@ public class MemberServiceImpl implements MemberService {
     private final EducatorinfoRepository educatorInfoRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+
+
+    //페이지네이션용
+    @Override
+    public Page<Member> findAllMembers(Pageable pageable) {
+        return memberRepository.findAll(pageable);
+    }
+    //모달-단일 회원삭제
+    @Transactional
+    @Override
+    public void deleteMemberByMemberNo(Integer memberNo) {
+        memberRepository.deleteByMemberNo(memberNo);
+    }
+    //게시판 회원 다중 삭제
+    @Transactional
+    @Override
+    public void deleteAllMembers(List<Integer> memberNos) {
+        memberRepository.deleteByMemberNoIn(memberNos);
+    }
 
     //Member테이블 수정
     @Override

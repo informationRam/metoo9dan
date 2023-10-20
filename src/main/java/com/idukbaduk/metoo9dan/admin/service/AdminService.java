@@ -1,7 +1,6 @@
 package com.idukbaduk.metoo9dan.admin.service;
 
 import com.idukbaduk.metoo9dan.admin.domain.MemberSpecification;
-import com.idukbaduk.metoo9dan.admin.dto.MemberResponseDTO;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import com.idukbaduk.metoo9dan.member.repository.MemberRepository;
