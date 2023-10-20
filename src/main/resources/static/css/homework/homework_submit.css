@@ -72,11 +72,11 @@
 }
 
 /* 제출 완료 및 제출 전에 따른 배경색 설정 */
-.table-success {
+.nado-table-success {
     background-color: #d4edda;  /* 연두색 */
 }
 
-.table-warning {
+.nado-table-warning {
     background-color: #ffeeba;  /* 연한 노란색 */
 }
 
