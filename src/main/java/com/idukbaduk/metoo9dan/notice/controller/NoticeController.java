@@ -168,9 +168,14 @@ public class NoticeController {
 
     //공지사항 삭제해줘 요청
     @GetMapping("/delete/{noticeNo}")
-    public String delete(@PathVariable Integer noticeNo){
+    public String delete(@PathVariable Integer noticeNo, Principal principal, RedirectAttributes redirectAttributes){
         //우선 삭제할 글 조회
         Notice notice = noticeService.getNotice(noticeNo);
+        Member member = memberServiceImpl.getUser(principal.getName());
+        if(!notice.getMember().equals(member)){
+            redirectAttributes.addFlashAttribute("msg","해당 게시글을 삭제할 권한이 없습니다.");
+            return String.format("redirect:/notice/detail/%d", noticeNo);
+        }
         List<NoticeFiles> filesList = filesService.getFiles(notice);
         noticeService.delete(notice); //DB에서 cascade되어 댓글과 파일데이터는 지워짐.
 
@@ -254,11 +259,15 @@ public class NoticeController {
     @GetMapping("/modify/{noticeNo}")
     @PreAuthorize("isAuthenticated()")
     public String noticeModifyForm(@PathVariable("noticeNo")Integer noticeNo, NoticeForm noticeForm,
-                                   Principal principal, Model model){
+                                   Principal principal, Model model, RedirectAttributes redirectAttributes){
         //수정하려는 사람이 작성한 사람인지 확인.~~~~~~~~~~~
-        String memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
+        Member member = memberServiceImpl.getUser(principal.getName());
         //공지사항 조회
         Notice notice = noticeService.getNotice(noticeNo);
+        if(!notice.getMember().equals(member)){
+            redirectAttributes.addFlashAttribute("msg","해당 게시글을 수정할 권한이 없습니다.");
+            return String.format("redirect:/notice/detail/%d", noticeNo);
+        }
         //파일 조회
         List<NoticeFiles> filesList=filesService.getFiles(notice);
         //조회된 공지사항의 내용을 수정폼에 세팅
@@ -275,7 +284,7 @@ public class NoticeController {
             model.addAttribute("impCk", "impChecked");
         }
         
-        model.addAttribute("memberRole", memberRole); //사이드바를 위한 모델설정
+        model.addAttribute("memberRole", member.getRole()); //사이드바를 위한 모델설정
         model.addAttribute("filesList", filesList); //공지 파일 목록
         model.addAttribute("notice", notice); //공지 파일 목록
         
@@ -301,8 +310,6 @@ public class NoticeController {
 
         Notice notice = noticeService.getNotice(noticeNo);
         List<NoticeFiles> filesList=filesService.getFiles(notice); //파일조회
-
-        //수정하려는 자와 작성자가 같은 사람인지 확인해야함~~~~~~~~~
 
         NoticeDTO noticeDTO = new NoticeDTO();
 
