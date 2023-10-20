@@ -61,6 +61,7 @@
                     <textarea type="text" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요."/>
                 </div>
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
+                    <input type="hidden" id="payment_no" name="paymentNo" class="form-control" th:value="${payment_no}"/>
                     <input type="hidden" th:value="${member_no}" class="form-control"/>
                 <div style="display: flex; justify-content: center; align-items: center;">
                     <input type="submit" value="학습 그룹 등록 하기" class="btn btn-primary my-2"/>

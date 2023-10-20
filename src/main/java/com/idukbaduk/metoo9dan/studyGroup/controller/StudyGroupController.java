@@ -110,15 +110,15 @@ public class StudyGroupController {
 
     //학습 그룹 등록 상세(교육자)
     //학습 그룹 등록 폼
-    @GetMapping("/add/{game_content_no}")
+    @GetMapping("/add/{game_content_no}/{payment_no}")
     public String add(Model model,StudyGroupForm studyGroupForm
-                      ,@PathVariable("game_content_no") int game_content_no,Map<String, Integer> map,Principal principal){
+                      ,@PathVariable("game_content_no") int game_content_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map,Principal principal){
         //Principal
         Member member = memberService.getUser(principal.getName());
         int member_no = member.getMemberNo();
 
         map.put("member_no", member_no); // map에 member_no 추가
-        map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+        map.put("payment_no", payment_no); // map에 payment_no 추가
         GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
         model.addAttribute("gameInfo",gameInfo);
         System.out.println("gameInfo="+gameInfo);
@@ -127,9 +127,9 @@ public class StudyGroupController {
     }
 
     //학습 그룹 등록 처리
-    @PostMapping("/add/{game_content_no}")
+    @PostMapping("/add/{game_content_no}/{payment_no}")
     public String studygroupAdd(Model model, @Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,
-                                @PathVariable("game_content_no") int game_content_no,Map<String, Integer> map,Principal principal){
+                                @PathVariable("game_content_no") int game_content_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map,Principal principal){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
             //Principal
             Member member = memberService.getUser(principal.getName());
@@ -151,7 +151,7 @@ public class StudyGroupController {
         Member member2 = memberRepositoryStudyGroup.findById(member_no).orElse(null);
 
         studyGroupService.add(studyGroupForm.getGroupName(),studyGroupForm.getGroupSize(),studyGroupForm.getGroupStartDate(),
-                                studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),gameContents,member2);
+                                studyGroupForm.getGroupFinishDate(),studyGroupForm.getGroupIntroduce(),payment_no, gameContents,member2);
 
         return "redirect:/studygroup/list";
     }
@@ -159,9 +159,9 @@ public class StudyGroupController {
 
     //학습 그룹 수정(교육자)
     //학습 그룹 수정 폼
-    @GetMapping("/modify/{group_no}")
+    @GetMapping("/modify/{group_no}/{payment_no}")
     public String modify(Model model,StudyGroupForm studyGroupForm,
-                         @PathVariable("group_no") int group_no,Map<String, Integer> map){
+                         @PathVariable("group_no") int group_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map){
 
         StudyGroups studyGroups = studyGroupService.getGruop(group_no);
         studyGroupForm.setGroupName(studyGroups.getGroupName());
@@ -175,6 +175,7 @@ public class StudyGroupController {
         int member_no= studyGroups.getMember().getMemberNo();
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+        map.put("payment_no", payment_no); // map에 payment_no 추가
         GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
         model.addAttribute("gameInfo",gameInfo);
 
@@ -196,9 +197,9 @@ public class StudyGroupController {
     }
 
     //학습 그룹 수정 처리
-    @PostMapping("/modify/{group_no}")
+    @PostMapping("/modify/{group_no}/{payment_no}")
     public String studygroupModify(Model model,@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
-                                 ,@PathVariable("group_no") int group_no,Map<String, Integer> map,Principal principal){
+                                 ,@PathVariable("group_no") int group_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map,Principal principal){
         if(bindingResult.hasErrors()){ //유효성검사시 에러가 발생하면
             //유효성 검사시 게임콘텐츠정보 넘기기
             StudyGroups studyGroups = studyGroupService.getGruop(group_no);
@@ -207,6 +208,7 @@ public class StudyGroupController {
 
             map.put("member_no", member_no); // map에 member_no 추가
             map.put("game_content_no", game_content_no); // map에 game_content_no 추가
+            map.put("payment_no", payment_no); // map에 payment_no 추가
             GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
             model.addAttribute("gameInfo",gameInfo);
 
@@ -283,6 +285,7 @@ public class StudyGroupController {
 
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("selectedGroupNo", selectedGroupNo); // map에 selectedGroupNo 추가
+        //map.put("selectedPaymentNo", selectedPaymentNo); // map에 selectedGroupNo 추가
 
         //학습 그룹 정보 가져오기
         List<StudyGroupsListDTO> selectGroup = studyGroupService.selectGroup(map);

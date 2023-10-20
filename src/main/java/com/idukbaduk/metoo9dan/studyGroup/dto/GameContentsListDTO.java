@@ -20,4 +20,5 @@ public class GameContentsListDTO {
     
     //학습그룹 등록시 필요
     private String name; //교육자명
+    private int payment_no; //결제 번호
 }
