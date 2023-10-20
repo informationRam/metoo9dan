@@ -399,7 +399,7 @@ public class StudyGroupController {
     }
 
 
-    //학습 그룹 가입 신청(학생),학습 그룹 리스트
+    //학습 그룹 가입 신청(학생),학습 그룹 리스트 //이미지 처리 필요!
     @GetMapping("/groupJoinList")
     public String joinList(Model model,Principal principal,Map<String, Integer> map,
                            @RequestParam(value = "page", defaultValue = "1") int currentPage){
@@ -441,7 +441,7 @@ public class StudyGroupController {
     }
 
 
-    //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
+    //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트 //이미지 처리 필요!
     @GetMapping(value = "/groupJoinListEndpoint", produces = "application/json")
     @ResponseBody
     public Map<String, Object> groupJoinListEndpoint(@RequestParam(required = false) Integer group_no, @RequestParam(required = false) Integer member_no
