@@ -60,7 +60,7 @@
                         <a class="card-subtitle text-body-secondary" th:text="|답변일시: ${#temporals.format(answer.writeDate, 'yyyy-MM-dd HH:mm')}|"></a>
                         <p class="card-text" th:text="${answer.answerContent}"></p>
                         <div>
-                            <a th:href="@{#}" class="btn btn-sm btn-danger">답변 삭제</a>
+                            <a th:href="@{|/answer/delete/${answer.answerNo}|}" class="btn btn-sm btn-danger">답변 삭제</a>
                         </div>
                     </div>
                 </div>

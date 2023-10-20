@@ -3,15 +3,12 @@ package com.idukbaduk.metoo9dan.qna.service;
 import com.idukbaduk.metoo9dan.common.entity.QnaAnswers;
 import com.idukbaduk.metoo9dan.common.entity.QnaQuestions;
 import com.idukbaduk.metoo9dan.notice.controller.NoticeController;
-import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
 import com.idukbaduk.metoo9dan.qna.dto.AnswerDTO;
-import com.idukbaduk.metoo9dan.qna.dto.AnswerDTOforBatis;
 import com.idukbaduk.metoo9dan.qna.repository.AnswerRepository;
 import com.idukbaduk.metoo9dan.qna.repository.QnaMapper;
 import com.idukbaduk.metoo9dan.qna.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -43,8 +39,8 @@ public class AnswerService {
     }
 
     //해당 질문의 답변여부 컬럼 업데이트
-    public void updateIsAnswered(QnaQuestions questions) {
-        questions.setIsAnswered(true);
+    public void updateIsAnswered(QnaQuestions questions, Boolean isAnswered) {
+        questions.setIsAnswered(isAnswered);
         questionRepository.save(questions);
     }
 
@@ -100,11 +96,25 @@ public class AnswerService {
 //    }
 
     //8트
-    public QnaAnswers getAnswers(QnaQuestions questions){
-        logger.info("QNo: "+questions.getQuestionNo());
-        //return mapper.getAnswers(questions.getQuestionNo());
-        QnaAnswers answers = sqlSession.selectOne("qna.getAnswers", questions.getQuestionNo());
-        logger.info("answers: "+answers);
+//    public QnaAnswers getAnswers(QnaQuestions questions){
+//        logger.info("QNo: "+questions.getQuestionNo());
+//        //return mapper.getAnswers(questions.getQuestionNo());
+//        QnaAnswers answers = sqlSession.selectOne("qna.getAnswers", questions.getQuestionNo());
+//        logger.info("answers: "+answers);
+//        return null;
+//    }
+
+    //답변번호로 답변 조회
+    public QnaAnswers getAnswers(Integer answerNo) {
+        Optional<QnaAnswers> answers =answerRepository.findById(answerNo);
+        if(answers.isPresent()){
+            return answers.get();
+        }
         return null;
+    }
+    //답변 삭제
+    public void delete(QnaAnswers answers) {
+        answerRepository.delete(answers);
+        logger.info(answers.getAnswerNo()+"번 답변 삭제완료");
     }
 }
