@@ -17,5 +17,6 @@ public class StudyGroupsListDTO {
     private Date group_finish_date; //그룹 종료일
     //private int subscription_duration; //구독 기간
     private int approved_num; //등록학생수
+    private int payment_no; //결제번호
 
 }

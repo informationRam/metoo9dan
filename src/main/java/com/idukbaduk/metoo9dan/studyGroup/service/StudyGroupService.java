@@ -52,13 +52,14 @@ public class StudyGroupService {
     }
 
     //학습그룹 등록
-    public void add(String group_name, Integer group_size, Date group_start_date, Date group_finish_date, String group_introduce,  GameContents gameContents, Member member) {
+    public void add(String group_name, Integer group_size, Date group_start_date, Date group_finish_date, String group_introduce, Integer payment_no,  GameContents gameContents, Member member) {
         StudyGroups studyGroups = new StudyGroups();
         studyGroups.setGroupName(group_name);
         studyGroups.setGroupSize(group_size);
         studyGroups.setGroupStartDate(group_start_date);
         studyGroups.setGroupFinishDate(group_finish_date);
         studyGroups.setGroupIntroduce(group_introduce);
+        studyGroups.setPaymentNo(payment_no);
         studyGroups.setGameContents(gameContents);
         studyGroups.setMember(member);
         //studyGroups.setGameContents(gameContentRepository.findById(game_content_no).orElse(null));
