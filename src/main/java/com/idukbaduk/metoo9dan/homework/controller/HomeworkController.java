@@ -354,7 +354,20 @@ public class HomeworkController {
 
         return ResponseEntity.ok(evalPer);
     }
-    //
+    //평가하기
+    @PostMapping("/homework/evaluate/submit-evaluation")
+    public ResponseEntity<?> submitEvaluation(@RequestBody List<EvaluationDTO> evaluations) {
+
+        for(int i = 0;i <= evaluations.size();i++){
+            String stringSn = evaluations.get(i).getHomeworkSubmitNo();
+            int SubmitNo = Integer.parseInt(stringSn);
+            String evaluation = evaluations.get(i).getEvaluationValue();
+            HomeworkSubmit homeworkSubmit =homeworkService.getSubmitBySendNo(SubmitNo);
+            homeworkService.saveEvaluation(homeworkSubmit,evaluation);
+        }
+
+        return ResponseEntity.ok(Map.of("success", true));
+    }
 
     //평가 조회 화면
 

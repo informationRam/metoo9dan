@@ -50,10 +50,10 @@
 
                 <div>
                     <!-- 전송 내역 -->
-                    <form><!-- 숙제 평가 업데이트 폼 -->
+                    <form id="evaluationForm" action="/homework/evaluate/submit-evaluation" method="post">
                         <div id="evaluationCard"></div>
                         <div id="eval-pagination"></div>
-                        <input type="submit">
+                        <button type="submit">평가 저장</button>
                     </form>
                 </div>
             </div>
@@ -349,7 +349,7 @@
                                                     <span>${item.evaluation}</span>
                                                 </div>
                                                 <div class="dropdown">
-                                                    <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                    <select name="evaluation${item.homeworkSubmitNo}" class="form-select">
                                                         <option value="F" selected="selected">선택해주세요</option>
                                                         <option value="A">우수</option>
                                                         <option value="B">보통</option>
@@ -414,6 +414,29 @@
                             }
                         });
                     }
+                });
+
+                $("#evaluationForm").submit(function(e) {
+                    e.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
+
+                    let evaluations = [];
+
+                    // 폼 내의 모든 드롭다운 값을 수집합니다.
+                    $("select[id^='evaluation']").each(function() {
+                        evaluations.push({
+                            homeworkSubmitNo: $(this).attr('id').replace('evaluation', ''),
+                            evaluationValue: $(this).val()
+                        });
+                    });
+
+                    // AJAX를 사용하여 서버로 전송합니다.
+                    $.post('/homework/evaluate/submit-evaluation', { evaluations: evaluations }, function(response) {
+                        if (response.success) {
+                            alert("평가 내용이 저장되었습니다.");
+                        } else {
+                            alert("평가 내용 저장에 실패하였습니다.");
+                        }
+                    });
                 });
 
             </script>

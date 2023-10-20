@@ -359,4 +359,9 @@ public class HomeworkService {
             homeworkSendRepository.delete(optionalHomeworkSend.get());
         }
     }
+
+    public void saveEvaluation(HomeworkSubmit homeworkSubmit, String evaluation) {
+        homeworkSubmit.setEvaluation(evaluation);
+        homeworkSubmitRepository.save(homeworkSubmit);
+    }
 }
