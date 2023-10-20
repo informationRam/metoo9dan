@@ -1,0 +1,123 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h3>[학습 그룹 리스트 상세]</h3>
+            <div>
+                <div style="display: flex; align-items: center;">
+                    <label for="selectStudyGroup" class="form-label" style="margin-right: 10px;">학습그룹</label>
+                    <select name="selectStudyGroup" id="selectStudyGroup" class="form-select"  style="width: 200px; margin-right: 10px;">
+                        <option th:each="groupNameList : ${groupNameList}" th:value="${groupNameList.group_no}" th:text="${groupNameList.group_name}" th:selected="${groupNameList.group_no == group_no}"></option>
+                    </select>
+                    <button id="viewButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회 하기</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <!--<th>학습그룹</th>-->
+                            <th>게임콘텐츠</th>
+                            <th>그룹제한인원</th>
+                            <th>그룹가입인원</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="GroupInfo : ${GroupInfo}">
+                            <!--<td th:text="${GroupInfo.group_name}"></td>-->
+                            <td th:text="${GroupInfo.game_name}"></td>
+                            <td th:text="${GroupInfo.group_size}"></td>
+                            <td th:text="${GroupInfo.approved_num}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>그룹소개글</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="GroupInfo : ${GroupInfo}">
+                        <td>
+                            <span th:if="${GroupInfo.group_introduce != null}" th:text="${GroupInfo.group_introduce}"></span>
+                            <span th:if="${GroupInfo.group_introduce == null}">그룹 소개글이 없습니다</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+                <br/>
+            <p>그룹가입내역:</p>
+            <div>
+                <table class="table">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>학생이름</th>
+                        <th>연락처</th>
+                        <th>이메일</th>
+                        <th>가입일자</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  th:each="GroupDetail, idx : ${GroupDetail}">
+                        <td th:text="${idx.index + 1}"></td>
+                        <td th:text="${GroupDetail.name}"></td>
+                        <td th:text="${GroupDetail.tel}"></td>
+                        <td th:text="${GroupDetail.email}"></td>
+                        <td th:text="${#dates.format(GroupDetail.join_date,'yyyy-MM-dd')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!-- GroupDetail 값이 없을 때 -->
+                <div th:if="${#lists.isEmpty(GroupDetail)}">
+                    <p>학습 그룹에 가입된 학생이 없습니다.</p>
+                </div>
+                <div style="display: flex; justify-content: center; align-items: center;">
+
+                </div>
+            </div>
+            <p/>
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    //selectBox선택 후 조회하기 버튼 클릭시
+    document.addEventListener("DOMContentLoaded", function () {
+    var viewButton = document.getElementById("viewButton");
+    var selectGameContent = document.getElementById("selectStudyGroup");
+
+    viewButton.addEventListener("click", function () {
+        var selectedGroupNo = selectGameContent.value;
+
+        // 유효한 그룹을 선택한 경우에만 이동
+        if (selectedGroupNo) {
+            // 선택한 그룹의 group_no를 사용하여 요청 주소 생성
+            var url = "/studygroup/detail/" + selectedGroupNo;
+
+            // 생성한 주소로 이동
+            window.location.href = url;
+        }
+    });
+});
+</script>
+<script>
+    //선택한 학습 그룹명이 기본으로 보여지게 하기
+    document.addEventListener("DOMContentLoaded", function () {
+        // 서버에서 전달받은 group_no 값을 읽기
+        var group_no = [[${group_no}]];
+
+        // select 요소를 찾아 선택 옵션을 설정
+    /*    var selectElement = document.getElementById("group_no");
+        for (var i = 0; i < selectElement.options.length; i++) {
+            if (selectElement.options[i].value === group_no.toString()) {
+                selectElement.options[i].selected = true;
+                break;
+            }
+        }*/
+    });
+</script>

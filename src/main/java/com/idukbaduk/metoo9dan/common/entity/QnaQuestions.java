@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,6 +32,14 @@ public class QnaQuestions {
     private Member member; //질문 작성자
 
     @Column(name="is_answered") //답변여부
-    private String isAnswered;
+    private Boolean isAnswered;
+
+    //이 해당필드가 QnaAnswers 엔티티의 'qnaAnswers 필드'에 의해 매핑된다는 의미.
+    @OneToOne(mappedBy = "qnaQuestions", cascade = CascadeType.ALL)
+    private QnaAnswers qnaAnswers;
+
+    //이 해당필드가 QuestionFiles 엔티티의 'qnaQuestions 필드'에 의해 매핑된다는 의미.
+    @OneToMany(mappedBy = "qnaQuestions", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<QuestionFiles> questionFiles;
 
 }
