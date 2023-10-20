@@ -53,6 +53,17 @@ public class AnswerController {
         }
         //답변자 정보 가져오기
         Member member = memberServiceImpl.getUser(principal.getName());
+        //관리자만 답변 작성 가능
+        if(!member.getRole().equalsIgnoreCase("admin")){
+            redirectAttributes.addFlashAttribute("msg", "답변은 관리자만 작성할 수 있습니다.");
+            return String.format("redirect:/qna/detail/%d", questionNo);
+        }
+
+        //이미 작성했으면 답변 작성할 수 없어야함. 해당 qNo에 대해 작성된 answer가 있는지 확인. -> inAnswered 확인
+        if(questions.getIsAnswered()){
+            redirectAttributes.addFlashAttribute("msg", "이미 답변이 등록된 문의사항입니다.");
+            return String.format("redirect:/qna/detail/%d", questionNo);
+        }
 
         //비즈니스로직처리(Question의 isAnswered 컬럼 true로 변경)
         AnswerDTO answerDTO = new AnswerDTO();
@@ -74,4 +85,6 @@ public class AnswerController {
 
         //return String.format("redirect: /qna/detail/%d", questionNo);
     }
+
+    //답변삭제
 }

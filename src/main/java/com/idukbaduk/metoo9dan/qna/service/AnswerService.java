@@ -48,6 +48,8 @@ public class AnswerService {
         questionRepository.save(questions);
     }
 
+    // ~~~
+
     /*//답변 조회 1트
     public QnaAnswers getAnswer(QnaQuestions questions) {
         Optional<QnaAnswers> answers = answerRepository.findByQnaQuestions(questions);
@@ -92,13 +94,17 @@ public class AnswerService {
 
     //7트 _엔티티수정
     //답변 목록조회
-    public List<QnaAnswers> getAnswers(QnaQuestions questions){
-        List<QnaAnswers> answers = answerRepository.findByQnaQuestions(questions);
-        return answers;
-    }
+//    public List<QnaAnswers> getAnswers(QnaQuestions questions){
+//        List<QnaAnswers> answers = answerRepository.findByQnaQuestions(questions);
+//        return answers;
+//    }
 
     //8트
     public QnaAnswers getAnswers(QnaQuestions questions){
-        return mapper.getAnswers(questions.getQuestionNo());
+        logger.info("QNo: "+questions.getQuestionNo());
+        //return mapper.getAnswers(questions.getQuestionNo());
+        QnaAnswers answers = sqlSession.selectOne("qna.getAnswers", questions.getQuestionNo());
+        logger.info("answers: "+answers);
+        return null;
     }
 }
