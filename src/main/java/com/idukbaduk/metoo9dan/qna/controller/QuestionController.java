@@ -234,13 +234,12 @@ public class QuestionController {
                     model.addAttribute("msg", "파일을 업로드할 수 없습니다. 파일 확장자와 사이즈를 확인하세요.");
                     return "qna/questionForm"; //questionForm.html로 이동.
                 }
+                filesService.fileUpload(uploadFolder, question, multipartFile, list, redirectAttributes);
             }
-            filesService.fileUpload(uploadFolder, question, multipartFile, list, redirectAttributes);
         }//파일 없으면,
         filesService.addFiles(list);
 
         redirectAttributes.addFlashAttribute("msg", "문의사항이 등록되었습니다.");
-
         return String.format("redirect:/qna/detail/%d", question.getQuestionNo()); //상세조회로 이동
     }
 

@@ -35,8 +35,8 @@ public class NoticeReplyController {
 
     //메소드
     // 댓글 등록처리 해줘 요청
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add/{noticeNo}")
+    @PreAuthorize("isAuthenticated()")
     public String replyAdd(@PathVariable("noticeNo")Integer noticeNo,
                            Model model,
                            @Valid NoticeReplyForm noticeReplyForm,
@@ -83,6 +83,7 @@ public class NoticeReplyController {
 
     // 댓글 삭제 요청
     @GetMapping("/delete/{replyNo}")
+    @PreAuthorize("isAuthenticated()")
     public String delete(@PathVariable Integer replyNo, 
                          RedirectAttributes redirectAttributes,
                          Principal principal){
