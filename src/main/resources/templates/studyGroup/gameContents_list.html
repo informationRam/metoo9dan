@@ -66,60 +66,60 @@
 </div>
 </html>
 <script>
-    //----학습 그룹 상세 입력----
-    document.addEventListener("DOMContentLoaded", function () {
-        // 조회 버튼 클릭 시
-        document.getElementById("viewButton").addEventListener("click", function () {
-            var selectedGameContentNo = null;
+//----학습 그룹 상세 입력----
+document.addEventListener("DOMContentLoaded", function () {
+    // 조회 버튼 클릭 시
+    document.getElementById("viewButton").addEventListener("click", function () {
+        var selectedGameContentNo = null;
 
-            // 선택된 체크박스 찾기
-            var checkboxes = document.querySelectorAll(".groupCheckbox");
-            checkboxes.forEach(function (checkbox) {
-                if (checkbox.checked) {
-                    selectedGameContentNo = checkbox.value;
-                    return; // 첫 번째 선택된 체크박스만 처리
-                }
-            });
-            if (selectedGameContentNo !== null) {
-                 var selectedCheckbox = document.querySelector('input[name="selectedGame"]:checked');
-                    if (selectedCheckbox) {
-                    var selectedGameRow = selectedCheckbox.closest("tr");
-                    var maxSubscribers = selectedGameRow.querySelector('td:nth-child(5)').textContent;
-                    var appointedGroupNum = selectedGameRow.querySelector('td:nth-child(6)').textContent;
-
-                    if (maxSubscribers === appointedGroupNum) {
-                        alert("만들 수 있는 학습그룹 인원이 없습니다.");
-                        window.location.href = "/studygroup/gameList";
-                    }else{
-                    // 선택된 게임콘텐츠 번호를 사용하여 링크로 이동
-                    window.location.href = "/studygroup/add/" + selectedGameContentNo;
-                    }
-                } else {
-                alert("게임콘텐츠를 선택해주세요.");
-                }
-            } else {
-                alert("게임콘텐츠를 선택해주세요.");
-            }
-        });
-
-        // 체크박스 클릭 시 다른 체크박스의 선택을 해제
+        // 선택된 체크박스 찾기
         var checkboxes = document.querySelectorAll(".groupCheckbox");
         checkboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                if (this.checked) {
-                    // 다른 체크박스 선택 해제
-                    checkboxes.forEach(function (otherCheckbox) {
-                        if (otherCheckbox !== checkbox) {
-                            otherCheckbox.checked = false;
-                        }
-                    });
-                }else {
-                // 선택 해제된 체크박스는 다시 선택되지 않도록 설정
-                this.checked = true;
+            if (checkbox.checked) {
+                selectedGameContentNo = checkbox.value;
+                return; // 첫 번째 선택된 체크박스만 처리
             }
-            });
+        });
+        if (selectedGameContentNo !== null) {
+             var selectedCheckbox = document.querySelector('input[name="selectedGame"]:checked');
+                if (selectedCheckbox) {
+                var selectedGameRow = selectedCheckbox.closest("tr");
+                var maxSubscribers = selectedGameRow.querySelector('td:nth-child(5)').textContent;
+                var appointedGroupNum = selectedGameRow.querySelector('td:nth-child(6)').textContent;
+
+                if (maxSubscribers === appointedGroupNum) {
+                    alert("만들 수 있는 학습그룹 인원이 없습니다.");
+                    window.location.href = "/studygroup/gameList";
+                }else{
+                // 선택된 게임콘텐츠 번호를 사용하여 링크로 이동
+                window.location.href = "/studygroup/add/" + selectedGameContentNo;
+                }
+            } else {
+            alert("게임콘텐츠를 선택해주세요.");
+            }
+        } else {
+            alert("게임콘텐츠를 선택해주세요.");
+        }
+    });
+
+    // 체크박스 클릭 시 다른 체크박스의 선택을 해제
+    var checkboxes = document.querySelectorAll(".groupCheckbox");
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener("click", function () {
+            if (this.checked) {
+                // 다른 체크박스 선택 해제
+                checkboxes.forEach(function (otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }else {
+            // 선택 해제된 체크박스는 다시 선택되지 않도록 설정
+            this.checked = true;
+        }
         });
     });
+});
 
 
 /*
@@ -274,9 +274,9 @@
                 addEventListeners();
 
 
+               });
             });
           });
-        });
         }
         // 초기 로드 시 한번 실행
         addEventListeners();
@@ -377,152 +377,5 @@
         }
 
     });
-
-
-
-
-
-/*
-    document.addEventListener("DOMContentLoaded", function () {
-    // 조회하기 버튼 찾기
-    var searchButton = document.getElementById("searchButton");
-    // 결과를 표시할 엘리먼트 찾기
-    var selectGroupResult = document.getElementById("selectGameResult");
-    // 현재 페이지 및 총 페이지 변수 추가
-    var currentPage = 1;
-    var totalPages = 1;
-
-    // 페이지네이션 UI 생성 함수
-    function createPaginationUI() {
-        var html = '<nav><ul class="pagination">';
-        // 이전 버튼 생성
-        html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
-        html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
-        html += '</li>';
-
-        // 페이지 번호 버튼 생성
-        for (var i = 1; i <= totalPages; i++) {
-            html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
-            html += '<a class="page-link page-button" href="#" data-page="' + i + '">' + i + '</a>';
-            html += '</li>';
-        }
-
-        // 다음 버튼 생성
-        html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
-        html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
-        html += '</li>';
-        html += '</ul></nav>';
-        return html;
-    }
-
-    // 페이지네이션 버튼 클릭 이벤트 리스너
-    function addPaginationButtonListeners() {
-        var pageButtons = document.querySelectorAll(".page-button");
-        pageButtons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                var newPage = parseInt(this.dataset.page);
-                if (newPage !== currentPage) {
-                    currentPage = newPage;
-                    fetchGameContents();
-                }
-            });
-        });
-    }
-
-    // 페이지네이션 UI 초기화
-    function initPaginationUI() {
-        var paginationContainer = document.getElementById("paginationContainer");
-        paginationContainer.innerHTML = createPaginationUI();
-        addPaginationButtonListeners();
-    }
-
-    // 조회하기 버튼 클릭 시
-    searchButton.addEventListener("click", function () {
-        var selectedGameContentNo = document.getElementById("selectGameContent").value;
-
-        if (selectedGameContentNo !== "") {
-            fetchGameContents();
-        } else {
-            window.location.href = "/studygroup/gameList";
-        }
-    });
-
-    // 서버에서 게임 목록 가져오기
-    function fetchGameContents() {
-        fetch('/studygroup/gameListEndpoint?game_content_no=' + selectedGameContentNo + '&page=' + currentPage)
-            .then(response => response.json())
-            .then(data => {
-                updateGameList(data);
-                totalPages = data.totalPages;
-                initPaginationUI();
-            });
-    }
-
-    // 게임 목록 업데이트
-    function updateGameList(data) {
-        var resultHTML = "";
-        if (data && data.gameContents.length > 0) {
-            // 게임 목록 업데이트 코드 (동일한 코드 사용)
-           resultHTML += "<table class='table' id='selectGroupResult'>";
-           resultHTML += "<thead class='table-dark'>";
-           resultHTML += "<tr>";
-           resultHTML += "<th>선택</th>";
-           resultHTML += "<th>게임콘텐츠명</th>";
-           resultHTML += "<th>학습 시작일</th>";
-           resultHTML += "<th>학습 종료일</th>";
-           resultHTML += "<th>학습 가능 인원</th>";
-           resultHTML += "<th>그룹 지정된 인원</th>";
-           resultHTML += "</tr>";
-           resultHTML += "</thead>";
-
-
-          data.forEach(function (gameContent) {
-
-             var startDate = new Date(gameContent.payment_date);
-             var endDate = new Date(gameContent.subscription_end_date);
-
-             var formattedStartDate =
-               startDate.getFullYear() +
-               "-" +
-               ("0" + (startDate.getMonth() + 1)).slice(-2) +
-               "-" +
-               ("0" + startDate.getDate()).slice(-2);
-
-             var formattedEndDate =
-               endDate.getFullYear() +
-               "-" +
-               ("0" +(endDate.getMonth()+1)).slice(-2)+
-                "-"+
-                 ("0"+endDate.getDate()).slice(-2);
-
-            // 각 게임 콘텐츠마다 행 추가
-            resultHTML +=
-                '<tbody>' +
-                '<tr>' +
-                  '<td>' +
-                    '<input type="checkbox" class="groupCheckbox" name="selectedGame" value="' +
-                    gameContent.game_content_no +
-                    '" />' +
-                  '</td>' +
-                  '<td>' + gameContent.game_name + '</td>' +
-                  '<td>' + formattedStartDate + '</td>' +
-                  '<td>' + formattedEndDate+ '</td>'+
-                   '<td>'+gameContent.max_subscribers+'</td>'+
-                   '<td>'+gameContent.appointed_group_num+'</td>'+
-                '</tr>'+
-                '</tbody>';
-            });
-
-            resultHTML += "</table>";
-         } else {
-           resultHTML = "<p>게임콘텐츠를 선택해주세요.</p>"
-         }
-
-         selectGroupResult.innerHTML = resultHTML;
-       }
-
-    // 초기 페이지 로딩 시 페이지네이션 UI 초기화
-    initPaginationUI();
-});*/
 
 </script>
