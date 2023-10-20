@@ -157,7 +157,7 @@ public class PaymentsController {
         }
 
 
-            int currentPage = paymentsPage.getPageable().getPageNumber();
+        int currentPage = paymentsPage.getPageable().getPageNumber();
         int totalPages = paymentsPage.getTotalPages();
         int pageRange = 5; // 한 번에 보여줄 페이지 범위
 
@@ -184,16 +184,23 @@ public class PaymentsController {
     @GetMapping("/detail/{paymentNo}")
     public String paymentDetail(@PathVariable Integer paymentNo,Model model, @RequestParam(value = "page", defaultValue = "0") int page, Payments payments,Principal principal) {
 
-        Member member = memberService.getUser(principal.getName());
+       /* Member member = memberService.getUser(principal.getName());
 
         Payments payment = paymentsService.getPayment(paymentNo);
-        GameContents gameContents = payment.getGameContents();
-        List<EducationalResources> educationTogameno = gameContents.getEducationalResourcesList();
+      *//*  GameContents gameContents = payment.getGameContents();
+        List<EducationalResources> educationTogameno = gameContents.getEducationalResourcesList();*//*
+
+            GameContents gameContentsForPayment = paymentsService.getGameContentsForPayment(payment);
+
+            // Fetch and add associated EducationalResources
+            List<EducationalResources> educationalResources = educationService.getEducationalResourcesForGameContents(gameContentsForPayment);
+            gameContentsForPayment.setEducationalResourcesList(educationalResources);
+
 
         model.addAttribute("payment", payment);
-        model.addAttribute("gameContents", gameContents);
-        model.addAttribute("education", educationTogameno);
-
+        model.addAttribute("gameContents", gameContentsForPayment);
+        model.addAttribute("education", educationalResources);
+*/
         return "payments/detail";
     }
 
