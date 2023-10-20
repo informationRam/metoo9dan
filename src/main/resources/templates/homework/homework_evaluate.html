@@ -295,7 +295,7 @@
                                                 </div>
 
                                             `;
-                                        } else if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) <= currentDate){
+                                        } else if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) >= currentDate){
                                             tableContent += `
                                                 <div class="item-row">
                                                     <i class="fa fa-list-ol"></i> <span>${item.homeworkSubmitNo}</span>
@@ -323,6 +323,20 @@
                                                 <div class="no-submission-message">아직 평가 기간이 되지 않았습니다</div>
                                             </div>
                                             </div>
+                                            `;
+                                        } else if(item.homeworkSubmitNo === 0 && new Date(item.dueDate) < currentDate) {
+                                            tableContent += `
+                                                <div class="no-submission-wrapper">
+                                                    <div class="no-submission-message">숙제가 미제출되었습니다</div>
+                                                </div>
+                                            <div class="dropdown cute-dropdown">
+                                                <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                    <option value="F" selected="selected">선택해주세요</option>
+                                                    <option value="C">미흡</option>
+                                                </select>
+                                            </div>
+                                                </div>
+
                                             `;
                                         }
 
@@ -394,6 +408,7 @@
                             evaluationValue: $(this).val()
                         });
                     });
+                    console.log("evaluations"+evaluations.content);
 
                     // AJAX를 사용하여 서버로 전송합니다.
                     $.post('/homework/evaluate/submit-evaluation', { evaluations: evaluations }, function(response) {
