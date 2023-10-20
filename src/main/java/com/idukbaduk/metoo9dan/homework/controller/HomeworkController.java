@@ -370,18 +370,15 @@ public class HomeworkController {
                     case "C":
                         cCnt+=1;
                         break;
-                    default:
-                        fCnt+=1;
-                        break;
                 }
             }
         } else{
             fCnt=sendCnt;
         }
-        double aPer = (submitCnt != 0) ? (double) aCnt / submitCnt : 0.0;
-        double bPer = (submitCnt != 0) ? (double) bCnt / submitCnt : 0.0;
-        double cPer = (submitCnt != 0) ? (double)cCnt/submitCnt : 0.0;
-        double fPer = (submitCnt != 0) ? (double)fCnt/submitCnt : 0.0;
+        double aPer = (submitCnt != 0) ? ((double) aCnt / submitCnt) : 0.0;
+        double bPer = (submitCnt != 0) ? ((double) bCnt / submitCnt) : 0.0;
+        double cPer = (submitCnt != 0) ? ((double)cCnt/submitCnt) : 0.0;
+        double fPer = 100-(aPer+bPer+cPer);
 
         List<Double> evalPer = new ArrayList<>();
         evalPer.add(aPer);
