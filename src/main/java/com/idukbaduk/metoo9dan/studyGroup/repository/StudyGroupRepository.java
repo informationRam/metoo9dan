@@ -78,13 +78,18 @@ public class StudyGroupRepository {
     }
 
     //학습그룹명 조건 조회(학습 그룹 신청 리스트)
-    public List<GroupJoinListDTO> selectNameList(int group_no) {
-        return sqlSession.selectList("StudyGroup.SelectNameList",group_no);
+    public List<GroupJoinListDTO> selectNameList(Map<String, Integer> map) {
+        return sqlSession.selectList("StudyGroup.SelectNameList",map);
     }
 
     //교육자명 조건 조회(학습 그룹 신청 리스트)
-    public List<GroupJoinListDTO> SelectEducatorNameList(int member_no) {
-        return sqlSession.selectList("StudyGroup.SelectEducatorNameList",member_no);
+    public List<GroupJoinListDTO> SelectEducatorNameList(Map<String, Integer> map) {
+        return sqlSession.selectList("StudyGroup.SelectEducatorNameList",map);
+    }
+
+    //교육자명 조건 조회(학습 그룹 신청 리스트) cnt
+    public int SelectEducatorNameListCnt(int member_no) {
+        return sqlSession.selectOne("StudyGroup.SelectEducatorNameListCnt",member_no);
     }
 
     //학습그룹명&교육자명 조건 조회(학습 그룹 신청 리스트)

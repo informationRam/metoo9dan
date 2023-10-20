@@ -113,7 +113,10 @@
                             otherCheckbox.checked = false;
                         }
                     });
-                }
+                }else {
+                // 선택 해제된 체크박스는 다시 선택되지 않도록 설정
+                this.checked = true;
+            }
             });
         });
     });
@@ -261,11 +264,16 @@
                 currentPage = data.currentPage;
                 totalPages = data.totalPages;
                 updateGameList(data);
+
+                // 데이터 로딩 후에도 체크박스 선택 해제 로직 적용
+                //applyCheckboxLogic();
                 // 페이지네이션 UI 업데이트
                 paginationContainer.innerHTML = createPaginationUI(currentPage, totalPages);
 
                 // 새롭게 생성된 버튼들에 대한 이벤트 리스너 재설정
                 addEventListeners();
+
+
             });
           });
         });
@@ -318,11 +326,26 @@
                resultHTML += '</tbody>';
                });
                resultHTML += "</table>";
+
          } else {
            resultHTML = "<p>선택한 게임콘텐츠의 정보가 없습니다.</p>"
          }
 
          selectGroupResult.innerHTML = resultHTML;
+
+         var checkboxes = document.querySelectorAll(".groupCheckbox");
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener("click", function () {
+                    if (this.checked) {
+                        // 다른 체크박스 선택 해제
+                        checkboxes.forEach(function (otherCheckbox) {
+                            if (otherCheckbox !== checkbox) {
+                                otherCheckbox.checked = false;
+                            }
+                        });
+                    }
+                });
+            });
        }
 
        function createPageButtons(currentPage, totalPages) {
@@ -354,6 +377,10 @@
         }
 
     });
+
+
+
+
 
 /*
     document.addEventListener("DOMContentLoaded", function () {

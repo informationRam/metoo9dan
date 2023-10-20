@@ -119,13 +119,18 @@ public class StudyGroupService {
     }
 
     //학습그룹명 조건 조회(학습 그룹 신청 리스트)
-    public List<GroupJoinListDTO> selectNameList(int group_no) {
-        return studyGroupRepository.selectNameList(group_no);
+    public List<GroupJoinListDTO> selectNameList(Map<String, Integer> map) {
+        return studyGroupRepository.selectNameList(map);
     }
 
     //교육자명 조건 조회(학습 그룹 신청 리스트)
-    public List<GroupJoinListDTO> SelectEducatorNameList(int member_no) {
-        return studyGroupRepository.SelectEducatorNameList(member_no);
+    public List<GroupJoinListDTO> SelectEducatorNameList(Map<String, Integer> map) {
+        return studyGroupRepository.SelectEducatorNameList(map);
+    }
+
+    //교육자명 조건 조회(학습 그룹 신청 리스트) cnt
+    public int SelectEducatorNameListCnt(int member_no) {
+        return studyGroupRepository.SelectEducatorNameListCnt(member_no);
     }
 
     //학습그룹명&교육자명 조건 조회(학습 그룹 신청 리스트)
