@@ -45,7 +45,7 @@ public class NoticeService {
         return noticeRepository.findAll(pageable);
     }
 
-    //목록조회 - 관리자 아닌 사람용
+    //공지사항 목록조회 - 관리자 아닌 사람용
     public Page<Notice> getList(int pageNo, int listSize) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("isImp")); //중요 게시글인 경우 내림차순 정렬.
@@ -58,15 +58,13 @@ public class NoticeService {
 
     //faq 목록조회
     public Page<Notice> getFaqList(int pageNo, int listSize) {
-
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("postDate")); //게시일 기준으로 내림차순 정렬.
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
-
-        return noticeRepository.findByNoticeType("faq", pageable);
+        return noticeRepository.findByNoticeTypeAndStatus("faq", "post", pageable);
     }
 
-    //검색 -일반인용검색 여기서 예약글은 검색안되게 제한해야할듯~~~~~~~~~~~~
+    //검색 -일반인용검색
     public Page<Notice> search(String searchCategory, String keyword, int pageNo, int listSize) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
@@ -74,16 +72,26 @@ public class NoticeService {
         Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
         switch (searchCategory){
             case "noticeTitleAndNoticeContent":
-                Page<Notice> noticeList = noticeRepository.findByNoticeTitleContainingOrNoticeContentContaining(keyword, keyword, pageable);
+                Page<Notice> noticeList = noticeRepository.findByNoticeTitleContainingOrNoticeContentContaining("noti", keyword, keyword, pageable);
                 return noticeList;
             case "noticeTitle":
-                Page<Notice> searchTitleList = noticeRepository.findByNoticeTitleContaining(keyword, pageable);
+                Page<Notice> searchTitleList = noticeRepository.findByNoticeTitleContaining("noti",keyword, pageable);
                 return searchTitleList;
             case "noticeContent":
-                Page<Notice> searchContentList = noticeRepository.findByNoticeContentContaining(keyword, pageable);
+                Page<Notice> searchContentList = noticeRepository.findByNoticeContentContaining("noti", keyword, pageable);
                 return searchContentList;
         }
         return null;
+    }
+
+    //FAQ 검색
+    public Page<Notice> searchFaq(String keyword, int pageNo, int listSize) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
+        sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
+        Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
+        Page<Notice> searchFaqList = noticeRepository.findByNoticeTitleContainingOrNoticeContentContaining("faq", keyword, keyword, pageable);
+        return searchFaqList;
     }
 
     //검색 - for Admin 모든 항목별로 검색할 수 있어야 함
@@ -104,16 +112,6 @@ public class NoticeService {
                 return searchContentList;
         }
         return null;
-    }
-
-    //FAQ 검색
-    public Page<Notice> searchFaq(String keyword, int pageNo, int listSize) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("noticeNo")); //pk 기준으로 내림차순 정렬.
-        sorts.add(Sort.Order.desc("postDate")); //작성일 기준으로 내림차순 정렬.
-        Pageable pageable = PageRequest.of(pageNo, listSize, Sort.by(sorts));
-        Page<Notice> searchFaqList = noticeRepository.findFaqsByTypeAndKeyword("faq", keyword, pageable);
-        return searchFaqList;
     }
 
     //상세조회

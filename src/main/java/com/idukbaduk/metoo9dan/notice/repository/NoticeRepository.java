@@ -17,29 +17,32 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 
     //검색 -Containing쓰면 Like 연산자가 가능하다고 함
     //제목만
-    Page<Notice> findByNoticeTitleContaining(String keyword, Pageable pageable);
-    //내용만
-    Page<Notice> findByNoticeContentContaining(String keyword, Pageable pageable);
-    //제목+내용
-    /*  SELECT *
-        FROM notice n
-        WHERE n.notice_title LIKE '%내용%'
-        or n.notice_content LIKE '%내용%';*/
-    Page<Notice> findByNoticeTitleContainingOrNoticeContentContaining(String keyword1, String keyword2, Pageable pageable);
-
-    //faq목록
-    Page<Notice> findByNoticeType(String noticeType, Pageable pageable);
-    //faq 검색목록
-    /*  SELECT *
-        FROM notice
-        WHERE notice_type = 'FAQ'
-        AND (notice_title LIKE '%더미%' OR notice_content LIKE '%더미%');*/
     @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
+            "AND n.status = 'post' " +
+            "AND n.noticeTitle LIKE %:keyword%")
+    Page<Notice> findByNoticeTitleContaining(@Param("type") String type,
+                                             @Param("keyword") String keyword,
+                                             Pageable pageable);
+    //내용만
+    @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
+            "AND n.status = 'post' " +
+            "AND n.noticeContent LIKE %:keyword%")
+    Page<Notice> findByNoticeContentContaining(@Param("type") String type,
+                                               @Param("keyword") String keyword,
+                                               Pageable pageable);
+    //제목+내용
+    @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
+            "AND n.status = 'post' " +
             "AND (n.noticeTitle LIKE %:keyword% OR n.noticeContent LIKE %:keyword%)")
-    Page<Notice> findFaqsByTypeAndKeyword(@Param("type") String type, @Param("keyword") String keyword, Pageable pageable);
+    Page<Notice> findByNoticeTitleContainingOrNoticeContentContaining(@Param("type") String type,
+                                                                      @Param("keyword") String keyword,
+                                                                      @Param("keyword") String keyword1,
+                                                                      Pageable pageable);
 
-    //공지 목록 - 관리자 아닌 사람용
-    Page<Notice> findByNoticeTypeAndStatus(String noti, String post, Pageable pageable);
+    //공지 및 faq목록 - 관리자 아닌 사람용
+    @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +
+            "AND n.status = :status")
+    Page<Notice> findByNoticeTypeAndStatus(@Param("type") String type, @Param("status")String status, Pageable pageable);
 
     //관리자용 검색
     @Query("SELECT n FROM Notice n WHERE n.noticeType = :type " +

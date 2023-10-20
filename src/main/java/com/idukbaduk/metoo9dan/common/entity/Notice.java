@@ -56,6 +56,10 @@ public class Notice {
             return 0;
         }
     }
+//    //첨부파일 유무를 확인하기 위한 메소드
+    public Boolean haveAttachFiles(){
+        return noticeFiles != null && !noticeFiles.isEmpty();
+    }
     //이 해당필드가 NoticeReply 엔티티의 'notice 필드'에 의해 매핑된다는 의미.
     @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
     private List<NoticeReply> noticeReplies;
