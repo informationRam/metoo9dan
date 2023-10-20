@@ -1,21 +1,12 @@
  <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
         <div layout:fragment="content" class="container my-3">
             <link rel="stylesheet" href="/css/game/addform.css" />
-
-            <!-- Remove this line since it's Popper.js 1.12.9, not needed for Bootstrap 5 -->
-            <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script> -->
-
-            <!-- Include Popper.js for Bootstrap 5 -->
             <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-
             <!-- Include Bootstrap 5 CSS -->
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
             <!-- Include Bootstrap 5 JavaScript -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
 
-
-            <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
             <div class="row">
                 <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
                 <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
@@ -103,7 +94,7 @@
                                 <div class="mb-3 row">
                                     <label for="original_price" class="col-sm-2 col-form-label">정가</label>
                                     <div class="col-sm-7">
-                                        <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)" value="${gameValidation.original_price}">
+                                        <input type="text" th:field="*{original_price}" class="form-control" id="original_price" oninput="addCommas(this)">
                                         <span th:if="${#fields.hasErrors('original_price')}" th:errors="*{original_price}" class="error-message text-danger small"></span>
                                     </div>
                                 </div>
@@ -162,7 +153,7 @@
                                         <div class="col-sm-10" style="padding-left: 0px">
                                             <textarea class="form-control" th:field="*{package_details}" rows="8" placeholder="내용을 입력해주세요." value="${gameValidation.package_details}"></textarea>
                                         </div>
-                                </div>
+                                    </div>
                                     <!-- 파일 업로드 -->
                                     <div class="mb-2 row">
                                         <label for="boardFile" class="col-sm-2 col-form-label">썸네일</label>
@@ -183,7 +174,7 @@
                                     </div>
 
                                     <!-- Files for Deletion -->
-                                    </div>
+                                </div>
                                     <!-- Modal 교육자료리스트 선택-->
                                     <div class="modal fade" id="educationModal" name="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true" style="display:hidden;">
                                         <div class="modal-dialog modal-lg">
@@ -259,13 +250,9 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
-                                </div>
                         </div>
                         <input type="hidden" id="selectedValues" name="selectedValues" value="">
-
-                        <!--<input type="hidden" id="selectedValues" name="selectedValues" th:value="${selectedValues}" th:if="${selectedValues != null and !selectedValues.isEmpty()}">-->
                         <div class="mb-3 text-center">
                             <button type="submit" class="btn btn-primary" id="insert">수정등록</button>
                         </div>
@@ -274,7 +261,7 @@
                 </div>
             </div>
             <script>
-                // Initialize Bootstrap popovers
+                // popovers
                 var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
                 var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
                     return new bootstrap.Popover(popoverTriggerEl);
@@ -282,7 +269,6 @@
             </script>
 
             <script>
-
             function addCommas(inputElement) {
                    // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.
                    var value = inputElement.value.replace(/,/g, ''); // 입력된 콤마를 제거
@@ -536,7 +522,7 @@
         var selectedCount = checkboxes.length;
 
         // 선택된 체크박스의 수를 출력하거나 원하는 작업을 수행합니다.
-        selectedValuesDisplay.textContent = "선택한 패키지 수: " + selectedCount;
+        selectedValuesDisplay.textContent ="추가한 패키지 수: " + selectedCount;
          console.log("Selected Resource Nos:", selectedResourceNos);
 
          //모달을 닫음
@@ -550,7 +536,7 @@ function closeModal() {
     educationModal.hide();
 }
     </script>
-            <script>
+   <script>
                 document.getElementById('boardFile').addEventListener('change', function (e) {
                     const fileList = document.getElementById('fileList');
                     fileList.innerHTML = ''; // Clear previous file names
@@ -563,8 +549,23 @@ function closeModal() {
                         fileList.appendChild(listItem);
                     }
                 });
+// 파일 삭제 버튼 처리
+        function deleteFile(event, fileNo) {
+        console.log("Delete button clicked for fileNo:", fileNo);
+             var listItem = event.target.parentElement;
 
+             // Hide the parent element
+             if (listItem) {
+                 listItem.style.display = 'none';
+             }
 
-            </script>
+             // Create a hidden input element to track deleted files
+             var hiddenInput = document.createElement('input');
+             hiddenInput.type = 'hidden';
+             hiddenInput.name = 'deletedFiles'; // Unique name for board files
+             hiddenInput.value = fileNo; // Use the fileNo directly
+             document.getElementById('gameModify').appendChild(hiddenInput);
+         }
+</script>
         </div>
-</html>
+ </html>

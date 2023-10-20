@@ -255,7 +255,7 @@ public class GameController {
 
     //수정처리
     @PostMapping("/modify/{gameContentNo}")
-    public String modifyGame(@PathVariable Integer gameContentNo, @ModelAttribute("gameValidation") GameValidation gameValidation, @RequestParam MultiValueMap<String, String> params, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
+    public String modifyGame(@PathVariable Integer gameContentNo, @ModelAttribute("gameValidation") GameValidation gameValidation, @RequestParam MultiValueMap<String, String> params, @RequestParam(name = "selectedValues", required = false) String selectedValues) throws IOException {
 
         // 1. 삭제된 파일 처리
         List<String> deletedFiles = params.get("deletedFiles");
@@ -268,7 +268,37 @@ public class GameController {
         // 2. 수정된 컨텐츠 내용 처리
         GameContents gameContents = gameService.getGameContents(gameContentNo);
         if (gameContents != null) {
-            GameContents modify = gameService.modify(gameContents, gameValidation);
+            //게임자료를 수정한다.
+            GameContents modifyGame = gameService.modify(gameContents, gameValidation);
+
+            //3.추가된 교육자료번호가 있으면 저장 한다.
+            String[] selectedResourceNos = {};
+
+            if (selectedValues != null && !selectedValues.isEmpty()) {
+                selectedResourceNos = selectedValues.split(",");
+
+                // 선택한 각 resourceNo에 대해 Education 객체를 조회하고 처리합니다.
+                for (String resourceNoStr : selectedResourceNos) {
+
+                    int resourceNo = Integer.parseInt(resourceNoStr);
+
+                    // resourceNo값을 넣어 EducationalResources 값을 가져온다.
+                    EducationalResources education = educationService.getEducation(resourceNo);
+
+                    //저장한 gameContentNo(pk)를 가져온다. 가져온 gameContentNo값을 가지고 gameContents를 가져온다.
+                    getgameContents = gameService.getGameContents(modifyGame.getGameContentNo());
+
+                    System.out.println("education.getGameContents()? : " + education.getGameContents());
+
+                    //선택한 교육자료의 GameContents값이 없으면 update.
+                    if (education.getGameContents() == null || education.getGameContents().equals("")) {
+                        educationService.pgInsert(education, gameContents);
+                    } else {
+                        EducationValidation educationValidation = educationService.toEducationValidation(education);
+                        educationService.copysave(educationValidation, getgameContents);
+                    }
+                }
+            }
 
             // 업로드된 파일의 확장자 확인
             MultipartFile fileName = gameValidation.getBoardFile().get(0);
@@ -307,7 +337,7 @@ public class GameController {
         }
     }
 
-
+/*
     //  삭제하기
     @GetMapping("/delete/{gameContentNo}")
     public String gameDelete(@PathVariable("gameContentNo") Integer gameContentNo) {
@@ -323,7 +353,7 @@ public class GameController {
         gameFilesService.deleteFile(gameContents.getGameContentNo());
         gameService.delete(gameContents);
         return "redirect:/game/list2";    //목록으로이동
-    }
+    }*/
 
     //  삭제하기
     @GetMapping("/test")
