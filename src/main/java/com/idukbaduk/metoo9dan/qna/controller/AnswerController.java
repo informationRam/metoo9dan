@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.qna.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.common.entity.QnaAnswers;
 import com.idukbaduk.metoo9dan.common.entity.QnaQuestions;
 import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.notice.controller.NoticeController;
@@ -16,10 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -75,16 +73,29 @@ public class AnswerController {
         answerService.add(answerDTO);
 
         //Question의 정보도 Update
-        answerService.updateIsAnswered(questions);
+        answerService.updateIsAnswered(questions, true);
 
         //메일발송처리
         //answerService.sendMail(member);
 
         redirectAttributes.addFlashAttribute("msg", "답변이 등록되었습니다.");
         return String.format("redirect:/qna/detail/%d", questionNo);
-
-        //return String.format("redirect: /qna/detail/%d", questionNo);
     }
 
     //답변삭제
+    @GetMapping("/delete/{answerNo}")
+    public String deleteAnswer(@PathVariable Integer answerNo, RedirectAttributes redirectAttributes){
+        logger.info("deleteAnswer()진입. 삭제하려는 answerNo: "+answerNo);
+        QnaAnswers answers = answerService.getAnswers(answerNo);
+        if(answers != null){
+            QnaQuestions questions =answers.getQnaQuestions();
+            answerService.delete(answers);
+            //question 테이블의 isAnswered 컬럼 값 변경
+            answerService.updateIsAnswered(questions, false);
+            redirectAttributes.addFlashAttribute("msg", "답변이 삭제되었습니다.");
+            return String.format("redirect:/qna/detail/%d", questions.getQuestionNo());
+        }
+        redirectAttributes.addFlashAttribute("msg", "삭제할 답변이 존재하지 않습니다.");
+        return String.format("redirect:/qna/list");
+    }
 }

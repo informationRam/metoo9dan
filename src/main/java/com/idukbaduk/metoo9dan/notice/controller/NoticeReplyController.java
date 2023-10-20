@@ -67,12 +67,8 @@ public class NoticeReplyController {
     @ResponseBody
     public String replyModify(@RequestBody NoticeReplyForm noticeReplyForm,
                               @PathVariable Integer replyNo){
-        //1. 파라미터받기
-        //2. 비즈니스로직수행
         replyService.updateReply(replyNo, noticeReplyForm.getContent());
         Integer noticeNo = replyService.getReply(replyNo).getNotice().getNoticeNo();
-        //3. 모델
-        //4. 뷰
         return String.format("redirect:/notice/detail/%d", noticeNo);
     }
 
@@ -91,19 +87,19 @@ public class NoticeReplyController {
 
     // 댓글 삭제 요청
     @GetMapping("/delete/{replyNo}")
-    public String delete(@PathVariable Integer replyNo){
-        // 1. 파라미터 받기
-        // 2. 비즈니스 로직 처리
-            //우선 삭제할 댓글이 존재하는지 조회하여 확인
+    public String delete(@PathVariable Integer replyNo, 
+                         RedirectAttributes redirectAttributes,
+                         Principal principal){
+        Member member = memberServiceImpl.getUser(principal.getName());
+        //우선 삭제할 댓글이 존재하는지 조회하여 확인
         NoticeReply noticeReply = replyService.getReply(replyNo);
         Integer noticeNo =replyService.getReply(replyNo).getNotice().getNoticeNo();
         //댓글 작성자와 로그인한 유저가 같지 않는 경우 BAD_REQUEST 응답처리하는 코드 추가해야함
-        /*if(member.~~~.equals(principal.getName())){
-
-        }*/
+        if(!member.getMemberId().equals(principal.getName())){
+            redirectAttributes.addFlashAttribute("msg", "댓글을 삭제할 권한이 없습니다.");
+            return String.format("redirect:/notice/detail/%d", noticeNo);
+        }
         replyService.delete(noticeReply);
-        // 3. 모델
-        // 4. 뷰
         return String.format("redirect:/notice/detail/%d", noticeNo);
     }
 }
