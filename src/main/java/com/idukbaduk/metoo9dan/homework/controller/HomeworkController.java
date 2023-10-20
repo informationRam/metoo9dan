@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +144,7 @@ public class HomeworkController {
         return "redirect:/homework/send";
     }
     
-    @DeleteMapping("homework/send/cancel/{sendNo}")
+    @DeleteMapping("/send/cancel/{sendNo}")
     public ResponseEntity<Map<String, Boolean>> sendCancel(@PathVariable Integer sendNo) {
         try {
             homeworkService.deleteHomeworkSend(sendNo);
@@ -278,14 +280,23 @@ public class HomeworkController {
     @GetMapping("/evaluate/submit-list")
     public ResponseEntity<?> getHomeworks(/*homeworkNo SendDate SendNo*/
             @RequestParam int homeworkNo,
-            @RequestParam LocalDateTime sendDate,
+            @RequestParam String sendDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "asc") String sort
     ) {
         page-=1;
+
+        // 스트링 형식의 날짜를 LocalDateTime 객체로 변환
+        LocalDateTime sd;
+        try {
+            sd = LocalDateTime.parse(sendDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Invalid date-time format");
+        }
+
         //1. homeworkService찾기
-        List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
+        List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sd);
         System.out.println("1차"+homeworkSendList);
         //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
         List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
@@ -300,14 +311,29 @@ public class HomeworkController {
     @GetMapping("/evaluate/dash-submit/{homeworkNo}/{sendDate}")
     public ResponseEntity<?> evalDashboard1(
             @PathVariable int homeworkNo,
-            @PathVariable LocalDateTime sendDate
+            @PathVariable String sendDate
     ){
-        List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
+
+        // 스트링 형식의 날짜를 LocalDateTime 객체로 변환
+        LocalDateTime sd;
+        try {
+            sd = LocalDateTime.parse(sendDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Invalid date-time format");
+        }
+
+        List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sd);
         int sendCnt = homeworkSendList.size();
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
-        int submitCnt = homeworkSubmitList.size();
+        if (homeworkSubmitList == null) {
+            homeworkSubmitList = new ArrayList<>();
+        }
+        int submitCnt =0;
+        if(homeworkSubmitList != null){
+            submitCnt = homeworkSubmitList.size();
+        }
 
-        double submitPercent=(submitCnt/sendCnt)*100;
+        double submitPercent=((double)submitCnt/sendCnt)*100;
 
         return ResponseEntity.ok(submitPercent);
     }
@@ -321,30 +347,41 @@ public class HomeworkController {
         List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
         int sendCnt = homeworkSendList.size();
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
-        int submitCnt = homeworkSubmitList.size();
-
+        if (homeworkSubmitList == null) {
+            homeworkSubmitList = new ArrayList<>();
+        }
+        int submitCnt =0;
         int aCnt = 0;
         int bCnt = 0;
         int cCnt = 0;
-        int fCnt = sendCnt-submitCnt;
-        for(HomeworkSubmit homeworkSubmit : homeworkSubmitList){
-            String eval = homeworkSubmit.getEvaluation();
-            switch(eval) {
-                case "A":
-                    aCnt+=1;
-                    break;
-                case "B":
-                    bCnt=1;
-                    break;
-                case "C":
-                    cCnt+=1;
-                    break;
+        int fCnt = 0;
+        if(homeworkSubmitList != null){
+            submitCnt = homeworkSubmitList.size();
+
+            for(HomeworkSubmit homeworkSubmit : homeworkSubmitList){
+                String eval = homeworkSubmit.getEvaluation();
+                switch(eval) {
+                    case "A":
+                        aCnt+=1;
+                        break;
+                    case "B":
+                        bCnt=1;
+                        break;
+                    case "C":
+                        cCnt+=1;
+                        break;
+                    default:
+                        fCnt+=1;
+                        break;
+                }
             }
+        } else{
+            fCnt=sendCnt;
         }
-        double aPer=aCnt/submitCnt;
-        double bPer=bCnt/submitCnt;
-        double cPer=cCnt/submitCnt;
-        double fPer=fCnt/submitCnt;
+        double aPer = (submitCnt != 0) ? (double) aCnt / submitCnt : 0.0;
+        double bPer = (submitCnt != 0) ? (double) bCnt / submitCnt : 0.0;
+        double cPer = (submitCnt != 0) ? (double)cCnt/submitCnt : 0.0;
+        double fPer = (submitCnt != 0) ? (double)fCnt/submitCnt : 0.0;
 
         List<Double> evalPer = new ArrayList<>();
         evalPer.add(aPer);
@@ -355,7 +392,7 @@ public class HomeworkController {
         return ResponseEntity.ok(evalPer);
     }
     //평가하기
-    @PostMapping("/homework/evaluate/submit-evaluation")
+    @PostMapping("/evaluate/submit-evaluation")
     public ResponseEntity<?> submitEvaluation(@RequestBody List<EvaluationDTO> evaluations) {
 
         for(int i = 0;i <= evaluations.size();i++){
@@ -369,6 +406,21 @@ public class HomeworkController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
-    //--평가 조회 -------------------------------------------------------------------------------------------------------
+    //--지난 숙제 제출내용 조회 --------------------------------------------------------------------------------------------
+
+    /*
+    기본으로 모든 숙제를 보여주고 모든 숙제에 대한 평가도(chart.js 사용)가 보여진다
+    게임 컨텐츠 드롭다운을 제공하고
+    게임 컨텐츠를 선택하면 해당 게임 컨텐츠에 대해서 제출한 숙제와 평가도가 보여진다
+    처음 화면에서는 게임 컨텐츠 드롭다운을 제공하고
+    */
+
+    // Controller
+    @GetMapping("/submit/past")
+    public String pastHw(Model model){
+        List<String> gameContents = homeworkService.findGameContentTitlesByMemberId("lee123"); // 모든 게임 컨텐츠를 가져옵니다.
+        model.addAttribute("gameContents", gameContents); // 뷰에 게임 컨텐츠 데이터를 전달합니다.
+        return "pastHw";
+    }
 
 }

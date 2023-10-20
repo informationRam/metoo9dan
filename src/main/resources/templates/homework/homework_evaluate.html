@@ -230,7 +230,7 @@
                                             tableContent += `
 <div class="no-submission-wrapper">
     <div class="no-submission-message">제출된 숙제가 없습니다</div>
-    <button class="cancel-btn" data-sendno="${item.sendNo}">전송 취소</button>
+    <button class="cancel-btn" id="cancel-btn" data-sendno="${item.sendNo}" onclick="handleCancelClick(this)">전송 취소</button>
 </div>
 </div>
 
@@ -397,24 +397,30 @@
                         });
                     });
 
-                document.querySelector(".cancel-btn").addEventListener("click", function() {
-                    var sendNo = this.getAttribute("data-sendno");
+                  function handleCancelClick(buttonElement) {
+                        const sendNo = buttonElement.getAttribute("data-sendno");
+                        const confirmation = confirm("전송을 취소하시겠습니까?");
 
-                    var confirmation = confirm("전송을 취소하시겠습니까?");
+                        if (confirmation) {
+                            fetch(`/homework/send/cancel/${sendNo}`, {
+                                method: "DELETE",
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("숙제가 성공적으로 삭제되었습니다.");
+                                    location.reload();
+                                } else {
+                                    alert("숙제 삭제에 실패하였습니다. 다시 시도해주세요.");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error during the fetch operation:", error);
+                                alert("오류가 발생했습니다. 다시 시도해주세요.");
+                            });
+                        }
+                  }
 
-                    if (confirmation) {
-                        fetch(`/homework/send/cancel/${sendNo}`, {
-                            method: "DELETE",
-                        }).then(response => response.json()).then(data => {
-                            if (data.success) { // 예: 서버에서 { success: true } 라는 응답을 보냈다고 가정
-                                alert("숙제가 성공적으로 삭제되었습니다.");
-                                location.reload();
-                            } else {
-                                alert("숙제 삭제에 실패하였습니다. 다시 시도해주세요.");
-                            }
-                        });
-                    }
-                });
 
                 $("#evaluationForm").submit(function(e) {
                     e.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
