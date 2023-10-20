@@ -54,25 +54,30 @@ public class QuestionController {
      * 자기가 작성한 문의사항만 목록조회할 수 있어야 함.
      * 요청주소를 따로 만들지? service단에서 불러오는 페이지를 제한할지?*/
 
+
     /* 관리자용
      * 문의사항 목록 보여줘 요청
      * model로 memberRole 넘겨주어야 함.*/
     @GetMapping("/list")
+    @PreAuthorize("isAuthenticated()")
     public String getQnaList(Model model,
-                             //Pageable pageable,
                              Principal principal,
                              @RequestParam(value = "page", defaultValue = "0") int pageNo) {
-        String memberRole = null;
-        if (principal != null) {
-            memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
-        }
-        if (principal == null || !memberRole.equalsIgnoreCase("admin")) {
+        Member member = memberServiceImpl.getUser(principal.getName());
+        Page<QnaQuestions> questionPage = null;
+
+        if (!member.getRole().equalsIgnoreCase("admin")) { //관리자 아닌경우
+            questionPage = questionService.getMyQnaList(pageNo, member);
             model.addAttribute("memberRole", "notAdmin");
-        } else {
-            model.addAttribute("memberRole", memberRole);
+        } else { //관리자인 경우
+            //관리자용
+            questionPage = questionService.getList(pageNo);
+            model.addAttribute("memberRole", member.getRole());
         }
-        Page<QnaQuestions> questionPage = questionService.getList(pageNo);
+
         logger.info("questionPage: " + questionPage);
+
+        model.addAttribute("questionPage", questionPage);
         int endPage = (int) (Math.ceil((pageNo + 1) / 5.0)) * 5; //5의 배수
         int startPage = endPage - 4; //1, 5의 배수 +1 ...
         if (endPage > questionPage.getTotalPages()) {
@@ -81,7 +86,6 @@ public class QuestionController {
         } else {
             model.addAttribute("endPage", endPage);
         }
-        model.addAttribute("questionPage", questionPage);
         model.addAttribute("startPage", startPage);
 
         return "qna/qnaList";
@@ -117,14 +121,9 @@ public class QuestionController {
         }
         //파일도 조회할 수 있어야 함.
         List<QuestionFiles> filesList = filesService.getFiles(questions);
-        //답변도 조회할 수 있어야 함.
-        //List<QnaAnswers> answers = answerService.getAnswers(questions);
-
         QnaAnswers answer = questions.getQnaAnswers();
-
-        //안됨.
-        // QnaAnswers answers = answerService.getAnswers(questions);
         logger.info("Q.getA(): "+answer);
+
         //답변폼은 관리자만 볼 수 있어야 함.
         model.addAttribute("question", questions);
         //model.addAttribute("answer", answers);
@@ -134,8 +133,8 @@ public class QuestionController {
 
     /*검색 조회 요청
      * listSize는 10으로 고정.*/
-    //@PreAuthorize("isAuthenticated()")
     @GetMapping("/search")
+    @PreAuthorize("isAuthenticated()")
     public String searchQna(Model model, Principal principal, Pageable pageable,
                             @RequestParam(value = "page", defaultValue = "0") int pageNo,
                             String searchCategory, String keyword) {
@@ -143,19 +142,18 @@ public class QuestionController {
         logger.info("searchCategory: " + searchCategory);
         logger.info("keyword: " + keyword);
         //memberRole에 따른 사이드바 표출을 위한 model 설정
-        String memberRole = null;
-        if (principal != null) {
-            memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
-        }
-        logger.info(memberRole);
-        if (principal == null || !memberRole.equalsIgnoreCase("admin")) {
-            model.addAttribute("memberRole", "notAdmin");
-        } else {
-            model.addAttribute("memberRole", memberRole);
-        }
-        logger.info("memberRole: " + memberRole);
+        Member member = memberServiceImpl.getUser(principal.getName());
+        Page<QnaQuestions> questionPage = null;
 
-        Page<QnaQuestions> questionPage = questionService.search(pageNo, searchCategory, keyword);
+        if (!member.getRole().equalsIgnoreCase("admin")) { //관리자 아닌경우
+            questionPage = questionService.searchMyQnaList(pageNo, searchCategory, keyword, member);
+            model.addAttribute("memberRole", "notAdmin");
+        } else { //관리자인 경우
+            //관리자용
+            questionPage = questionService.search(pageNo, searchCategory, keyword);
+            model.addAttribute("memberRole", member.getRole());
+        }
+
         logger.info("questionPage: " + questionPage);
 
         int endPage = (int) (Math.ceil((pageNo + 1) / 5.0)) * 5; //5의 배수
