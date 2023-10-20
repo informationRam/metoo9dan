@@ -96,10 +96,7 @@ public class QuestionController {
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
         Member member = memberServiceImpl.getUser(principal.getName());
-        logger.info("로그인한 member: "+member);
         QnaQuestions questions = questionService.getQuestion(questionNo);
-        logger.info("questionNo?: "+questionNo);
-        logger.info("questions: "+questions);
         //본인이 작성한 글이거나 관리자여야 열람이 가능함.
         // 관리자가 아니고, 본인이 작성한 글이 아닐 때는 열람할 수 없음
         if(!member.getRole().equalsIgnoreCase("admin") && !questions.getMember().equals(member)){
@@ -122,11 +119,15 @@ public class QuestionController {
         List<QuestionFiles> filesList = filesService.getFiles(questions);
         //답변도 조회할 수 있어야 함.
         //List<QnaAnswers> answers = answerService.getAnswers(questions);
-        QnaAnswers answers = answerService.getAnswers(questions);
 
+        QnaAnswers answer = questions.getQnaAnswers();
+
+        //안됨.
+        // QnaAnswers answers = answerService.getAnswers(questions);
+        logger.info("Q.getA(): "+answer);
         //답변폼은 관리자만 볼 수 있어야 함.
         model.addAttribute("question", questions);
-        model.addAttribute("answer", answers);
+        //model.addAttribute("answer", answers);
         model.addAttribute("filesList", filesList);
         return "qna/qnaDetail";
     }
