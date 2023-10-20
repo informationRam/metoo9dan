@@ -102,6 +102,7 @@ public class StudyGroupController {
         return gameContents;
     }*/
 
+    //게임콘텐츠 조회하기 버튼 엔드포인트
     @GetMapping(value = "/gameListEndpoint", produces = "application/json")
     @ResponseBody
     public Map<String, Object> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map, Principal principal,
@@ -456,7 +457,7 @@ public class StudyGroupController {
 
 
         //페이지네이션
-        int pageSize = 2; // 페이지당 보여줄 아이템 개수
+        int pageSize = 5; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
         map.put("pageSize", pageSize);
         map.put("offset", offset);
@@ -480,6 +481,97 @@ public class StudyGroupController {
         return "studyGroup/studyGroup_joinList";
     }
 
+
+    //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
+    @GetMapping(value = "/groupJoinListEndpoint", produces = "application/json")
+    @ResponseBody
+    public Map<String, Object> groupJoinListEndpoint(@RequestParam(required = false) Integer group_no, @RequestParam(required = false) Integer member_no
+                                                        ,Map<String, Integer> map,@RequestParam(value = "page", defaultValue = "1") int currentPage){
+        if (group_no != null && member_no != null) {
+            // 두 파라미터가 동시에 전달될 경우 처리
+            System.out.println("같이");
+            System.out.println("group_no=" + group_no);
+            System.out.println("member_no=" + member_no);
+
+            map.put("group_no", group_no);
+            map.put("member_no", member_no);
+
+            //페이지네이션
+            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
+            map.put("pageSize", pageSize);
+            map.put("offset", offset);
+
+            List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectGroupJoinList(map);
+            System.out.println("엔트groupJoinList"+groupJoinList);
+
+            int totalCount = 1; // 게임리스트 조회 카운트
+            int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지
+
+            // JSON 응답 데이터 생성
+            Map<String, Object> response = new HashMap<>();
+            response.put("groupJoinList", groupJoinList);
+            response.put("currentPage", currentPage);
+            response.put("totalPages", totalPages);
+
+            return response;
+            //return groupJoinList;
+        } else if (group_no != null) {
+            //페이지네이션
+            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
+            map.put("pageSize", pageSize);
+            map.put("offset", offset);
+            map.put("group_no", group_no);
+
+            // group_no를 이용한 처리
+            List<GroupJoinListDTO> groupJoinListByGroup = studyGroupService.selectNameList(map);
+            System.out.println("group_no=" + group_no);
+            System.out.println("groupJoinListByGroup"+groupJoinListByGroup);
+
+            int totalCount = 1; // 게임리스트 조회 카운트
+            int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지
+
+            // JSON 응답 데이터 생성
+            Map<String, Object> response = new HashMap<>();
+            response.put("groupJoinList", groupJoinListByGroup);
+            response.put("currentPage", currentPage);
+            response.put("totalPages", totalPages);
+
+            return response;
+            //return groupJoinListByGroup;
+        } else if (member_no != null) {
+            //페이지네이션
+            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
+            map.put("pageSize", pageSize);
+            map.put("offset", offset);
+            map.put("member_no", member_no);
+
+            // member_no를 이용한 처리
+            List<GroupJoinListDTO> groupJoinListByMember = studyGroupService.SelectEducatorNameList(map);
+            System.out.println("member_no=" + member_no);
+            System.out.println("groupJoinListByMember"+groupJoinListByMember);
+
+            int totalCount = studyGroupService.SelectEducatorNameListCnt(member_no); // 게임리스트 조회 카운트
+            int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지
+
+            // JSON 응답 데이터 생성
+            Map<String, Object> response = new HashMap<>();
+            response.put("groupJoinList", groupJoinListByMember);
+            response.put("currentPage", currentPage);
+            response.put("totalPages", totalPages);
+
+            return response;
+            //return groupJoinListByMember;
+        } else {
+            // 두 파라미터 중 하나도 전달되지 않은 경우 처리
+            return null;
+            //return Collections.emptyList();
+        }
+    }
+
+/*
     //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
     @GetMapping(value = "/groupJoinListEndpoint", produces = "application/json")
     @ResponseBody
@@ -511,7 +603,7 @@ public class StudyGroupController {
             return Collections.emptyList();
         }
     }
-
+*/
 
 
     //학습 그룹 가입 신청 처리(학생)
