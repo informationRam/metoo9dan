@@ -470,8 +470,8 @@
                       type: "POST",
                       data: $(this).serialize(),
                       success: function(response) {
-                          reAction(); // 꽃가루 효과
                           $("#successModal").show(); // 모달 보이기
+                          reAction(); // 꽃가루 효과
                       },
                       error: function(xhr) {
                           let errors = xhr.responseJSON;
