@@ -82,8 +82,8 @@ public class StudyGroupService {
     }
 
     //학습그룹 등록(게임리스트) 조회 cnt
-    public int selectGameCnt() {
-        return studyGroupRepository.selectGameCnt();
+    public int selectGameCnt(Map<String, Integer> map) {
+        return studyGroupRepository.selectGameCnt(map);
     }
 
     //학습그룹 삭제

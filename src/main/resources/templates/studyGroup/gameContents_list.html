@@ -224,10 +224,6 @@
   // 결과를 표시할 엘리먼트 찾기
   var selectGroupResult = document.getElementById("selectGameResult");
 
-   // 현재 페이지 및 총 페이지 변수 추가
-  var currentPage = 1;
-  var totalPages = 1;
-
   // 조회하기 버튼 클릭 시
   searchButton.addEventListener("click", function () {
     var selectedGameContentNo = document.getElementById("selectGameContent").value;
@@ -247,18 +243,36 @@
           var paginationContainer = document.getElementById("paginationContainer");
           paginationContainer.innerHTML = createPaginationUI(data.currentPage, data.totalPages);
 
+          function addEventListeners() {
           // 각 페이지 번호 버튼에 이벤트 리스너 추가
-          var pageButtons = paginationContainer.querySelectorAll(".page-button");
+          var pageButtons = paginationContainer.querySelectorAll(".page-link");
           pageButtons.forEach(function (button) {
             button.addEventListener("click", function () {
+             event.preventDefault(); // 기본 동작 방지
+
+             // 'disabled' 클래스가 있으면 아무것도 하지 않기
+            if (button.parentElement.classList.contains('disabled')) return;
+
                // 페이지 번호를 버튼에서 읽어와 사용
               var pageNum = button.getAttribute("data-page");
               fetch('/studygroup/gameListEndpoint?game_content_no=' + selectedGameContentNo + '&page=' + pageNum)
                 .then(response => response.json())
-                .then(data => updateGameList(data.gameContents));
+                .then(data =>{
+                currentPage = data.currentPage;
+                totalPages = data.totalPages;
+                updateGameList(data);
+                // 페이지네이션 UI 업데이트
+                paginationContainer.innerHTML = createPaginationUI(currentPage, totalPages);
+
+                // 새롭게 생성된 버튼들에 대한 이벤트 리스너 재설정
+                addEventListeners();
             });
           });
         });
+        }
+        // 초기 로드 시 한번 실행
+        addEventListeners();
+       });
     } else {
       window.location.href = "/studygroup/gameList";
     }
@@ -267,7 +281,7 @@
      function updateGameList(data) {
      console.log('data2',data);
          var resultHTML = "";
-         if (data && data.length > 0) {
+         if (data && data.gameContents.length > 0) {
            resultHTML += "<table class='table' id='selectGroupResult'>";
            resultHTML += "<thead class='table-dark'>";
            resultHTML += "<tr>";
@@ -281,44 +295,29 @@
            resultHTML += "</thead>";
 
 
-          data.forEach(function (gameContent) {
+           // data.gameContents로 루프 돌기
+            data.gameContents.forEach(function (gameContents) {
+               resultHTML += '<tbody>';
+               resultHTML += '<tr>';
+               resultHTML += '<td>';
+               resultHTML += '<input type="checkbox" class="groupCheckbox" name="selectedGame" value="' + gameContents.game_content_no + '" />';
+               resultHTML += '</td>';
+               resultHTML += '<td>' + gameContents.game_name + '</td>';
 
-             var startDate = new Date(gameContent.payment_date);
-             var endDate = new Date(gameContent.subscription_end_date);
+               var originalDate = new Date(gameContents.payment_date);
+               var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
+               resultHTML += '<td>' + formattedDate + '</td>';
 
-             var formattedStartDate =
-               startDate.getFullYear() +
-               "-" +
-               ("0" + (startDate.getMonth() + 1)).slice(-2) +
-               "-" +
-               ("0" + startDate.getDate()).slice(-2);
+               var originalDate = new Date(gameContents.subscription_end_date);
+               var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
+               resultHTML += '<td>' + formattedDate + '</td>';
 
-             var formattedEndDate =
-               endDate.getFullYear() +
-               "-" +
-               ("0" +(endDate.getMonth()+1)).slice(-2)+
-                "-"+
-                 ("0"+endDate.getDate()).slice(-2);
-
-            // 각 게임 콘텐츠마다 행 추가
-            resultHTML +=
-                '<tbody>' +
-                '<tr>' +
-                  '<td>' +
-                    '<input type="checkbox" class="groupCheckbox" name="selectedGame" value="' +
-                    gameContent.game_content_no +
-                    '" />' +
-                  '</td>' +
-                  '<td>' + gameContent.game_name + '</td>' +
-                  '<td>' + formattedStartDate + '</td>' +
-                  '<td>' + formattedEndDate+ '</td>'+
-                   '<td>'+gameContent.max_subscribers+'</td>'+
-                   '<td>'+gameContent.appointed_group_num+'</td>'+
-                '</tr>'+
-                '</tbody>';
-            });
-
-            resultHTML += "</table>";
+               resultHTML += '<td>' + gameContents.max_subscribers + '</td>';
+               resultHTML += '<td>' + gameContents.appointed_group_num + '</td>';
+               resultHTML += '</tr>';
+               resultHTML += '</tbody>';
+               });
+               resultHTML += "</table>";
          } else {
            resultHTML = "<p>선택한 게임콘텐츠의 정보가 없습니다.</p>"
          }
@@ -326,33 +325,34 @@
          selectGroupResult.innerHTML = resultHTML;
        }
 
-
-       function createPaginationUI(currentPage, totalPages) {
-          //var totalCount = 1;
-          //var totalPages = 1; // 총 페이지 수
-          //var currentPage = 1;
-          //var pageSize = 2; // 페이지당 항목 수
-
-         var html = '<nav><ul class="pagination">';
-         // 이전 버튼 생성
-         html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
-         html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
-         html += '</li>';
-
-         // 페이지 번호 버튼 생성
-         for (var i = 1; i <= totalPages; i++) {
-           html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
-           html += '<a class="page-link page-button" href="#" data-page="' + i +'">' + i+ '</a>';
-           html += '</li>';
+       function createPageButtons(currentPage, totalPages) {
+          var html = '';
+          for (var i = 1; i <= totalPages; i++) {
+            html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
+            html += '<a class="page-link page-button" href="#" data-page="' + i + '">' + i + '</a>';
+            html += '</li>';
           }
+          return html;
+        }
+
+        function createPaginationUI(currentPage, totalPages) {
+          var html = '<nav><ul class="pagination">';
+          // 이전 버튼 생성
+          html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
+          html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
+          html += '</li>';
+
+          // 페이지 번호 버튼 생성
+          html += createPageButtons(currentPage, totalPages);
 
           // 다음 버튼 생성
-          html += '<li class="page-item ' +(currentPage === totalPages ? 'disabled' : '')+ '">';
-          html += '<a class="page-link" href="#" data-page="'+(currentPage+1)+'">다음</a>';
+          html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
+          html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
           html += '</li>';
 
           return html;
-       }
+        }
+
     });
 
 /*
