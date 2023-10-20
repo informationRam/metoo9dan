@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.qna.service;
 
+import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.QnaQuestions;
 import com.idukbaduk.metoo9dan.notice.controller.NoticeController;
@@ -27,6 +28,14 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
+    // 로그인한 회원이 작성한 문의사항만 목록조회
+    public Page<QnaQuestions> getMyQnaList(int pageNo, Member member) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("questionNo"));
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(sorts));
+        return questionRepository.findByMember(member, pageable);
+    }
+
     //목록조회
     public Page<QnaQuestions> getList(int pageNo) {
         List<Sort.Order> sorts = new ArrayList<>();
@@ -43,6 +52,35 @@ public class QuestionService {
         }else{
             throw new DataNotFoundException("QUESTION NOT FOUND");
         }
+    }
+
+    //자기가 작성한 Qna리스트에서만 검색
+    public Page<QnaQuestions> searchMyQnaList(int pageNo, String searchCategory, String keyword, Member member) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("questionNo"));
+        Pageable pageable = PageRequest.of(pageNo, 10, Sort.by(sorts));
+        //return questionRepository.findByMember(member, pageable);
+        switch (searchCategory){
+            case "titleAndContent":
+                logger.info("case: 제목+내용");
+                Page<QnaQuestions> searchList =
+                        questionRepository.findByMemberAndQuestionTitleContainingOrQuestionContentContaining(member, keyword, keyword, pageable);
+                logger.info("my)searchList: "+searchList);
+                return searchList;
+            case "title":
+                logger.info("case: 제목");
+                Page<QnaQuestions> searchTitleList =
+                        questionRepository.findByMemberAndQuestionTitleContaining(member, keyword, pageable);
+                logger.info("my)searchTitleList: "+searchTitleList);
+                return searchTitleList;
+            case "content":
+                logger.info("case: 내용");
+                Page<QnaQuestions> searchContentList =
+                        questionRepository.findByMemberAndQuestionContentContaining(member, keyword, pageable);
+                logger.info("my)searchContentList: "+searchContentList);
+                return searchContentList;
+        }
+        return null;
     }
 
     //검색 목록조회
@@ -93,6 +131,5 @@ public class QuestionService {
     public void delete(QnaQuestions questions) {
         questionRepository.delete(questions);
     }
-
 
 }

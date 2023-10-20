@@ -56,7 +56,7 @@ public class Notice {
             return 0;
         }
     }
-//    //첨부파일 유무를 확인하기 위한 메소드
+    //첨부파일 유무를 확인하기 위한 메소드
     public Boolean haveAttachFiles(){
         return noticeFiles != null && !noticeFiles.isEmpty();
     }
