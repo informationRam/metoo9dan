@@ -1,0 +1,336 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <div class="row">
+        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h3>[학습 그룹 신청 리스트]</h3>
+            <div>
+                <div style="display: flex; align-items: center;">
+                    <label for="selectSudyGroup" class="form-label" style="margin-right: 10px;">학습그룹:</label>
+                    <select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
+                        <option th:each="groupNameList : ${groupNameList}" th:value="${groupNameList.group_no}" th:text="${groupNameList.group_name}"></option>
+                    </select>
+                    <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
+                </div>
+
+                <div id="selectGroupGameResult">
+                    <table class="table" id="table1">
+                        <thead class="table">
+                        <tr>
+                            <th>게임 콘텐츠 명</th>
+                            <th>구독 가능 인원</th>
+                            <th>승인 인원</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="GroupInfo : ${GroupInfo}">
+                            <td th:text="${GroupInfo.game_name}"></td>
+                            <td th:text="${GroupInfo.group_size}"></td>
+                            <td th:text="${GroupInfo.approved_num}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p/>
+                <!--<form th:object="${approvalForm}" method="post" action="/studygroup/updateApprove" id="approvalForm">-->
+                <form id="approvalForm">
+                    <div id="selectGroupResult">
+                        <table class="table" id="table2">
+                            <thead class="table-dark">
+                            <tr>
+                                <th>NO</th>
+                                <th>학습 그룹명</th>
+                                <th>학생 이름</th>
+                                <th>학생 연락처</th>
+                                <th>승인 요청 일자</th>
+                                <th>승인 일자</th>
+                                <th>승인 여부</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.size(approveList) != 0}" th:each="approveList, idx :${approveList}">
+                                <td th:text="(${idx.index + 1})"></td>
+                                <td th:text="${approveList.group_name}"></td>
+                                <td th:text="${approveList.name}"></td>
+                                <td th:text="${approveList.tel}"></td>
+                                <td th:text="${#dates.format(approveList.application_date,'yyyy-MM-dd')}"></td>
+                                <td th:text="${#dates.format(approveList.approved_date,'yyyy-MM-dd')}"></td>
+                                <td>
+                                    <input type="checkbox" class="groupCheckbox" name="selectedMembers" th:attr="data-group-students-no=${approveList.group_students_no}" th:checked="${approveList.is_approved}"/>
+                                    <input type="hidden" class="groupStudentsNo" th:value="${approveList.group_students_no}"/>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="display: flex; justify-content: right; align-items: center;">
+                        <button class="btn btn-outline-primary" id="viewButton" type="submit">저장 하기</button>
+                    </div>
+                </form>
+            </div>
+            <p/>
+        </div>
+    </div>
+</div>
+</html>
+<script>
+//--저장하기 후 승인 처리--
+document.addEventListener("DOMContentLoaded", function () {
+    setupApprovalHandling();
+  });
+
+//-------학습그룹 승인처리 함수----------
+function setupApprovalHandling() {
+    var selectedMembers = []; // 선택된 멤버의 group_students_no를 저장할 배열
+
+    // 클래스 'groupCheckbox'를 가진 체크박스의 변경 사항을 청취합니다.
+    var checkboxes = document.querySelectorAll('.groupCheckbox');
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].addEventListener('change', function () {
+            var isApproved = this.checked;
+            //var isApproved = this.getAttribute('checked') === 'checked'; // 'checked' 속성 값 확인
+            var groupStudentsNo = this.getAttribute('data-group-students-no');
+            console.log("groupStudentsNo",groupStudentsNo);
+            console.log("isApproved",isApproved);
+
+            var index = selectedMembers.indexOf(parseInt(groupStudentsNo));
+            if (index === -1) {
+                selectedMembers.push(parseInt(groupStudentsNo)); // 배열에 추가
+            } else {
+                selectedMembers.splice(index, 1); // 배열에서 제거
+            }
+
+            // 숨겨진 입력 필드에 값을 설정 (체크 여부에 관계없이 항상 설정)
+            var groupStudentsNoInput = this.closest('td').querySelector('.groupStudentsNo');
+            groupStudentsNoInput.value = groupStudentsNo;
+        });
+    }
+
+    // '저장하기' 버튼 클릭 시 서버로 선택된 멤버의 group_students_no를 전송
+    var viewButton = document.getElementById('viewButton');
+    if (viewButton) {
+        viewButton.addEventListener('click', function (event) {
+            event.preventDefault(); // 기본 이벤트 중지
+
+            var data = {
+                selectedMembers: selectedMembers
+            };
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/studygroup/updateApprove', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // 필요한 경우 서버 응답을 처리합니다.
+                        console.log('기존 데이터 전송 성공');
+
+                        handleSearchClick();
+
+                         // selectedMembers 배열 초기화
+                        selectedMembers = [];
+                    } else {
+                        // AJAX 요청 중에 발생하는 오류를 처리합니다.
+                        console.error('데이터 전송 중 오류: ' + xhr.status);
+                    }
+                }
+            };
+            console.log(data);
+            xhr.send(JSON.stringify(data));
+        });
+    }
+}
+
+
+
+// ------학습 그룹 선택 후 조회하기-------------
+document.addEventListener("DOMContentLoaded", function () {
+    // 이벤트 핸들러 연결
+    var searchButton = document.getElementById("searchButton");
+    searchButton.addEventListener("click", handleSearchClick);
+});
+
+// 조회하기 버튼 클릭 이벤트 핸들러
+function handleSearchClick() {
+
+     // 조회하기 버튼 클릭 시
+        var selectedGroupNo = document.getElementById("selectSudyGroup").value; // 학습그룹 선택값 가져오기
+        if (selectedGroupNo !== "") {
+        // 새로운 XMLHttpRequest 객체 생성
+        var xhr = new XMLHttpRequest();
+
+        // GET 요청 설정
+        xhr.open('GET', '/studygroup/approveListEndpoint?group_no=' + selectedGroupNo, true);
+
+        // 요청 완료 시 실행할 함수 설정
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                try {
+                    //console.log(xhr.responseText);
+                    var responseData = JSON.parse(xhr.responseText);
+                    // 이제 responseData 변수에 JSON 데이터가 들어 있습니다.
+
+                    // 처리할 작업을 수행합니다.
+                    console.log("responseData2",responseData);
+
+                    // 표시할 데이터를 가져와서 HTML에 적용(그룹정보)
+                    var resultHTML2 = "";
+                    if (responseData.groupInfo && responseData.groupInfo.length > 0) {
+                        resultHTML2 += "<table class='table' id='table1'>";
+                        resultHTML2 += "<thead class='table'>";
+                        resultHTML2 += "<tr>";
+                        resultHTML2 += "<th>게임 콘텐츠 명</th>";
+                        resultHTML2 += "<th>구독 가능 인원</th>";
+                        resultHTML2 += "<th>승인 인원</th>";
+                        // 다른 헤더 열 추가
+                        resultHTML2 += "</tr>";
+                        resultHTML2 += "</thead>";
+                        resultHTML2 += "<tbody>";
+
+                        responseData.groupInfo.forEach(function (GroupInfo) {
+                            resultHTML2 += "<tr>";
+                            resultHTML2 += "<td>" + GroupInfo.game_name + "</td>";
+                            resultHTML2 += "<td>" + GroupInfo.group_size + "</td>";
+                            resultHTML2 += "<td>" + GroupInfo.approved_num + "</td>";
+                            resultHTML2 += "</tr>";
+                        });
+
+                        resultHTML2 += "</tbody>";
+                        resultHTML2 += "</table>";
+
+                        } else {
+                        resultHTML = "<p>선택한 학습 그룹의 정보가 없습니다.</p>";
+                    }
+                    selectGroupGameResult.innerHTML = resultHTML2;
+
+                    // 표시할 데이터를 가져와서 HTML에 적용(그룹 인원 정보)
+                    var resultHTML = "";
+                    if (responseData.approveList && responseData.approveList.length > 0) {
+                        resultHTML = "<table class='table' id='table2'>";
+                        resultHTML += "<thead class='table-dark'>";
+                        resultHTML += "<tr>";
+                        resultHTML += "<th>NO</th>";
+                        resultHTML += "<th>학습 그룹명</th>";
+                        resultHTML += "<th>학생 이름</th>";
+                        resultHTML += "<th>학생 연락처</th>";
+                        resultHTML += "<th>승인 요청 일자</th>";
+                        resultHTML += "<th>승인 일자</th>";
+                        resultHTML += "<th>승인 여부</th>";
+                        // 다른 헤더 열 추가
+                        resultHTML += "</tr>";
+                        resultHTML += "</thead>";
+                        resultHTML += "<tbody>";
+
+                        responseData.approveList.forEach(function (approveList, idx) {
+                            resultHTML += "<tr>";
+                            resultHTML += "<td>" + (idx + 1) + "</td>";
+                            resultHTML += "<td>" + approveList.group_name + "</td>";
+                            resultHTML += "<td>" + approveList.name + "</td>";
+                            resultHTML += "<td>" + approveList.tel + "</td>";
+                            //resultHTML += "<td>" + approveList.application_date + "</td>"; // 승인 요청 일자
+                            var originalDate = new Date(approveList.application_date);
+                            var formattedDate = originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2);
+                            resultHTML += "<td>" + formattedDate + "</td>";
+
+                            //resultHTML += "<td>" + approveList.approved_date + "</td>"; // 승인 일자
+                            var originalDate = approveList.approved_date ? new Date(approveList.approved_date) : null;
+                            var formattedDate = originalDate ? (originalDate.getFullYear() + '-' + ('0' + (originalDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalDate.getDate()).slice(-2)) : "";
+                            resultHTML += "<td>" + formattedDate + "</td>";
+
+                            resultHTML += "<td>";
+                            resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedMembers' data-group-students-no='" + approveList.group_students_no + "' "+ (approveList.is_approved ? "checked" : "") + " />";
+                            resultHTML += "<input type='hidden' class='groupStudentsNo' value='" + approveList.group_students_no + "'/>";
+                            resultHTML += "</td>";
+
+                            resultHTML += "</tr>";
+                        });
+                        resultHTML += "</tbody>";
+                        resultHTML += "</table>";
+
+                    } else {
+                        resultHTML = "<p>선택한 학습 그룹에 신청한 학생이 없습니다.</p>";
+                    }
+
+                    // 결과 엘리먼트에 HTML 추가
+                    selectGroupResult.innerHTML = resultHTML;
+
+                    //--승인처리--
+                    var selectedMembers = []; // 선택된 멤버의 group_students_no를 저장할 배열
+
+                    // 클래스 'groupCheckbox'를 가진 체크박스의 변경 사항을 청취합니다.
+                    var checkboxes = document.querySelectorAll('.groupCheckbox');
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        checkboxes[i].addEventListener('change', function () {
+                            var isApproved = this.checked;
+                            //var isApproved = this.getAttribute('checked') === 'checked'; // 'checked' 속성 값 확인
+                            var groupStudentsNo = this.getAttribute('data-group-students-no');
+                            console.log("groupStudentsNo",groupStudentsNo);
+                            console.log("isApproved",isApproved);
+
+                            var index = selectedMembers.indexOf(parseInt(groupStudentsNo));
+                            if (index === -1) {
+                                selectedMembers.push(parseInt(groupStudentsNo)); // 배열에 추가
+                            } else {
+                                selectedMembers.splice(index, 1); // 배열에서 제거
+                            }
+
+                            // 숨겨진 입력 필드에 값을 설정 (체크 여부에 관계없이 항상 설정)
+                            var groupStudentsNoInput = this.closest('td').querySelector('.groupStudentsNo');
+                            groupStudentsNoInput.value = groupStudentsNo;
+                        });
+                    }
+
+                    // '저장하기' 버튼 클릭 시 서버로 선택된 멤버의 group_students_no를 전송
+                    var viewButton = document.getElementById('viewButton');
+                    if (viewButton) {
+                        viewButton.addEventListener('click', function (event) {
+                            event.preventDefault(); // 기본 이벤트 중지
+
+                            var data = {
+                                selectedMembers: selectedMembers
+                            };
+
+                            var xhr = new XMLHttpRequest();
+                            xhr.open('POST', '/studygroup/updateApprove', true);
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === 4) {
+                                    if (xhr.status === 200) {
+                                        // 필요한 경우 서버 응답을 처리합니다.
+                                        console.log('기존 데이터 전송 성공');
+                                         // selectedMembers 배열 초기화
+                                        selectedMembers = [];
+                                    } else {
+                                        // AJAX 요청 중에 발생하는 오류를 처리합니다.
+                                        console.error('데이터 전송 중 오류: ' + xhr.status);
+                                    }
+                                }
+                            };
+                            console.log(data);
+                            xhr.send(JSON.stringify(data));
+                        });
+                    }
+
+                } catch (e) {
+                    console.error('JSON 파싱 오류:', e);
+                }
+            } else {
+                // 요청이 실패한 경우 오류 처리
+                console.error('Ajax 요청 오류: ' + xhr.status);
+            }
+        };
+
+        // 요청 보내기
+        xhr.send();
+    } else {
+        // 선택한 학습 그룹이 없을 때의 처리
+        window.location.href = "/studygroup/approveList";
+        //alert("학습 그룹을 선택하세요.");
+    }
+}
+</script>
+
