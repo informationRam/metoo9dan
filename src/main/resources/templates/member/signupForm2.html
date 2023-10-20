@@ -5,11 +5,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <!-- 약관내용 스타일 적용 -->
     <link rel="stylesheet" type="text/css" th:href="@{/css/member/joinForm.css}">
-    <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/member/memberSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/member/login.css}">
+<!--    <div class="row">-->
+<!--        &lt;!&ndash;<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>&ndash;&gt;-->
+<!--        <div th:replace="~{/member/memberSidebar::sidebar}"></div> &lt;!&ndash;테스트 사이드바 경로를 넣어놓음&ndash;&gt;-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+<!--        <div style="border: 1px solid black;" class="col-10"> &lt;!&ndash;class에서 col-10은 빼면 안됨&ndash;&gt;-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <div class="d-flex justify-content-center align-items-center mt-5">
                 <div class="row">
@@ -17,11 +18,11 @@
                     <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link active" id="tab-login" data-bs-toggle="pill" href="#pills-login" role="tab"
-                               aria-controls="pills-login" aria-selected="true">Login</a>
+                               aria-controls="pills-login" aria-selected="true">로그인</a>
                         </li>
                         <li class="nav-item" role="presentation">
                             <a class="nav-link" id="tab-register" data-bs-toggle="pill" href="#pills-register" role="tab"
-                               aria-controls="pills-register" aria-selected="false">Register</a>
+                               aria-controls="pills-register" aria-selected="false">회원가입</a>
                         </li>
                     </ul>
                     <!-- Pills navs -->
@@ -33,14 +34,14 @@
                             <form id="loginForm"  th:action="@{/member/login}" th:object="${loginValidation}" method="post">
                                 <!-- ID input -->
                                 <div class="form-outline mb-4">
-                                    <input type="text" name="memberId" id="memberId" class="form-control" />
+                                    <input type="text" name="memberId" id="memberId" class="form-control" placeholder="아이디" required />
                                     <label class="form-label" for="memberId"></label>
                                 </div>
 
                                 <!-- Password input -->
                                 <div class="form-outline mb-4">
-                                    <input type="password" name="password" id="loginPassword" class="form-control" />
-                                    <label class="form-label" for="loginPassword">비밀번호</label>
+                                    <input type="password" name="password" id="loginPassword" class="form-control" placeholder="비밀번호" required/>
+                                    <label class="form-label" for="loginPassword"></label>
                                 </div>
 
                                 <!-- 오류시 보여주는 문구 -->
@@ -56,7 +57,7 @@
                                         <!-- Checkbox -->
                                         <div class="form-check mb-3 mb-md-0">
                                             <input class="form-check-input" type="checkbox" value="" id="loginCheck" checked />
-                                            <label class="form-check-label" for="loginCheck"> Remember me </label>
+                                            <label class="form-check-label" for="loginCheck"> 로그인 정보 저장 </label>
                                         </div>
                                     </div>
 
@@ -68,7 +69,7 @@
                                 </div>
 
                                 <!-- Submit button -->
-                                <button id=login type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+                                <button id=loginbtn type="submit" class="btn btn-primary btn-block mb-4">로그인하기</button>
 
                                 <!-- Register buttons -->
                                 <div class="text-center">
@@ -157,7 +158,7 @@
                                             <div class="agreement form-check">
                                                 <div class="row">
                                                     <div class="col-1">
-                                                        <input class="form-check-input"  th:field="*{privacyConsent}"type="checkbox" id="agreement3">
+                                                        <input class="form-check-input" name="privacyConsent" type="checkbox" id="agreement3">
                                                     </div>
                                                     <div class="col-11">
                                                         <label class="form-check-label" for="agreement3">개인정보 선택항목에 대한 처리 및 이용 (선택)</label>
@@ -280,8 +281,8 @@
                                             <div class="mb-3">
                                                 <label for="birth" class="form-label">생년월일</label>
                                                 <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"  readonly required>
-                                            </div>
                                                 <span th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" class="error-message text-danger"></span>
+                                            </div>
 
                                             <!-- 이메일 주소 입력란 -->
                                             <div class="mb-3">
@@ -368,113 +369,10 @@
                     </div> <!-- tab-content -->
                 </div> <!-- tab_row -->
             </div> <!-- dflex -->
-        </div> <!-- border : col-10 메인 내용 -->
-    </div> <!-- row -->
-    <script layout:fragment="script">
-        // "회원가입하기" 링크 클릭 시 Register 탭을 활성화
-        document.querySelector('#registerLink').addEventListener('click', function (e) {
-            e.preventDefault();
-            var registerTab = new bootstrap.Tab(document.querySelector('#tab-register'));
-            registerTab.show();
-        });
+<!--        </div> &lt;!&ndash; border : col-10 메인 내용 &ndash;&gt;-->
+<!--    </div> &lt;!&ndash; row &ndash;&gt;-->
 
-
-
-        // 사용자가 'Next' 버튼을 클릭하면 호출되는 함수
-        function enableInputFields() {
-            document.getElementById("memberIdInput").removeAttribute("readonly");
-            document.getElementById("password").removeAttribute("readonly");
-            document.getElementById("confirmPassword").removeAttribute("readonly");
-            document.getElementById("birth").removeAttribute("readonly");
-            document.getElementById("email").removeAttribute("readonly");
-        }
-
-    //mulitStep-form 작동
-
-                 var currentTab = 0; // 현재 탭을 첫 번째 탭(0)으로 설정합니다.
-                 showTab(currentTab); // 현재 탭을 표시합니다.
-
-                 function showTab(n) {
-                   var x = document.getElementsByClassName("step");
-                   x[n].style.display = "block"; // 현재 탭을 보여줍니다.
-
-                   if (n == 0) {
-                     document.getElementById("prevBtn").style.display = "none"; // 첫 번째 탭이면 "이전" 버튼을 숨깁니다.
-                   } else {
-                     document.getElementById("prevBtn").style.display = "inline"; // 첫 번째 탭이 아니면 "이전" 버튼을 표시합니다.
-                   }
-
-                   var nextBtn = document.getElementById("nextBtn");
-                   if (n == x.length - 1) {
-                     document.getElementById("nextBtn").innerHTML = "Submit"; // 마지막 탭이면 "다음" 버튼 텍스트를 "제출"로 변경합니다.
-                     nextBtn.setAttribute("type", "submit"); // 버튼의 type을 "submit"으로 변경합니다.
-                   } else {
-                     document.getElementById("nextBtn").innerHTML = "Next"; // 마지막 탭이 아니면 "다음" 버튼 텍스트를 "다음"으로 변경합니다.
-                     nextBtn.setAttribute("type", "button"); // 버튼의 type을 "button"으로 설정합니다.
-                   }
-                    // ... and run a function that displays the correct step indicator:
-                   fixStepIndicator(n)
-                 }
-
-                 function nextPrev(n) {
-                    var x = document.getElementsByClassName("step");
-
-                    if (n == 1) {
-                        if (!validateForm()) return false; // 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
-                        if (currentTab === 1) { // 두 번째 스텝인 경우
-                            if (!verificationIsSuccessful) { // 인증이 실패한 경우
-                                alert("본인 인증 단계를 완료하세요.");
-                                return false; // 인증이 실패한 경우 다음으로 진행하지 않습니다.
-                            }
-                        }
-                    }
-
-                    x[currentTab].style.display = "none"; // 현재 탭을 숨깁니다.
-                    currentTab = currentTab + n; // 다음 탭 또는 이전 탭으로 이동합니다.
-
-                    if (currentTab === x.length - 1) {
-                        var lastStepFormInputs = document.querySelectorAll("#lastStepForm input");
-                        lastStepFormInputs.forEach(function (input) {
-                            input.removeAttribute("disabled");
-                        });
-                    }
-
-                    if (currentTab === x.length) {
-                        document.getElementById("signUpForm").submit(); // 마지막 탭이면 폼을 제출합니다.
-                    } else {
-                        showTab(currentTab); // 다음 탭을 표시합니다.
-                    }
-                }
-
-
-
-                 function validateForm() {
-                   var x, y, i, valid = true;
-                   x = document.getElementsByClassName("step");
-                   y = x[currentTab].getElementsByTagName("input");
-
-                   for (i = 0; i < y.length; i++) {
-                     if (y[i].value == "") {
-                       y[i].className += " invalid"; // 빈 필드에 "invalid" 클래스를 추가하여 사용자에게 알립니다.
-                       valid = false;
-                     }
-                   }
-
-                   if (valid) {
-                     var stepIndicators = document.getElementsByClassName("stepIndicator");
-                     stepIndicators[currentTab].className += " finish"; // 유효한 데이터가 입력되면 해당 단계를 완료로 표시합니다.
-                   }
-                   return valid;
-                 }
-
-                 function fixStepIndicator(n) {
-                   var i, x = document.getElementsByClassName("stepIndicator");
-                   for (i = 0; i < x.length; i++) {
-                     x[i].className = x[i].className.replace(" active", ""); // 모든 단계에서 "active" 클래스를 제거합니다.
-                   }
-                   x[n].className += " active"; // 현재 단계에 "active" 클래스를 추가하여 활성화된 단계를 표시합니다.
-                 }
-    </script>
+    <script th:src="@{/js/member/multistepForm.js}"></script>
     <script th:src="@{/js/member/AgreenAuth.js}"></script>
     <script src="/js/member/educatorSido.js"></script>
 

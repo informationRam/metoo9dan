@@ -6,7 +6,6 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.member.dto.EducatorInfoDTO;
 import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
-import com.idukbaduk.metoo9dan.member.validation.LoginValidation;
 import com.idukbaduk.metoo9dan.member.validation.UserCreateForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,50 +50,32 @@ public class memberController {
 
     //로그인 & 회원가입 폼 화면 보여주기
     @GetMapping("/login")
-    public String login(Model model, LoginValidation loginValidation, UserCreateForm userCreateForm){
-        model.addAttribute("loginValidation", loginValidation);
+    public String login(Model model,UserCreateForm userCreateForm){
         model.addAttribute("userCreateForm", userCreateForm);
         return "member/signupForm2";
     }
 
-
     //회원가입 처리하기
     //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
     @PostMapping("/join")
-    public String createUser(@Valid UserCreateForm userCreateForm, BindingResult bindingResult, Model model) {
+    public String createUser(@Valid UserCreateForm form, BindingResult bindingResult, Model model) {
 
-        // userCreateForm 검증 실패시 다시 입력폼
-        if (bindingResult.hasErrors()) {
-            return "member/signupForm2";
-        }
+//        if (bindingResult.hasErrors()) {
+//            return "/member/signupForm2";
+//        }
 
         ModelMapper modelMapper = new ModelMapper();
         System.out.println("join컨트롤러 진입");
-        MemberDTO memberDTO = modelMapper.map(userCreateForm, MemberDTO.class);
-        memberDTO.setPassword(passwordEncoder.encode(userCreateForm.getPwd1()));
+        MemberDTO memberDTO = modelMapper.map(form, MemberDTO.class);
+        memberDTO.setPassword(passwordEncoder.encode(form.getPwd1()));
 
-        //비밀번호 일쳐여부 검사
-        if (!userCreateForm.getPwd1().equals(userCreateForm.getPwd2())) {
-            model.addAttribute("passwordMismatch", true);
-            return "member/signupForm2";
-        }
-        //아이디 중복 검사
-        if (memberService.checkmemberIdDuplication(userCreateForm.getMemberId())) {
-            model.addAttribute("memberIdDuplicate", true);
-            return "member/signupForm2";
-        }
-        //이메일 중복 검사
-        if (memberService.checkEmailDuplication(userCreateForm.getEmail())) {
-            model.addAttribute("emailDuplicate", true);
-            return "member/signupForm2";
-        }
+        if ("EDUCATOR".equals(form.getRole())) {
+            EducatorInfoDTO educatorInfoDTO = modelMapper.map(form, EducatorInfoDTO.class);
 
-        if ("EDUCATOR".equals(userCreateForm.getRole())) {
             // MemberDTO 데이터를 Member 엔티티로 이동
             Member member = modelMapper.map(memberDTO, Member.class);
 
             // EducatorInfoDTO 데이터를 EducatorInfo 엔티티로 이동
-            EducatorInfoDTO educatorInfoDTO = modelMapper.map(userCreateForm, EducatorInfoDTO.class);
             EducatorInfo educatorInfo = modelMapper.map(educatorInfoDTO, EducatorInfo.class);
 
             memberService.createUserWithEducatorInfo(member, educatorInfo);
@@ -116,3 +97,53 @@ public class memberController {
     }
 
 }
+
+
+//회원가입 처리하기
+//    //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
+//    @PostMapping("/join")
+//    public String createUser(@Valid UserCreateForm userCreateForm, BindingResult bindingResult, Model model) {
+//
+//        // userCreateForm 검증 실패시 다시 입력폼
+//        if (bindingResult.hasErrors()) {
+//            return "member/signupForm2";
+//        }
+//
+//        ModelMapper modelMapper = new ModelMapper();
+//        System.out.println("join컨트롤러 진입");
+//        MemberDTO memberDTO = modelMapper.map(userCreateForm, MemberDTO.class);
+//        memberDTO.setPassword(passwordEncoder.encode(userCreateForm.getPwd1()));
+//
+//        //비밀번호 일치여부 검사
+//        if (!userCreateForm.getPwd1().equals(userCreateForm.getPwd2())) {
+//            model.addAttribute("passwordMismatch", true);
+//            return "member/signupForm2";
+//        }
+//        //아이디 중복 검사
+//        if (memberService.checkmemberIdDuplication(userCreateForm.getMemberId())) {
+//            model.addAttribute("memberIdDuplicate", true);
+//            return "member/signupForm2";
+//        }
+//        //이메일 중복 검사
+//        if (memberService.checkEmailDuplication(userCreateForm.getEmail())) {
+//            model.addAttribute("emailDuplicate", true);
+//            return "member/signupForm2";
+//        }
+//
+//        if ("EDUCATOR".equals(userCreateForm.getRole())) {
+//            // MemberDTO 데이터를 Member 엔티티로 이동
+//            Member member = modelMapper.map(memberDTO, Member.class);
+//
+//            // EducatorInfoDTO 데이터를 EducatorInfo 엔티티로 이동
+//            EducatorInfoDTO educatorInfoDTO = modelMapper.map(userCreateForm, EducatorInfoDTO.class);
+//            EducatorInfo educatorInfo = modelMapper.map(educatorInfoDTO, EducatorInfo.class);
+//
+//            memberService.createUserWithEducatorInfo(member, educatorInfo);
+//        } else {
+//            // MemberDTO 데이터를 Member 엔티티로 이동
+//            Member member = modelMapper.map(memberDTO, Member.class);
+//            memberService.createUser(member);
+//        }
+//
+//        return "redirect:/member/login"; //회원가입 후 로그인 페이지
+//    }

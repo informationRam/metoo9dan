@@ -1,0 +1,49 @@
+/*로그인 css*/
+/* 탭의 기본 스타일 */
+.nav-pills .nav-link {
+    background-color: rgba(197,224,180); /* 비활성화된 탭의 배경색 */
+    color: white; /* 글씨색 흰색 */
+    border-radius: 5px; /* 둥근 모서리 추가 */
+    transition: all 0.3s; /* 부드러운 트랜지션 효과 */
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    margin-right: 10px; /* 탭 사이의 간격 조절 */
+    padding: 10px 20px; /* 탭 상자 크기 조절 */
+}
+
+
+/* 활성화된 탭의 스타일 */
+.nav-pills .nav-link.active {
+    background-color: rgb(112, 173, 71); /* 진한 연두색 */
+    color: white; /* 글자색 흰색 */
+}
+
+/* 버튼에 그림자 효과 */
+.btn {
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+   }
+
+/* 로고 영역 추가 (tab-content 바로 위에 위치) */
+.tab-content::before {
+    content: url('/img/metooLogo.png'); /* 로고 이미지 경로를 입력하세요 */
+    display: block;
+    width: 100px; /* 로고의 너비 (원하는 크기로 조정 가능) */
+    height: 100px; /* 로고의 높이 (원하는 크기로 조정 가능) */
+    margin: 20px auto; /* 위아래 여백과 중앙 정렬 */
+}
+
+#loginbtn {
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+    width: 100%; /* 버튼 길이를 ID, 비밀번호 입력폼과 같게 설정 */
+    background-color: rgb(112, 173, 71);
+    color: white;
+    transition: border-color 0.3s, background-color 0.3s; /* 변화에 트랜지션 효과 적용 */
+
+    /* 기본 테두리 스타일 */
+    border: 1px solid rgb(112, 173, 71);
+}
+
+#loginbtn:hover, #loginbtn:active {
+    /* 호버 및 클릭 상태일 때 테두리와 배경색 변경 */
+    border-color: darkgreen;
+    background-color: rgb(112, 173, 71);
+}

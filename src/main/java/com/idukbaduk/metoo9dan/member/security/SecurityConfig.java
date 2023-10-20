@@ -30,7 +30,7 @@ import java.io.IOException;
 @EnableWebSecurity  // 모든 요청 url이 스프링 시큐리티의 제어를 받도록 만든다.
 public class SecurityConfig {
 
-    private final UserSecurityService userSecurityService;
+    private final UserSecurityService userDetailsService;
 
     //UserSecurityService와 PasswordEncoder가 자동으로 설정
     @Bean
@@ -66,7 +66,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/member/**").authenticated() //로그인 인증받은 회원만 접근가능
+                //.requestMatchers("/member/**").authenticated() //로그인 인증받은 회원만 접근가능
                 .requestMatchers("/student/**").hasAuthority("STUDENT")
                 .requestMatchers( "/admin/**").hasAuthority("ADMIN")
                 .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
@@ -99,7 +99,7 @@ public class SecurityConfig {
                 .failureHandler(new AuthenticationFailureHandler() {
                     @Override
                     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                        System.out.println("exception" + exception.getMessage());  //인증 실패 메세지 출력
+                        System.out.println("exception" + exception.getMessage());  //인증 실패 메세지 출력(콘솔)
                         response.sendRedirect("/member/login");  // 로그인 실패 후 이동 페이지
                     }
                 });

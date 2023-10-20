@@ -15,10 +15,6 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 
-    //다양한 검색조건으로 회원정보 가져오기
-//    List<Member> findByCriteria(String startDate, String endDate, String memberType, String membershipStatus, String searchCriteria, String searchKeyword, Pageable pageable);
-  //deleteByMemberNo(memberNo);
-
     //아이디로 값 찾기
     Optional<Member> findByMemberId(String memberId);
 
