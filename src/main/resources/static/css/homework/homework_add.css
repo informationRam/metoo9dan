@@ -110,7 +110,7 @@
     background-color: #ffa000;
 }
 
-.nado-center-contain {
+.nado-center- {
     display: flex;             /* Flexbox 사용 */
     justify-content: center;  /* 가로축에서 중앙 정렬 */
     align-items: center;      /* 세로축에서 중앙 정렬 */
@@ -132,6 +132,7 @@
     padding-left: 40px; /* 텍스트가 아이콘과 겹치지 않도록 왼쪽 패딩 추가 */
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 귀여운 그림자 효과 */
     placeholder-color: #aaa; /* 플레이스홀더 색상 */
+    vertical-align: -0.25em;
 }
 
 .nado-search:focus {
@@ -145,23 +146,15 @@
     display: inline-block; /* 아이콘과 검색바가 나란히 위치하도록 변경 */
     margin-left: 10px;   /* 검색바와의 간격 설정 */
     color: #ffc107;       /* 노란색 설정 */
-    font-size: 29px;      /* 아이콘 크기 조정 */
+    font-size: 34px;      /* 아이콘 크기 조정 */
     vertical-align: middle; /* 아이콘과 검색바의 중앙 정렬 */
 }
 
 /* 검색바와 아이콘의 상위 div 스타일 */
 .nado-search-right {
     text-align: right;
-    height: 100%;
 }
 
-/* 검색 라벨 스타일 */
-.nado-search-label {
-    display: inline-block;
-    margin-left: 10px; /* 아이콘과 검색바 사이의 간격을 조절 */
-    color: #ffc107;
-    font-size: 28px;
-}
 
 /* ----------------------------------------------------------------------------------- */
 

@@ -1,3 +1,98 @@
+
+.nado-search {
+    width: 600px; /* 검색창의 길이를 너무 길지 않게 설정 */
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 25px; /* 귀여운 둥근 모양 */
+    font-size: 25px;
+    transition: all 0.3s; /* 부드러운 전환 효과 */
+    background-color: #ffffff;
+    background-image: url('path_to_search_icon.svg'); /* 검색 아이콘 이미지 */
+    background-repeat: no-repeat;
+    background-position: 10px center; /* 아이콘의 위치 설정 */
+    padding-left: 40px; /* 텍스트가 아이콘과 겹치지 않도록 왼쪽 패딩 추가 */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 귀여운 그림자 효과 */
+    placeholder-color: #aaa; /* 플레이스홀더 색상 */
+    vertical-align: -0.25em;
+}
+
+.nado-search:focus {
+    border-color: #ffc107; /* 노란색 기반의 포커스 색상 */
+    outline: none;
+    box-shadow: 0px 0px 15px rgba(255, 192, 7, 0.4); /* 포커스 시 더 큰 그림자 효과 */
+}
+
+/* 검색 라벨 스타일 */
+.nado-search-label {
+    display: inline-block; /* 아이콘과 검색바가 나란히 위치하도록 변경 */
+    margin-left: 10px;   /* 검색바와의 간격 설정 */
+    color: #ffc107;       /* 노란색 설정 */
+    font-size: 27px;      /* 아이콘 크기 조정 */
+    vertical-align: middle; /* 아이콘과 검색바의 중앙 정렬 */
+}
+
+/* 검색바와 아이콘의 상위 div 스타일 */
+.nado-search-center {
+    display: flex;             /* Flexbox 사용 */
+    justify-content: center;  /* 가로축에서 중앙 정렬 */
+    align-items: center;      /* 세로축에서 중앙 정렬 */
+    height: 100%;
+}
+
+/* 테이블 컨테이너 스타일 */
+.nado-table-container {
+    overflow: hidden;  /* 동글동글한 모서리를 위해 숨김 처리 */
+    border-radius: 15px;  /* 모서리 둥글게 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* 약간의 그림자로 입체감 주기 */
+}
+
+/* 테이블 기본 스타일 */
+.nado-table {
+    width: 100%;
+    border-collapse: collapse;  /* 경계선 겹치기 */
+    font-size: 16px;  /* 가독성을 위한 폰트 크기 설정 */
+}
+
+/* 테이블 헤더 스타일 */
+.nado-thead-light th {
+    background-color: #ffc107;  /* 노란색 */
+    color: #333;  /* 글씨색 */
+    padding: 10px 15px;
+    border-bottom: 2px solid #e0e0e0;  /* 하단 경계선 */
+}
+
+/* 테이블 바디 스타일 */
+.nado-table tbody tr {
+    transition: background-color 0.3s;  /* 배경색 전환 효과 */
+}
+
+/* 호버 효과: 행을 호버할 때 */
+.nado-table-hover tbody tr:hover {
+    background-color: #f6f6f6;  /* 호버 배경색 */
+}
+
+/* 제출 완료 및 제출 전에 따른 배경색 설정 */
+.table-success {
+    background-color: #d4edda;  /* 연두색 */
+}
+
+.table-warning {
+    background-color: #ffeeba;  /* 연한 노란색 */
+}
+
+/* 셀 스타일 */
+.nado-table td, .nado-table th {
+    padding: 10px 15px;
+    border: 1px solid #e0e0e0;  /* 연한 회색 경계선 */
+}
+
+/* 최하단 경계선 */
+.nado-table tr:last-child td {
+    border-bottom: 2px solid #e0e0e0;
+}
+
+
+/*-------------------------------------------------------------------------------*/
 canvas{
 z-index:10;
 pointer-events: none;
@@ -5,17 +100,14 @@ position: fixed;
 top: 0;
 transform: scale(1.1);
 }
-
-
                 .submitted {
-                    background-color: lightgreen;
+                    background-color: #d4edda;
                 }
 
                 .not-submitted {
-                    background-color: lightyellow;
+                    background-color: #ffeeba;
                 }
-
-                        /*책관련*/
+/*책관련*/
         .book {
           position: relative;
           width: 90%;
@@ -241,4 +333,33 @@ transform: scale(1.1);
     background-color: #0056b3;
 }
 
+.pagination {
+    padding-left: 0;
+    list-style-type: none;
+}
 
+.pagination .page-item {
+    margin: 0 2px;
+}
+
+.pagination .page-link {
+    border: none;
+    color: #333;
+    border-radius: 5px;
+    padding: 8px 12px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-item.active .page-link,
+.pagination .page-link:hover {
+    background-color: #ffc107;
+    color: #333;
+    border-color: #ffc107;
+}
+
+.pagination .page-item.disabled .page-link {
+    pointer-events: none;
+    cursor: default;
+    background-color: #f2f2e6;
+    color: #999;
+}
