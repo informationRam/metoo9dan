@@ -33,6 +33,9 @@ public class StudyGroups {
     @Column(name="group_introduce")
     private String groupIntroduce; //그룹 소개
 
+    @Column(name="payment_no")
+    private Integer paymentNo; //결제 번호
+
     @ManyToOne(fetch = FetchType.LAZY) // 게임콘텐츠-다대일 관계
     @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no") // 외래 키 설정 //게임 콘텐츠 번호
     private GameContents gameContents;
