@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,6 +37,7 @@ public class AnswerController {
 
     //답변 작성
     @PostMapping("/add/{questionNo}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String AnswerAdd(@PathVariable Integer questionNo,
                             Model model,
                             @Valid AnswerForm answerForm,
@@ -84,6 +86,7 @@ public class AnswerController {
 
     //답변삭제
     @GetMapping("/delete/{answerNo}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String deleteAnswer(@PathVariable Integer answerNo, RedirectAttributes redirectAttributes){
         logger.info("deleteAnswer()진입. 삭제하려는 answerNo: "+answerNo);
         QnaAnswers answers = answerService.getAnswers(answerNo);

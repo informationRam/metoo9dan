@@ -135,7 +135,7 @@ public class QuestionFilesService {
             list.add(fileDTO);
         } catch (IOException e) {
             logger.error(e.getMessage());
-            redirectAttributes.addFlashAttribute("msg", "공지등록하는 중에 에러 발생");
+            redirectAttributes.addFlashAttribute("msg", "문의사항 등록하는 중에 에러 발생");
         }//end catch
     }
 

@@ -168,6 +168,7 @@ public class NoticeController {
 
     //공지사항 삭제해줘 요청
     @GetMapping("/delete/{noticeNo}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String delete(@PathVariable Integer noticeNo, Principal principal, RedirectAttributes redirectAttributes){
         //우선 삭제할 글 조회
         Notice notice = noticeService.getNotice(noticeNo);
@@ -188,7 +189,7 @@ public class NoticeController {
 
     //공지 작성폼 보여줘 요청
     @GetMapping("/add")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String noticeAddForm(NoticeForm noticeForm, Model model, Principal principal){
         String memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
         model.addAttribute("memberRole", memberRole);
@@ -198,6 +199,7 @@ public class NoticeController {
 
     //공지사항 등록 처리해줘 요청
     @PostMapping("/add") //관리자만 작성 가능해야 함.
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String add(@Valid NoticeForm noticeForm, BindingResult bindingResult,
                       @RequestParam("uploadFiles") List<MultipartFile> uploadFiles,
                       Principal principal, RedirectAttributes redirectAttributes, Model model ){
@@ -245,19 +247,19 @@ public class NoticeController {
                     model.addAttribute("msg","파일을 업로드할 수 없습니다. 파일 확장자와 사이즈를 확인하세요.");
                     return "notice/noticeForm"; //noticeForm.html로 이동.
                 }
+                filesService.fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
             }
-            filesService.fileUpload(uploadFolder, notice, multipartFile, list, redirectAttributes);
         }//파일 없으면,
         filesService.addFiles(list);
 
         redirectAttributes.addFlashAttribute("msg", "공지가 등록되었습니다.");
-        return "redirect:/notice/list"; //질문목록조회 요청
+        return String.format("redirect:/notice/detail/%d", notice.getNoticeNo()); //상세조회로 이동
     }
 
 
     //공지사항 수정폼 보여줘 요청
     @GetMapping("/modify/{noticeNo}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String noticeModifyForm(@PathVariable("noticeNo")Integer noticeNo, NoticeForm noticeForm,
                                    Principal principal, Model model, RedirectAttributes redirectAttributes){
         //수정하려는 사람이 작성한 사람인지 확인.~~~~~~~~~~~
@@ -293,6 +295,7 @@ public class NoticeController {
 
     //공지사항 수정 처리해줘 요청
     @PostMapping("/modify/{noticeNo}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String modify(@PathVariable("noticeNo")Integer noticeNo,
                          @RequestParam("uploadFiles") List<MultipartFile> uploadFiles,
                          @Valid NoticeForm noticeForm, //유효성검사처리를 해주어야함
