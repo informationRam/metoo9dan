@@ -1,5 +1,5 @@
 <!--이 파일 내용을 복사하여 templates/본인기능폴더 하위에 추가하여 본인 구현 페이지에 맞게 사이드바 내용을 작업해주세요-->
-<div th:fragment="sidebar" style="border: 1px solid black;" class="col-2" th:if="${memberRole}==ADMIN"> <!--class에서 col-2은 빼면 안됨-->
+<div th:fragment="sidebar" class="col-2" th:if="${memberRole}==ADMIN"> <!--class에서 col-2은 빼면 안됨-->
     <!--운영마당용 사이드바-->
     <ul>
         <li><a th:href="@{#}">게임콘텐츠 등록</a></li>
