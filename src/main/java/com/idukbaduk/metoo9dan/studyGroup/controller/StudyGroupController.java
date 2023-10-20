@@ -69,38 +69,7 @@ public class StudyGroupController {
 
         return "studyGroup/gameContents_list";
     }
-/*
-    //게임콘텐츠 조회하기 버튼 엔드포인트
-    @GetMapping(value = "/gameListEndpoint", produces = "application/json")
-    @ResponseBody
-    public List<GameContentsListDTO> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map,Principal principal,
-                                                      @RequestParam(value = "page", defaultValue = "1") int currentPage,Model model) {
-        //Principal
-        Member member = memberService.getUser(principal.getName());
-        int member_no = member.getMemberNo();
 
-        //페이지네이션
-        int pageSize = 10; // 페이지당 보여줄 아이템 개수
-        int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
-        //map.put("member_no", member_no);
-        map.put("pageSize", pageSize);
-        map.put("offset", offset);
-
-        int totalCount=studyGroupService.selectGameCnt(); //게임리스트 조회 카운트
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
-
-        map.put("member_no", member_no); // map에 member_no 추가
-        map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
-
-        //model.addAttribute("currentPage",currentPage);
-        //model.addAttribute("totalCount",totalCount);
-        //model.addAttribute("totalPages",totalPages);
-
-        List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
-        //model.addAttribute("gameContents",gameContents);
-        System.out.println("엔드포인트gameContents="+gameContents);
-        return gameContents;
-    }*/
 
     //게임콘텐츠 조회하기 버튼 엔드포인트
     @GetMapping(value = "/gameListEndpoint", produces = "application/json")
@@ -426,19 +395,6 @@ public class StudyGroupController {
         }
     }
 
-/*    @PostMapping(value = "/updateApproveEnd", produces = "application/json")
-    public ResponseEntity<String> updateApproveEnd(@RequestBody List<Integer> selectedMembers) {
-        System.out.println("updateApproveEnd진입");
-        // 'selectedMembers' 데이터를 사용하여 필요한 작업을 수행 (예: 데이터베이스 업데이트)
-        int result = studyGroupService.updateApproval(selectedMembers);
-
-        if (result > 0) {
-            return ResponseEntity.ok("Data processed successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Data processing failed");
-        }
-    }*/
-
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트
     @GetMapping("/groupJoinList")
@@ -515,7 +471,6 @@ public class StudyGroupController {
             response.put("totalPages", totalPages);
 
             return response;
-            //return groupJoinList;
         } else if (group_no != null) {
             //페이지네이션
             int pageSize = 5; // 페이지당 보여줄 아이템 개수
@@ -539,7 +494,6 @@ public class StudyGroupController {
             response.put("totalPages", totalPages);
 
             return response;
-            //return groupJoinListByGroup;
         } else if (member_no != null) {
             //페이지네이션
             int pageSize = 5; // 페이지당 보여줄 아이템 개수
@@ -563,47 +517,12 @@ public class StudyGroupController {
             response.put("totalPages", totalPages);
 
             return response;
-            //return groupJoinListByMember;
         } else {
             // 두 파라미터 중 하나도 전달되지 않은 경우 처리
             return null;
-            //return Collections.emptyList();
         }
     }
 
-/*
-    //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트
-    @GetMapping(value = "/groupJoinListEndpoint", produces = "application/json")
-    @ResponseBody
-    public List<GroupJoinListDTO> groupJoinListEndpoint(@RequestParam(required = false) Integer group_no, @RequestParam(required = false) Integer member_no){
-        if (group_no != null && member_no != null) {
-            // 두 파라미터가 동시에 전달될 경우 처리
-            System.out.println("같이");
-            System.out.println("group_no=" + group_no);
-            System.out.println("member_no=" + member_no);
-
-            Map<String, Integer> map = new HashMap<>();
-            map.put("group_no", group_no);
-            map.put("member_no", member_no);
-
-            List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectGroupJoinList(map);
-            return groupJoinList;
-        } else if (group_no != null) {
-            // group_no를 이용한 처리
-            List<GroupJoinListDTO> groupJoinListByGroup = studyGroupService.selectNameList(group_no);
-            System.out.println("group_no=" + group_no);
-            return groupJoinListByGroup;
-        } else if (member_no != null) {
-            // member_no를 이용한 처리
-            List<GroupJoinListDTO> groupJoinListByMember = studyGroupService.SelectEducatorNameList(member_no);
-            System.out.println("member_no=" + member_no);
-            return groupJoinListByMember;
-        } else {
-            // 두 파라미터 중 하나도 전달되지 않은 경우 처리
-            return Collections.emptyList();
-        }
-    }
-*/
 
 
     //학습 그룹 가입 신청 처리(학생)
