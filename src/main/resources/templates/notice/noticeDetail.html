@@ -12,7 +12,6 @@
             <div class="py-2">
                 <div>
                     <div id="noticeHeader"> <!--글상세 헤더정보-->
-                        <!--<a th:text="${notice.noticeType}">분류</a>-->
                         <a th:if="${notice.noticeType.equals('noti')}" th:text="공지"></a>
                         <a th:if="${!notice.noticeType.equals('noti')}" th:text="자주묻는질문"></a>
                         <a th:text="${notice.status}">상태</a><br/><!--운영관리자한테만-->
@@ -34,20 +33,18 @@
                     </div>
                     <div th:text="${notice.noticeContent}">내용</div>
                     <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
-                    <div>
+                    <div sec:authorize="isAuthenticated()"
+                         th:if="${ notice.member!=null and #authentication.getPrincipal().getUsername()==notice.member.memberId }">
                         <a th:href="@{|/notice/modify/${noticeNo}|}" class="btn btn-secondary">수정</a>
                         <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.noticeNo}|}"
                            class="delete btn btn-outline-danger"
                            th:text="삭제">
-                            <!--댓글작성자와 로그인한사람이 동일할때만 보여져야함-->
-                            <!--sec:authorize="isAuthenticated()"
-                            th:if="${ answer.writer!=null and #authentication.getPrincipal().getUsername()==answer.writer.username }"-->
                         </a>
                     </div>
                 </div>
                 <hr/>
                 <!--댓글 등록 폼-->
-                <form id="replyForm" th:object="${noticeReplyForm}" th:action="@{|/reply/add/${notice.noticeNo}|}" method="post">
+                <form id="replyForm" sec:authorize="isAuthenticated()"  th:object="${noticeReplyForm}" th:action="@{|/reply/add/${notice.noticeNo}|}" method="post">
                     <div th:replace="~{form_errors::formErrorsFragment}"></div>
                     <div class="d-flex justify-content-around">
                         <textarea th:field="*{content}" rows="2" class="form-control"></textarea>
@@ -65,13 +62,14 @@
                         </div>
                         <div class="card-text" th:text="${reply.content}">댓글내용</div>
                         <div class="d-flex justify-content-end">
-                            <a th:id="|replyModify${reply.noticeReplyNo}|" class="btn btn-sm btn-secondary">수정</a>
-                            <a href="javascript:void(0);" th:data-uri="@{|/reply/delete/${reply.noticeReplyNo}|}"
-                               class="delete btn btn-sm btn-outline-danger"
+                            <a th:id="|replyModify${reply.noticeReplyNo}|" class="btn btn-sm btn-secondary"
+                               sec:authorize="isAuthenticated()"
+                               th:if="${ reply.member!=null and #authentication.getPrincipal().getUsername()==reply.member.memberId }">수정</a>
+                            <a href="javascript:void(0);" class="delete btn btn-sm btn-outline-danger"
+                               th:data-uri="@{|/reply/delete/${reply.noticeReplyNo}|}"
+                               sec:authorize="isAuthenticated()"
+                               th:if="${ reply.member!=null and #authentication.getPrincipal().getUsername()==reply.member.memberId or memberRole=='ADMIN'}"
                                th:text="삭제">
-                               <!--댓글작성자와 로그인한사람이 동일할때만 보여져야함-->
-                               <!--sec:authorize="isAuthenticated()"
-                               th:if="${ answer.writer!=null and #authentication.getPrincipal().getUsername()==answer.writer.username }"-->
                             </a>
                         </div>
                     </div>

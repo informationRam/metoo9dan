@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +35,7 @@ public class NoticeReplyController {
 
     //메소드
     // 댓글 등록처리 해줘 요청
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add/{noticeNo}")
     public String replyAdd(@PathVariable("noticeNo")Integer noticeNo,
                            Model model,
@@ -42,23 +44,17 @@ public class NoticeReplyController {
                            RedirectAttributes redirectAttributes,
                            Principal principal
                            ){
-        // 1.파라미터 받기
         Notice notice = noticeService.getNotice(noticeNo);
         Member member = memberServiceImpl.getUser(principal.getName());
-            //유저정보도가져와야함
 
-        // 2.비즈니스로직 수행
         if(bindingResult.hasErrors()){ //에러가 존재하면
             model.addAttribute("notice", notice);
             return "notice/noticeDetail"; //화면에서 에러 메시지를 출력함
         } else { //에러 없으면
-            replyService.add(notice, noticeReplyForm.getContent(), member); // 유효성 검사 거친 내용으로 저장처리 (user정보 추가해야함)
+            replyService.add(notice, noticeReplyForm.getContent(), member); // 유효성 검사 거친 내용으로 저장처리
             redirectAttributes.addFlashAttribute("msg", "댓글이 등록되었습니다.");
             return String.format("redirect:/notice/detail/%d", noticeNo);
         }
-
-        // 3.모델
-        // 4.뷰
     }
 
     // 댓글 수정처리 해줘 요청

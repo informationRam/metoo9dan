@@ -172,9 +172,6 @@ public class NoticeController {
         //우선 삭제할 글 조회
         Notice notice = noticeService.getNotice(noticeNo);
         List<NoticeFiles> filesList = filesService.getFiles(notice);
-        //댓글 작성자와 로그인한 유저가 같지 않는 경우 BAD_REQUEST 응답처리하는 코드 추가해야함~~~~~~~~~
-        /*if(member.~~~.equals(principal.getName())){
-        }*/
         noticeService.delete(notice); //DB에서 cascade되어 댓글과 파일데이터는 지워짐.
 
         //물리적 파일 삭제
@@ -189,7 +186,6 @@ public class NoticeController {
     @PreAuthorize("isAuthenticated()")
     public String noticeAddForm(NoticeForm noticeForm, Model model, Principal principal){
         String memberRole = memberServiceImpl.getUser(principal.getName()).getRole();
-        //~~~ admin 아니면 폼 보여주면 안됨~~~~~~~~~~~~~~~~~~~~~
         model.addAttribute("memberRole", memberRole);
 
         return "notice/noticeForm";
@@ -206,7 +202,6 @@ public class NoticeController {
             return "notice/noticeForm"; //noticeForm.html로 이동.
         }//에러가 없으면, 공지사항 등록 진행
 
-        //로그인한 사람이 관리자인지 확인하는 코드 필요.~~~~~~~~~~~~~~~~
         Member member = memberServiceImpl.getUser(principal.getName());
         model.addAttribute("memberRole", member.getRole());
 
@@ -366,16 +361,17 @@ public class NoticeController {
     }
 
     //자주묻는질문 목록
+    //관리자 아닌 사람들이 주로 봄 (관리자도 볼 수 있음)
     @GetMapping("/faq")
     public String getFaqList(Model model, Pageable pageable,
                              @RequestParam(value = "page", defaultValue = "0") int pageNo,
                              @RequestParam(value = "listSize", defaultValue = "5") int listSize){
         logger.info("page: "+pageNo);
-        Page<Notice> noticePage = this.noticeService.getFaqList(pageNo, listSize);
+        Page<Notice> faqPage = this.noticeService.getFaqList(pageNo, listSize);
         int endPage = (int)(Math.ceil((pageNo+1)/5.0))*5; //5의 배수
         int startPage = endPage - 4; //1, 5의 배수 +1 ...
-        if(endPage > noticePage.getTotalPages()){
-            int realEnd = noticePage.getTotalPages();
+        if(endPage > faqPage.getTotalPages()){
+            int realEnd = faqPage.getTotalPages();
             model.addAttribute("endPage", realEnd);
             logger.info("realEnd: "+realEnd);
         } else {
@@ -384,7 +380,7 @@ public class NoticeController {
         logger.info("endPage: "+endPage);
         logger.info("startPage: "+startPage);
 
-        model.addAttribute("noticePage", noticePage);
+        model.addAttribute("noticePage", faqPage);
         model.addAttribute("startPage", startPage);
         return "notice/faqList";
     }
