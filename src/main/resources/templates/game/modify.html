@@ -165,15 +165,13 @@
                                         <div class="col-sm-2"></div>
                                         <div class="col-sm-7">
                                             <ul id="fileList"></ul>
-                                            <div th:if="${gameValidation.saveboardFile.originFileName != null}">
-                                                <!-- 파일 다운로드 링크 생성 -->
+                                            <div th:if="${gameValidation != null && gameValidation.saveboardFile != null && gameValidation.saveboardFile.fileNo != null}">
+                                            <!-- 파일 다운로드 링크 생성 -->
                                                 <a th:href="@{|/game/downloadFile/${gameValidation.saveboardFile.fileNo}|}" th:text="${gameValidation.saveboardFile.originFileName}" />
                                                 <button class="btn btn-sm btn-danger" th:attr="data-fileNo=2" onclick="deleteFile(event, 2); return false;">Delete</button>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Files for Deletion -->
                                 </div>
                                     <!-- Modal 교육자료리스트 선택-->
                                     <div class="modal fade" id="educationModal" name="educationModal" tabindex="-1" aria-labelledby="educationModalLabel" aria-hidden="true" style="display:hidden;">
@@ -251,8 +249,9 @@
                                             </div>
                                         </div>
                                     </div>
+                            <input type="hidden" id="selectedValues" name="selectedValues" value="">
+
                         </div>
-                        <input type="hidden" id="selectedValues" name="selectedValues" value="">
                         <div class="mb-3 text-center">
                             <button type="submit" class="btn btn-primary" id="insert">수정등록</button>
                         </div>

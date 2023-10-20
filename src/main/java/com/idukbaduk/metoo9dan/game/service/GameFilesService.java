@@ -48,23 +48,35 @@ public class GameFilesService {
         return gameContentFiles;
     }
 
-    //저장처리 (파일도 저장함)
     public void save(GameContents gameContents, GameValidation gameValidation) throws IOException {
         for (MultipartFile boardFile : gameValidation.getBoardFile()) {
             GameContentFiles gameContentFiles = new GameContentFiles(); // 이미지 저장을 위한 객체 생성
 
-            String originalFileName = boardFile.getOriginalFilename(); //파일이름을 가져옴
+            String originalFileName = boardFile.getOriginalFilename();
             String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            String copyFileName = todayDate + "_" + originalFileName;    //파일저장명 'yyyyMMddHHmmss+원본파일명'
-            String savePath = fileUrl + copyFileName;   //mac 파일 지정 C:/baduk
-            boardFile.transferTo(new File(savePath));   //파일저장 처리
+            String copyFileName = todayDate + "_" + originalFileName;
+            String savePath = fileUrl + copyFileName;
 
-            gameContentFiles.setGameContents(gameContents);
-            gameContentFiles.setOriginFileName(originalFileName);
-            gameContentFiles.setCopyFileName(copyFileName);
-            gameContentsFileRepository.save(gameContentFiles);
+            try {
+                // Check if the directory exists, if not, create it
+                File saveDirectory = new File(fileUrl);
+                if (!saveDirectory.exists()) {
+                    saveDirectory.mkdirs();
+                }
+
+                boardFile.transferTo(new File(savePath));
+                gameContentFiles.setGameContents(gameContents);
+                gameContentFiles.setOriginFileName(originalFileName);
+                gameContentFiles.setCopyFileName(copyFileName);
+                gameContentsFileRepository.save(gameContentFiles);
+            } catch (IOException e) {
+                // Handle the exception appropriately, e.g., log it or throw a custom exception
+                e.printStackTrace();
+                throw e; // You can also throw a custom exception here
+            }
         }
     }
+
 
 
     // 파일 삭제로직
