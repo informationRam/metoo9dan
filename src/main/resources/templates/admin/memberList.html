@@ -58,6 +58,7 @@
                                 <div class="col-md-4">
                                     <label for="searchCriteria" class="form-label">조건검색</label>
                                     <select id="searchCriteria" class="form-select">
+                                        <option value="">선택</option>
                                         <option value="id">아이디</option>
                                         <option value="phone">휴대폰</option>
                                         <option value="name">이름</option>
@@ -220,15 +221,19 @@
                     <!-- 페이지네이션 -->
                     <div class="pagination d-flex justify-content-center mt-3">
                         <ul class="pagination">
-<!--                            <li class="page-item">-->
-<!--                                <a class="page-link" href="#" id="previousPage">이전</a>-->
-<!--                            </li>-->
-<!--                            &lt;!&ndash; 여기에 숫자 버튼을 동적으로 추가할 것입니다. &ndash;&gt;-->
-<!--                            <li class="page-item">-->
-<!--                                <a class="page-link" href="#" id="nextPage">다음</a>-->
-<!--                            </li>-->
+                            <!-- Previous Button -->
+                            <a th:href="@{/listMember(page=${currentPage - 1})}" th:unless="${currentPage == 0}" class="page-btn">이전</a>
+
+                            <!-- Pagination Numbers -->
+                            <th:block th:each="num : ${#numbers.sequence(currentPage - (currentPage % 4), currentPage - (currentPage % 4) + 3)}">
+                                <a th:href="@{/listMember(page=${num})}" th:text="${num + 1}" th:if="${num < totalPages}" class="page-btn"></a>
+                            </th:block>
+
+                            <!-- Next Button -->
+                            <a th:href="@{/listMember(page=${currentPage + 1})}" th:unless="${currentPage + 1 == totalPages}" class="page-btn">다음</a>
                         </ul>
                     </div>
+
 
                 </div> <!-- 회원관리게시판 container 끝 -->
             </div><!-- 내부 컨테이너 -->
@@ -238,11 +243,109 @@
             <script th:src="@{/js/admin/listMember.js}"></script>
             <script th:src="@{/js/admin/modalValidation.js}"></script>
             <script th:src="@{/js/admin/memberModal.js}"></script>
+            <script>
+                // 페이지가 준비되면
+                document.addEventListener("DOMContentLoaded", function() {
+                    // 페이지네이션 버튼 클릭 이벤트 설정
+                    document.querySelectorAll(".page-btn").forEach(function(btn) {
+                        btn.addEventListener("click", function(e) {
+                            e.preventDefault();
+
+                            // 클릭된 버튼의 페이지 번호 가져오기
+                            const targetPage = e.target.getAttribute("data-page");
+
+                            // 해당 페이지 데이터 불러오기
+                            loadPageData(targetPage);
+                        });
+                    });
+                });
+
+                function loadPageData(page) {
+                    fetch(`/listMember?page=${page}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("네트워크 응답이 올바르지 않습니다.");
+                        }
+                        return response.text();  // HTML로 가정하고 text로 반환
+                    })
+                    .then(data => {
+                        // 회원 목록 부분 업데이트 (ID는 실제 HTML 구조에 따라 수정 필요)
+                        document.querySelector("#memberList").innerHTML = data;
+
+                        // 페이지네이션 업데이트
+                        generatePagination(document.querySelector("#totalPages").value, page);
+                    })
+                    .catch(error => {
+                        console.error("데이터를 불러오는데 실패했습니다:", error);
+                    });
+                }
+
+                function generatePagination(totalPages, currentPage) {
+
+
+                    // 이전 버튼
+                    const prevLi = document.createElement('li');
+                    prevLi.classList.add('page-item');
+                    const prevButton = document.createElement('a');
+                    prevButton.classList.add('page-link');
+                    prevButton.textContent = '이전';
+                    prevButton.addEventListener('click', () => {
+                        if (currentStartPage > 1) {
+                            currentStartPage -= 4;
+                            generatePagination(totalElements);
+                            loadPageData();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
+                        }
+                    });
+                    prevLi.appendChild(prevButton);
+                    paginationContainer.appendChild(prevLi);
+
+                      // 숫자 버튼
+                      for (let i = 0; i < 4; i++) {
+                          //if (currentStartPage + i > totalPage) break;  // 전체 페이지 수를 초과하면 생성 중단
+                           const pageNumber = currentStartPage + i;
+                            if (pageNumber > totalPages) break;  // 전체 페이지 수를 초과하면 생성 중단
+
+                          const pageLi = document.createElement('li');
+                          pageLi.classList.add('page-item');
+                           if (pageNumber === currentPage) {
+                                      pageLi.classList.add('active');  // 현재 페이지를 나타내는 스타일 추가
+                                  }
+                          const pageButton = document.createElement('a');
+                          pageButton.classList.add('page-link');
+                          pageButton.textContent = pageNumber;
+                         // pageButton.textContent = currentStartPage + i;
+                          //숫자 클릭 시 해당 페이지의 데이터 로드
+                          pageButton.addEventListener('click', () => {
+                              loadPageData(pageNumber);  // 선택한 페이지에 해당하는 검색 결과를 가져옴
+                          });
+                          pageLi.appendChild(pageButton);
+                          paginationContainer.appendChild(pageLi);
+                      }
+
+                        // 다음 버튼
+                        const nextLi = document.createElement('li');
+                        nextLi.classList.add('page-item');
+                        const nextButton = document.createElement('a');
+                        nextButton.classList.add('page-link');
+                        nextButton.textContent = '다음';
+                        nextButton.addEventListener('click', () => {
+                            if (currentStartPage + 3 <= totalPage) {
+                                currentStartPage += 4;
+                                generatePagination(totalElements);
+                                loadPageData();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
+                            }
+                        });
+                        nextLi.appendChild(nextButton);
+                        paginationContainer.appendChild(nextLi);
+                }
+
+                        }
+
+
+
+
+            </script>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
-
-
-
-
 </div><!--container-->
 </html>

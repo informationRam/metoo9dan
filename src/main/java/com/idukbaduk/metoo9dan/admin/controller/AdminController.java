@@ -9,9 +9,13 @@ import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -22,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @RequestMapping("/admin")
@@ -37,18 +42,21 @@ public class AdminController {
     //회원관리페이지 보여주기
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value="/listMember")
-    public String showMemberList(Model model) throws Exception {
-        List<Member> members = memberService.getAllMembers(); // 모든 회원의 목록
+    public String showMemberList(Model model,
+                                 @RequestParam(defaultValue = "0") int page) throws Exception {
+        Pageable pageable = PageRequest.of(page,15); //한 목록에 15개씩
+        Page<Member> memberPage = memberService.findAllMembers(pageable); // 모든 회원의 목록
 
         // joinDate를 원하는 형식의 문자열로 변환
-        List<String> formattedJoinDates = new ArrayList<>();
-        for (Member member : members) {
-            String formattedDate = DateTimeUtils.formatLocalDateTime(member.getJoinDate(), "yyyy.MM.dd");
-            formattedJoinDates.add(formattedDate);
-        }
+        List<String> formattedJoinDates = memberPage.getContent().stream()
+                .map(member -> DateTimeUtils.formatLocalDateTime(member.getJoinDate(),"yyyy.MM.dd")) //.map스트림요소 변환
+                .collect(Collectors.toList()); //.collect 스트림요소 수집
 
-        model.addAttribute("members", members);
-        model.addAttribute("joinDate", formattedJoinDates);
+        model.addAttribute("members", memberPage.getContent()); //회원정보
+        model.addAttribute("joinDate", formattedJoinDates); //형식변환 joinDate
+        model.addAttribute("totalPages", memberPage.getTotalPages());
+        model.addAttribute("currentPage",page); //현재페이지: 페이지0부터 시작
+
         return "admin/memberList";
     }
 

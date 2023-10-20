@@ -1,24 +1,31 @@
-//검색조건 이벤트 , 체크박스 이벤트 처리
+//검색조건 이벤트 , 체크박스 회원 삭제
 
 //체크박스 선택 이벤트
-     document.addEventListener("DOMContentLoaded", function() {
-         // 전체 선택 체크박스 클릭 시 모든 체크박스 선택/해제
-         const selectAllCheckbox = document.getElementById("selectAllCheckbox");
-         const memberCheckboxes = document.querySelectorAll(".memberCheckbox");
 
-         selectAllCheckbox.addEventListener("change", function() {
-             memberCheckboxes.forEach(function(checkbox) {
-                 checkbox.checked = selectAllCheckbox.checked;
-             });
-         });
+     let memberCheckboxes; // 이 부분을 상단에 추가
+     document.addEventListener("DOMContentLoaded", attachCheckboxEventListeners);
 
-         // 개별 체크박스 클릭 시 전체 선택 체크박스 업데이트
-         memberCheckboxes.forEach(function(checkbox) {
-             checkbox.addEventListener("change", function() {
-                 const allChecked = [...memberCheckboxes].every(checkbox => checkbox.checked);
-                 selectAllCheckbox.checked = allChecked;
-             });
-         });
+
+
+            function attachCheckboxEventListeners() {
+             // 전체 선택 체크박스 클릭 시 모든 체크박스 선택/해제
+                     const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+                     memberCheckboxes = document.querySelectorAll(".memberCheckbox");
+
+                 selectAllCheckbox.addEventListener("change", function() {
+                     memberCheckboxes.forEach(function(checkbox) {
+                         checkbox.checked = selectAllCheckbox.checked;
+                     });
+                 });
+
+                 // 개별 체크박스 클릭 시 전체 선택 체크박스 업데이트
+                 memberCheckboxes.forEach(function(checkbox) {
+                     checkbox.addEventListener("change", function() {
+                         const allChecked = [...memberCheckboxes].every(checkbox => checkbox.checked);
+                         selectAllCheckbox.checked = allChecked;
+                     });
+                 });
+               }
 
          // 삭제 버튼 클릭 이벤트
          const deleteButton = document.getElementById("deleteMembersButton");
@@ -81,7 +88,7 @@
                     console.error('삭제 실패:', error);
                 });
         }
-    })
+   // })
 
 
 //검색버튼 이벤트
@@ -135,6 +142,8 @@
                         // 검색 결과가 있는 경우 데이터 표시 및 페이지네이션 생성
                         displayResults(data.content);
                         generatePagination(data.totalPages,pageNumber); // 현재페이지 번호 넘겨준다
+                        // 여기에 체크박스 이벤트 리스너를 다시 설정
+                        attachCheckboxEventListeners();
                     }
                 })
                 .catch(error => {
@@ -219,10 +228,9 @@
          }
 
 // 현재 페이지네이션 범위를 저장할 변수
-        let currentStartPage = 1;
+       let currentStartPage = 1;
 // 페이지네이션 생성
-        function generatePagination(totalElements) {
-            const totalPage = Math.ceil(totalElements / 15);
+        function generatePagination(totalPages,currentPage) {
             const paginationContainer = document.querySelector('.pagination ul');
             paginationContainer.innerHTML = ''; // 기존 페이지네이션 삭제
 
@@ -245,17 +253,24 @@
 
               // 숫자 버튼
               for (let i = 0; i < 4; i++) {
-                  if (currentStartPage + i > totalPage) break;  // 전체 페이지 수를 초과하면 생성 중단
+                  //if (currentStartPage + i > totalPage) break;  // 전체 페이지 수를 초과하면 생성 중단
+                   const pageNumber = currentStartPage + i;
+                    if (pageNumber > totalPages) break;  // 전체 페이지 수를 초과하면 생성 중단
 
                   const pageLi = document.createElement('li');
                   pageLi.classList.add('page-item');
+                   if (pageNumber === currentPage) {
+                              pageLi.classList.add('active');  // 현재 페이지를 나타내는 스타일 추가
+                          }
                   const pageButton = document.createElement('a');
                   pageButton.classList.add('page-link');
-                  pageButton.textContent = currentStartPage + i;
+                  pageButton.textContent = pageNumber;
+                 // pageButton.textContent = currentStartPage + i;
+                  //숫자 클릭 시 해당 페이지의 데이터 로드
                   pageButton.addEventListener('click', () => {
-                      let params = getSearchParams();
-                      params.page = currentStartPage + i;
-                      fetchSearchResults();  // 선택한 페이지에 해당하는 검색 결과를 가져옴
+//                      let params = getSearchParams();
+//                      params.page = currentStartPage + i;
+                      fetchSearchResults(pageNumber);  // 선택한 페이지에 해당하는 검색 결과를 가져옴
                   });
                   pageLi.appendChild(pageButton);
                   paginationContainer.appendChild(pageLi);
@@ -268,7 +283,7 @@
                 nextButton.classList.add('page-link');
                 nextButton.textContent = '다음';
                 nextButton.addEventListener('click', () => {
-                    if (currentStartPage + 4 <= totalPage) {
+                    if (currentStartPage + 3 <= totalPage) {
                         currentStartPage += 4;
                         generatePagination(totalElements);
                         fetchSearchResults();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
