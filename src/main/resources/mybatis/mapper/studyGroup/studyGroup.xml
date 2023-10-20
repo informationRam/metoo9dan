@@ -181,7 +181,7 @@
         </if>
     </select>
 
-    <select id="SelectGameListCnt" parameterType="int"  resultType="int">
+    <select id="SelectGameListCnt" parameterType="map"  resultType="int">
         <![CDATA[
         SELECT count(g.game_content_no)
         FROM baduk.game_contents g
@@ -189,10 +189,10 @@
         LEFT JOIN (
             SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
             FROM baduk.study_groups
-            WHERE member_no = 20
+            WHERE member_no = #{member_no}
             GROUP BY game_content_no, member_no
         ) s ON g.game_content_no = s.game_content_no
-        WHERE p.member_no = 20  AND p.status='complete' AND g.game_content_no=60
+        WHERE p.member_no = #{member_no}  AND p.status='complete' AND g.game_content_no=#{game_content_no}
             AND DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY)>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
         ]]>
     </select>

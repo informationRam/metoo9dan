@@ -43,19 +43,9 @@ public class StudyGroupController {
         //Principal
         Member member = memberService.getUser(principal.getName());
         int member_no = member.getMemberNo(); //회원 번호
-        //String role = member.getRole(); //역할
-
-       /* // 현재 사용자의 인증 정보를 가져옴
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // 현재 사용자의 권한 중 하나라도 "EDUCATOR"이 아니라면
-        if (!authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("EDUCATOR"))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"권한이 없습니다.");
-        }*/
 
         //페이지네이션
-        int pageSize = 10; // 페이지당 보여줄 아이템 개수
+        int pageSize = 5; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
         map.put("member_no", member_no);
         map.put("pageSize", pageSize);
@@ -121,18 +111,22 @@ public class StudyGroupController {
         int member_no = member.getMemberNo();
 
         // 페이지네이션
-        int pageSize = 10; // 페이지당 보여줄 아이템 개수
+        int pageSize = 5; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; // 페이지 시작 위치
         map.put("pageSize", pageSize);
         map.put("offset", offset);
-
-        int totalCount = studyGroupService.selectGameCnt(); // 게임리스트 조회 카운트
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지
 
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
 
         List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
+
+        map.clear(); // 기존에 추가된 모든 항목을 제거
+        map.put("member_no", member_no); // map에 member_no 추가
+        map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
+
+        int totalCount = studyGroupService.selectGameCnt(map); // 게임리스트 조회 카운트
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지
 
         // JSON 응답 데이터 생성
         Map<String, Object> response = new HashMap<>();

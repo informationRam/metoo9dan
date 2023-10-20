@@ -63,8 +63,8 @@ public class StudyGroupRepository {
     }
 
     //학습그룹 등록(게임리스트) 조회 cnt
-    public int selectGameCnt() {
-        return sqlSession.selectOne("StudyGroup.SelectGameListCnt");
+    public int selectGameCnt(Map<String, Integer> map) {
+        return sqlSession.selectOne("StudyGroup.SelectGameListCnt",map);
     }
 
     //학습 그룹 가입(학습그룹 리스트 전체)
