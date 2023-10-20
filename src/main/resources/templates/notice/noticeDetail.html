@@ -31,7 +31,7 @@
                             </a>
                         </label>
                     </div>
-                    <div th:text="${notice.noticeContent}">내용</div>
+                    <div th:text="${notice.noticeContent}" style="white-space: pre;">내용</div>
                     <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
                     <div sec:authorize="isAuthenticated()"
                          th:if="${ notice.member!=null and #authentication.getPrincipal().getUsername()==notice.member.memberId }">
@@ -60,7 +60,7 @@
                             <span class="badge bg-primary p-2 text-start" th:text="${reply.member.memberId}">작성자</span>
                             <span class="badge bg-light text-dark p-2 text-start" th:text="${#temporals.format(reply.writeDate, 'yyyy-MM-dd HH:mm')}">작성일</span>
                         </div>
-                        <div class="card-text" th:text="${reply.content}">댓글내용</div>
+                        <div class="card-text" th:text="${reply.content}" style="white-space: pre;">댓글내용</div>
                         <div class="d-flex justify-content-end">
                             <a th:id="|replyModify${reply.noticeReplyNo}|" class="btn btn-sm btn-secondary"
                                sec:authorize="isAuthenticated()"
