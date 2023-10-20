@@ -119,113 +119,143 @@ let data;
                                 console.error('결제 정보 가져오기 실패:', error);
                             });
                 })
+        } //모달열기
 
-//                   // 모달 footer에 있는 "회원 삭제" 버튼 클릭 이벤트
-//                   document.querySelector('#deleteButton').addEventListener('click', function() {
-//                       // 삭제 여부를 묻는 경고창 표시
-//                       const confirmation = confirm("선택한 회원을 삭제하시겠습니까?");
-//                       if (confirmation) {
-//                           // 확인 버튼을 클릭했을 때의 로직 추가 (선택한 회원 삭제)
-//                           const memberNo = document.querySelector('#editButton').getAttribute('data-memberno');
-//                           // 여기에서 선택한 회원 삭제 로직을 추가
-//                           deleteMember(memberNo); // 예시 함수 이름, 실제로 구현해야 함
-//                       }
-//                   });
-//                   let isDeleting = false; // 요청 중인지 여부를 나타내는 변수
-//
-//                   // 선택한 회원 삭제 로직
-//                   function deleteMember(memberNo) {
-//                       // 이미 삭제 요청을 처리 중인 경우 중복 요청을 방지
-//                       if (isDeleting) {
-//                           return;
-//                       }
-//                       isDeleting = true; // 요청 처리 중
-//
-//                       // 서버에 삭제 요청을 보내고, 해당 회원을 삭제합니다.
-//                       const xhr = new XMLHttpRequest();
-//                       xhr.open('DELETE', `/admin/${memberNo}/delete`, true);
-//                       xhr.onreadystatechange = function() {
-//                           if (xhr.readyState === 4) {
-//                               if (xhr.status === 204) {
-//                                   // 삭제가 성공하면 알림창 표시 및 페이지를 새로 고침
-//                                   alert("회원 삭제가 완료되었습니다.");
-//                                   location.reload(); // 페이지 새로 고침
-//                               } else {
-//                                   // 삭제가 실패하면 에러 메시지 표시
-//                                   alert("회원 삭제에 실패했습니다.");
-//                               }
-//                               isDeleting = false; // 요청 처리 완료
-//                           }
-//                       };
-//                       xhr.send();
-//                   }
-
-            //모달 데이터 수정값 전송
-            document.querySelector('#editButton').addEventListener('click', function() {
+        // 수정 기능 함수
+        function handleEditButton() {
             console.log('수정버튼 클릭');
 
-                // 유효성 검사 함수 호출
-                   // 모달에서 사용자가 수정한 데이터 가져오기
-                       const memberNo = document.querySelector('#editButton').getAttribute('data-memberno');
-                       const updatedMemberData = {
-                           birth: document.querySelector('#memberBirth').value,
-                           tel: document.querySelector('#memberTel').value,
-                           email: document.querySelector('#memberEmail').value,
-                           memberMemo: document.querySelector('#memberMemo').value,
-                       };
+            // 모달에서 사용자가 수정한 데이터 가져오기
+            const memberNo = document.querySelector('#editButton').getAttribute('data-memberno');
+            const updatedMemberData = {
+                birth: document.querySelector('#memberBirth').value,
+                tel: document.querySelector('#memberTel').value,
+                email: document.querySelector('#memberEmail').value,
+                memberMemo: document.querySelector('#memberMemo').value,
+            };
+            // 여기서 유효성 검사 수행
+            if (!validateForm()) {
+               // 유효성 검사를 통과하지 못했을 경우, 수정 요청을 중단하고 함수 종료
+                    alert('입력한 정보를 다시 확인해주세요.');
+                    return; // 이 부분은 함수를 여기서 종료하기 위한 코드입니다.
+            }
+            // 서버로 수정된 데이터 전송
+            fetch(`/admin/members/${memberNo}/updateMemberData`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedMemberData),
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data && data.role === 'EDUCATOR') {
+                    //MEMBER 데이터 업데이트 성공 & 교육자일 경우 EduInfo 업데이트 수행
+                    const updatedEducatorData = {
+                        schoolName: document.querySelector('#memberSchoolName').value,
+                        sido: document.querySelector('#sidoDropdown').value,
+                        sigungu: document.querySelector('#sigunguDropdown').value,
+                    };
 
-                       // 서버로 수정된 데이터 전송
-                       fetch(`/admin/members/${memberNo}/updateMemberData`, {
-                           method: 'PUT',
-                           headers: {'Content-Type': 'application/json',
-                           },
-                           body: JSON.stringify(updatedMemberData),
-                       })
-                           .then(response => {
-                               if (response.ok) {
-                                 // Check the user's role
-                                   if (data && data.role     === 'EDUCATOR') {
-                                       //MEMBER 데이터 업데이트 성공 & 교육자일 경우 EduInfo 업데이트 수행
-                                        const updatedEducatorData = {
-                                             schoolName : document.querySelector('#memberSchoolName').value,
-                                             sido : document.querySelector('#sidoDropdown').value,
-                                             sigungu : document.querySelector('#sigunguDropdown').value,
-                                        };
-
-                                 // 서버로 EducatorInfo 데이터 업데이트 요청 보내기
-                                   fetch(`/admin/members/${memberNo}/updateEducatorData`, {
-                                       method: 'PUT',
-                                       headers: {
-                                           'Content-Type': 'application/json',
-                                       },
-                                       body: JSON.stringify(updatedEducatorData),
-                                   })
-
-                                    .then(educatorResponse => {
-                                          if (educatorResponse.ok) {
-                                              // EducatorInfo 데이터 업데이트 성공 시 모달 닫기
-                                              $('#memberDetailsModal').modal('hide');
-                                          } else {
-                                               alert("교육자 정보 수정 실패");
-                                              console.error('EducatorInfo 데이터 수정 실패');
-                                          }
-                                      });
-                                  } else {
-                                       alert("회원정보가 성공적으로 수정되었습니다");
-                                      // 교육자가 아니면 이미 성공, 모달 닫기
-                                      $('#memberDetailsModal').modal('hide');
-                                  }
-                              } else {
-                                  console.error('Member 데이터 수정 실패');
-                                  alert("회원정보 수정 실패 else");
-                              }
-                          })
-                          .catch(error => {
-                          console.error('Member 데이터 수정 실패:', error);
-                              alert("회원정보 수정 실패 catch");
-                          });
+                    // 서버로 EducatorInfo 데이터 업데이트 요청 보내기
+                    fetch(`/admin/members/${memberNo}/updateEducatorData`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(updatedEducatorData),
+                    })
+                    .then(educatorResponse => {
+                        if (educatorResponse.ok) {
+                            // EducatorInfo 데이터 업데이트 성공 시 모달 닫기
+                            $('#memberDetailsModal').modal('hide');
+                        } else {
+                            alert("교육자 정보 수정 실패");
+                            console.error('EducatorInfo 데이터 수정 실패');
+                        }
+                    });
+                } else {
+                    alert("회원정보가 성공적으로 수정되었습니다");
+                    // 교육자가 아니면 이미 성공, 모달 닫기
+                    $('#memberDetailsModal').modal('hide');
+                }
+            })
+            .catch(error => {
+                console.error('Member 데이터 수정 실패:', error);
+                alert("회원정보 수정 실패");
             });
         }
+
+        // 이벤트 리스너 연결
+        document.querySelector('#editButton').addEventListener('click', handleEditButton);
+
+//            //모달 데이터 수정값 전송
+//            document.querySelector('#editButton').addEventListener('click', function() {
+//
+//            console.log('수정버튼 클릭');
+//
+//                // 유효성 검사 함수 호출
+//                   // 모달에서 사용자가 수정한 데이터 가져오기
+//                       const memberNo = document.querySelector('#editButton').getAttribute('data-memberno');
+//                       const updatedMemberData = {
+//                           birth: document.querySelector('#memberBirth').value,
+//                           tel: document.querySelector('#memberTel').value,
+//                           email: document.querySelector('#memberEmail').value,
+//                           memberMemo: document.querySelector('#memberMemo').value,
+//                       };
+//
+//                       // 서버로 수정된 데이터 전송
+//                       fetch(`/admin/members/${memberNo}/updateMemberData`, {
+//                           method: 'PUT',
+//                           headers: {'Content-Type': 'application/json',
+//                           },
+//                           body: JSON.stringify(updatedMemberData),
+//                       })
+//                           .then(response => {
+//                               if (response.ok) {
+//                                 // Check the user's role
+//                                   if (data && data.role     === 'EDUCATOR') {
+//                                       //MEMBER 데이터 업데이트 성공 & 교육자일 경우 EduInfo 업데이트 수행
+//                                        const updatedEducatorData = {
+//                                             schoolName : document.querySelector('#memberSchoolName').value,
+//                                             sido : document.querySelector('#sidoDropdown').value,
+//                                             sigungu : document.querySelector('#sigunguDropdown').value,
+//                                        };
+//
+//                                 // 서버로 EducatorInfo 데이터 업데이트 요청 보내기
+//                                   fetch(`/admin/members/${memberNo}/updateEducatorData`, {
+//                                       method: 'PUT',
+//                                       headers: {
+//                                           'Content-Type': 'application/json',
+//                                       },
+//                                       body: JSON.stringify(updatedEducatorData),
+//                                   })
+//
+//                                    .then(educatorResponse => {
+//                                          if (educatorResponse.ok) {
+//                                              // EducatorInfo 데이터 업데이트 성공 시 모달 닫기
+//                                              $('#memberDetailsModal').modal('hide');
+//                                          } else {
+//                                               alert("교육자 정보 수정 실패");
+//                                              console.error('EducatorInfo 데이터 수정 실패');
+//                                          }
+//                                      });
+//                                  } else {
+//                                       alert("회원정보가 성공적으로 수정되었습니다");
+//                                      // 교육자가 아니면 이미 성공, 모달 닫기
+//                                      $('#memberDetailsModal').modal('hide');
+//                                  }
+//                              } else {
+//                                  console.error('Member 데이터 수정 실패');
+//                                  alert("회원정보 수정 실패 else");
+//                              }
+//                          })
+//                          .catch(error => {
+//                          console.error('Member 데이터 수정 실패:', error);
+//                              alert("회원정보 수정 실패 catch");
+//                          });
+//            });
+        //} //모달열기 함수
 
 // 모달 footer에 있는 "회원 삭제" 버튼 클릭 이벤트
 document.querySelector('#deleteButton').addEventListener('click', function() {

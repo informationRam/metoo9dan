@@ -1,6 +1,9 @@
 // 유효성 검사 함수
 
         function validateForm() {
+            //role 에 따라 유효성 검사 분리
+            const memberRole = document.querySelector('#editButton').getAttribute('data-role');
+
                // 모든 필드의 유효성 검사를 통과하면 true 반환
                const isMemberBirthValid = validateMemberBirth();
                const isMemberTelValid = validateMemberTel();
@@ -9,11 +12,20 @@
                const isSidoDropdownValid = validateSidoDropdown();
                const isSigunguDropdownValid = validateSigunguDropdown();
 
-               if (!isMemberBirthValid || !isMemberTelValid || !isMemberEmailValid || !isMemberMemoValid || !isSidoDropdownValid || !isSigunguDropdownValid) {
-                   return false;
-               }
-               return true;
-        }
+               if (memberRole === 'EDUCATOR') { // role이 EDUCATOR인 경우
+                      const isSidoDropdownValid = validateSidoDropdown();
+                      const isSigunguDropdownValid = validateSigunguDropdown();
+
+                      if (!isMemberBirthValid || !isMemberTelValid || !isMemberEmailValid || !isMemberMemoValid || !isSidoDropdownValid || !isSigunguDropdownValid) {
+                          return false;
+                      }
+                  } else { // role이 EDUCATOR가 아닌 경우
+                      if (!isMemberBirthValid || !isMemberTelValid || !isMemberEmailValid || !isMemberMemoValid) {
+                          return false;
+                      }
+                  }
+                  return true;
+              }
 
                  // 입력 필드
                  const memberBirthInput = document.querySelector('#memberBirth');
