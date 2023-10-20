@@ -8,6 +8,7 @@ import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.payments.reprository.PaymentsRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,16 +28,17 @@ public class PaymentsService {
     private final GameService gameService;
     private EntityManager entityManager;
 
+
+
     // 구매한 게임컨텐츠에 대한 정보를 가져온다.
 
     public Page<Payments> paymentsList(Integer memberNo,int page) {
 
         List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("creationDate"));     //등록일순
+        sorts.add(Sort.Order.desc("paymentDate"));     //등록일순
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return paymentsRepository.findByMemberMemberNo(memberNo, pageable);
     }
-
 
 
 // OrderNumber의 가장 큰 값을 가져온다.
@@ -80,7 +82,6 @@ public class PaymentsService {
     }
 
 
-
     //목록조회 (페이징처리)
     public Page<Payments> getPay(int page) {
 
@@ -89,6 +90,22 @@ public class PaymentsService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return paymentsRepository.findAll(pageable);
     }
+
+
+    //paymentNo 값으로 해당 결제내역의 상세정보를 가져옴
+    public Payments getPayment(Integer paymentNo) {
+
+        Optional<Payments> byId = paymentsRepository.findById(paymentNo);
+
+        Payments payments = byId.get();
+        return payments;
+    }
+
+
+
+
+
+
 
 
    /* //결제 내용 저장하기 (DB)

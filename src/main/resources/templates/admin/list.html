@@ -1,0 +1,176 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/game/list.css" />
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+<h1>게임컨텐츠 목록</h1>
+            <div class="col-lg-4">
+                <div class="top-streamers">
+                    <div class="heading-section">
+                        <h4><em>Best</em>Game</h4>
+                    </div>
+                    <ul>
+                        <li>
+                            <span>01</span>
+                            <img src="/css/game/cyborg/assets/images/avatar-01.jpg" alt="" style="max-width: 46px; border-radius: 50%; margin-right: 15px;">
+                            <h6><i class="fa fa-check"></i> LahutaM</h6>
+                            <div class="main-button">
+                                <a href="#">Follow</a>
+                            </div>
+                        </li>
+                        <li>
+                            <span>02</span>
+                            <img src="/css/game/cyborg/assets/images/avatar-02.jpg" alt="" style="max-width: 46px; border-radius: 50%; margin-right: 15px;">
+                            <h6><i class="fa fa-check"></i> Kengan</h6>
+                            <div class="main-button">
+                                <a href="#">Follow</a>
+                            </div>
+                        </li>
+                        <li>
+                            <span>03</span>
+                            <img src="/css/game/cyborg/assets/images/avatar-03.jpg" alt="" style="max-width: 46px; border-radius: 50%; margin-right: 15px;">
+                            <h6><i class="fa fa-check"></i> Areluwa</h6>
+                            <div class="main-button">
+                                <a href="#">Follow</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- ***** Featured Games End ***** -->
+        <div class="gaming-library">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col">
+                        <h4>게임 콘텐츠</h4>
+                    </div>
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
+                            <button class="btn btn-primary" type="button" onclick="searchGames()">검색</button>
+                        </div>
+                    </div>
+                </div>
+                <form id="nadopayment" class="my-2" th:action="@{|/payments/paymentsform|}" method="post">
+                    <div class="card-deck">
+                        <div th:each="game : ${gamePage.content}" class="card mb-3" style="height: 200px;">
+                            <div class="row g-0">
+                                <div class="col-md-4" style="height: 200px;">
+                                    <img th:if="${game != null and game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                                         th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}"
+                                         alt="게임 이미지" class="card-img" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div class="col-lg-10">
+                                            <h5 class="nado-card-title" th:text="${game.gameName}"></h5>
+                                            <p class="card-text" id="gameList">
+                              <span th:switch="${game.difficulty}">
+                                <span th:case="'beginner'" class="badge bg-success" >초급</span>
+                                <span th:case="'intermediate'" class="badge bg-warning text-dark">중급</span>
+                                <span th:case="'advanced'" class="badge bg-danger">고급</span>
+                              </span>
+                                            </p>
+                                            <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration}"></span></p>
+                                            <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
+                                            <p class="card-text">
+                            <span
+                                    th:text="${#strings.length(game.packageDetails) > 50 ? #strings.substring(game.packageDetails, 0, 50) + '...' : game.packageDetails}"
+                                    data-toggle="popover" data-content="${game.packageDetails}"
+                                    data-placement="top"
+                                    data-trigger="hover"
+                            >
+                            </span>
+                                        </div>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name="gameContentNo" id="checkbox1" th:value="${game.gameContentNo}" data-game-content-no="${game.gameContentNo}">
+                                                <input type="hidden" id="hiddenGameContentNos" name="gameContentNos">
+                                                <label class="form-check-label" for="checkbox1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- 페이지 네이션 처리 -->
+        <div id="pagination">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <!-- 이전 페이지 링크 -->
+                    <li class="page-item" th:classappend="${gamePage.pageable.pageNumber == 0} ? 'disabled'">
+                        <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber - 1}, searchText=${searchText})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <!-- 페이지 번호 링크 -->
+                    <li class="page-item" th:classappend="${i == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                        <a class="page-link" href="#" th:href="@{/game/alllist(page=${i}, searchText=${searchText})}" th:text="${i}">1</a>
+                    </li>
+                    <!-- 다음 페이지 링크 -->
+                    <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">
+                        <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber + 1}, searchText=${searchText})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+      </span>
+        </div>
+        <span>
+          <button type="submit" class="btn btn-outline-warning" id="subscribeButton" onclick="subscribe()">구독하기</button>
+        </span>
+        </form>
+    </div>
+</div>
+
+
+</div>
+
+<table>
+    <tr>
+
+        <th>주문번호</th>
+
+        <th>Method</th>
+        <th>Payment Date</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th>Depositor Name</th>
+    </tr>
+    <tr th:each="payment : ${payments}">
+        <td th:text="${payment.orderNumber}"></td>
+        <td th:text="${payment.contact}"></td>
+        <td th:text="${payment.method}"></td>
+        <td th:text="${payment.paymentDate}"></td>
+        <td th:text="${payment.status}"></td>
+        <td th:text="${payment.amount}"></td>
+        <td th:text="${payment.depositorName}"></td>
+    </tr>
+    <tr th:each="game : ${gameContentsList}">
+        <td th:text="${game.gameContentNo}"></td>
+        <td th:text="${game.gameName}"></td>
+        <td th:text="${game.difficulty}"></td>
+        <td th:text="${game.subscriptionDuration}"></td>
+        <td th:text="${game.maxSubscribers}"></td>
+        <td th:text="${game.salePrice}"></td>
+        <td th:text="${game.packageDetails}"></td>
+        <td th:text="${game.creationDate}"></td>
+    </tr>
+</table>
+        </div>
+</html>

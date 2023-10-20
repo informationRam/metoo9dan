@@ -226,5 +226,9 @@ public class EducationService {
         List<EducationalResources> distinctByResourceNameIsNotNull = educationalRepository.findDistinctByResourceNameIsNotNull();
         return distinctByResourceNameIsNotNull;
     }
+
+    public List<EducationalResources> getEducationalResourcesForGameContents(GameContents gameContents) {
+        return educationalRepository.findByGameContents(gameContents);
+    }
 }//class
 

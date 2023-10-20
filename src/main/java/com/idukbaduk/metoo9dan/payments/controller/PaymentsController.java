@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.payments.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.*;
+import com.idukbaduk.metoo9dan.education.service.EducationService;
 import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
@@ -33,7 +34,7 @@ import java.util.List;
 public class PaymentsController {
 
     private final GameService gameService;
-    private final GameFilesService gameFilesService;
+    private final EducationService educationService;
     private final KakaoPayService kakaoPayService;
     private final PaymentsService paymentsService;
     private final MemberService memberService;
@@ -130,25 +131,70 @@ public class PaymentsController {
     }
 
 
-    //게임컨텐츠 구매 목록조회
+    //구매 목록조회
     @GetMapping("/list")
-    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,Principal principal) {
+    public String paymentsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, Payments payments,Principal principal) {
 
         Member member = memberService.getUser(principal.getName());
-        //List<Payments> payments = paymentsService.paymentsList(member.getMemberNo());
+        Page<Payments> paymentsPage = paymentsService.paymentsList(member.getMemberNo(), page);
 
         // Create a list to store the associated GameContents
         List<GameContents> gameContentsList = new ArrayList<>();
 
-       /* for (Payments payment : payments) {
+        for (Payments payment : paymentsPage) {
             GameContents gameContentsForPayment = paymentsService.getGameContentsForPayment(payment);
             gameContentsList.add(gameContentsForPayment);
         }
 
-        model.addAttribute("payments", payments);*/
+        for (Payments payment : paymentsPage) {
+            GameContents gameContentsForPayment = paymentsService.getGameContentsForPayment(payment);
+
+            // Fetch and add associated EducationalResources
+            List<EducationalResources> educationalResources = educationService.getEducationalResourcesForGameContents(gameContentsForPayment);
+            gameContentsForPayment.setEducationalResourcesList(educationalResources);
+
+            gameContentsList.add(gameContentsForPayment);
+        }
+
+
+            int currentPage = paymentsPage.getPageable().getPageNumber();
+        int totalPages = paymentsPage.getTotalPages();
+        int pageRange = 5; // 한 번에 보여줄 페이지 범위
+
+        int startPage = Math.max(0, currentPage - pageRange / 2);
+        int endPage = startPage + pageRange - 1;
+        if (endPage >= totalPages) {
+            endPage = totalPages - 1;
+            startPage = Math.max(0, endPage - pageRange + 1);
+        }
+
+// 페이지 번호에 1을 더해줍니다.
+        startPage += 1;
+        endPage += 1;
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("paymentsPage", paymentsPage);
         model.addAttribute("gameContentsList", gameContentsList);
 
         return "payments/list";
+    }
+
+    //상세조회
+    @GetMapping("/detail/{paymentNo}")
+    public String paymentDetail(@PathVariable Integer paymentNo,Model model, @RequestParam(value = "page", defaultValue = "0") int page, Payments payments,Principal principal) {
+
+        Member member = memberService.getUser(principal.getName());
+
+        Payments payment = paymentsService.getPayment(paymentNo);
+        GameContents gameContents = payment.getGameContents();
+        List<EducationalResources> educationTogameno = gameContents.getEducationalResourcesList();
+
+        model.addAttribute("payment", payment);
+        model.addAttribute("gameContents", gameContents);
+        model.addAttribute("education", educationTogameno);
+
+        return "payments/detail";
     }
 
 

@@ -1,0 +1,52 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/game/list.css" />
+    <style>
+
+    </style>
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/payments/paySidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+
+            <h1>상세보기</h1>
+            <table>
+                <tr>
+                    <th>주문번호</th>
+                    <th>결제수단</th>
+                    <th>결제일</th>
+                    <th>상태</th>
+                    <th>구매가</th>
+                    <th>Game Name</th>
+                    <th>Educational Resources</th>
+                    <th>Game Content Files</th>
+                </tr>
+                <tr>
+                    <td th:text="${payment.orderNumber}"></td>
+                    <td th:text="${payment.method}"></td>
+                    <td th:text="${#temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td th:text="${payment.status}"></td>
+                    <td th:text="${payment.amount <= 999 ? #numbers.formatInteger(payment.amount.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(payment.amount.intValue(), 3, 'COMMA') + '원'}"></td>
+                    <td th:text="${payment.gameContents.gameName}"></td>
+                    <td>
+                        <ul>
+                            <li th:each="resource : ${payment.gameContents.educationalResourcesList}">
+                                <span th:text="${resource.resourceName}"></span>
+                            </li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li th:each="file : ${payment.gameContents.gameContentFilesList}">
+                                <img th:src="@{|/upload/game/${file.copyFileName}|}" alt="Game Image" style="max-width: 100px;">
+                                <span th:text="${file.copyFileName}"></span>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+
+        </div>
+</html>

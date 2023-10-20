@@ -33,6 +33,9 @@ public interface EducationRepository extends JpaRepository<EducationalResources,
     // ResourceName중복 제거
     @Query("SELECT e FROM EducationalResources e WHERE e.resourceName IS NOT NULL GROUP BY e.resourceName")
     List<EducationalResources> findDistinctByResourceNameIsNotNull();
+
+
+    List<EducationalResources> findByGameContents(GameContents gameContents);
 }
 
 

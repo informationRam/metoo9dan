@@ -155,23 +155,6 @@ public class GameController {
 
     //게임콘텐츠 목록조회
     @GetMapping("/list")
-    public String gameList(Model model) {
-        List<GameContents> allGameContents = gameService.getAllGameContents();
-
-        System.out.println("allGameContents1?: " + allGameContents);
-        // 각 게임 컨텐츠에 대한 파일 정보를 가져와서 모델에 추가
-        for (GameContents gameContents : allGameContents) {
-            System.out.println("gameContents?: " + gameContents);
-            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gameContents.getGameContentNo());
-            gameContents.setGameContentFilesList(gameContentFilesList);
-        }
-        // Model
-        model.addAttribute("gameList", allGameContents);
-        return "sb-admin-7.0.4/tables";
-    }
-
-    //게임콘텐츠 목록조회
-    @GetMapping("/list2")
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
 
         // 게임컨텐츠 목록 조회
@@ -214,7 +197,6 @@ public class GameController {
         return "game/list";
     }
 
-
     // 게임 상세조회
     @GetMapping("/detail/{gameContentNo}")
     public String gameDetail(@PathVariable Integer gameContentNo, Model model) {
@@ -224,7 +206,6 @@ public class GameController {
         model.addAttribute("gameContents", gameContents);
         return "game/detailForm";
     }
-
 
     //게임콘텐츠 수정폼
     @GetMapping("/modify/{gameContentNo}")
@@ -251,7 +232,6 @@ public class GameController {
 
         return "game/modify";
     }
-
 
     @PostMapping("/modify/{gameContentNo}")
     public String modifyGame(@PathVariable Integer gameContentNo, @ModelAttribute("gameValidation") GameValidation gameValidation, @RequestParam MultiValueMap<String, String> params, @RequestParam(name = "selectedValues", required = false) String selectedValues) throws IOException {
@@ -289,9 +269,9 @@ public class GameController {
                 gameFilesService.save(gameContents, gameValidation);
             }
 
-            return "redirect:/game/list2";
+            return "redirect:/game/list";
         }
-        return "redirect:/game/list2"; // Handle the case where gameContents is not found
+        return "redirect:/game/list"; // Handle the case where gameContents is not found
     }
 
 
@@ -314,69 +294,11 @@ public class GameController {
         }
     }
 
-/*
-    //  삭제하기
-    @GetMapping("/delete/{gameContentNo}")
-    public String gameDelete(@PathVariable("gameContentNo") Integer gameContentNo) {
-        // 현재 사용자의 인증 정보를 가져옴
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // 현재 사용자의 권한 중 하나라도 "ROLE_ADMIN"이 아니라면
-//        if (!authentication.getAuthorities().stream()
-//                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"권한이 없습니다.");
-//        }
-        GameContents gameContents = gameService.getGameContents(gameContentNo);
-        gameFilesService.deleteFile(gameContents.getGameContentNo());
-        gameService.delete(gameContents);
-        return "redirect:/game/list2";    //목록으로이동
-    }*/
-
     //  삭제하기
     @GetMapping("/test")
     public String test() {
         return "sb-admin-7.0.4/charts";    //목록으로이동
     }
-
-    // ----------------- 테스트 --------------------!
-
-
- /*   // page 1
-    @GetMapping("/page1")
-    public String getPage1(Model model) {
-        model.addAttribute("gameValidation", new GameValidation());
-        return "game/page1";
-    }
-
-    @PostMapping("/page1")
-    public String handlePage1Post(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult
-                                      ,@RequestParam("boardFile") MultipartFile[] files, HttpSession session) {
-
-        // 파일 처리 로직
-        List<String> originFileNames = new ArrayList<>();
-
-        for (MultipartFile boardFile : files) {
-            String originalFileName = boardFile.getOriginalFilename();
-            String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-            originFileNames.add(originalFileName); // originFileName을 리스트에 추가
-        }
-
-        // 세션에 originFileNames 리스트를 저장
-        session.setAttribute("gameContentFiles", originFileNames);
-        session.setAttribute("gameValidationPage1", gameValidation);
-
-        return "redirect:/game/page2"; // Page2로 리다이렉트
-    }
-
-    // page 2
-    @GetMapping("/page2")
-    public String getPage2(@ModelAttribute("gameValidation") GameValidation gameValidation, Model model) {
-        List<EducationalResources> allEducation = educationService.getAllEducation();
-
-       *//* model.addAttribute("gameValidation",gameValidation);*//*
-        model.addAttribute("allEducation", allEducation);
-        return "game/page2";
-    }*/
 
     // 게임등록 폼에서 교육자료 선택
     @Transactional(readOnly = true)

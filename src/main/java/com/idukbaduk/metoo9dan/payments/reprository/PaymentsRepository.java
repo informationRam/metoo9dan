@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.payments.reprository;
 
+import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Payments;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,10 @@ public interface PaymentsRepository extends JpaRepository<Payments, Integer> {
     //List<Payments> findByMemberMemberNo(Integer memberNo);
 
     Page<Payments> findByMemberMemberNo(Integer memberNo, Pageable pageable);
+
+
+    //paymentNo로 게임 값 가져오기
+    GameContents findGameContentsByPaymentNo(Integer paymentNo);
 
 
 }
