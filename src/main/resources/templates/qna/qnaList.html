@@ -13,7 +13,7 @@
                 <a th:text="|총 게시물 ${questionPage.getTotalElements}개 조회되었습니다.|"></a>
                 <table class="table table-hover">
                     <thead class="table-dark">
-                        <tr>
+                        <tr class="text-center">
                             <th>No</th>
                             <th>제목</th>
                             <th>작성자</th>
@@ -23,18 +23,18 @@
                     </thead>
                     <tbody>
                         <tr th:each="question, loop:${questionPage}">
-                            <td th:text="${question.questionNo}"></td>
+                            <td class="text-center" th:text="${question.questionNo}"></td>
                             <td><a th:text="${question.questionTitle}"
                                    th:href="@{|/qna/detail/${question.questionNo}|}"></a></td>
-                            <td th:text="${question.member.memberId}"></td>
-                            <td th:text="${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}"></td>
-                            <td>
+                            <td class="text-center" th:text="${question.member.memberId}"></td>
+                            <td class="text-center" th:text="${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td class="text-center">
                                 <span th:if="${question.isAnswered}==false" class="badge rounded-pill text-bg-secondary">답변대기</span>
                                 <span th:unless="${question.isAnswered}==false" class="badge rounded-pill text-bg-primary">답변완료</span>
                             </td>
                         </tr>
                         <tr th:if="${questionPage.isEmpty()}">
-                            <td colspan="5" class="">작성된 문의사항이 없습니다.</td>
+                            <td colspan="5" class="text-center">작성된 문의사항이 없습니다.</td>
                         </tr>
                     </tbody>
                 </table>

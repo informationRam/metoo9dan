@@ -25,34 +25,55 @@
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h2>문의사항 게시글 수정</h2>
             <form id="questionForm" th:object="${questionForm}" th:action="@{|/qna/questionModify/${questionNo}|}" method="post" enctype="multipart/form-data">
-                <label for="title">제목</label>
-                <input type="text" th:field="*{title}" th:value="${question.questionTitle}" placeholder="제목을 입력하세요" class="form-control">
-                <label for="content" class="col-form-label">내용</label>
-                <textarea th:field="*{content}" th:value="${question.questionContent}" rows="6" placeholder="내용을 입력하세요" class="form-control p-2"></textarea>
-
-                <span>기존에 첨부된 파일</span>
-                <div id="attachFiles" th:each="file : ${filesList}"><!--첨부파일 있으면 여기에 추가-->
-                    <label th:for="|id${file.originFileName}|">
-                        <a th:if="${file}!=null "
-                           th:id="|id${file.originFileName}|">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M21.586 10.461l-10.05 10.075c-1.95 1.949-5.122 1.949-7.071 0s-1.95-5.122 0-7.072l10.628-10.585c1.17-1.17 3.073-1.17 4.243 0 1.169 1.17 1.17 3.072 0 4.242l-8.507 8.464c-.39.39-1.024.39-1.414 0s-.39-1.024 0-1.414l7.093-7.05-1.415-1.414-7.093 7.049c-1.172 1.172-1.171 3.073 0 4.244s3.071 1.171 4.242 0l8.507-8.464c.977-.977 1.464-2.256 1.464-3.536 0-2.769-2.246-4.999-5-4.999-1.28 0-2.559.488-3.536 1.465l-10.627 10.583c-1.366 1.368-2.05 3.159-2.05 4.951 0 3.863 3.13 7 7 7 1.792 0 3.583-.684 4.95-2.05l10.05-10.075-1.414-1.414z"/></svg>
-                            <a th:text="${file.originFileName}"
-                               th:href="@{|/qna/download?fileName=${file.fileUrl}/${file.copyFileName}_${file.originFileName}|}"></a>
-                            <span class="btn btn-sm btn-danger" th:attr="data-fileNo=${file.fileNo}" onclick="deleteFile(event, this.getAttribute('data-fileNo'))">삭제</span>
-                        </a>
-                    </label>
+                <div class="mb-3 mt-3 row">
+                    <label for="title" class="col-sm-2 col-form-label">제목
+                        <svg xmlns="http://www.w3.org/2000/svg" height="0.4em" viewBox="0 0 512 512" style="fill:#d41633;"><path d="M208 32c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V172.9l122-70.4c15.3-8.8 34.9-3.6 43.7 11.7l16 27.7c8.8 15.3 3.6 34.9-11.7 43.7L352 256l122 70.4c15.3 8.8 20.5 28.4 11.7 43.7l-16 27.7c-8.8 15.3-28.4 20.6-43.7 11.7L304 339.1V480c0 17.7-14.3 32-32 32H240c-17.7 0-32-14.3-32-32V339.1L86 409.6c-15.3 8.8-34.9 3.6-43.7-11.7l-16-27.7c-8.8-15.3-3.6-34.9 11.7-43.7L160 256 38 185.6c-15.3-8.8-20.5-28.4-11.7-43.7l16-27.7C51.1 98.8 70.7 93.6 86 102.4l122 70.4V32z"/></svg></label>
+                    <div class="col-sm-10">
+                        <input type="text" th:field="*{title}" th:value="${question.questionTitle}" placeholder="제목을 입력하세요" class="form-control">
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="content" class="col-sm-2 col-form-label">내용
+                        <svg xmlns="http://www.w3.org/2000/svg" height="0.4em" viewBox="0 0 512 512" style="fill:#d41633;"><path d="M208 32c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V172.9l122-70.4c15.3-8.8 34.9-3.6 43.7 11.7l16 27.7c8.8 15.3 3.6 34.9-11.7 43.7L352 256l122 70.4c15.3 8.8 20.5 28.4 11.7 43.7l-16 27.7c-8.8 15.3-28.4 20.6-43.7 11.7L304 339.1V480c0 17.7-14.3 32-32 32H240c-17.7 0-32-14.3-32-32V339.1L86 409.6c-15.3 8.8-34.9 3.6-43.7-11.7l-16-27.7c-8.8-15.3-3.6-34.9 11.7-43.7L160 256 38 185.6c-15.3-8.8-20.5-28.4-11.7-43.7l16-27.7C51.1 98.8 70.7 93.6 86 102.4l122 70.4V32z"/></svg></label>
+                    <div class="col-sm-10">
+                        <textarea th:field="*{content}" th:value="${question.questionContent}" rows="6" placeholder="내용을 입력하세요" class="form-control p-2"></textarea>
+                    </div>
                 </div>
 
-                첨부파일 (파일 1개당 최대 첨부용량: 30MB / 이미지 파일만 업로드 가능)
-                <div id="fileInfo" style="border: 1px solid black;">
-                    <p>현재 첨부된 파일 정보</p>
+                <div class="form-text mb-3 row">
+                    <label class="col-sm-2 col-form-label">기존에 첨부된 파일</label>
+                    <div class="col-sm-10 p-2">
+                        <div id="attachFiles" th:each="file : ${filesList}"><!--첨부파일 있으면 여기에 추가-->
+                            <label th:for="|id${file.originFileName}|">
+                                <a th:if="${file}!=null " th:id="|id${file.originFileName}|">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path d="M21.586 10.461l-10.05 10.075c-1.95 1.949-5.122 1.949-7.071 0s-1.95-5.122 0-7.072l10.628-10.585c1.17-1.17 3.073-1.17 4.243 0 1.169 1.17 1.17 3.072 0 4.242l-8.507 8.464c-.39.39-1.024.39-1.414 0s-.39-1.024 0-1.414l7.093-7.05-1.415-1.414-7.093 7.049c-1.172 1.172-1.171 3.073 0 4.244s3.071 1.171 4.242 0l8.507-8.464c.977-.977 1.464-2.256 1.464-3.536 0-2.769-2.246-4.999-5-4.999-1.28 0-2.559.488-3.536 1.465l-10.627 10.583c-1.366 1.368-2.05 3.159-2.05 4.951 0 3.863 3.13 7 7 7 1.792 0 3.583-.684 4.95-2.05l10.05-10.075-1.414-1.414z"/></svg>
+                                    <a th:text="${file.originFileName}" th:href="@{|/qna/download?fileName=${file.fileUrl}/${file.copyFileName}_${file.originFileName}|}"></a>
+                                    <span class="badge bg-danger" style="cursor: pointer;" th:attr="data-fileNo=${file.fileNo}" onclick="deleteFile(event, this.getAttribute('data-fileNo'))">삭제</span>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="drop-area" class="form-label">파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.
-                        <input class="form-control" type="file" id="drop-area" name="uploadFiles" accept="image/*" multiple>
+                <div class="form-text row"><!--style="border: 1px solid black;"-->
+                    <p class="col-sm-2 col-form-label">(선택)<br/>첨부된 파일 정보</p>
+                    <div class="col-sm-10" id="fileInfo"></div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label for="fileUpload" >
+                        <div id="drop-area" class="form-text">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 384 512"><path d="M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z"/></svg>
+                            파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.
+                            <input class="" style="display:none;" type="file" id="fileUpload" name="uploadFiles" accept="image/*" multiple>
+                        </div>
                     </label>
+                    <div class="d-flex justify-content-end form-text">(파일 1개당 최대 첨부용량: 30MB / 이미지 파일만 업로드 가능)</div>
                 </div>
-                <input type="button" onclick="saveForm()" value="게시글 저장" class="btn btn-primary">
+                <div class="d-flex justify-content-end">
+                    <input type="button" onclick="saveForm()" value="게시글 저장" class="btn btn-primary">
+                </div>
+
+
             </form>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->

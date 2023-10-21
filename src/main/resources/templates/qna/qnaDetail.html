@@ -59,7 +59,7 @@
                         <a class="badge rounded-pill text-bg-primary" th:text="${answer.member.memberId}"></a>
                         <a class="card-subtitle text-body-secondary" th:text="|답변일시: ${#temporals.format(answer.writeDate, 'yyyy-MM-dd HH:mm')}|"></a>
                         <p class="card-text" th:text="${answer.answerContent}" style="white-space: pre;"></p>
-                        <div>
+                        <div th:if="${memberRole}==ADMIN">
                             <a th:href="@{|/answer/delete/${answer.answerNo}|}" class="btn btn-sm btn-danger">답변 삭제</a>
                         </div>
                     </div>
