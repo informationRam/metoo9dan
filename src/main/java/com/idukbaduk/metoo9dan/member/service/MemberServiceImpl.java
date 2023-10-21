@@ -124,7 +124,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void userUpdate(Member member) {
 
-        member.setMembershipStatus("Premium member");
+        member.setMembershipStatus("유료회원");
         memberRepository.save(member);
     }
 

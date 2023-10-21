@@ -61,19 +61,21 @@
                 </div>
               </div>
               <div class="col-lg-5">
-                <h3 class="mb-3">총 [[${session.selectedGameContents.size()}]] 건,  합계: th:t 원</h3>
--->
+                <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>
+
+                <!-- 소수점 제거한 totalSalePrice 출력 -->
+                <h3 class="mb-3">총 <span th:text="${#lists.size(gameContentNos)}"></span> 건,
+                  총 <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>원</h3>
               </div>
             </div>
             <div>
               <div class="d-flex justify-content-center">
-                <input type="hidden" id="item_name" name="item_name" th:value="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}" />
-                <input type="hidden" id="total-amount" name="total_amount" th:value="${session.totalSalePrice}" />
+                <input type="hidden" id="item_name" name="item_name" th:value="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"/>
+                <input type="hidden" id="total-amount" name="total_amount" th:value="${totalSalePrice}" />
             <!--  <button type="submit" class="btn btn-primary mt-3">결제하기</button>-->
               <!--  <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#paymentModal">결제하기</button>-->
                 <!-- 결제하기 버튼 -->
                 <button type="button" class="btn btn-primary mt-3" id="openModalBtn">결제하기</button>
-
               </div>
           </div>
             <!-- 반품 규정 안내 -->
@@ -101,13 +103,12 @@
             <div class="images d-flex flex-row align-items-center">
               <img src="/image/game/baduk_icon_06.png" class="rounded" width="60">
               <div class="d-flex flex-column ml-4">
-                <!-- 이 부분을 Thymeleaf로 변경 -->
                 <span class="business" th:text="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"></span>
                 <span class="plan">content purchase</span>
               </div>
             </div>
             <div class="d-flex flex-column ml-4">
-              <span class="business">₩</span>
+              <span class="business" th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"> 원</span>
             </div>
           </div>
           <div class="credit rounded mt-4">
@@ -156,7 +157,7 @@
               </div>
             </div>
             <div class="d-flex flex-column ml-4">
-              <span class="business">₩</span>
+              <span class="business" th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"> 원</span>
             </div>
           </div>
           <div class="mt-3">

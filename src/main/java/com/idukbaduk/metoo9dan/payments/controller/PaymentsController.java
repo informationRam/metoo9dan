@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -46,7 +47,12 @@ public class PaymentsController {
     // 결제하기 폼
     //@RequestMapping(value = "/paymentsform", method = {RequestMethod.GET, RequestMethod.POST})
     @PostMapping("/paymentsform")
-    public String paymentsform(@RequestParam(name = "gameContentNos") String gameContentNos, Model model, HttpSession session) {
+    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
+    public String paymentsform(@RequestParam(name = "gameContentNos") String gameContentNos, Model model, HttpSession session,Principal principal) {
+
+        Member user = memberService.getUser(principal.getName());
+        session.setAttribute("user",user);
+        System.out.println("user1?"+user);
 
         System.out.println("1. 넘어온 값: gameContentNos? " + gameContentNos);
 
@@ -56,28 +62,28 @@ public class PaymentsController {
 
             // JSON 배열을 순회하며 각 항목을 int로 변환
             List<Integer> gameContentNoList = new ArrayList<>();
+            List<GameContents> gameContents = new ArrayList<>();
+            Double total = 0.0;
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 int gameContentNo = jsonArray.getInt(i);
                 gameContentNoList.add(gameContentNo);
+
+                gameContents.add(gameService.getGameContents(gameContentNo));
+                Double salePrice = gameContents.get(i).getSalePrice();
+                total += salePrice;
+
                 // 예: 콘솔에 출력
                 System.out.println("2. int로 변경 gameContentNo: " + gameContentNo);
-            }
-
-            //GameContents 값 담기
-            List<GameContents> gameContents = new ArrayList<>();
-
-            for(int gameNo : gameContentNoList){
-                gameContents.add(gameService.getGameContents(gameNo));
                 System.out.println("gameContents?:" + gameContents);
+                System.out.println("totalSalePrice?:" + total);
             }
 
-            int totalSalePrice = 0;
-            for(GameContents gameconSaleprice : gameContents){
-                Double salePrice = gameconSaleprice.getSalePrice();
-                totalSalePrice += salePrice;
-                System.out.println("totalSalePrice?:" + totalSalePrice);
-            }
+            int totalSalePrice = total.intValue();
+
+            session.setAttribute("totalSalePrice", totalSalePrice);
+            session.setAttribute("selectedGameContents", gameContents);
+
 
             // 리스트 형태로 컨트롤러에서 사용할 수 있음
             model.addAttribute("gameContentNos", gameContentNoList);
@@ -183,6 +189,7 @@ public class PaymentsController {
 
     //구매 목록조회
     @GetMapping("/list")
+    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
     public String paymentsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, Payments payments,Principal principal) {
 
         Member member = memberService.getUser(principal.getName());
@@ -266,9 +273,9 @@ public class PaymentsController {
         String pay = "pay";
         KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken,member,selectedGameContents,pay);
 
-        // 세션을 종료 (무효화)
-        session = request.getSession();
-        session.invalidate();
+        // 세션을 종료.
+        session.removeAttribute("selectedGameContents");
+        session.removeAttribute("totalSalePrice");
 
         // 구매목록으로 redirect
         return "redirect:/payments/list";
