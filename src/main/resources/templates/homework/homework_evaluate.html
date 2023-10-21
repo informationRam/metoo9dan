@@ -408,7 +408,6 @@
                             evaluationValue: $(this).val()
                         });
                     });
-                    console.log("evaluations"+evaluations.content);
 
                     // AJAX를 사용하여 서버로 전송합니다.
                     $.post('/homework/evaluate/submit-evaluation', { evaluations: evaluations }, function(response) {

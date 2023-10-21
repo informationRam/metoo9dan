@@ -5,21 +5,6 @@
     display: none;
 }
 
-#hw-homeworkDetailModal,
-#hw-editModal
- {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    width: 400px;
-    border-radius: 8px;
-    z-index: 10;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-}
-
 #hw-backdrop {
     position: fixed;
     top: 0;
@@ -126,7 +111,6 @@
     font-size: 16px;
     transition: all 0.3s; /* 부드러운 전환 효과 */
     background-color: #ffffff;
-    background-image: url('path_to_search_icon.svg'); /* 검색 아이콘 이미지 */
     background-repeat: no-repeat;
     background-position: 10px center; /* 아이콘의 위치 설정 */
     padding-left: 40px; /* 텍스트가 아이콘과 겹치지 않도록 왼쪽 패딩 추가 */
@@ -249,3 +233,152 @@
     color: #999;
 }
 
+.groupMessage {
+    padding: 20px;
+    background-color: transparent; /* 배경을 투명하게 변경 */
+    font-size: 18px; /* 글자 크기 증가 */
+    font-weight: bold; /* 글자를 굵게 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    color: #495057; /* 부트스트랩의 dark text color */
+    margin-top: 20px; /* 위쪽 여백 */
+    border: none; /* 테두리 제거 */
+    display:none;
+}
+
+.groupMessage img {
+    width: 15%; /* 이미지 넓이를 50%로 설정 */
+    display: block; /* 이미지를 block 요소로 설정하여 중앙 정렬하기 쉽게 함 */
+    margin: 10px auto; /* 위 아래 10px의 여백을 주고 좌우는 자동으로 설정하여 중앙 정렬 */
+}
+
+/* 기본 스타일 설정 */
+.naod-modal {
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    z-index: 10;
+}
+
+.naod-modal-header {
+    background-color: #ffebcd; /* 노랑색의 연한 버전 */
+    padding: 10px 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.naod-modal-title {
+    font-weight: bold;
+    color: #ffab00; /* 노랑색 */
+}
+
+.naod-modal-body {
+    padding: 20px;
+}
+
+.row {
+    margin-bottom: 15px;
+}
+
+.naod-title {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.naod-content {
+    margin-left: 10px;
+    color: #555;
+}
+
+.modal-footer {
+    padding: 10px 20px;
+    background-color: #ffebcd;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.nado-edit-btn, .nado-delete-btn {
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    margin: 10px;
+}
+
+.nado-edit-btn {
+    background-color: #ffab00;
+    color: #fff;
+}
+
+.nado-delete-btn {
+    background-color: #ff6b6b; /* 붉은색 */
+    color: #fff;
+}
+
+/* 부트스트랩 아이콘 스타일
+.naod-title::before {
+    content: "\f05a";
+    font-family: "Bootstrap Icons";
+    margin-right: 8px;
+    color: #ffab00;
+}
+ */
+
+/* 기본 스타일링 (input, select, number에 공통적으로 적용될 스타일) */
+.nodo-edit-input, .nado-edit-select, .nado-edit-number {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    border: 1px solid #ffebcd;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #555;
+    box-sizing: border-box;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+
+    /* 포커스 스타일 */
+    &:focus {
+        border: 1px solid #ffa000;
+        box-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+        outline: none;
+    }
+}
+
+/* select의 화살표 스타일링 */
+.nado-edit-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="#555" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5H7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 30px;
+}
+
+/* number 입력 타입 스타일링 */
+.nado-edit-number::-webkit-inner-spin-button,
+.nado-edit-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.nado-edit-number {
+    -moz-appearance: textfield;
+}
+
+.yellow-divider {
+    height: 1px;
+    background-color: #ffab00;
+    margin: 20px 10px;
+}

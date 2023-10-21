@@ -101,7 +101,12 @@
                     </tr>
                     <!-- 목록이 없을 때의 메시지 -->
                     <tr th:if="${homeworkList == null or homeworkList.size() == 0}">
-                        <td colspan="6" class="nado-none">등록된 숙제가 없습니다.</td>
+                        <td colspan="6" class="nado-none">
+                            <div id="groupMessage" class="groupMessage mb-3 text-center">
+                                <img src="/css/homework/groupIcon.png" alt="Group Icon" class="mb-2">
+                                <div id="groupMessageText"></div>
+                            </div>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -124,93 +129,100 @@
             </div>
 
             <!-- 통합 모달창 -->
-            <div id="hw-homeworkDetailModal" class="modal-lg">
+            <div id="hw-homeworkDetailModal" class="naod-modal">
                 <!--여기서 부터는 모달 안 내용은 건들지 말고-->
                 <div id="hwDetailCheck">
-                    <div class="modal-header">
-                        <h2 id="modalTitle" class="modal-title"></h2>
+                    <div class="naod-modal-header">
+                        <h2 id="modalTitle" class="naod-modal-title"></h2>
                     </div>
-                    <div class="modal-body">
+                    <div class="naod-modal-body">
                         <div class="row">
-                            <div class="col-md-3">내용:</div>
-                            <div class="col-md-9">
+                            <div class="naod-title">내용</div>
+                            <div class="naod-content">
                                 <p id="modalContent"></p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">게임 콘텐츠명:</div>
-                            <div class="col-md-9">
+                            <div class="naod-title">게임 콘텐츠명</div>
+                            <div class="naod-content">
                                 <p id="modalGameTitle"></p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">진도:</div>
-                            <div class="col-md-9">
+                            <div class="naod-title">진도</div>
+                            <div class="naod-content">
                                 <p id="modalProgress"></p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">메모:</div>
-                            <div class="col-md-9">
+                            <div class="naod-title">기한</div>
+                            <div class="naod-content">
+                                <p id="modalDueDate"></p>
+                            </div>
+                        </div>
+                        <div class="yellow-divider"></div>
+                        <div class="row">
+                            <div class="naod-title">메모</div>
+                            <div class="naod-content">
                                 <p id="modalMemo"></p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">기한:</div>
-                            <div class="col-md-9">
-                                <p id="modalDueDate"></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3">생성일:</div>
-                            <div class="col-md-9">
+                            <div class="naod-title">생성일</div>
+                            <div class="naod-content">
                                 <p id="modalCreateDate"></p>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                    <button id="editBtn" class="btn btn-primary">수정</button>
-                    <button id="deleteBtn" class="btn btn-danger">삭제</button>
+                    <button id="editBtn" class="nado-edit-btn">수정</button>
+                    <button id="deleteBtn" class="nado-delete-btn">삭제</button>
                     </div>
                 </div>
 
                 <div id="hwEdit" style="display:none;">
-                    <h2 class="mb-4">숙제 수정</h2>
+                    <div class="naod-modal-header">
+                        <h2 class="naod-modal-title">숙제 수정</h2>
+                    </div>
                     <form id="editForm" th:action="@{/homework/edit}" th:object="${homeworksEditForm}" method="post">
+                        <div class="naod-modal-body">
                         <input type="hidden" th:field="*{hwNo}" id="editNo">
                         <div class="mb-3">
-                            <label for="editTitle" class="form-label">숙제 제목:</label>
-                            <input type="text" class="form-control" th:field="*{hwTitle}" id="editTitle">
+                            <label for="editTitle" class="naod-title">숙제 제목</label>
+                            <input type="text" class="nodo-edit-input" th:field="*{hwTitle}" id="editTitle">
                             <span id="editTitleError" class="error-message"></span>
                         </div>
                         <div class="mb-3">
-                            <label for="editContent" class="form-label">숙제 내용:</label>
-                            <textarea class="form-control" th:field="*{hwContent}" id="editContent"></textarea>
+                            <label for="editContent" class="naod-title">숙제 내용</label>
+                            <textarea class="nodo-edit-input" th:field="*{hwContent}" id="editContent"></textarea>
                             <span id="editContentError" class="error-message"></span>
                         </div>
                         <div class="mb-3">
-                            <label for="editGameTitle" class="form-label">게임 콘텐츠명:</label>
-                            <select class="form-select" th:field="*{gameTitle}" id="editGameTitle">
+                            <label for="editGameTitle" class="naod-title">게임 콘텐츠명</label>
+                            <select class="nado-edit-select" th:field="*{gameTitle}" id="editGameTitle">
                                 <option th:each="title : ${titles}" th:value="${title}" th:text="${title}"></option>
                             </select>
                             <span th:if="${#fields.hasErrors('gameTitle')}" th:errors="*{gameTitle}" class="error-message">Invalid Progress</span>
                         </div>
                         <div class="mb-3">
-                            <label for="editProgress" class="form-label">숙제 진도:</label>
-                            <input type="number" class="form-control" th:field="*{hwProgress}" id="editProgress">
+                            <label for="editProgress" class="naod-title">숙제 진도</label>
+                            <input type="number" class="nado-edit-number" th:field="*{hwProgress}" id="editProgress">
                             <span id="editProgressError" class="error-message"></span>
                         </div>
                         <div class="mb-3">
-                            <label for="editDueDate" class="form-label">제출 기한:</label>
-                            <input type="date" class="form-control" th:field="*{hwDueDate}" id="editDueDate">
+                            <label for="editDueDate" class="naod-title">제출 기한</label>
+                            <input type="date" class="nodo-edit-input" th:field="*{hwDueDate}" id="editDueDate">
                             <span id="editDueDateError" class="error-message"></span>
                         </div>
                         <div class="mb-3">
-                            <label for="editMemo" class="form-label">숙제 메모:</label>
-                            <textarea class="form-control" th:field="*{hwMemo}" id="editMemo"></textarea>
+                            <label for="editMemo" class="naod-title">숙제 메모</label>
+                            <textarea class="nodo-edit-input" th:field="*{hwMemo}" id="editMemo"></textarea>
                             <span id="editMemoError" class="error-message"></span>
                         </div>
-                        <button type="submit" class="btn btn-primary">저장</button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="nado-edit-btn">저장</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -269,8 +281,8 @@
                 // 검색 결과가 없는 경우 메시지 표시
                 if (foundCount == 0) {
                     $("#homeworkTable").hide(); // 테이블 전체를 숨김
-                    $("#hw-pagination").hide(); // 페이지네이션 숨김
                     $("#homeworkTable").after('<p id="noSearchResult">검색 결과가 없습니다</p>'); // 테이블 바로 아래 메시지 추가
+                    $("#hw-pagination").hide(); // 페이지네이션 숨김
                 } else {
                     $("#homeworkTable").show(); // 테이블 표시
                     $("#hw-pagination").show(); // 페이지네이션 표시
