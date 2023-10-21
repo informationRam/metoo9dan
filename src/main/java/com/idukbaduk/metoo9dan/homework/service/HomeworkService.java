@@ -156,6 +156,7 @@ public class HomeworkService {
 
     public List<String> saveHomeworksForMembers(List<String> homeworks, List<String> members) {
         List<String> skippedEntries = new ArrayList<>(); // 건너뛴 학생과 숙제의 조합을 저장하기 위한 리스트
+        LocalDateTime ldt = LocalDateTime.now();
 
         for (String homework : homeworks) {
             for (String member : members) {
@@ -171,7 +172,7 @@ public class HomeworkService {
                         homeworkSend.setHomeworks(hw.get());
                         homeworkSend.setMember(mem.get());
                         homeworkSend.setCurrentLevel(hw.get().getProgress());
-                        homeworkSend.setSendDate(LocalDateTime.now());
+                        homeworkSend.setSendDate(ldt);
                         homeworkSend.setIsSubmit("N");
                         homeworkSendRepository.save(homeworkSend);
                     } else {
@@ -309,7 +310,6 @@ public class HomeworkService {
         } else {
             homeworkSendPage = homeworkSendRepository.findAllByMemberId(memberId, pageable);
         }
-        System.out.println(homeworkSendPage);
         Page<HomeworkSendDTO> homeworksDto = homeworkSendPage.map(HomeworkSendDTO::new);
         return homeworksDto;
     }
@@ -323,7 +323,6 @@ public class HomeworkService {
         //리스트를 순회하면서 homeworkSend로 homewowrkSubmit을 찾는다
         for (HomeworkSend hs : homeworkSendList) {
             Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend(hs);
-            System.out.println(optionalHomeworkSubmit);
             if(optionalHomeworkSubmit.isPresent()){
                 HwSendSubmitDTO HwSendSubmitDTO =new HwSendSubmitDTO(hs,optionalHomeworkSubmit.get());
                 submitDTO.add(HwSendSubmitDTO);
@@ -332,11 +331,12 @@ public class HomeworkService {
                 submitDTO.add(HwSendSubmitDTO);
             }
         }
+        System.out.println(submitDTO);
         return submitDTO;
     }
 
     public List<HomeworkSubmit> findSubmitsBySendNo(List<HomeworkSend> homeworkSendList) {
-        List<HomeworkSubmit> homeworkSubmits = null;
+        List<HomeworkSubmit> homeworkSubmits = new ArrayList<>();
         for(HomeworkSend hs:homeworkSendList){
             Optional<HomeworkSubmit> optionalHomeworkSubmit = homeworkSubmitRepository.findByHomeworkSend_SendNo(hs.getSendNo());
             if(optionalHomeworkSubmit.isPresent()){

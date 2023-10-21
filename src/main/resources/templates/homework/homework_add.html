@@ -10,7 +10,7 @@
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
                 <div class="row justify-content-center">
-                    <div class="nado-card-container">
+                    <div class="upperSection">
                         <div class="nado-card">
                             <div class="nado-card-header">
                                 <h2>숙제 생성</h2>
@@ -62,6 +62,9 @@
                                     </div>
                                 </form>
                             </div>
+                        <div class="curveEffect text-center mt-4">
+                            <i class="bi bi-chevron-double-down center-icon fs-3"></i>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -100,17 +103,25 @@
                         <td th:text="${hw.sent ? (hw.dueDate > #dates.createNow() ? '제출 진행 중' : '제출 기한 만료') : '전송 기록 없음'}"></td>
                     </tr>
                     <!-- 목록이 없을 때의 메시지 -->
+                    <!-- 목록이 없을 때의 메시지 -->
+                    <!-- 목록이 없을 때의 메시지 -->
                     <tr th:if="${homeworkList == null or homeworkList.size() == 0}">
-                        <td colspan="6" class="nado-none">
-                            <div id="groupMessage" class="groupMessage mb-3 text-center">
-                                <img src="/css/homework/groupIcon.png" alt="Group Icon" class="mb-2">
-                                <div id="groupMessageText"></div>
+                        <td colspan="7">
+                            <div id="noHomework" class="groupMessage mb-3 text-center">
+                                <img src="/css/homework/noHwIcon.png" alt="No data Icon" class="mb-2">
+                                <div>숙제 목록이 없습니다</div>
                             </div>
                         </td>
                     </tr>
                     </tbody>
                 </table>
+                    <div id="noResult" class="groupMessage mb-3 text-center" style="display:none;">
+                        <img src="/css/homework/searchNoneIcon.png" alt="Group Icon" class="mb-2">
+                        <div>검색 결과가 없습니다</div>
+                    </div>
                 </div>
+
+
 
                 <!-- 페이징 -->
                 <div id="hw-pagination" class="d-flex justify-content-center mt-3">
@@ -175,8 +186,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <div id="nado-btnContainer">
                     <button id="editBtn" class="nado-edit-btn">수정</button>
                     <button id="deleteBtn" class="nado-delete-btn">삭제</button>
+                        </div>
                     </div>
                 </div>
 
@@ -281,16 +294,18 @@
                 // 검색 결과가 없는 경우 메시지 표시
                 if (foundCount == 0) {
                     $("#homeworkTable").hide(); // 테이블 전체를 숨김
-                    $("#homeworkTable").after('<p id="noSearchResult">검색 결과가 없습니다</p>'); // 테이블 바로 아래 메시지 추가
                     $("#hw-pagination").hide(); // 페이지네이션 숨김
+                    $("#noResult").show(); // 테이블 전체를 숨김
+                    return;
                 } else {
                     $("#homeworkTable").show(); // 테이블 표시
                     $("#hw-pagination").show(); // 페이지네이션 표시
+                    $("#noResult").hide(); // 테이블 전체를 숨김
                 }
-
                 // 검색 후 첫 번째 페이지로 돌아감
                 currentPage = 1;
                 updatePagination();
+
             }
 
                 function sortTable(columnIndex) {
@@ -351,6 +366,8 @@
                 function renderPagination() {
                     let totalPages = Math.ceil(totalRows / rowsPerPage);
 
+                    // 만약 행이 없으면 페이지네이션을 숨기고 함수를 종료
+
                     // 현재 페이지를 중심으로 페이지네이션에 5개의 페이지 번호만 보이게 설정
                     let startPage = currentPage - 2;
                     let endPage = currentPage + 2;
@@ -395,6 +412,7 @@
                 }
                 $(document).ready(function() {
                     totalRows = $("#homeworkTable tr").length - 1; // 헤더 제외
+                    console.log("totalRows"+totalRows);
 
                     $("#hw-pagination").on("click", ".hw-page-number", function() {
                         currentPage = $(this).data('page');
@@ -432,8 +450,14 @@
 
                             // 전송 여부에 따라 수정 버튼을 비활성화/활성화 처리합니다.
                             if (data.sent) {
+
+                                $("#cannotDelete").remove();
                                 $("#editBtn").prop('disabled', true);
                                 $("#deleteBtn").prop('disabled', true);
+                                $("#nado-btnContainer").after(`
+                                '<p id="cannotDelete">전송한 숙제는 삭제할 수 없습니다</p>'
+                            `);
+
                             } else {
                                 $("#editBtn").prop('disabled', false);
                                 $("#deleteBtn").prop('disabled', false);
@@ -487,7 +511,7 @@
                                 }
                             });
                         } else {
-                            alert('숙제 ID가 없습니다. 다시 시도해주세요.');
+                            alert('숙제를 삭제를 취소합니다.');
                         }
                     });
                     // 모달 및 오버레이 외의 영역 클릭 시 모달 및 오버레이 숨김

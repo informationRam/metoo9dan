@@ -27,9 +27,7 @@ public class HwSendSubmitDTO {
     private String name; //숙제 받은놈 이름
 
     private Integer homeworkSubmitNo;
-    private String submitContentPreview;
     private String submitContent;
-    private String additionalQuestionsPreview;
     private String additionalQuestions;
     private LocalDateTime submitDate;
     private String evaluation;
@@ -46,9 +44,7 @@ public class HwSendSubmitDTO {
         this.name = homeworkSend.getMember().getName();
 
         this.homeworkSubmitNo = 0;
-        this.submitContentPreview = "";
         this.submitContent = "";
-        this.additionalQuestionsPreview = "";
         this.additionalQuestions = "";
         this.submitDate = LocalDateTime.now();
         this.evaluation = "C";
@@ -65,13 +61,7 @@ public class HwSendSubmitDTO {
         this.name = homeworkSend.getMember().getName();
 
         this.homeworkSubmitNo = homeworkSubmit.getHomeworkSubmitNo();
-        this.submitContentPreview = homeworkSubmit.getHomeworkContent().length() > 10 ?
-                homeworkSubmit.getHomeworkContent().substring(0, 10) + "..." :
-                homeworkSubmit.getHomeworkContent();
         this.submitContent = homeworkSubmit.getHomeworkContent();
-        this.additionalQuestionsPreview = homeworkSubmit.getAdditionalQuestions().length() > 10 ?
-                homeworkSubmit.getAdditionalQuestions().substring(0, 10) + "..." :
-                homeworkSubmit.getAdditionalQuestions();
         this.additionalQuestions = homeworkSubmit.getAdditionalQuestions();
         this.submitDate = homeworkSubmit.getSubmitDate();
         this.evaluation = homeworkSubmit.getEvaluation();

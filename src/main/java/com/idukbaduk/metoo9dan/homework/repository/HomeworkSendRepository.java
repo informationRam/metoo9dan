@@ -37,9 +37,13 @@ public interface HomeworkSendRepository extends JpaRepository<HomeworkSend, Inte
 
     List<HomeworkSend> findByHomeworks_HomeworkNoAndSendDate(int homeworkNo, LocalDateTime sendDate);
 
-    @Query("SELECT hs FROM HomeworkSend hs WHERE hs.homeworks.member.memberId = :memberId")
-    Page<HomeworkSend> findAllByMemberId(@Param("memberId") String memberId,Pageable pageable);
+    @Query("SELECT hs FROM HomeworkSend hs " +
+            "WHERE hs.homeworks.member.memberId = :memberId " +
+            "GROUP BY hs.sendDate, hs.homeworks.homeworkTitle")
+    Page<HomeworkSend> findAllByMemberId(@Param("memberId") String memberId, Pageable pageable);
 
-    @Query("SELECT hs FROM HomeworkSend hs JOIN hs.homeworks h JOIN h.member m WHERE m.memberId = :memberId AND h.homeworkTitle = :homeworkTitle")
+    @Query("SELECT hs FROM HomeworkSend hs JOIN hs.homeworks h JOIN h.member m " +
+            "WHERE m.memberId = :memberId AND h.homeworkTitle = :homeworkTitle " +
+            "GROUP BY hs.sendDate, h.homeworkTitle")
     Page<HomeworkSend> findByMemberIdAndTitle(@Param("memberId") String memberId, @Param("homeworkTitle") String homeworkTitle, Pageable pageable);
 }

@@ -302,13 +302,14 @@ public class HomeworkController {
             @RequestParam(defaultValue = "asc") String sort
     ) {
         page-=1;
-
+        System.out.println(homeworkNo);
+        System.out.println(sendDate);
         // 스트링 형식의 날짜를 LocalDateTime 객체로 변환
         LocalDateTime sd;
         try {
             sd = LocalDateTime.parse(sendDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body("Invalid date-time format");
+            return ResponseEntity.badRequest().body("날짜 형식이 잘못됨");//여기서 반환되는데
         }
 
         //1. homeworkService찾기
@@ -336,22 +337,16 @@ public class HomeworkController {
         try {
             sd = LocalDateTime.parse(sendDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body("Invalid date-time format");
+            return ResponseEntity.badRequest().body("날짜 형식이 잘못됨");
         }
 
         List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sd);
         int sendCnt = homeworkSendList.size();
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
-        if (homeworkSubmitList == null) {
-            homeworkSubmitList = new ArrayList<>();
-        }
-        int submitCnt =0;
-        if(homeworkSubmitList != null){
-            submitCnt = homeworkSubmitList.size();
-        }
+        int submitCnt = homeworkSubmitList.size();
 
         double submitPercent=((double)submitCnt/sendCnt)*100;
-
+        System.out.println(submitPercent);
         return ResponseEntity.ok(submitPercent);
     }
 
@@ -364,38 +359,39 @@ public class HomeworkController {
         List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sendDate);
         int sendCnt = homeworkSendList.size();
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
-        if (homeworkSubmitList == null) {
-            homeworkSubmitList = new ArrayList<>();
-        }
-        int submitCnt =0;
+        int submitCnt = homeworkSubmitList.size();
+
         int aCnt = 0;
         int bCnt = 0;
         int cCnt = 0;
         int fCnt = 0;
-        if(homeworkSubmitList != null){
-            submitCnt = homeworkSubmitList.size();
-
+        if(submitCnt !=0 ){
             for(HomeworkSubmit homeworkSubmit : homeworkSubmitList){
                 String eval = homeworkSubmit.getEvaluation();
-                switch(eval) {
+                if (eval == null) {
+                    fCnt+=1;//평가도를 평가 안한 항목을 포함 시키는게 좋을까 안하는게 좋을까 정하고 코드 삭제 여부가 달라질듯
+                    continue;
+                }
+                switch(eval) {//여기야
                     case "A":
                         aCnt+=1;
                         break;
                     case "B":
-                        bCnt=1;
+                        bCnt+=1;
                         break;
                     case "C":
                         cCnt+=1;
                         break;
                 }
             }
+            fCnt=sendCnt-submitCnt;
         } else{
             fCnt=sendCnt;
         }
-        double aPer = (submitCnt != 0) ? ((double) aCnt / submitCnt) : 0.0;
-        double bPer = (submitCnt != 0) ? ((double) bCnt / submitCnt) : 0.0;
-        double cPer = (submitCnt != 0) ? ((double)cCnt/submitCnt) : 0.0;
-        double fPer = 100-(aPer+bPer+cPer);
+        double aPer = (submitCnt != 0) ? ((double) aCnt / submitCnt)*100 : 0.0;
+        double bPer = (submitCnt != 0) ? ((double) bCnt / submitCnt)*100 : 0.0;
+        double cPer = (submitCnt != 0) ? ((double)cCnt/submitCnt)*100 : 0.0;
+        double fPer = (submitCnt != 0) ? ((double)fCnt/submitCnt)*100 : 100.0;
 
         List<Double> evalPer = new ArrayList<>();
         evalPer.add(aPer);
