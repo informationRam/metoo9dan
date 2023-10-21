@@ -2,273 +2,111 @@
 <div layout:fragment="content" class="container my-3">
   <link rel="stylesheet" href="/css/game/list.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <div class="row">
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
     <div th:replace="~{/admin/adminSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
     <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-
-   <!-- <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Bootstrap core CSS -->
-    <link href="/css/game/cyborg.vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-
-    <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="/css/game/cyborg/assets/css/fontawesome.css">
-    <link rel="stylesheet" href="/css/game/cyborg/assets/css/templatemo-cyborg-gaming.css">
-    <link rel="stylesheet" href="/css/game/cyborg/assets/css/owl.css">
-    <link rel="stylesheet" href="/css/game/cyborg/assets/css/animate.css">
-    <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-<!--
-
-TemplateMo 579 Cyborg Gaming
-
-https://templatemo.com/tm-579-cyborg-gaming
-
--->
-
-
-  <!-- ***** Preloader Start ***** -->
-
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="page-content">
-
-          <!-- ***** Featured Games Start ***** -->
-          <div class="row">
-            <div class="col-lg-8" id="nado-header-text">
-              <div class="featured-games header-text">
-                <div class="heading-section">
-                  <h4><em>이달의 게임</em></h4>
-                </div>
-                <div class="owl-features owl-carousel">
-                  <div class="item">
-                      <img src="/css/game/cyborg/assets/images/baduk.png" alt="">
-                      <div class="hover-effect">
-                        <h6>2.4K Streaming</h6>
-                    </div>
-                    <h4>CS-GO<br><span>249K Downloads</span></h4>
-                    <ul>
-                      <li><i class="fa fa-star"></i> 4.8</li>
-                      <li><i class="fa fa-download"></i> 2.3M</li>
-                    </ul>
-                  </div>
-                  <div class="item">
-                    <img src="/css/game/cyborg/assets/images/baduk.png" alt="">
-                    <div class="hover-effect">
-                      <h6>2.4K Streaming</h6>
-                    </div>
-                    <h4>CS-GO<br><span>249K Downloads</span></h4>
-                    <ul>
-                      <li><i class="fa fa-star"></i> 4.8</li>
-                      <li><i class="fa fa-download"></i> 2.3M</li>
-                    </ul>
-                  </div>
-                  <!--<div class="item">
-                    <div class="thumb">
-                      <img src="/css/game/cyborg/assets/images/featured-02.jpg" alt="">
-                      <div class="hover-effect">
-                        <h6>2.4K Streaming</h6>
-                      </div>
-                    </div>
-                    <h4>Gamezer<br><span>249K Downloads</span></h4>
-                    <ul>
-                      <li><i class="fa fa-star"></i> 4.8</li>
-                      <li><i class="fa fa-download"></i> 2.3M</li>
-                    </ul>
-                  </div>
-                  <div class="item">
-                    <div class="thumb">
-                      <img src="/css/game/cyborg/assets/images/featured-03.jpg" alt="">
-                      <div class="hover-effect">
-                        <h6>2.4K Streaming</h6>
-                      </div>
-                    </div>
-                    <h4>Island Rusty<br><span>249K Downloads</span></h4>
-                    <ul>
-                      <li><i class="fa fa-star"></i> 4.8</li>
-                      <li><i class="fa fa-download"></i> 2.3M</li>
-                    </ul>
-                  </div>
-                  <div class="item">
-                    <div class="thumb">
-                      <img src="/css/game/cyborg/assets/images/featured-01.jpg" alt="">
-                      <div class="hover-effect">
-                        <h6>2.4K Streaming</h6>
-                      </div>
-                    </div>
-                    <h4>CS-GO<br><span>249K Downloads</span></h4>
-                    <ul>
-                      <li><i class="fa fa-star"></i> 4.8</li>
-                      <li><i class="fa fa-download"></i> 2.3M</li>
-                    </ul>
-                  </div>
-                  <div class="item">
-                    <div class="thumb">
-                      <img src="/css/game/cyborg/assets/images/featured-02.jpg" alt="">
-                      <div class="hover-effect">
-                        <h6>2.4K Streaming</h6>
-                      </div>
-                    </div>
-                    <h4>Gamezer<br><span>249K Downloads</span></h4>
-                    <ul>
-                      <li><i class="fa fa-star"></i> 4.8</li>
-                      <li><i class="fa fa-download"></i> 2.3M</li>
-                    </ul>
-                  </div>
-                  <div class="item">
-                    <div class="thumb">
-                      <img src="/css/game/cyborg/assets/images/featured-03.jpg" alt="">
-                      <div class="hover-effect">
-                        <h6>2.4K Streaming</h6>
-                      </div>
-                    </div>
-                    <h4>Island Rusty<br><span>249K Downloads</span></h4>
-                    <ul>
-                      <li><i class="fa fa-star"></i> 4.8</li>
-                      <li><i class="fa fa-download"></i> 2.3M</li>
-                    </ul>
-                  </div>-->
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4">
-              <div class="top-streamers">
-                <div class="heading-section">
-                  <h4><em>Best</em>Game</h4>
-                </div>
-                <ul>
-                  <li>
-                    <span>01</span>
-                    <img src="/css/game/cyborg/assets/images/avatar-01.jpg" alt="" style="max-width: 46px; border-radius: 50%; margin-right: 15px;">
-                    <h6><i class="fa fa-check"></i> LahutaM</h6>
-                    <div class="main-button">
-                      <a href="#">Follow</a>
-                    </div>
-                  </li>
-                  <li>
-                    <span>02</span>
-                    <img src="/css/game/cyborg/assets/images/avatar-02.jpg" alt="" style="max-width: 46px; border-radius: 50%; margin-right: 15px;">
-                    <h6><i class="fa fa-check"></i> Kengan</h6>
-                    <div class="main-button">
-                      <a href="#">Follow</a>
-                    </div>
-                  </li>
-                  <li>
-                    <span>03</span>
-                    <img src="/css/game/cyborg/assets/images/avatar-03.jpg" alt="" style="max-width: 46px; border-radius: 50%; margin-right: 15px;">
-                    <h6><i class="fa fa-check"></i> Areluwa</h6>
-                    <div class="main-button">
-                      <a href="#">Follow</a>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <!-- ***** Featured Games End ***** -->
-          <div class="gaming-library">
-            <div class="col-lg-12">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="page-content">
+              <!-- Featured Games Start -->
               <div class="row">
-                <div class="col">
-                  <h4>게임 콘텐츠</h4>
-                </div>
-                <div class="col">
-                  <div class="input-group">
-                    <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
-                    <button class="btn btn-primary" type="button" onclick="searchGames()">검색</button>
-                  </div>
-                </div>
-              </div>
-              <form id="nadopayment" class="my-2" th:action="@{|/payments/paymentsform|}" method="post">
-                <div class="card-deck">
-                  <div th:each="game : ${gamePage.content}" class="card mb-3" style="height: 200px;">
-                    <div class="row g-0">
-                      <div class="col-md-4" style="height: 200px;">
-                        <img th:if="${game != null and game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
-                             th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}"
-                             alt="게임 이미지" class="card-img" style="width: 100%; height: 100%; object-fit: cover;">
-                      </div>
-                      <div class="col-md-8">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                          <div class="col-lg-10">
-                            <h5 class="nado-card-title" th:text="${game.gameName}"></h5>
-                            <p class="card-text" id="gameList">
-                              <span th:switch="${game.difficulty}">
-                                <span th:case="'beginner'" class="badge bg-success" >초급</span>
-                                <span th:case="'intermediate'" class="badge bg-warning text-dark">중급</span>
-                                <span th:case="'advanced'" class="badge bg-danger">고급</span>
-                              </span>
-                            </p>
-                            <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration}"></span></p>
-                            <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
-                            <p class="card-text">
-                            <span
-                                    th:text="${#strings.length(game.packageDetails) > 50 ? #strings.substring(game.packageDetails, 0, 50) + '...' : game.packageDetails}"
-                                    data-toggle="popover" data-content="${game.packageDetails}"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                            >
-                            </span>
+                <div class="featured-games header-text">
+                  <div class="heading-section">
+
+                    <div class="gaming-library">
+                      <div class="col-lg-12">
+                        <div class="row">
+                          <div class="col">
+                            <h4>게임 콘텐츠</h4>
                           </div>
-                          <div>
-                          <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="gameContentNo" id="checkbox1" th:value="${game.gameContentNo}" data-game-content-no="${game.gameContentNo}">
-                            <input type="hidden" id="hiddenGameContentNos" name="gameContentNos">
-                            <label class="form-check-label" for="checkbox1"></label>
-                          </div>
+                          <div class="col">
+                            <div class="input-group">
+                              <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
+                              <button class="btn btn-primary" type="button" onclick="searchGames()">검색</button>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                        <form id="nadopayment" class="my-2" th:action="@{|/payments/paymentsform|}" method="post">
+                          <div class="card-deck">
+                            <div th:each="game : ${gamePage.content}" class="card mb-3" style="height: 200px;">
+                              <div class="row g-0">
+                                <div class="col-md-4" style="height: 200px;">
+                                  <img th:if="${game != null and game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                                       th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}"
+                                       alt="게임 이미지" class="card-img" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div class="col-md-8">
+                                  <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div class="col-lg-10">
+                                      <h5 class="nado-card-title" th:text="${game.gameName}"></h5>
+                                        <p class="card-text" id="gameList">
+                                          <span th:switch="${game.difficulty}">
+                                            <span th:case="'beginner'" class="badge bg-success" >초급</span>
+                                            <span th:case="'intermediate'" class="badge bg-warning text-dark">중급</span>
+                                            <span th:case="'advanced'" class="badge bg-danger">고급</span>
+                                          </span>
+                                        </p>
+                                        <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration}"></span></p>
+                                        <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
+                                        <p class="card-text">
+                                        <span th:text="${#strings.length(game.packageDetails) > 50 ? #strings.substring(game.packageDetails, 0, 50) + '...' : game.packageDetails}"
+                                                data-toggle="popover" data-content="${game.packageDetails}"
+                                                data-placement="top"
+                                                data-trigger="hover">
+                                        </span>
+                                    </div>
+                                    <div>
+                                      <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="gameContentNo" id="checkbox1" th:value="${game.gameContentNo}" data-game-content-no="${game.gameContentNo}">
+                                        <input type="hidden" id="hiddenGameContentNos" name="gameContentNos" th:value="${gameContentNos}">
+                                        <label class="form-check-label" for="checkbox1"></label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- 페이지 네이션 처리 -->
+                          <div id="pagination">
+                            <nav aria-label="Page navigation example">
+                              <ul class="pagination justify-content-center">
+                                <!-- 이전 페이지 링크 -->
+                                <li class="page-item" th:classappend="${gamePage.pageable.pageNumber == 0} ? 'disabled'">
+                                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber - 1}, searchText=${searchText})}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                  </a>
+                                </li>
+                                <!-- 페이지 번호 링크 -->
+                                <li class="page-item" th:classappend="${i - 1 == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${i - 1}, searchText=${searchText})}" th:text="${i}"></a>
+                                </li>
+                                <!-- 다음 페이지 링크 -->
+                                <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">
+                                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber + 1}, searchText=${searchText})}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </nav>
+                          </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              </form>
-            </div>
         </div>
-          <!-- 페이지 네이션 처리 -->
-          <div id="pagination">
-            <nav aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <!-- 이전 페이지 링크 -->
-                <li class="page-item" th:classappend="${gamePage.pageable.pageNumber == 0} ? 'disabled'">
-                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber - 1}, searchText=${searchText})}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                <!-- 페이지 번호 링크 -->
-                <li class="page-item" th:classappend="${i - 1 == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
-                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${i - 1}, searchText=${searchText})}" th:text="${i}"></a>
-                </li>
-                <!-- 다음 페이지 링크 -->
-                <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">
-                  <a class="page-link" href="#" th:href="@{/game/alllist(page=${gamePage.pageable.pageNumber + 1}, searchText=${searchText})}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-  </div>
-    </div>
-    </div>
-
+      </div>
     <div class="navbar navbar-expand-lg navbar-light bg-light fixed-bottom" style="border-radius: 10px; width: 67%; height: 60px; margin-top: 0px; margin-right: 300px !important; margin-bottom: 0px; text-align: center; margin-left: 350px !important;">
       <div class="container">
         <div class="d-flex justify-content-between align-items-center">
-      <span>
-        <img src="/image/game/icon-cart.png" style="width: 30px !important;">
-        <span style="margin-right: 20px;">총: <span id="totalItems">건</span></span>
-        <span style="margin-left: 30px !important;">합계: <span id="totalPrice">원</span></span>
-        <!-- HTML 코드 내에 버튼 추가 -->
-<button id="clearStorageButton" class="btn btn-danger" onclick="clearLocalStorage()">로컬 스토리지 초기화</button>
-
-      </span>
+        <span>
+            <img src="/image/game/icon-cart.png" style="width: 30px !important;">
+            <span style="margin-right: 20px;">총: <span id="totalItems">건</span></span>
+            <span style="margin-left: 30px !important;">합계: <span id="totalPrice">원</span></span>
+            <!-- HTML 코드 내에 버튼 추가 -->
+            <button id="clearStorageButton" class="btn btn-danger" onclick="clearLocalStorage()">로컬 스토리지 초기화</button>
+          </span>
         </div>
         <span>
           <button type="submit" class="btn btn-outline-warning" id="subscribeButton" onclick="subscribe()">구독하기</button>
@@ -276,208 +114,216 @@ https://templatemo.com/tm-579-cyborg-gaming
         </form>
       </div>
     </div>
-
-
   </div>
   </div>
-    <!-- Scripts -->
-    <!-- Bootstrap core JavaScript -->
-    <script src="/css/game/cyborg.vendor/jquery/jquery.min.js"></script>
-    <script src="/css/game/cyborg.vendor/bootstrap/js/bootstrap.min.js"></script>
-
-    <script src="/css/game/cyborg/assets/js/isotope.min.js"></script>
-    <script src="/css/game/cyborg/assets/js/owl-carousel.js"></script>
-    <script src="/css/game/cyborg/assets/js/tabs.js"></script>
-    <script src="/css/game/cyborg/assets/js/popup.js"></script>
-    <script src="/css/game/cyborg/assets/js/custom.js"></script>
-<!--    <script>
-       function subscribe() {
-         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-         var atLeastOneSelected = false;
-
-         checkboxes.forEach(function (checkbox) {
-           if (checkbox.checked) {
-             atLeastOneSelected = true;
-           }
-         });
-
-         if (atLeastOneSelected) {
-           document.getElementById("nadopayment").submit();
-         } else {
-           alert("선택한 상품이 없습니다.");
-         }
-       }
-    </script>-->
-    <script>
-      function subscribe() {
-     var hiddenField = document.getElementById("hiddenGameContentNos");
-     var storedValues = JSON.parse(sessionStorage.getItem("selectedValues"));
-     console.log('storedValues', storedValues);
-
-     var xhr = new XMLHttpRequest();
-     xhr.open("POST", "/payments/paymentsform", true);
-     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-     var data = JSON.stringify(storedValues); // Change this line to use storedValues
-
-     xhr.send(data);
-
-     xhr.onreadystatechange = function() {
-         if (xhr.readyState === 4 && xhr.status === 200) {
-             console.log('서버 응답:', xhr.responseText);
-         }
-     };
- }
-
-
-
-    </script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        var totalPriceElement = document.getElementById("totalPrice");
-        var totalItemsElement = document.getElementById("totalItems");
-        var selectedPrices = JSON.parse(localStorage.getItem("selectedPrices")) || {};
-        var selectedValues = JSON.parse(localStorage.getItem("selectedValues")) || [];
-
-        checkboxes.forEach(function (checkbox) {
-          var gameContentNo = checkbox.getAttribute("data-game-content-no");
-          console.log('gameContentNo???', gameContentNo);
-          if (selectedValues.includes(parseInt(gameContentNo))) {
-            checkbox.checked = true;
-          }
-
-          checkbox.addEventListener('change', function () {
-            updateTotalPrice();
-          });
-        });
-
-        // Page load: Restore selected prices and update the total
-        updateTotalPrice();
-
-       function updateTotalPrice() {
-    var total = 0;
-    var selectedGameContentNos = [];
-
-    checkboxes.forEach(function (checkbox) {
-    if (checkbox.checked) {
-      var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
-      var gameContentNo = checkbox.value;
-
-      if (priceElement && gameContentNo) {
-        var price = parseFloat(priceElement.textContent);
-        selectedPrices[gameContentNo] = price;
-        selectedValues.push(gameContentNo);
-        selectedGameContentNos.push(parseInt(gameContentNo));
-        console.log('gameContentNo', gameContentNo);
-        console.log('selectedValues', selectedValues);
-        console.log('selectedGameContentNos', selectedGameContentNos);
-      } else {
-        delete selectedPrices[gameContentNo];
-        selectedValues = selectedValues.filter(function (value) {
-          return value !== gameContentNo;
-        });
-      }
-    }
-  });
-
-  // Calculate the total from the selected prices
-  for (var contentNo in selectedPrices) {
-    total += selectedPrices[contentNo];
-  }
-
-  // Update session storage with the selected prices and values
-  sessionStorage.setItem("selectedPrices", JSON.stringify(selectedPrices));
-  sessionStorage.setItem("selectedValues", JSON.stringify(selectedValues));
-  sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
-  console.log('selectedValues', JSON.stringify(selectedValues));
-
-  if (totalPriceElement) {
-    totalPriceElement.innerText = total + " 원";
-  }
-
-  if (totalItemsElement) {
-    var itemsCount = selectedValues.length;
-    totalItemsElement.innerText = itemsCount + " 건";
-  }
-
-
-</script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <script>
-  // Define a function to clear session storage
-    function clearSessionStorage() {
-        if (confirm("세션 스토리지의 데이터를 모두 삭제하시겠습니까?")) {
-            sessionStorage.removeItem("selectedPrices");
-            sessionStorage.removeItem("selectedValues");
-            sessionStorage.clear(); // Session storage initialization
-            alert("세션 스토리지가 초기화되었습니다.");
+    function subscribe() {
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      var selectedGameContentNos = [];
 
-            // Update the displayed total and item count
-            if (totalPriceElement) {
-                totalPriceElement.innerText = "0 원";
-            }
-
-            if (totalItemsElement) {
-                totalItemsElement.innerText = "0 건";
-            }
+      checkboxes.forEach(function (checkbox) {
+        if (checkbox.checked) {
+          var gameContentNo = checkbox.value;
+          selectedGameContentNos.push(gameContentNo);
+           console.log('gameContentNo',gameContentNo)
         }
+      });
+
+      // 저장된 선택된 게임 콘텐츠 번호를 세션 스토리지에 저장
+      sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+
+      // 숨겨진 필드에 할당
+      document.getElementById("hiddenGameContentNos").value = JSON.stringify(selectedGameContentNos);
+      console.log('document.getElementById("hiddenGameContentNos").value',document.getElementById("hiddenGameContentNos").value)
+      // 폼 제출
+      document.getElementById("nadopayment").submit();
     }
-    </script>
-  <script>
-    // Define a function to search games
-    function searchGames() {
-        var searchText = document.getElementById('searchText').value;
-        window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+
+  </script>
+
+  <!--    <script>
+     function subscribe() {
+       var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+       var atLeastOneSelected = false;
+
+       checkboxes.forEach(function (checkbox) {
+         if (checkbox.checked) {
+           atLeastOneSelected = true;
+         }
+       });
+
+       if (atLeastOneSelected) {
+         document.getElementById("nadopayment").submit();
+       } else {
+         alert("선택한 상품이 없습니다.");
+       }
+     }
+  </script>-->
+  <!--<script>
+    function subscribe() {
+      var hiddenField = document.getElementById("hiddenGameContentNos");
+      var storedValues = JSON.parse(sessionStorage.getItem("selectedValues"));
+      console.log('storedValues', storedValues);
+
+      // Convert the storedValues to an array of integers
+      var integerValues = storedValues.map(function (value) {
+        return parseInt(value);
+      });
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/payments/paymentsform", true);
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+      var data = JSON.stringify(integerValues);
+
+      xhr.send(data);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          console.log('서버 응답:', xhr.responseText);
+        }
+      };
     }
   </script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      var totalPriceElement = document.getElementById("totalPrice");
+      var totalItemsElement = document.getElementById("totalItems");
 
+      checkboxes.forEach(function (checkbox) {
+        var gameContentNo = checkbox.getAttribute("data-game-content-no");
+        console.log('gameContentNo???', gameContentNo);
+        if (selectedValues.includes(parseInt(gameContentNo))) {
+          checkbox.checked = true;
+        }
 
-    <!--<script>
-            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
-            var totalItemsElement = document.getElementById("totalItems"); // 선택한 항목의 수를 표시할 요소
-            var nadoSalePriceElement = document.getElementById("nado-salePrice"); // Sale Price element
+        checkbox.addEventListener('change', function () {
+          updateTotalPrice();
+        });
+      });
 
-            checkboxes.forEach(function (checkbox) {
-                checkbox.addEventListener('change', function () {
-                    var selectedValues = [];
-                    checkboxes.forEach(function (checkbox) {
-                        if (checkbox.checked) {
-                            var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
-                            if (priceElement) {
-                                selectedValues.push(parseFloat(priceElement.textContent));
-                            }
-                        }
-                    });
+      // Page load: Restore selected prices and update the total
+      updateTotalPrice();
 
-                    // Calculate the total in JavaScript
-                    var total = selectedValues.reduce(function (accumulator, currentValue) {
-                        return accumulator + currentValue;
-                    }, 0);
+      function updateTotalPrice() {
+        var total = 0;
+        var selectedGameContentNos = [];
 
-                    // Update the displayed total
-                    if (totalPriceElement) {
-                        totalPriceElement.innerText = total + " 원";
-                    }
+        checkboxes.forEach(function (checkbox) {
+          if (checkbox.checked) {
+            var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
+            var gameContentNo = checkbox.value;
 
-                    // Update the displayed number of selected items
-                    if (totalItemsElement) {
-                        totalItemsElement.innerText = selectedValues.length + " 건";
-                    }
+            if (priceElement && gameContentNo) {
+              var price = parseFloat(priceElement.textContent);
+              selectedPrices[gameContentNo] = price;
+              selectedValues.push(gameContentNo);
+              selectedGameContentNos.push(parseInt(gameContentNo));
+              console.log('gameContentNo', gameContentNo);
+              console.log('selectedValues', selectedValues);
+              console.log('selectedGameContentNos', selectedGameContentNos);
+            } else {
+              delete selectedPrices[gameContentNo];
+              selectedValues = selectedValues.filter(function (value) {
+                return value !== gameContentNo;
+              });
+            }
+          }
+        });
 
-                    if (checkbox.checked) {
-                        alert("상품이 선택되었습니다.");
-                    } else {
-                        alert("선택을 취소했습니다.");
-                    }
-                });
-            });
+        // Calculate the total from the selected prices
+        for (var contentNo in selectedPrices) {
+          total += selectedPrices[contentNo];
+        }
 
-    </script>-->
+        // Update session storage with the selected prices and values
+        sessionStorage.setItem("selectedPrices", JSON.stringify(selectedPrices));
+        sessionStorage.setItem("selectedValues", JSON.stringify(selectedValues));
+        sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+        console.log('selectedValues', JSON.stringify(selectedValues));
 
+        if (totalPriceElement) {
+          totalPriceElement.innerText = total + " 원";
+        }
 
+        if (totalItemsElement) {
+          var itemsCount = selectedValues.length;
+          totalItemsElement.innerText = itemsCount + " 건";
+        }
+      }
+    });
+  </script>
 
+  <script>
+    // 로컬 스토리지 초기화 함수
+    function clearLocalStorage() {
+      if (confirm("로컬 스토리지의 데이터를 모두 삭제하시겠습니까?")) {
+        localStorage.removeItem("selectedPrices");
+         localStorage.removeItem("selectedValues");
+        localStorage.clear(); // 로컬 스토리지 초기화
+        alert("로컬 스토리지가 초기화되었습니다.");
+
+        // 아래 두 줄은 선택한 가격과 건수를 초기화합니다.
+        document.getElementById("totalPrice").innerText = "0 원";
+        document.getElementById("totalItems").innerText = "0 건";
+      }
+    }
+  </script>
+-->
+  <!--<script>
+          var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+          var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
+          var totalItemsElement = document.getElementById("totalItems"); // 선택한 항목의 수를 표시할 요소
+          var nadoSalePriceElement = document.getElementById("nado-salePrice"); // Sale Price element
+
+          checkboxes.forEach(function (checkbox) {
+              checkbox.addEventListener('change', function () {
+                  var selectedValues = [];
+                  checkboxes.forEach(function (checkbox) {
+                      if (checkbox.checked) {
+                          var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
+                          if (priceElement) {
+                              selectedValues.push(parseFloat(priceElement.textContent));
+                          }
+                      }
+                  });
+
+                  // Calculate the total in JavaScript
+                  var total = selectedValues.reduce(function (accumulator, currentValue) {
+                      return accumulator + currentValue;
+                  }, 0);
+
+                  // Update the displayed total
+                  if (totalPriceElement) {
+                      totalPriceElement.innerText = total + " 원";
+                  }
+
+                  // Update the displayed number of selected items
+                  if (totalItemsElement) {
+                      totalItemsElement.innerText = selectedValues.length + " 건";
+                  }
+
+                  if (checkbox.checked) {
+                      alert("상품이 선택되었습니다.");
+                  } else {
+                      alert("선택을 취소했습니다.");
+                  }
+              });
+          });
+
+  </script>-->
+  <script>
+    function searchGames() {
+      var searchText = document.getElementById('searchText').value;
+      window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+    }
+  </script>
 </div>
 </html>

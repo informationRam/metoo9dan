@@ -60,6 +60,8 @@ dependencies {
 	//Thymeleaf에서 #numbers.formatDecimal을 사용하여 숫자를 형식화에 필요
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE' // 현재 버전에 맞게 업데이트
 
+	// JSON 라이브러리 의존성 추가
+	implementation 'org.json:json:20210307'
 
 	//YJ:문자인증발송용 의존성추가
 	implementation 'org.apache.httpcomponents.client5:httpclient5:5.1.3'

@@ -13,6 +13,8 @@ import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,36 +44,84 @@ public class PaymentsController {
 
 
     // 결제하기 폼
+    //@RequestMapping(value = "/paymentsform", method = {RequestMethod.GET, RequestMethod.POST})
     @PostMapping("/paymentsform")
-    public String paymentsform(@RequestParam("gameContentNos") List<Integer> gameContentNos, Model model, HttpSession session) {
+    public String paymentsform(@RequestParam(name = "gameContentNos") String gameContentNos, Model model, HttpSession session) {
 
-        if(!gameContentNos.isEmpty()){
-            System.out.println("존재함: "+gameContentNos);
+        System.out.println("1. 넘어온 값: gameContentNos? " + gameContentNos);
 
+        try {
+            // gameContentNos 값을 JSON 배열로 파싱
+            JSONArray jsonArray = new JSONArray(gameContentNos);
+
+            // JSON 배열을 순회하며 각 항목을 int로 변환
+            List<Integer> gameContentNoList = new ArrayList<>();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                int gameContentNo = jsonArray.getInt(i);
+                gameContentNoList.add(gameContentNo);
+                // 예: 콘솔에 출력
+                System.out.println("2. int로 변경 gameContentNo: " + gameContentNo);
+            }
+
+            //GameContents 값 담기
+            List<GameContents> gameContents = new ArrayList<>();
+
+            for(int gameNo : gameContentNoList){
+                gameContents.add(gameService.getGameContents(gameNo));
+                System.out.println("gameContents?:" + gameContents);
+            }
+
+            int totalSalePrice = 0;
+            for(GameContents gameconSaleprice : gameContents){
+                Double salePrice = gameconSaleprice.getSalePrice();
+                totalSalePrice += salePrice;
+                System.out.println("totalSalePrice?:" + totalSalePrice);
+            }
+
+            // 리스트 형태로 컨트롤러에서 사용할 수 있음
+            model.addAttribute("gameContentNos", gameContentNoList);
+            model.addAttribute("gameContents", gameContents);
+            model.addAttribute("totalSalePrice", totalSalePrice);
+
+            return "payments/paymentsform";
+        } catch (JSONException e) {
+            // JSON 파싱 오류 처리
+            e.printStackTrace();
+            // 오류 메시지를 반환하거나 오류 페이지로 리다이렉트할 수 있습니다.
+            return "redirect:error"; // 예: 오류 페이지로 리다이렉트
+        }
+    }
+
+      /*  if (selectedValues != null) { // Check if selectedValues is not null
+            if (!selectedValues.isEmpty()) {
+                System.out.println("존재함: " + selectedValues+selectedValues);
+            }
         }
 
-
-        if (gameContentNos != null && !gameContentNos.isEmpty()) {
+        if (selectedValues != null && !selectedValues.isEmpty()) {
             List<GameContents> selectedGameContents = new ArrayList<>();
 
             int totalSalePrice = 0;
 
-            for (int gameno : gameContentNos) {
+            for (int gameno : selectedValues) {
                 System.out.println("gameno?"+gameno);
                 GameContents gameContents = gameService.getGameContents(gameno);
                 selectedGameContents.add(gameContents);
                 // salePrice의 합계 계산
                 totalSalePrice += (gameContents.getSalePrice());
                 System.out.println("totalSalePrice?" +totalSalePrice);
+                System.out.println("gameContents?" +gameContents);
             }
-
+*/
             // 세션에 선택한 게임 컨텐츠와 총 판매 가격 저장
-            session.setAttribute("selectedGameContents", selectedGameContents);
+       /*     session.setAttribute("selectedGameContents", selectedGameContents);
+            System.out.println("selectedGameContents"+selectedGameContents);
             session.setAttribute("totalSalePrice", totalSalePrice);
 
-        }
-        return "payments/paymentsform";
-    }
+        }*/
+   /*     return "redirect:payments/test";
+    }*/
 
 
 

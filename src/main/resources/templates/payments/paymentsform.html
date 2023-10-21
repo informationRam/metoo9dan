@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
   <link rel="stylesheet" href="/css/game/paymentsform.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -25,7 +25,7 @@
               </thead>
               <tbody class="text-center">
               <!-- 반복문을 사용하여 구매한 각 상품 표시 -->
-              <tr th:each="gamecon : ${session.selectedGameContents}">
+              <tr th:each="gamecon : ${gameContents}">
                 <td th:text="${gamecon.gameName}"></td>
                 <td class="game difficulty">
                   <span th:switch="${gamecon.difficulty}">
@@ -61,12 +61,13 @@
                 </div>
               </div>
               <div class="col-lg-5">
-                <h3 class="mb-3">총 [[${session.selectedGameContents.size()}]] 건,  합계: [[${#numbers.formatInteger(session.totalSalePrice, 0, 'COMMA')}]] 원</h3>
+                <h3 class="mb-3">총 [[${session.selectedGameContents.size()}]] 건,  합계: th:t 원</h3>
+-->
               </div>
             </div>
             <div>
               <div class="d-flex justify-content-center">
-                <input type="hidden" id="item_name" name="item_name" th:value="${session.selectedGameContents.size() > 0 ? session.selectedGameContents[0].gameName + (session.selectedGameContents.size() > 1 ? ' 외 ' + (session.selectedGameContents.size() - 1) + '건' : '') : ''}" />
+                <input type="hidden" id="item_name" name="item_name" th:value="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}" />
                 <input type="hidden" id="total-amount" name="total_amount" th:value="${session.totalSalePrice}" />
             <!--  <button type="submit" class="btn btn-primary mt-3">결제하기</button>-->
               <!--  <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#paymentModal">결제하기</button>-->
@@ -101,12 +102,12 @@
               <img src="/image/game/baduk_icon_06.png" class="rounded" width="60">
               <div class="d-flex flex-column ml-4">
                 <!-- 이 부분을 Thymeleaf로 변경 -->
-                <span class="business" th:text="${session.selectedGameContents.size() > 0 ? session.selectedGameContents[0].gameName + (session.selectedGameContents.size() > 1 ? ' 외 ' + (session.selectedGameContents.size() - 1) + '건' : '') : ''}"></span>
+                <span class="business" th:text="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"></span>
                 <span class="plan">content purchase</span>
               </div>
             </div>
             <div class="d-flex flex-column ml-4">
-              <span class="business">₩[[${#numbers.formatInteger(session.totalSalePrice, 0, 'COMMA')}]]</span>
+              <span class="business">₩</span>
             </div>
           </div>
           <div class="credit rounded mt-4">
@@ -150,12 +151,12 @@
               <div class="d-flex flex-column ml-4">
                 <!-- 이 부분을 Thymeleaf로 변경 -->
                 <span class="business"
-                      th:text="${session.selectedGameContents.size() > 0 ? session.selectedGameContents[0].gameName + (session.selectedGameContents.size() > 1 ? ' 외 ' + (session.selectedGameContents.size() - 1) + '건' : '') : ''}"></span>
+                      th:text="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"></span>
                 <span class="plan">content purchase</span>
               </div>
             </div>
             <div class="d-flex flex-column ml-4">
-              <span class="business">₩[[${#numbers.formatInteger(session.totalSalePrice, 0, 'COMMA')}]]</span>
+              <span class="business">₩</span>
             </div>
           </div>
           <div class="mt-3">
