@@ -369,7 +369,6 @@ public class HomeworkController {
             for(HomeworkSubmit homeworkSubmit : homeworkSubmitList){
                 String eval = homeworkSubmit.getEvaluation();
                 if (eval == null) {
-                    fCnt+=1;//평가도를 평가 안한 항목을 포함 시키는게 좋을까 안하는게 좋을까 정하고 코드 삭제 여부가 달라질듯
                     continue;
                 }
                 switch(eval) {//여기야
@@ -388,10 +387,10 @@ public class HomeworkController {
         } else{
             fCnt=sendCnt;
         }
-        double aPer = (submitCnt != 0) ? ((double) aCnt / submitCnt)*100 : 0.0;
-        double bPer = (submitCnt != 0) ? ((double) bCnt / submitCnt)*100 : 0.0;
-        double cPer = (submitCnt != 0) ? ((double)cCnt/submitCnt)*100 : 0.0;
-        double fPer = (submitCnt != 0) ? ((double)fCnt/submitCnt)*100 : 100.0;
+        double aPer = ((double) aCnt/sendCnt)*100;
+        double bPer = ((double) bCnt/sendCnt)*100;
+        double cPer = ((double)cCnt/sendCnt)*100;
+        double fPer = ((double)fCnt/sendCnt)*100;
 
         List<Double> evalPer = new ArrayList<>();
         evalPer.add(aPer);

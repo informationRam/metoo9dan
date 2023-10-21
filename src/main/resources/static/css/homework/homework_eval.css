@@ -59,3 +59,55 @@
 .cancel-btn:hover {
     background-color: #ff6f00; /* 조금 더 진한 주황색 */
 }
+
+        .nado-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 20px;
+            max-width: 800px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column; /* 세로 방향으로 요소를 배치 */
+            align-items: center; /* 중앙 정렬 */
+        }
+
+        .nado-card-title {
+            color: #FFD700;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .charts-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .chart-container {
+            display: flex;
+            align-items: center;
+            margin: 10px;
+            width: 45%; /* 차트와 내용의 너비 조정 */
+        }
+
+        .chart-container canvas {
+            max-width: 180px;
+            max-height: 180px;
+        }
+
+        .chart-detail {
+            margin-left: 20px;
+        }
+
+        .chart-detail h4 {
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .chart-detail p {
+            color: #888;
+            font-size: 14px;
+        }

@@ -45,11 +45,30 @@
 
             <!-- 하단 -->
             <div id="lowerSection" style="display:none;">
-                <div>
-                    <canvas id="submitChart" width="50" height="50"></canvas>
-                    <canvas id="evalChart" width="50" height="50"></canvas>
-                </div>
+                <div class="nado-card">
+                    <div class="nado-card-title">Nado's Cute Charts</div>
+                    <div class="charts-wrapper">
+                        <div class="chart-container">
+                            <div class="submitchart-container">
+                                <canvas id="submitChart" width="180" height="180"></canvas>
+                            </div>
+                            <div class="chart-detail">
+                                <h4>Submit Chart</h4>
+                                <p>Some description about this chart.</p>
+                            </div>
+                        </div>
 
+                        <div class="chart-container">
+                            <div class="evalchart-container">
+                                <canvas id="evalChart" width="180" height="180"></canvas>
+                            </div>
+                            <div class="chart-detail">
+                                <h4>Evaluation Chart</h4>
+                                <p>Some description about this chart.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div>
                     <!-- 전송 내역 -->
                     <form id="evaluationForm" action="/homework/evaluate/submit-evaluation" method="post">
@@ -189,7 +208,7 @@
                                     evalChartInstance = new Chart(evaluationCtx, {
                                     type: 'doughnut',
                                     data: {
-                                        labels: ['우수', '보통', '미흡', '평가 없음'],
+                                        labels: ['우수', '보통', '미흡', '평가X'],
                                         datasets: [{
                                             data: evalPer.map(val => val * 100), // %로 변환
                                             backgroundColor: ['#4CAF50', '#8BC34A', '#FFC107', '#FF5722'],
@@ -353,9 +372,9 @@
                                 }
 
                                 $('#eval-pagination').html(paginationContent);
-                                $('#lowerSection').css("display", "block");
                             }
                         });
+                                $('#lowerSection').slideDown();
                         });
                     });
 
