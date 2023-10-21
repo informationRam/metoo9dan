@@ -344,6 +344,11 @@ public class HomeworkController {
         int sendCnt = homeworkSendList.size();
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
         int submitCnt = homeworkSubmitList.size();
+        for(HomeworkSubmit hs : homeworkSubmitList){
+            if(hs.getSubmitDate()==LocalDateTime.of(1, 1, 1, 0, 0)){
+                submitCnt-=1;
+            }
+        }
 
         double submitPercent=((double)submitCnt/sendCnt)*100;
         System.out.println(submitPercent);
@@ -360,6 +365,11 @@ public class HomeworkController {
         int sendCnt = homeworkSendList.size();
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
         int submitCnt = homeworkSubmitList.size();
+        for(HomeworkSubmit hs : homeworkSubmitList){
+            if(hs.getSubmitDate()==LocalDateTime.of(1, 1, 1, 0, 0)){
+                submitCnt-=1;
+            }
+        }
 
         int aCnt = 0;
         int bCnt = 0;
@@ -405,13 +415,13 @@ public class HomeworkController {
     //@PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/evaluate/submit-evaluation")
     public ResponseEntity<?> submitEvaluation(@RequestBody List<EvaluationDTO> evaluations) {
+        System.out.println(evaluations);
 
-        for(int i = 0;i <= evaluations.size();i++){
-            String stringSn = evaluations.get(i).getHomeworkSubmitNo();
-            int SubmitNo = Integer.parseInt(stringSn);
+        for(int i = 0;i < evaluations.size();i++){
+            String stringSn = evaluations.get(i).getHomeworkSendNo();
+            int sendNo = Integer.parseInt(stringSn);
             String evaluation = evaluations.get(i).getEvaluationValue();
-            HomeworkSubmit homeworkSubmit =homeworkService.getSubmitBySendNo(SubmitNo);
-            homeworkService.saveEvaluation(homeworkSubmit,evaluation);
+            homeworkService.saveEvaluation(sendNo,evaluation);
         }
 
         return ResponseEntity.ok(Map.of("success", true));
@@ -434,6 +444,26 @@ public class HomeworkController {
         return "pastHw";
     }
 
-
+    //제출내역
+    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @GetMapping("/submit/past-list")
+    public ResponseEntity<?> getHomeworksResults(
+            @RequestParam String gameTitle,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "asc") String sort
+    ) {
+        page-=1;
+        //1. homeworkService찾기
+        //List<HomeworkSend> homeworkSendList = homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sd);
+        //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
+        //List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
+        //페이지네이션
+        //Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("dueDate").ascending() : Sort.by("dueDate").descending());
+        //<HwSendSubmitDTO> submitDTOPage = new PageImpl<>(submitDTO, pageable, submitDTO.size());
+        //결과로 반환
+        //return ResponseEntity.ok(submitDTOPage);
+        return ResponseEntity.ok("a");
+    }
 
 }

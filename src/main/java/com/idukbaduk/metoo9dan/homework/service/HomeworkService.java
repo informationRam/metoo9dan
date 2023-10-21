@@ -360,8 +360,24 @@ public class HomeworkService {
         }
     }
 
-    public void saveEvaluation(HomeworkSubmit homeworkSubmit, String evaluation) {
-        homeworkSubmit.setEvaluation(evaluation);
-        homeworkSubmitRepository.save(homeworkSubmit);
+    public void saveEvaluation(int sendNo, String evaluation) {
+        Optional<HomeworkSubmit> optionalHomeworkSubmit =homeworkSubmitRepository.findByHomeworkSend_SendNo(sendNo);
+        if(optionalHomeworkSubmit.isPresent()){
+            HomeworkSubmit homeworkSubmit =optionalHomeworkSubmit.get();
+            homeworkSubmit.setEvaluation(evaluation);
+            homeworkSubmitRepository.save(homeworkSubmit);
+        } else{
+            Optional<HomeworkSend> optionalHomeworkSend =homeworkSendRepository.findById(sendNo);
+            HomeworkSend homeworkSend =optionalHomeworkSend.get();
+            HomeworkSubmit homeworkSubmit = new HomeworkSubmit();
+            homeworkSubmit.setHomeworkSend(homeworkSend);
+            homeworkSubmit.setEvaluation(evaluation);
+            homeworkSubmit.setHomeworks(homeworkSend.getHomeworks());
+            homeworkSubmit.setHomeworkContent("");
+            homeworkSubmit.setMember(homeworkSend.getMember());
+            homeworkSubmit.setProgress(homeworkSend.getCurrentLevel());
+            homeworkSubmit.setSubmitDate(LocalDateTime.of(1, 1, 1, 0, 0));
+            homeworkSubmitRepository.save(homeworkSubmit);
+        }
     }
 }

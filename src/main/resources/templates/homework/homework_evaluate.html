@@ -290,7 +290,7 @@
                                                     <i class="fa fa-star-half-alt"></i> <span>${item.evaluation}</span>
                                                 </div>
                                             <div class="dropdown cute-dropdown">
-                                                <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                <select id="evaluation${item.sendNo}" class="form-select">
                                                     <option value="F" selected="selected">선택해주세요</option>
                                                     <option value="A">우수</option>
                                                     <option value="B">보통</option>
@@ -337,7 +337,7 @@
                                                     <div class="no-submission-message">숙제가 미제출되었습니다</div>
                                                 </div>
                                             <div class="dropdown cute-dropdown">
-                                                <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                <select id="evaluation${item.sendNo}" class="form-select">
                                                     <option value="F" selected="selected">선택해주세요</option>
                                                     <option value="C">미흡</option>
                                                 </select>
@@ -411,20 +411,27 @@
                     // 폼 내의 모든 드롭다운 값을 수집합니다.
                     $("select[id^='evaluation']").each(function() {
                         evaluations.push({
-                            homeworkSubmitNo: $(this).attr('id').replace('evaluation', ''),
+                            homeworkSendNo: $(this).attr('id').replace('evaluation', ''),
                             evaluationValue: $(this).val()
                         });
                     });
 
                     // AJAX를 사용하여 서버로 전송합니다.
-                    $.post('/homework/evaluate/submit-evaluation', { evaluations: evaluations }, function(response) {
-                        if (response.success) {
-                            alert("평가 내용이 저장되었습니다.");
-                        } else {
-                            alert("평가 내용 저장에 실패하였습니다.");
+                    $.ajax({
+                        url: '/homework/evaluate/submit-evaluation',
+                        method: 'POST',
+                        contentType: 'application/json', // JSON 형태로 데이터를 전송한다고 명시합니다.
+                        data: JSON.stringify(evaluations), // 데이터를 문자열로 변환합니다.
+                        success: function(response) {
+                            if (response.success) {
+                                alert("평가 내용이 저장되었습니다.");
+                            } else {
+                                alert("평가 내용 저장에 실패하였습니다.");
+                            }
                         }
                     });
                 });
+
 
             </script>
         </div><!--콘텐츠영역끝-->

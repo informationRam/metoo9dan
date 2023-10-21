@@ -13,6 +13,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 @ToString
 public class EvaluationDTO {
-    private String homeworkSubmitNo;
+    private String homeworkSendNo;
     private String evaluationValue;
 }
