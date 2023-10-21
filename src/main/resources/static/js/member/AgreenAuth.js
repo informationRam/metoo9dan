@@ -1,4 +1,5 @@
 //  window.onload = function () {
+
       // 필수 약관 체크박스
       var agreement1 = document.getElementById("agreement1");
       var agreement2 = document.getElementById("agreement2");
@@ -7,6 +8,11 @@
       // 본인 인증 폼 입력 필드
       var nameInput = document.querySelector(".authMember input[name='memName']");
       var toInput = document.querySelector(".authMember input[name='to']");
+      var phoneVerificationCodeInput = document.querySelector(".authForm #verificationCode");
+      // Add event listeners for the emailForm elements
+      var emailNameInput = document.querySelector(".authForm #emailName");
+      var valiEmailInput = document.querySelector(".authForm #valiEmail");
+      var emailVerificationCodeInput = document.querySelector(".authForm #emailVerificationCode");
       var sendButton = document.querySelector(".authMember button");
 
       // 전체 동의 체크박스
@@ -20,21 +26,60 @@
       // 입력 필드 초기화
       nameInput.disabled = true;
       toInput.disabled = true;
+      phoneVerificationCodeInput.disabled = true;
+      emailNameInput.disabled = true;
+      valiEmailInput.disabled = true;
+      emailVerificationCodeInput.disabled = true;
       sendButton.disabled = true;
+      //본인인증 화면 숨기기(첫 로드시)
+     document.getElementById("phoneForm").style.display = "none";
+     document.getElementById("emailForm").style.display = "none";
+
+        // 각 버튼 누르면 해당 입력필드 나타나게 하기
+        function showPhoneForm() {
+            document.getElementById("phoneForm").style.display = "block";
+            document.getElementById("emailForm").style.display = "none";
+            document.getElementById("phoneButton").classList.add("active");
+            document.getElementById("emailButton").classList.remove("active");
+        }
+
+        function showEmailForm() {
+            document.getElementById("phoneForm").style.display = "none";
+            document.getElementById("emailForm").style.display = "block";
+            document.getElementById("phoneButton").classList.remove("active");
+            document.getElementById("emailButton").classList.add("active");
+        }
+        document.getElementById("phoneButton").addEventListener("click", showPhoneForm);
+        document.getElementById("emailButton").addEventListener("click", showEmailForm);
 
       // 입력 필드 활성화/비활성화 함수
       function toggleAuthForm() {
-          // 필수 약관에 모두 동의한 경우
+          // 필수 약관에 모두 동의한 경우 :
           if (agreement1.checked && agreement2.checked && agreement5.checked) {
-              nameInput.disabled = false;
-              toInput.disabled = false;
-              sendButton.disabled = false;
+                nameInput.disabled = false;
+                toInput.disabled = false;
+                phoneVerificationCodeInput.disabled = false;
+                emailNameInput.disabled = false;
+                valiEmailInput.disabled = false;
+                emailVerificationCodeInput.disabled = false;
+                sendButton.disabled = false;
+                document.getElementById("phoneButton").disabled = false; // Enable phoneButton
+                document.getElementById("emailButton").disabled = false; // Enable emailButton
+
           } else {
               // 필수 약관 중 하나라도 동의하지 않은 경우
-              nameInput.disabled = true;
-              toInput.disabled = true;
-              sendButton.disabled = true;
-          }
+                  nameInput.disabled = true;
+                  toInput.disabled = true;
+                  phoneVerificationCodeInput.disabled = true;
+                  emailNameInput.disabled = true;
+                  valiEmailInput.disabled = true;
+                  emailVerificationCodeInput.disabled = true;
+                  sendButton.disabled = true;
+                  document.getElementById("phoneButton").disabled = true;
+                  document.getElementById("emailButton").disabled = true;
+                  document.getElementById("phoneForm").style.display = "none";
+                  document.getElementById("emailForm").style.display = "none";
+           }
       }
 
       // 전체 동의 체크박스 이벤트 리스너
@@ -67,8 +112,39 @@
               details.style.display = details.style.display === "block" ? "none" : "block";
           });
       }
+// 필수약관에 동의하지 않으면 버튼 클릭 금지, 어기면 알림
+        document.getElementById("phoneButton").addEventListener("click", function() {
+            if (!isAgreementChecked()) {
+                alert("필수약관에 동의해주세요.");
+                return;
+            }
+               showPhoneForm();
+        });
 
-    //유효성 검사
+        document.getElementById("emailButton").addEventListener("click", function() {
+            if (!isAgreementChecked()) {
+                alert("필수약관에 동의해주세요.");
+                return;
+            }
+          showEmailForm();
+        });
+/* -------본인인증 방법 선택 및 입력 필드 표기 ----------------------*/
+//document.getElementById("phoneButton").addEventListener("click", function () {
+//    // 휴대폰 폼을 보여주고 이메일 폼을 숨깁니다.
+//    document.getElementById("phoneForm").style.display = "block";
+//    document.getElementById("emailForm").style.display = "none";
+//});
+//
+//document.getElementById("emailButton").addEventListener("click", function () {
+//    // 이메일 폼을 보여주고 휴대폰 폼을 숨깁니다.
+//    document.getElementById("phoneForm").style.display = "none";
+//    document.getElementById("emailForm").style.display = "block";
+//});
+
+
+/* -------------------유효성 검사 --------------------------------*/
+
+//유효성 검사
   function setErrorMessage(element, message) {
     element.style.color = "red";
     element.innerText = message;
@@ -126,6 +202,9 @@ function validateVerificationCode() {
         verificationCodeInput.style.borderColor = "";
     }
 }
+/*--------------------------- 유효성 검사 끝 ------------------------------*/
+
+
 
     //------------------인증문자 발송------------
 // AJAX 요청을 사용하여 서버에 SMS 발송 요청
