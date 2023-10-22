@@ -1,8 +1,6 @@
 package com.idukbaduk.metoo9dan.member.service;
 
-import com.idukbaduk.metoo9dan.mail.dto.MailDTO;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
@@ -19,7 +17,7 @@ public class MailService {
     private final JavaMailSender javaMailSender;
     private final HttpSession httpSession; // 세션 객체를 주입
     private final SecureRandom secureRandom = new SecureRandom();
-    private final String numericCharacters = "0123456789";
+    String numericCharacters = "0123456789";
 
     // 인증번호 난수 생성
     private String createCode() {
@@ -47,7 +45,7 @@ public class MailService {
 
             return true;
         } catch (MailException e) {
-            e.printStackTrace();
+            System.out.println("이메일 발송 오류");;
             return false;
         }
     }

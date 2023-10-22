@@ -23,7 +23,7 @@ public class VerfificationController {
     private final SmsService smsService;
     //secureRandom으로 보안성 강화 인증번호 생성
     private final SecureRandom secureRandom = new SecureRandom();
-    private final String numericCharacters = "0123456789";
+    String numericCharacters = "0123456789";
 
     //이메일 발송
     @PostMapping("/sendEmailVerification")
@@ -90,7 +90,6 @@ public class VerfificationController {
                 return ResponseEntity.ok(Map.of("success", false, "message", "인증 코드 발송에 실패했습니다."));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.ok(Map.of("success", false, "message", "인증 코드 발송에 실패했습니다."));
         }
     }
@@ -111,7 +110,6 @@ public class VerfificationController {
                 return ResponseEntity.ok(Map.of("success", false, "message", "인증에 실패했습니다."));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.ok(Map.of("success", false, "message", "인증에 실패했습니다."));
         }
     }
