@@ -24,13 +24,15 @@ public interface MemberService {
 
     //회원정보전체 조회
     List<Member> getAllMembers();
-
+    //교육자회원가입-정보추가
     void createUserWithEducatorInfo(Member member, EducatorInfo educatorInfo);
 
+    //회원가입
     void createUser(Member member);
 
     //id로 회원정보 가져오기
     Member getUser(String memberId);
+
     //이메일 넣어 회원정보 찾기
     Member getUserbyEmail (String email);
 
@@ -42,6 +44,9 @@ public interface MemberService {
 
     //아이디 중복여부 확인
     boolean checkmemberIdDuplication(String user_id);
+
+    //휴대폰 중복여부 확인
+    boolean checkmemberTelDuplication(String tel);
 
     //아이디 찾기 - 이메일로 찾기
     String searchId(String email);

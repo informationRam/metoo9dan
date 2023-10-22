@@ -18,11 +18,14 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     //아이디로 값 찾기
     Optional<Member> findByMemberId(String memberId);
 
-    //회원가입시 중복값 아이디 확인
+    //회원가입시 아이디 중복 확인
     boolean existsBymemberId(String memberId);
 
-    //회원가입시 중복값 이메일 확인
+    //회원가입시 이메일 중복 확인
     boolean existsByEmail(String email);
+
+    //회원가입시 휴대폰번호중복확인
+    boolean existsByTel(String tel);
 
     //이메일로 아이디 찾기
     Optional<Member> findByEmail(String email);

@@ -1,10 +1,12 @@
 package com.idukbaduk.metoo9dan.member.controller;
 
+import com.idukbaduk.metoo9dan.member.service.MailService;
 import com.idukbaduk.metoo9dan.member.service.SmsService;
 import com.idukbaduk.metoo9dan.member.dto.SmsResponseDTO;
 import com.idukbaduk.metoo9dan.member.dto.VerificationRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +21,35 @@ import java.util.Map;
 @RestController
 public class VerfificationController {
 
+    private final MailService mailService;
     private final SmsService smsService;
     //secureRandom으로 보안성 강화 인증번호 생성
     private final SecureRandom secureRandom = new SecureRandom();
     private final String numericCharacters = "0123456789";
+
+    //이메일 발송
+    @PostMapping("/sendEmailVerification")
+    public ResponseEntity<?> sendVerificationCode(@RequestBody Map<String, String> request) {
+        System.out.println("이메일발송 컨트롤러");
+        String email = request.get("valiEmail");
+        System.out.println("email:"+email);
+        if (mailService.sendEmailCode(email)) {
+            return ResponseEntity.ok().body("{\"success\": true}");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"success\": false}");
+        }
+    }
+
+    @PostMapping("/verifyEmailCode")
+    public ResponseEntity<?> verifyEmailCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String inputCode = request.get("emailCode");
+        if (mailService.verifyEmailCode(email, inputCode)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증번호를 다시 확인하세요");
+        }
+    }
 
     // 휴대폰 인증번호 발송
     @PostMapping("/sendSMS-code")
@@ -71,6 +98,7 @@ public class VerfificationController {
 
             if (savedVerificationCode != null && savedVerificationCode.equals(request.getVerificationCode())) {
                 // 인증에 성공한 경우
+                session.removeAttribute(savedVerificationCode); //성공하면 삭제
                 return ResponseEntity.ok(Map.of("success", true, "message", "본인 인증이 완료되었습니다.", "userName", memName, "userPhone", to));
             } else {
                 // 인증에 실패한 경우
@@ -91,6 +119,7 @@ public class VerfificationController {
         }
         return sb.toString();
     }
+
 
 
 }

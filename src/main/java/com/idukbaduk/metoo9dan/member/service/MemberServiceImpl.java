@@ -171,6 +171,16 @@ public class MemberServiceImpl implements MemberService {
         return emailDuplicate;
     }
 
+    // 회원가입시 휴대폰번호 중복 확인
+    @Override
+    public boolean checkmemberTelDuplication(String tel){
+        System.out.println("휴대폰번호 중복 검사 서비스");
+        boolean telDuplicate = memberRepository.existsByTel(tel);
+        return telDuplicate;
+    }
+
+
+
     //아이디 찾기 - 이메일로 찾기
     @Override
     public String searchId(String email) {

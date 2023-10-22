@@ -31,26 +31,37 @@
       valiEmailInput.disabled = true;
       emailVerificationCodeInput.disabled = true;
       sendButton.disabled = true;
-      //본인인증 화면 숨기기(첫 로드시)
-     document.getElementById("phoneForm").style.display = "none";
-     document.getElementById("emailForm").style.display = "none";
+//      //본인인증 화면 숨기기(첫 로드시)
+//     document.getElementById("phoneForm").style.display = "none";
+//     document.getElementById("emailForm").style.display = "none";
 
-        // 각 버튼 누르면 해당 입력필드 나타나게 하기
-        function showPhoneForm() {
-            document.getElementById("phoneForm").style.display = "block";
-            document.getElementById("emailForm").style.display = "none";
-            document.getElementById("phoneButton").classList.add("active");
-            document.getElementById("emailButton").classList.remove("active");
-        }
+//        // 각 버튼 누르면 해당 입력필드 나타나게 하기
+//        function showPhoneForm() {
+//            document.getElementById("phoneForm").style.display = "block";
+//            document.getElementById("emailForm").style.display = "none";
+//            document.getElementById("phoneButton").classList.add("active");
+//            document.getElementById("emailButton").classList.remove("active");
+//        }
+//
+//        function showEmailForm() {
+//            document.getElementById("phoneForm").style.display = "none";
+//            document.getElementById("emailForm").style.display = "block";
+//            document.getElementById("phoneButton").classList.remove("active");
+//            document.getElementById("emailButton").classList.add("active");
+//        }
+//        document.getElementById("phoneButton").addEventListener("click", showPhoneForm);
+//        document.getElementById("emailButton").addEventListener("click", showEmailForm);
 
-        function showEmailForm() {
-            document.getElementById("phoneForm").style.display = "none";
-            document.getElementById("emailForm").style.display = "block";
-            document.getElementById("phoneButton").classList.remove("active");
-            document.getElementById("emailButton").classList.add("active");
-        }
-        document.getElementById("phoneButton").addEventListener("click", showPhoneForm);
-        document.getElementById("emailButton").addEventListener("click", showEmailForm);
+//휴대폰 인증 or 이메일 인증 선택 시 해당 입력 필드 활성화/비활성화:
+function toggleAuthMethod(selectedMethod) {
+    if (selectedMethod === "phone") {
+        document.getElementById("phoneForm").style.display = "block";
+        document.getElementById("emailForm").style.display = "none";
+    } else if (selectedMethod === "email") {
+        document.getElementById("emailForm").style.display = "block";
+        document.getElementById("phoneForm").style.display = "none";
+    }
+}
 
       // 입력 필드 활성화/비활성화 함수
       function toggleAuthForm() {
@@ -112,99 +123,132 @@
               details.style.display = details.style.display === "block" ? "none" : "block";
           });
       }
-// 필수약관에 동의하지 않으면 버튼 클릭 금지, 어기면 알림
-        document.getElementById("phoneButton").addEventListener("click", function() {
-            if (!isAgreementChecked()) {
-                alert("필수약관에 동의해주세요.");
-                return;
-            }
-               showPhoneForm();
-        });
-
-        document.getElementById("emailButton").addEventListener("click", function() {
-            if (!isAgreementChecked()) {
-                alert("필수약관에 동의해주세요.");
-                return;
-            }
-          showEmailForm();
-        });
-/* -------본인인증 방법 선택 및 입력 필드 표기 ----------------------*/
-//document.getElementById("phoneButton").addEventListener("click", function () {
-//    // 휴대폰 폼을 보여주고 이메일 폼을 숨깁니다.
-//    document.getElementById("phoneForm").style.display = "block";
-//    document.getElementById("emailForm").style.display = "none";
-//});
+//// 필수약관에 동의하지 않으면 버튼 클릭 금지, 어기면 알림
+//        document.getElementById("phoneButton").addEventListener("click", function() {
+//            if (!isAgreementChecked()) {
+//                alert("필수약관에 동의해주세요.");
+//                return;
+//            }
+//               showPhoneForm();
+//        });
 //
-//document.getElementById("emailButton").addEventListener("click", function () {
-//    // 이메일 폼을 보여주고 휴대폰 폼을 숨깁니다.
-//    document.getElementById("phoneForm").style.display = "none";
-//    document.getElementById("emailForm").style.display = "block";
-//});
-
+//        document.getElementById("emailButton").addEventListener("click", function() {
+//            if (!isAgreementChecked()) {
+//                alert("필수약관에 동의해주세요.");
+//                return;
+//            }
+//          showEmailForm();
+//        });
 
 /* -------------------유효성 검사 --------------------------------*/
 
-//유효성 검사
-  function setErrorMessage(element, message) {
-    element.style.color = "red";
-    element.innerText = message;
-}
+        //유효성 검사
+          function setErrorMessage(element, message) {
+            element.style.color = "red";
+            element.innerText = message;
+        }
 
-function clearErrorMessage(element) {
-    element.style.color = "";
-    element.innerText = "";
-}
+        function clearErrorMessage(element) {
+            element.style.color = "";
+            element.innerText = "";
+        }
+        //휴대폰인증 이름 유효성 검사
+        function validateName() {
+          var nameInput = document.getElementById("memName");
+          var nameError = document.getElementById("name-error-message");
+          var namePatternEng = /^[A-Za-z]{2,}$/;
+          var namePatternKor = /^[가-힣]{2,}$/;
 
-function validateName() {
-    var nameInput = document.getElementById("memName");
-    var nameError = document.getElementById("name-error-message");
-    var namePattern = /^[A-Za-z가-힣]+$/;
+              if (!namePatternEng.test(nameInput.value) && !namePatternKor.test(nameInput.value)) {
+                                 setErrorMessage(nameError, "두 글자 이상의 한글/영어만 입력할 수 있으며, 동시 입력은 불가능합니다.");
+                                 nameInput.style.borderColor = "red";
+                 }else if(namePatternEng.test(nameInput.value) && namePatternKor.test(nameInput.value)) {
+                      setErrorMessage(nameError, "영어와 한글 동시에 입력이 불가능합니다.");
+                      nameInput.style.borderColor = "red";
+                } else {
+                    clearErrorMessage(nameError);
+                    nameInput.style.borderColor = "";
+                }
+                validateButtonStatus();
+            }
 
-    if (!namePattern.test(nameInput.value)) {
-        setErrorMessage(nameError, "한글/영어만 입력 가능합니다.");
-        nameInput.style.borderColor = "red";
-    } else {
-        clearErrorMessage(nameError);
-        nameInput.style.borderColor = "";
-    }
-}
+        //폰인증 핸드폰 검사
+        function validatePhoneNumberAndFormat(input) {
+            var phoneInput = input;
+            var phoneError = document.getElementById("phone-error-message");
+            var phonePattern = /^\d{11}$/;
+            // 입력된 값에서 숫자 이외의 문자 제거
+            var phoneNumber = phoneInput.value.replace(/[^0-9]/g, '');
+            // 입력 필드에 제거된 문자를 제외한 값 설정
+            phoneInput.value = phoneNumber;
 
-function validatePhoneNumberAndFormat(input) {
-    var phoneInput = input;
-    var phoneError = document.getElementById("phone-error-message");
-    var phonePattern = /^\d{11}$/;
+            if (!phonePattern.test(phoneNumber)) {
+                setErrorMessage(phoneError, "휴대폰 형식이 올바르지 않습니다");
+                phoneInput.style.borderColor = "red";
+            }else{
+                // AJAX 요청을 통해 휴대폰 번호 중복 검사
+               fetch('/member/checkPhoneNumberDuplication', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json'
+                   },
+                   body: JSON.stringify({ tel: phoneNumber })
+               })
+               .then(response => response.json())
+               .then(data => {
+                   if (data.isDuplicate) {
+                       setErrorMessage(phoneError, "이미 가입한 계정이 있습니다.");
+                       phoneInput.style.borderColor = "red";
+                   } else {
+                       clearErrorMessage(phoneError);
+                       phoneInput.style.borderColor = "";
+                   }
+                   validateButtonStatus(); // AJAX 요청이 완료된 이후에 호출
+               })
+                .catch(error => console.error('Error:', error));
+                validateButtonStatus();
+            }
+        }
+        //발송버튼 막기
+      function validateButtonStatus() {
+          var nameInputValue = document.getElementById("memName").value;
+          var phoneInputValue = document.getElementById("to").value;
+          var nameError = document.getElementById("name-error-message");
+          var phoneError = document.getElementById("phone-error-message");
+          var sendButton = document.getElementById("phoneSendBtn");
 
-    // 입력된 값에서 숫자 이외의 문자 제거
-    var phoneNumber = phoneInput.value.replace(/[^0-9]/g, '');
+          // 오류 메시지가 없고, 두 입력 필드에 값이 있는 경우에만 버튼을 활성화
+          if (nameError.innerText === "" && phoneError.innerText === "" && nameInputValue.trim() !== "" && phoneInputValue.trim() !== "") {
+              sendButton.disabled = false;
+          } else {
+              sendButton.disabled = true;
+          }
+      }
 
-    // 입력 필드에 제거된 문자를 제외한 값 설정
-    phoneInput.value = phoneNumber;
+    //인증번호 유효성검사
+        function validateVerificationCode() {
+            var verificationCodeInput = document.getElementById("verificationCode");
+            var verificationCodeError = document.getElementById("verification-code-error-message");
+            var verificationCodePattern = /^\d{6}$/;
 
-    if (!phonePattern.test(phoneNumber)) {
-        setErrorMessage(phoneError, "휴대폰 형식이 올바르지 않습니다");
-        phoneInput.style.borderColor = "red";
-    } else {
-        clearErrorMessage(phoneError);
-        phoneInput.style.borderColor = "";
-    }
-}
+            if (!verificationCodePattern.test(verificationCodeInput.value)) {
+                setErrorMessage(verificationCodeError, "인증번호 형식이 올바르지 않습니다");
+                verificationCodeInput.style.borderColor = "red";
+                document.getElementById("verifyPhoneBtn").disabled = true; // 인증확인 비활성화
+            } else {
+                clearErrorMessage(verificationCodeError);
+                verificationCodeInput.style.borderColor = "";
+            }
+        }
 
-function validateVerificationCode() {
-    var verificationCodeInput = document.getElementById("verificationCode");
-    var verificationCodeError = document.getElementById("verification-code-error-message");
-    var verificationCodePattern = /^\d{6}$/;
 
-    if (!verificationCodePattern.test(verificationCodeInput.value)) {
-        setErrorMessage(verificationCodeError, "인증번호 형식이 올바르지 않습니다");
-        verificationCodeInput.style.borderColor = "red";
-    } else {
-        clearErrorMessage(verificationCodeError);
-        verificationCodeInput.style.borderColor = "";
-    }
-}
+
+
+
 /*--------------------------- 유효성 검사 끝 ------------------------------*/
 
-
+var phoneVerified = false;
+var emailVerified = false;
 
     //------------------인증문자 발송------------
 // AJAX 요청을 사용하여 서버에 SMS 발송 요청
@@ -234,6 +278,7 @@ function validateVerificationCode() {
                         const response = JSON.parse(xhr.responseText);
                         if (response.success) {
                             alert("인증 코드가 발송되었습니다.");
+                            document.getElementById("verifyPhoneBtn").disabled = false;  // 여기서 인증확인 버튼 활성화
                         } else {
                             alert("인증 코드 발송에 실패했습니다.");
                         }
@@ -262,6 +307,7 @@ function validateVerificationCode() {
 
 // 인증 코드 확인 함수
 let verificationIsSuccessful = false; // Initialize the variable
+
 function verifyCode() {
     // 사용자가 입력한 인증 코드 가져오기
     const verificationCode = document.getElementById("verificationCode").value;
@@ -283,7 +329,7 @@ function verifyCode() {
                 if (response.success) {
                      alert("본인 인증이 완료되었습니다.");
                       verificationIsSuccessful = true;
-                     nextPrev(1); // 인증 성공 시 다음 단계로 이동
+
                     // 세션에 저장된 이름과 휴대폰 번호 가져오기
                     const userName = response.userName;
                     const userPhone = response.userPhone;
@@ -293,9 +339,13 @@ function verifyCode() {
                     nextPrev(1);
 
                     // 화면에 이름과 휴대폰 번호 출력
-                    document.getElementById("verificationSuccess").style.display = "block";
+                    //document.getElementById("verificationSuccess").style.display = "block";
+                    //document.getElementById("verificationSuccess").style.display = "block";
                     document.getElementById("userNameInput").value = userName;
                     document.getElementById("userPhoneInput").value = userPhone;
+                    // 입력 필드를 읽기 전용으로 설정
+                    document.getElementById("userNameInput").readOnly = true;
+                    document.getElementById("userPhoneInput").readOnly = true;
                 } else {
                     alert("인증을 완료해주세요.");
                      verificationIsSuccessful = false;
@@ -309,3 +359,63 @@ function verifyCode() {
 
     xhr.send(JSON.stringify(requestData));
 }
+
+//이메일 인증번호 발송
+function sendEmailVerificationCode() {
+    var email = document.getElementById("valiEmail").value;
+    var emailName = document.getElementById("emailName").value;
+      fetch("/api/sendEmailVerification", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                valiEmail: email  //valiEmail이 서버 전송 변수
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("인증 코드가 이메일로 전송되었습니다.");
+            } else {
+                alert("이메일 전송 실패. 다시 시도해주세요.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("오류가 발생했습니다. 다시 시도해주세요.");
+        });
+    }
+
+//이메일 본인인증 확인
+function verifyEmailCode() {
+  var email = document.getElementById("valiEmail").value;
+  var name = document.getElementById("emailName").value;
+  var inputCode = document.getElementById("emailVerificationCode").value;
+
+    // 서버로 인증 코드 검증 요청
+    fetch('/api/verifyEmailCode', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+         body: JSON.stringify({
+                  valiEmail: email,
+                  emailCode: inputCode
+              })
+    })
+   .then(response => response.json())
+       .then(data => {
+           if (response.status === 200) { // 이메일 인증이 성공한 경우
+               document.getElementById("userNameInput").value = emailName; // 이전 입력폼에서의 이름을 가져와서 설정
+               document.getElementById("email").value = email; // 이전 입력폼에서의 이메일을 가져와서 설정
+               nextPrev(1); // 다음 단계로 이동
+           } else { // 인증 실패
+               alert("인증번호를 다시 확인하세요");
+           }
+       })
+       .catch(error => {
+           console.error("Error:", error);
+           alert("오류가 발생했습니다. 다시 시도해주세요.");
+       });
+   }

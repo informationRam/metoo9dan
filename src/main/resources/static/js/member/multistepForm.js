@@ -49,7 +49,7 @@
                     if (n == 1) {
                         if (!validateForm()) return false; // 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
                         if (currentTab === 1) { // 두 번째 스텝인 경우
-                            if (!verificationIsSuccessful) { // 인증이 실패한 경우
+                            if (!verificationIsSuccessful) { // 휴대폰 인증이 실패한 경우(휴대폰 또는 이메일 인증 실페로 수정)
                                 alert("본인 인증 단계를 완료하세요.");
                                 return false; // 인증이 실패한 경우 다음으로 진행하지 않습니다.
                             }
@@ -74,19 +74,23 @@
                 }
 
 
-
+                //모든 step의 빈 필드 검사
                  function validateForm() {
                    var x, y, i, valid = true;
                    x = document.getElementsByClassName("step");
-                   y = x[currentTab].getElementsByTagName("input");
+                   y = x[currentTab].getElementsByTagName("input");  //input 태그 검사
 
                    for (i = 0; i < y.length; i++) {
+                      // phoneForm이 비활성화되었을 때, 해당 폼의 모든 input 필드를 생략
+                         if (document.getElementById("phoneForm").style.display === "none" && y[i].closest("#phoneForm")) continue;
+                      // emailForm이 비활성화되었을 때, 해당 폼의 모든 input 필드를 생략
+                         if (document.getElementById("emailForm").style.display === "none" && y[i].closest("#emailForm")) continue;
+                     //그 외는 검사
                      if (y[i].value == "") {
                        y[i].className += " invalid"; // 빈 필드에 "invalid" 클래스를 추가하여 사용자에게 알립니다.
                        valid = false;
                      }
                    }
-
                    if (valid) {
                      var stepIndicators = document.getElementsByClassName("stepIndicator");
                      stepIndicators[currentTab].className += " finish"; // 유효한 데이터가 입력되면 해당 단계를 완료로 표시합니다.

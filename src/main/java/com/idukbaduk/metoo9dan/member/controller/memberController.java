@@ -18,6 +18,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -30,27 +32,27 @@ public class memberController {
     private PasswordEncoder passwordEncoder;
 
     //test- 마이페이지 접근
-    @GetMapping(value="/mypage/{memberId}")
-    public String myPage(  @PathVariable("memberId") String memberId,
-                           Model model, Principal principal) throws Exception {
+    @GetMapping(value = "/mypage/{memberId}")
+    public String myPage(@PathVariable("memberId") String memberId,
+                         Model model, Principal principal) throws Exception {
         Member member = memberService.getUser(principal.getName());
         String memname = member.getName(); //  회원이름
         String Id = member.getMemberId(); // 회원아이디
         String Role = member.getRole(); // 역할
 
 
-        System.out.println("이름"+memname);
-        System.out.println("아이디"+Id);
+        System.out.println("이름" + memname);
+        System.out.println("아이디" + Id);
 
-        model.addAttribute("member",member); // 로그인 사용자 전체 정보
-        model.addAttribute("role",Role); // 로그인 사용자 전체 정보
-        model.addAttribute("memberName",memname); // 로그인 회원 이름
+        model.addAttribute("member", member); // 로그인 사용자 전체 정보
+        model.addAttribute("role", Role); // 로그인 사용자 전체 정보
+        model.addAttribute("memberName", memname); // 로그인 회원 이름
         return "/member/myPage";
     }
 
     //로그인 & 회원가입 폼 화면 보여주기
     @GetMapping("/login")
-    public String login(Model model,UserCreateForm userCreateForm){
+    public String login(Model model, UserCreateForm userCreateForm) {
         model.addAttribute("userCreateForm", userCreateForm);
         return "member/signupForm2";
     }
@@ -96,8 +98,19 @@ public class memberController {
 
     }
 
-}
+    @PostMapping("/checkPhoneNumberDuplication")
+    @ResponseBody //json응답반환
+    public Map<String, Boolean> checkPhoneNumberDuplication(@RequestBody Map<String, String> request) {
+        String tel = request.get("tel");
+        System.out.println("휴대폰번호 중복 확인 요청: " + tel);
 
+        boolean isDuplicate = memberService.checkmemberTelDuplication(tel);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicate", isDuplicate);
+        return response;
+
+    }
+}
 
 //회원가입 처리하기
 //    //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
