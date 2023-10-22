@@ -9,13 +9,15 @@ import lombok.Data;
 @Table(name="educator_info")
 public class EducatorInfo {
 
-    @Id
-    @Column(name = "member_no")
-    private Integer memberNo;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "educator_info_no")
+    private Integer educatorInfoNo;
+
+   // @MapsId //@MapsId 는 @id로 지정한 컬럼에 @OneToOne 이나 @ManyToOne 관계를 매핑시키는 역할 :해당 엔티티의 PK가 다른 엔티티의 PK와 동일하게 설정
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId //@MapsId 는 @id로 지정한 컬럼에 @OneToOne 이나 @ManyToOne 관계를 매핑시키는 역할
-    @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정
+    @JoinColumn(name = "member_no", referencedColumnName = "member_no",unique = true) // 외래 키 설정
     private Member member;
 
     @Column

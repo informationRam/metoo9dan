@@ -105,6 +105,7 @@ public class MemberServiceImpl implements MemberService {
     public void createUserWithEducatorInfo(Member member, EducatorInfo educatorInfo) {
 
         member.setJoinDate(LocalDateTime.now()); // 현재 날짜 및 시간을 설정
+        member.setMembershipStatus("무료회원");
         memberRepository.save(member);
         // EducatorInfo 엔터티 저장
         educatorInfo.setMember(member); // 교육자 정보의 memberNo를 설정
@@ -117,7 +118,8 @@ public class MemberServiceImpl implements MemberService {
     public void createUser(Member member) {
 
         member.setJoinDate(LocalDateTime.now()); // 현재 날짜 및 시간을 설정
-        member.setJoinDate(LocalDateTime.now()); // 현재 날짜 및 시간을 설정
+        member.setMembershipStatus("무료회원");
+
         // Member 엔터티 저장
         memberRepository.save(member);
     }

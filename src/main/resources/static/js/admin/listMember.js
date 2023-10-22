@@ -13,7 +13,7 @@
                      memberCheckboxes = document.querySelectorAll(".memberCheckbox");
 
                  selectAllCheckbox.addEventListener("change", function() {
-                     memberCheckboxes.forEach(function(checkbox) {
+                     memberCheckboxes.forEㅣach(function(checkbox) {
                          checkbox.checked = selectAllCheckbox.checked;
                      });
                  });
@@ -25,7 +25,7 @@
                          selectAllCheckbox.checked = allChecked;
                      });
                  });
-               }
+             }
 
          // 삭제 버튼 클릭 이벤트
          const deleteButton = document.getElementById("deleteMembersButton");
@@ -229,7 +229,7 @@
 
 // 현재 페이지네이션 범위를 저장할 변수
        let currentStartPage = 1;
-// 페이지네이션 생성
+// 검색 페이지네이션 생성
         function generatePagination(totalPages,currentPage) {
             const paginationContainer = document.querySelector('.pagination ul');
             paginationContainer.innerHTML = ''; // 기존 페이지네이션 삭제
@@ -251,7 +251,7 @@
             prevLi.appendChild(prevButton);
             paginationContainer.appendChild(prevLi);
 
-              // 숫자 버튼
+            // 숫자 버튼
               for (let i = 0; i < 4; i++) {
                   //if (currentStartPage + i > totalPage) break;  // 전체 페이지 수를 초과하면 생성 중단
                    const pageNumber = currentStartPage + i;
@@ -260,40 +260,38 @@
                   const pageLi = document.createElement('li');
                   pageLi.classList.add('page-item');
                    if (pageNumber === currentPage) {
-                              pageLi.classList.add('active');  // 현재 페이지를 나타내는 스타일 추가
-                          }
+                       pageLi.classList.add('active');  // 현재 페이지를 나타내는 스타일 추가
+                   }
                   const pageButton = document.createElement('a');
                   pageButton.classList.add('page-link');
                   pageButton.textContent = pageNumber;
                  // pageButton.textContent = currentStartPage + i;
                   //숫자 클릭 시 해당 페이지의 데이터 로드
                   pageButton.addEventListener('click', () => {
-//                      let params = getSearchParams();
-//                      params.page = currentStartPage + i;
+                     //let params = getSearchParams();
+                      //params.page = currentStartPage + i;
                       fetchSearchResults(pageNumber);  // 선택한 페이지에 해당하는 검색 결과를 가져옴
                   });
-                  pageLi.appendChild(pageButton);
-                  paginationContainer.appendChild(pageLi);
+                      pageLi.appendChild(pageButton);
+                      paginationContainer.appendChild(pageLi);
               }
 
-                // 다음 버튼
-                const nextLi = document.createElement('li');
-                nextLi.classList.add('page-item');
-                const nextButton = document.createElement('a');
-                nextButton.classList.add('page-link');
-                nextButton.textContent = '다음';
-                nextButton.addEventListener('click', () => {
-                    if (currentStartPage + 3 <= totalPage) {
-                        currentStartPage += 4;
-                        generatePagination(totalElements);
-                        fetchSearchResults();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
-                    }
-                });
-                nextLi.appendChild(nextButton);
-                paginationContainer.appendChild(nextLi);
+            // 다음 버튼
+            const nextLi = document.createElement('li');
+            nextLi.classList.add('page-item');
+            const nextButton = document.createElement('a');
+            nextButton.classList.add('page-link');
+            nextButton.textContent = '다음';
+            nextButton.addEventListener('click', () => {
+                if (currentStartPage + 3 <= totalPage) {
+                    currentStartPage += 4;
+                    generatePagination(totalElements);
+                    fetchSearchResults();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
+                }
+            });
+            nextLi.appendChild(nextButton);
+            paginationContainer.appendChild(nextLi);
         }
-
-
 
 //        //페이지 변경시 검색결과 갱신
 //        function changePage(pageNumber) {
