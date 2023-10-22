@@ -10,7 +10,7 @@
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h2>문의사항</h2>
             <div>
-                <a th:text="|총 게시물 ${questionPage.getTotalElements}개 조회되었습니다.|"></a>
+                <a class="form-text" th:text="|총 게시물 ${questionPage.getTotalElements}개 조회되었습니다.|"></a>
                 <table class="table table-hover">
                     <thead class="table-dark">
                         <tr class="text-center">
@@ -76,7 +76,7 @@
             </nav>
 
             <!--문의사항 검색 영역-->
-            <div class="mb-3">
+            <div class="mb-3 mt-3">
                 <form action="/qna/search">
                     <div class="d-flex justify-content-center">
                         <div class="input-group" style="width: 45%">

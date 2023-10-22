@@ -1,5 +1,8 @@
 body {
-  background-color: #F9F7F7;
+  background-color: #F9F7F7; /*#838383;*/
+}
+a{
+  color: #101010;
 }
 
 .pagination {
@@ -12,5 +15,10 @@ body {
   --bs-pagination-focus-color: #886d17;
 }
 
+ul.sub-menu{
+    border-radius: 10px;
+}
 
-
+.header-area {
+    background-color: #70ad47;
+}
