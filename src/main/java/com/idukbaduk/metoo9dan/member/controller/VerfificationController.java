@@ -8,10 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -42,16 +39,20 @@ public class VerfificationController {
     }
 
     @PostMapping("/verifyEmailCode")
+    @ResponseBody
     public ResponseEntity<?> verifyEmailCode(@RequestBody Map<String, String> request) {
         String email = request.get("valiEmail");  // 변경: 클라이언트에서 "valiEmail"로 보낸 값을 검색합니다.
         String inputCode = request.get("emailCode");
         System.out.println("사용자입력코드:"+inputCode);
+        System.out.println("본인인증이메일:"+email);
         if (mailService.verifyEmailCode(email, inputCode)) {
-            return ResponseEntity.ok().body("{\"success\": true}");
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("success", true);
+            return ResponseEntity.ok(response);
         } else {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "인증번호를 다시 확인하세요");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);  // 변경: JSON 형식의 응답 및 400 상태 코드 반환
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);  // ResponseEntity:java객체 json 변환 및 400 상태 코드 반환
         }
     }
 

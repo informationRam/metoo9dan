@@ -306,7 +306,8 @@ var emailVerified = false;
      }
 
     // 인증 코드 확인 함수
-    let verificationIsSuccessful = false; // Initialize the variable
+    let phoneVerificationIsSuccess = false; //휴대폰 인증완료 초기값
+    let emailVerificationIsSuccessful = false; // 이메일 인증완료 초기값
 
     function verifyCode() {
         // 사용자가 입력한 인증 코드 가져오기
@@ -328,7 +329,7 @@ var emailVerified = false;
                     const response = JSON.parse(xhr.responseText);
                     if (response.success) {
                          alert("본인 인증이 완료되었습니다.");
-                          verificationIsSuccessful = true;
+                          phoneVerificationIsSuccess = true;
 
                         // 세션에 저장된 이름과 휴대폰 번호 가져오기
                         const userName = response.userName;
@@ -348,11 +349,11 @@ var emailVerified = false;
                         document.getElementById("userPhoneInput").readOnly = true;
                     } else {
                         alert("인증을 완료해주세요.");
-                         verificationIsSuccessful = false;
+                         phoneVerificationIsSuccess = false;
                     }
                 } else {
                     alert("인증에 실패했습니다.");
-                     verificationIsSuccessful = false;
+                     phoneVerificationIsSuccess = false;
                 }
             }
         };
@@ -389,9 +390,9 @@ var emailVerified = false;
 
     //이메일 본인인증 확인
     function verifyEmailCode() {
-      var email = document.getElementById("valiEmail").value;
+      var email = document.getElementById("valiEmail").value; //인증받을 이메일
       var name = document.getElementById("emailName").value;
-      var inputCode = document.getElementById("emailVerificationCode").value;
+      var inputCode = document.getElementById("emailVerificationCode").value; //사용자가 입력한 인증번호
 
         // 서버로 인증 코드 검증 요청
         fetch('/api/verifyEmailCode', {
@@ -419,6 +420,8 @@ var emailVerified = false;
             .then(data => {
                 document.getElementById("userNameInput").value = name;
                 document.getElementById("email").value = email;
+                alert("본인 인증이 완료되었습니다.")
+                emailVerificationIsSuccessful = true;
                 nextPrev(1);
             })
             .catch(error => {

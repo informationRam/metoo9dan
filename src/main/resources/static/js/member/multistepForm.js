@@ -49,7 +49,7 @@
                     if (n == 1) {
                         if (!validateForm()) return false; // 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
                         if (currentTab === 1) { // 두 번째 스텝인 경우
-                            if (!verificationIsSuccessful) { // 휴대폰 인증이 실패한 경우(휴대폰 또는 이메일 인증 실페로 수정)
+                            if (!emailVerificationIsSuccessful && !phoneVerificationIsSuccessful) { //둘다 인증되지 않으면 안넘어감, 하나라도 인증되면 넘어감
                                 alert("본인 인증 단계를 완료하세요.");
                                 return false; // 인증이 실패한 경우 다음으로 진행하지 않습니다.
                             }
