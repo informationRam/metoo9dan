@@ -71,29 +71,35 @@
 
                 <div class="lowerSection bg-light p-4 rounded">
                     <!-- Group Students -->
-                    <h3 class="mb-3">Study Groups</h3>
+                    <h3 class="mb-3">학습 그룹</h3>
 
-                        <!-- Notification messages -->
-                        <div th:if="${successMessage != null}" class="alert alert-success mb-3">
-                            <strong>숙제가 성공적으로 전송되었습니다</strong>
-                        </div>
-                        <div th:if="${skippedEntries != null and not #lists.isEmpty(skippedEntries)}" class="alert alert-warning mt-2">
-                            <strong>주의!</strong> 전송 내역이 존재하는 경우에는 중복 전송되지 않았습니다.
-                            <ul>
-                                <!-- Each skipped combination -->
-                                <li th:each="entry : ${skippedEntries}" th:text="${entry}"></li>
-                            </ul>
-                        </div>
 
-                    <div class="mb-3" style="width: 30%;">
-                        <div class="dropdown">
+                    <div class="d-flex align-items-left mb-3" style="gap: 10px;">
+                        <div class="dropdown" style="flex: 0.3;"> <!-- 드롭다운의 길이를 조절하기 위해 flex 값을 조정 -->
                             <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()" class="form-select">
                                 <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
                                 <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
                             </select>
                         </div>
+                        <!-- 버튼 -->
+                        <button id="selectAllButton" type="button" class="btn btn btn-outline-secondary" onclick="toggleAllCheckboxes()">전체 선택/해제</button>
                     </div>
-                        <button id="selectAllButton" type="button" class="btn btn-secondary mt-2" onclick="toggleAllCheckboxes()">전체 선택/해제</button>
+
+
+                        <!-- Notification messages -->
+                    <div th:if="${successMessage != null}" class="alert alert-success mb-3 alert-dismissible fade show" role="alert">
+                        <strong>숙제가 성공적으로 전송되었습니다</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <div th:if="${skippedEntries != null and not #lists.isEmpty(skippedEntries)}" class="alert alert-warning mt-2 alert-dismissible fade show" role="alert">
+                        <strong>주의!</strong> 전송 내역이 존재하는 경우에는 중복 전송되지 않았습니다.
+                        <ul>
+                            <!-- Each skipped combination -->
+                            <li th:each="entry : ${skippedEntries}" th:text="${entry}"></li>
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
 
                     <div id="groupMessage" class="groupMessage mb-3 text-center">
                         <img src="/css/homework/groupIcon.png" alt="Group Icon" class="mb-2">
@@ -102,25 +108,26 @@
 
                     <!-- Responsive table -->
                     <div class="table-responsive">
-                        <div class="nado-table-container>"
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th>Name</th>
-                                <th>Tel</th>
-                                <th>Current Level</th>
-                                <!-- Second student info headers -->
-                                <th></th>
-                                <th>Name</th>
-                                <th>Tel</th>
-                                <th>Current Level</th>
-                            </tr>
-                            </thead>
-                            <tbody id="studyGroupMembersBody">
-                            <!-- Rows created by Ajax -->
-                            </tbody>
-                        </table>
+                        <div class="nado-table-container" style="display:none;" id="tableContainer">
+                            <table class="nano-table nano-table-hover">
+                                <thead class="nano-thead">
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Tel</th>
+                                    <th>Current Level</th>
+                                    <!-- Second student info headers -->
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Tel</th>
+                                    <th>Current Level</th>
+                                </tr>
+                                </thead>
+                                <tbody id="studyGroupMembersBody" class="nado-tbody">
+                                <!-- Rows created by Ajax -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     </div>
                     <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
@@ -128,21 +135,28 @@
 
                     <!-- Styled button -->
                     <div class="d-flex justify-content-center mt-2">
-                        <button id="submitButton" type="button" onclick="validateAndSubmitForm()" class="btn btn-primary btn-lg">숙제 전송</button>
+                        <button id="submitButton" type="button" onclick="validateAndSubmitForm()" class="btn-nado-primary" style="display:none;">숙제 전송</button>
                     </div>
 
                 </div>
             </form>
         </div>
             <!-- 통합 모달창 -->
-            <div id="hw-homeworkDetailModal">
+            <div id="hw-homeworkDetailModal" class="naod-modal">
+                <div class="naod-modal-header">
                 <h2 id="modalTitle"></h2>
+                </div>
+                <div class="naod-modal-body">
                 내용<p id="modalContent"></p>
                 게임 컨텐츠<p id="modalGameTitle"></p>
                 진도<p id="modalProgress"></p>
                 메모<p id="modalMemo"></p>
                 기한<p id="modalDueDate"></p>
                 생성일<p id="modalCreateDate"></p>
+                </div>
+                <div class="modal-footer">
+                    <br/>
+                </div>
             </div>
 
             <!-- 통합 모달창 끝 -->
@@ -304,6 +318,8 @@
                     const table = tableBody.closest('table');
                     const messageDiv = document.getElementById('groupMessage');
                     const messageTextDiv = document.getElementById('groupMessageText');
+                    const tableContainer = document.getElementById('tableContainer');
+                    const submitButton = document.getElementById('submitButton');
 
                     if (groupId === "none") {
                         table.style.display = 'none'; // 테이블을 숨깁니다.
@@ -315,10 +331,14 @@
                         .then(data => {
                             if (data.length === 0) {
                                 table.style.display = 'none'; // 테이블을 숨깁니다.
+                                tableContainer.style.display = 'none';
                                 messageTextDiv.innerText = "승인된 학생이 없습니다."; // 메시지 표시
                                 messageDiv.style.display = 'block';
+                                submitButton.style.display = 'none';
                             } else {
                                 table.style.display = ''; // 테이블을 보여줍니다.
+                                tableContainer.style.display = '';
+                                submitButton.style.display = '';
                                 messageDiv.style.display = 'none';
                                 populateTable(data); // 테이블로 표시
                             }
