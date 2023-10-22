@@ -15,11 +15,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -109,12 +109,13 @@ public class PaymentsService {
         sorts.add(Sort.Order.desc("paymentDate"));     //결제일순
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 
-        System.out.println("startDate?-서비스"+startDate);
-        System.out.println("endDate?-서비스"+endDate);
-
         return paymentsRepository.getMonthlyTotalAmounts(startDate, endDate, pageable);
 
+    }
 
+    // 월 별 조회 후 매출 합계
+    public List<Object[]> getMonthlySummaries(LocalDateTime startDate, LocalDateTime endDate) {
+        return paymentsRepository.getMonthlyTotalAmounts(startDate, endDate);
     }
 
     // 일별 데이터 조회 및 페이지네이션 처리
@@ -126,6 +127,53 @@ public class PaymentsService {
 
         // paymentsRepository를 사용하여 일별 데이터 조회
         return paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate, pageable);
+    }
+
+    // 일 별 조회 후 매출 합계
+    public List<Object[]> getDailySummaries(LocalDateTime startDate, LocalDateTime endDate) {
+        return paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate);
+    }
+
+
+    // 일별 그래프에 사용
+    public List<Object[]> getFormattedDailySummaries(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Object[]> dailySummaries = paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate);
+
+        // 날짜 형식을 변경하고 저장할 새로운 리스트 생성
+        List<Object[]> formattedSummaries = new ArrayList<>();
+        for (Object[] summary : dailySummaries) {
+            Payments payment = (Payments) summary[0];
+            LocalDateTime paymentDate = payment.getPaymentDate();
+
+            // 원하는 날짜 형식으로 변환
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String formattedDate = paymentDate.format(formatter);
+
+            // summary 배열을 업데이트하고 저장
+            summary[0] = formattedDate;
+            formattedSummaries.add(summary);
+        }
+
+        return formattedSummaries;
+
+    }
+
+    // 월 별 그래프에 사용
+// 월별 매출조회 합계
+    public List<Object[]> getMonthlyTotalAmounts(LocalDateTime startDate, LocalDateTime endDate) {
+        return paymentsRepository.getMonthlyTotalAmounts(startDate, endDate);
+    }
+
+
+
+    // 해당 월 상세 조회
+    public Page<Payments> getMonthlyPayments(int month,int page){
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("paymentDate"));   //오름차순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+        return paymentsRepository.getMonthlyPayments(month, pageable);
     }
 
 

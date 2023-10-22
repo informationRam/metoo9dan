@@ -26,23 +26,40 @@ public interface PaymentsRepository extends JpaRepository<Payments, Integer> {
     //paymentNo로 게임 값 가져오기
     GameContents findGameContentsByPaymentNo(Integer paymentNo);
 
-    //해당월로 매출조회
+    //해당월로 Payments 정보조회
     @Query("SELECT p FROM Payments p WHERE MONTH(p.paymentDate) = :month")
     Page<Payments> getMonthlyPayments(@Param("month") int month, Pageable pageable);
 
     // 월별 매출조회
-    // 월별 매출 조회
     @Query("SELECT MONTH(p.paymentDate) AS month, COUNT(p) AS transactionCount, SUM(p.amount) AS totalAmount " +
             "FROM Payments p " +
             "WHERE p.paymentDate >= :startDate AND p.paymentDate <= :endDate " +
             "GROUP BY MONTH(p.paymentDate)")
     Page<Object[]> getMonthlyTotalAmounts(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate,Pageable pageable);
 
+
+// 월별 매출조회 합계
+    @Query("SELECT MONTH(p.paymentDate) AS month, COUNT(p) AS transactionCount, SUM(p.amount) AS totalAmount " +
+            "FROM Payments p " +
+            "WHERE p.paymentDate >= :startDate AND p.paymentDate <= :endDate " +
+            "GROUP BY MONTH(p.paymentDate)")
+    List<Object[]> getMonthlyTotalAmounts(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
     //일별 매출조회
+    @Query("SELECT p, COUNT(p) as paymentCount, SUM(p.amount) as totalAmount " +
+            "FROM Payments p " +
+            "WHERE DATE(p.paymentDate) BETWEEN DATE(:startDate) AND DATE(:endDate) " +
+            "GROUP BY DATE(p.paymentDate)")
+    Page<Object[]> getDailyPaymentsWithSummary(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
+
+    //일별 매출 합계
     @Query("SELECT p, COUNT(p) as paymentCount, SUM(p.amount) as totalAmount " +
             "FROM Payments p " +
             "WHERE p.paymentDate BETWEEN :startDate AND :endDate " +
             "GROUP BY p.paymentDate")
-    Page<Object[]> getDailyPaymentsWithSummary(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
+    List<Object[]> getDailyPaymentsWithSummary(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
+
 
 }

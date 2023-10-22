@@ -25,6 +25,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.Principal;
@@ -34,7 +35,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/payments")
@@ -241,18 +244,16 @@ public class PaymentsController {
                                       @RequestParam(name = "view", defaultValue = "daily") String view,
                                       @RequestParam(name = "page", defaultValue = "0") int page, Model model) {
 
-
         System.out.println("----------********** view?" + view);
         System.out.println("----------********** startDate?" + startDate);
         System.out.println("----------********** endDate?" + endDate);
 
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = null;
+        int totalTransactionCount = 0;
+        int totalAmount = 0;
 
         if (!startDate.isEmpty() && !endDate.isEmpty()) {
-           /* DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            startDateTime = LocalDate.parse(startDate, formatter).atStartOfDay();
-            endDateTime = LocalDate.parse(endDate, formatter).atTime(LocalTime.MAX);*/
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             startDateTime = LocalDate.parse(startDate, formatter).atStartOfDay();
             endDateTime = LocalDate.parse(endDate, formatter).atTime(LocalTime.MAX);
@@ -270,11 +271,41 @@ public class PaymentsController {
 
         if ("month".equals(view)) {
             paymentsPage = paymentsService.getMonthlyTotalAmounts(startDateTime, endDateTime, page);
+
+            // 월별 합계를 계산
+            List<Object[]> monthlySummaries = paymentsService.getMonthlySummaries(startDateTime, endDateTime);
+            totalTransactionCount = 0;
+            totalAmount = 0; // 매출을 정수로 저장
+            for (Object[] summary : monthlySummaries) {
+                totalTransactionCount += ((Long) summary[1]).intValue();
+                totalAmount += ((Double) summary[2]).intValue();
+            }
+
         } else if("daily".equals(view)){
             paymentsPage = paymentsService.getDailyPayments(startDateTime, endDateTime, page);
+
+            // 일별 합계를 계산
+            List<Object[]> monthlySummaries = paymentsService.getDailySummaries(startDateTime, endDateTime);
+            totalTransactionCount = 0;
+            totalAmount = 0; // 매출을 정수로 저장
+            for (Object[] summary : monthlySummaries) {
+                totalTransactionCount += ((Long) summary[1]).intValue();
+                totalAmount += ((Double) summary[2]).intValue();
+            }
+
         }else {
             paymentsPage = paymentsService.getDailyPayments(startDateTime, endDateTime, page);
-        }
+
+
+            // 일별 합계를 계산
+            List<Object[]> monthlySummaries = paymentsService.getDailySummaries(startDateTime, endDateTime);
+            totalTransactionCount = 0;
+            totalAmount = 0; // 매출을 정수로 저장
+            for (Object[] summary : monthlySummaries) {
+                totalTransactionCount += ((Long) summary[1]).intValue();
+                totalAmount += ((Double) summary[2]).intValue();
+                }
+            }
 
         int currentPage = paymentsPage.getPageable().getPageNumber();
         int totalPages = paymentsPage.getTotalPages();
@@ -294,15 +325,74 @@ public class PaymentsController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
+        System.out.println("totalTransactionCount : "+totalTransactionCount);
+        System.out.println("totalAmount : "+totalAmount);
         //3.Model
             model.addAttribute("paymentsPage", paymentsPage);
             model.addAttribute("startDate", startDate);
             model.addAttribute("endDate", endDate);
+            model.addAttribute("totalTransactionCount", totalTransactionCount);
+            model.addAttribute("totalAmount", totalAmount);
             model.addAttribute("view", view);
 
         return "payments/showPayments";
     }
 
 
+
+   /* // 월별 데이터를 반환
+    public Map<String, Object> getMonthlyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Object[]> monthlySummaries = paymentsService.getMonthlySummaries(startDateTime, endDateTime);
+
+        Map<String, Object> dataMap = new HashMap<>();
+        List<String> labels = new ArrayList<>();
+        List<Integer> salesData = new ArrayList<>();
+
+        for (Object[] summary : monthlySummaries) {
+            labels.add(summary[0].toString());
+            salesData.add(((Double) summary[2]).intValue());
+        }
+
+        dataMap.put("labels", labels);
+        dataMap.put("salesData", salesData);
+
+        return dataMap;
+    }
+
+    // 일별 데이터를 반환
+    public Map<String, Object> getDailyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Object[]> dailySummaries = paymentsService.getDailySummaries(startDateTime, endDateTime);
+
+        Map<String, Object> dataMap = new HashMap<>();
+        List<String> labels = new ArrayList<>();
+        List<Integer> salesData = new ArrayList<>();
+
+        for (Object[] summary : dailySummaries) {
+            labels.add(summary[0].toString());
+            salesData.add(((Double) summary[2]).intValue());
+        }
+
+        dataMap.put("labels", labels);
+        dataMap.put("salesData", salesData);
+
+        return dataMap;
+    }
+
+*/
+
+
+/*
+    // 월 상세 조회
+    @PostMapping("/showMonthlyDetails")
+    public String showMonthlyDetails(@RequestParam(name = "startDate", defaultValue = "") String startDate,
+                                      @RequestParam(name = "endDate", defaultValue = "") String endDate,
+                                      @RequestParam(name = "view", defaultValue = "daily") String view,
+                                      @RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+
+
+
+    }
+
+*/
 
 }
