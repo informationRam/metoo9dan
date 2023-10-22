@@ -30,9 +30,9 @@
                                 <li class="has-sub">
                                     <a href="javascript:void(0)">이용안내</a>
                                     <ul class="sub-menu">
-                                        <li><a class="dropdown-item" href="#">사이트 소개</a></li>
-                                        <li><a class="dropdown-item" href="#">이용가이드</a></li>
-                                        <li><a class="dropdown-item" href="#">상품소개</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/#service}">사이트 소개</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/#meetings}">상품소개</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/#guide}">이용가이드</a></li>
                                         <li><a class="dropdown-item" th:href="@{/notice/list}">공지사항</a></li>
                                         <li><a class="dropdown-item" th:href="@{/notice/faq}">자주묻는질문</a></li>
                                         <li><a class="dropdown-item" th:href="@{/qna/list}">문의사항</a></li>
@@ -102,8 +102,8 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="caption">
-                            <h6>'나도9단'과 함께 프로바둑러가 될 준비 되셨나요?</h6>
-                            <h2>함께하고, 배우고, 성장해요!</h2>
+                            <h6>함께하고, 배우고, 성장해요!</h6>
+                            <h2>'나도9단'과 함께 프로바둑러가 될 준비 되셨나요?</h2>
                             <p>학습그룹에 가입하고, 나에게 꼭 맞는 맞춤형 숙제를 해결해요. 궁금한 것이 있으면 얼마든지 물어볼 수 있어요.</p>
                             <div class="main-button-red">
                                 <div class="scroll-to-section"><a href="#contact">나도 9단 되기</a></div>
@@ -115,7 +115,7 @@
         </div>
     </section>
     <!-- ***** Main Banner Area End ***** -->
-    <section class="services">
+    <section class="services" id="service">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -126,8 +126,8 @@
                                 <img src="/assets/images/service-icon-01.png" alt="">
                             </div>
                             <div class="down-content">
-                                <h4>수준 높은 교육</h4>
-                                <p>앱과 함께 교육의 시너지 효과를 누리세요!</p>
+                                <h4>차별화된 학습그룹</h4>
+                                <p>더 이상 혼자 공부하지 마세요. 함께 공부해요!</p>
                             </div>
                         </div>
 
@@ -146,8 +146,8 @@
                                 <img src="/assets/images/service-icon-03.png" alt="">
                             </div>
                             <div class="down-content">
-                                <h4>열정적으로 배우는 학생</h4>
-                                <p>'나도9단'과 함께 더욱 더 열정적으로 학습할 수 있습니다!</p>
+                                <h4>숙제를 통한 실력 업그레이드</h4>
+                                <p>학습그룹에 가입하면, 진도별 숙제를 받을 수 있습니다. 차근차근 해결해요.</p>
                             </div>
                         </div>
 
@@ -166,8 +166,8 @@
                                 <img src="/assets/images/service-icon-03.png" alt="">
                             </div>
                             <div class="down-content">
-                                <h4>빠르고 정확한 피드백</h4>
-                                <p>학생 개개인별로 맞춤형 숙제가 주어집니다. 궁금한 것이 생겼다면 언제든지 물어볼 수 있습니다.</p>
+                                <h4>남녀노소 누구나 쉽게!</h4>
+                                <p>교육자나 학습자가 아니어도 얼마든지 콘텐츠를 구독할 수 있습니다! 단독 상품을 만나보세요.</p>
                             </div>
                         </div>
 
@@ -177,7 +177,147 @@
         </div>
     </section>
 
+    <section class="upcoming-meetings" id="meetings">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-heading">
+                        <h2>정규 콘텐츠를 만나보세요</h2>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="categories">
+                        <h4>정규 콘텐츠</h4>
+                        <ul>
+                            <li><a href="https://textbookmedia.gimmyoung.com/baduk/">렛츠 고 바둑스쿨</a></li>
+                            <li><a href="#">초등 창의인성 바둑 교과서</a></li>
+                            <li><a href="#">프로기사의 대국 복기를 통한 묘수풀이</a></li>
+                            <li><a href="#">게임을 통한 바둑 학습</a></li>
+                        </ul>
+                        <div class="main-button-red">
+                            <a href="#">구독 서비스 이용하러가기</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="meeting-item">
+                                <div class="thumb">
+                                    <div class="price">
+                                        <span>3,900원/월</span>
+                                    </div>
+                                    <a href="#"><img src="/assets/images/meeting-01.jpg" alt="New Lecturer Meeting"></a>
+                                </div>
+                                <div class="down-content">
+                                    <div class="date">
+                                        <h6>Nov <span>22</span></h6>
+                                    </div>
+                                    <a href="#"><h4>일반 구독자를 위한 강의</h4></a>
+                                    <p>유용한 바둑 교육 자료를<br>제공하고 있습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="meeting-item">
+                                <div class="thumb">
+                                    <div class="price">
+                                        <span>22,000원</span>
+                                    </div>
+                                    <a href="#"><img src="/assets/images/meeting-02.jpg" alt="Online Teaching"></a>
+                                </div>
+                                <div class="down-content">
+                                    <div class="date">
+                                        <h6>Nov <span>24</span></h6>
+                                    </div>
+                                    <a href="#"><h4>단독 패키지 구성</h4></a>
+                                    <p>게임콘텐츠만 포함된 상품<br>재미있게 바둑을 배우세요.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="meeting-item">
+                                <div class="thumb">
+                                    <div class="price">
+                                        <span>15,000원 +@</span>
+                                    </div>
+                                    <a href="#"><img src="/assets/images/meeting-03.jpg" alt="Higher Education"></a>
+                                </div>
+                                <div class="down-content">
+                                    <div class="date">
+                                        <h6>Oct <span>22</span></h6>
+                                    </div>
+                                    <a href="meeting-details.html"><h4>학습그룹 포함 패키지</h4></a>
+                                    <p>학생들과 효율적으로 교감하며<br>바둑교육을 시작하세요.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="meeting-item">
+                                <div class="thumb">
+                                    <div class="price">
+                                        <span>15,000원 +@</span>
+                                    </div>
+                                    <a href="#"><img src="/assets/images/meeting-04.jpg" alt="Student Training"></a>
+                                </div>
+                                <div class="down-content">
+                                    <div class="date">
+                                        <h6>Oct <span>30</span></h6>
+                                    </div>
+                                    <a href="#"><h4>학습그룹 포함 패키지2</h4></a>
+                                    <p>입문학생을 위한 교수법이 포함되어<br>눈높이에 맞게 학습시킬 수 있습니다..</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <section class="our-facts" id="guide">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>'나도9단' 이렇게 이용하세요!</h2>
+                </div>
+                <div class="col-lg-4"> <!--왼-->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>교육자</h5>
+                        </div>
+                        <div class="card">구독상품 검색</div>
+                        <div class="card">구독상품 결제/취소</div>
+                        <div class="row">
+                            <div class="col-lg-6">유료콘텐츠 시청</div>
+                            <div class="col-lg-6">학습그룹 등록</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 align-self-center"> <!--중-->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>학습자</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4"> <!--오-->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>일반인</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-text p-5">
+            [유료콘텐츠 결제 관련 안내] <br/>
+            상품 구매 후 학습그룹을 생성하지 않았거나 학습자료를 열람하지 않은 경우에 한하여 7일 이내 환불요청이 가능합니다. <br/>
+            구매 후 7일이 지났거나, 7일이 지나지 않았어도 학습그룹을 생성한 적이 있으면 환불이 불가하오니 이 점 양지해주시기 바랍니다.<br/>
+            구독 서비스를 통해 이용하시는 유료콘텐츠와 학습자료는 무단 전제 배포를 금합니다.
+        </div>
+    </section>
 
 
     <script src="/assets/js/isotope.min.js"></script>

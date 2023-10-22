@@ -1,14 +1,16 @@
 package com.idukbaduk.metoo9dan.notice.config;
 
+import com.idukbaduk.metoo9dan.notice.service.UpdatePosting;
+import org.quartz.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class QuartzConfig {
-    /*@Bean
+    @Bean
     public JobDetail myJobDetail() {
-        return JobBuilder.newJob(MyJob.class)
-                .withIdentity("myJob")
+        return JobBuilder.newJob(UpdatePosting.class)
+                .withIdentity("updatePosting")
                 .storeDurably()
                 .build();
     }
@@ -18,7 +20,7 @@ public class QuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(job)
                 .withIdentity("myTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0/5 * * * * ?")) // Example cron expression
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 43 12 * * ?")) // Example cron expression
                 .build();
-    }*/
+    }
 }
