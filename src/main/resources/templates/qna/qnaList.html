@@ -30,7 +30,7 @@
                             <td class="text-center" th:text="${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}"></td>
                             <td class="text-center">
                                 <span th:if="${question.isAnswered}==false" class="badge rounded-pill text-bg-secondary">답변대기</span>
-                                <span th:unless="${question.isAnswered}==false" class="badge rounded-pill text-bg-primary">답변완료</span>
+                                <span th:unless="${question.isAnswered}==false" class="badge rounded-pill text-bg-warning text-white">답변완료</span>
                             </td>
                         </tr>
                         <tr th:if="${questionPage.isEmpty()}">
@@ -40,7 +40,7 @@
                 </table>
             </div>
             <div class="d-flex justify-content-end">
-                <a class="btn btn-primary" th:href="@{/qna/questionAdd}">문의사항 작성</a>
+                <a class="btn btn-warning text-white" th:href="@{/qna/questionAdd}">문의사항 작성</a>
             </div>
             <!--페이지네이션-->
             <nav th:if="${!questionPage.isEmpty()}" class="d-flex justify-content-center">
@@ -86,7 +86,7 @@
                             <option value="content">내용</option>
                         </select>
                         <input type="text" id="keyword" name="keyword" th:value="${keyword}" class="col-auto form-control">
-                        <input type="submit" value="검색" class="col-auto btn btn-outline-primary">
+                        <input type="submit" value="검색" class="col-auto btn btn-outline-warning">
                         </div>
                     </div>
                 </form>
@@ -100,6 +100,18 @@
     if([[${msg}]]!=null){
         alert([[${msg}]]);
     }
+
+    //셀 박 값 고정 - searchCategory
+    document.addEventListener('DOMContentLoaded', function(){
+        var searchCategory = [[${searchCategory}]];
+        var searchCategorySE = document.getElementById('searchCategory');
+        for(var i = 0; i<searchCategorySE.length; i++){
+            if(searchCategorySE.options[i].value == searchCategory){
+            searchCategorySE.options[i].selected = true;
+            break;
+            }
+        }
+    });
 </script>
 </div>
 

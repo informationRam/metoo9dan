@@ -125,8 +125,8 @@ public class NoticeController {
         logger.info("startPage: "+startPage);
 
 
-        model.addAttribute("noticeType", noticeType);
-        model.addAttribute("status", status);
+        model.addAttribute("noticeType", noticeType); //고정 완료
+        model.addAttribute("status", status); //고정 완료
         model.addAttribute("listSize", listSize); //고정 완료
         model.addAttribute("searchCategory", searchCategory);
         model.addAttribute("keyword", keyword); //고정 완료

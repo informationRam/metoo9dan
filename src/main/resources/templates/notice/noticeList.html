@@ -54,14 +54,14 @@
                                 <option value="noticeContent">내용</option>
                             </select>
                             <input class="form-control" type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
-                            <input type="submit" value="검색" class="btn btn-outline-primary">
+                            <input type="submit" value="검색" class="btn btn-outline-warning">
                         </div>
                     </div>
                 </form>
 
             </div>
             <div>
-                <a th:text="|총 게시물 ${noticePage.getTotalElements}개 조회되었습니다.|"></a>
+                <a class="form-text" th:text="|총 게시물 ${noticePage.getTotalElements}개 조회되었습니다.|"></a>
                 <table class="table table-hover">
                     <thead class="table-dark">
                         <tr class="text-center">
@@ -100,13 +100,13 @@
                             <td class="text-center" th:text="${notice.readCnt}"></td>
                         </tr>
                         <tr th:if="${noticePage.isEmpty()}">
-                            <td colspan="6" class="text-center">검색 결과가 없습니다.</td>
+                            <td colspan="6" class="text-center form-text">검색 결과가 없습니다.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="d-flex justify-content-end">
-                <a href="/notice/add" th:href="@{/notice/add}" th:if="${memberRole}==ADMIN" class="btn btn-primary">공지사항 등록</a>
+                <a href="/notice/add" th:href="@{/notice/add}" th:if="${memberRole}==ADMIN" class="btn btn-warning text-white">공지사항 등록</a>
             </div>
             <!--페이지네이션 들어가야함-->
             <nav th:if="${!noticePage.isEmpty()}" class="d-flex justify-content-center">
@@ -136,7 +136,6 @@
 
                     <!-- 다음  &=${}-->
                     <li class="page-item" th:classappend="${endPage >= noticePage.totalPages} ? 'disabled'">
-                        <!--조건 추가해야함. 멤버롤이 어드민이면 이거, 아니면 status고정으로??-->
                         <a class="page-link"
                            th:if="${keyword}!=null"
                            th:href="@{|?noticeType=${noticeType}&page=${endPage}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
@@ -158,6 +157,8 @@
         if([[${msg}]]!=null){
             alert([[${msg}]]);
         }
+
+        //셀렉트 박스 값 고정 - listSize
         document.addEventListener("DOMContentLoaded", function () {
             var listSize = [[${listSize}]];
             var selectElement = document.getElementById("listSize");
@@ -171,6 +172,44 @@
                 }
             }
         });
+
+        //셀 박 값 고정 - noticeType
+        document.addEventListener('DOMContentLoaded', function(){
+            var noticeType = [[${noticeType}]];
+            var noticeTypeSE = document.getElementById('noticeType');
+            for(var i = 0; i<noticeTypeSE.length; i++){
+                if(noticeTypeSE.options[i].value == noticeType){
+                noticeTypeSE.options[i].selected = true;
+                break;
+                }
+            }
+        });
+
+        //셀 박 값 고정 - status
+        document.addEventListener('DOMContentLoaded', function(){
+            var status = [[${status}]];
+            var statusSE = document.getElementById('status');
+            for(var i = 0; i<statusSE.length; i++){
+                if(statusSE.options[i].value == status){
+                statusSE.options[i].selected = true;
+                break;
+                }
+            }
+        });
+        //셀 박 값 고정 - searchCategory
+        document.addEventListener('DOMContentLoaded', function(){
+            var searchCategory = [[${searchCategory}]];
+            var searchCategorySE = document.getElementById('searchCategory');
+            for(var i = 0; i<searchCategorySE.length; i++){
+                if(searchCategorySE.options[i].value == searchCategory){
+                searchCategorySE.options[i].selected = true;
+                break;
+                }
+            }
+        });
+
+
+
 
     </script>
 </div>

@@ -15,12 +15,12 @@
                 <form action="/notice/faq/search" class="input-group input-group-lg">
                     <input class="form-control" type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
                     <input type="hidden" id="page" name="page" value="">
-                    <input class="btn btn-outline-primary" type="submit" value="검색">
+                    <input class="btn btn-outline-warning" type="submit" value="검색">
                 </form>
             </div>
 
             <div th:if="${noticePage.isEmpty()}">
-                <div class="card text-center">검색 결과가 없습니다.</div>
+                <div class="card text-center form-text">검색 결과가 없습니다.</div>
             </div>
 
             <div class="accordion" id="faqList">
