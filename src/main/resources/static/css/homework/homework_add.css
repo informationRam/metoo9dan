@@ -26,9 +26,9 @@
 .nado-card {
     margin: 50px auto;
     padding: 20px;
-    background-color: #ffffff; /* 깔끔한 흰색 배경 */
+    background-color: rgba(255, 255, 255, 0.9); /* 90% 불투명도의 흰색 배경 */
     border-radius: 15px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* 깔끔하고 귀여운 그림자 효과 */
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 }
 
 .nado-card-header {
@@ -57,6 +57,7 @@
 }
 
 .nado-form-control {
+    background-color: rgba(255, 255, 255, 0.9); /* 90% 불투명도의 흰색 배경 */
     width: 100%;
     padding: 10px 15px;
     margin-bottom: 10px;
@@ -161,7 +162,7 @@
 .nado-card-container {
     border-radius: 10px;
     overflow: hidden;  /* 테두리 내부로 내용이 넘치지 않게 처리 */
-    padding: auto 20px;  /* 테이블과 컨테이너와의 간격 */
+    padding: auto;  /* 테이블과 컨테이너와의 간격 */
 }
 
 /* 테이블 컨테이너 */
@@ -189,6 +190,7 @@
 
 .nano-table-hover tbody tr:hover {
     background-color: #fff9e5;  /* 노란색 테마의 호버 색상 */
+    cursor: pointer;
 }
 
 /* 헤더 스타일 */
@@ -201,6 +203,7 @@
 
 .nano-thead th:hover {
     background-color: #ffa000;  /* 노란색 테마의 호버 색상 (더 진한 노란색) */
+    cursor: pointer;
 }
 
 /* 본문 스타일 */
@@ -414,11 +417,16 @@
     height: 100%;            /* 컨테이너의 높이. 필요에 따라 조정하실 수 있습니다. */
 }
 
+
 .upperSection {
-    background-color: #ffdd57; /* 기본 색상: 밝은 노란색 */
-    background-image: linear-gradient(to bottom, #ffee77, #ffdd66); /* 상단은 하단색에 가깝게, 하단은 상단색에 가깝게 설정 */
+    background-color: #ffdd57;
+    background-image: linear-gradient(to bottom, #ffee77, #ffdd66);
     position: relative;
-    padding-bottom: 20px; /* curveEffect와의 공백을 없애기 위해 추가 */
+    padding-bottom: 20px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin: 10px 10px 10px 10px; /* 마진 추가 */
+    border-radius: 25px; /* 둥근 모서리 추가 */
 }
 
 .curveEffect {

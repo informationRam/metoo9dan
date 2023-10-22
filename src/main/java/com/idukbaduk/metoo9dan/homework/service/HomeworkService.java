@@ -176,7 +176,7 @@ public class HomeworkService {
                         String title =hw.get().getHomeworkTitle();
                         String name = mem.get().getName();
 
-                        skippedEntries.add("Member ID: " + name + " - Homework ID: " + title); // 건너뛴 조합 저장
+                        skippedEntries.add("학생명 : " + name + " - 숙제명 : " + title); // 건너뛴 조합 저장
                     }
                 }
             }
@@ -359,6 +359,7 @@ public class HomeworkService {
 
     public void saveEvaluation(int sendNo, String evaluation) {
         Optional<HomeworkSubmit> optionalHomeworkSubmit =homeworkSubmitRepository.findByHomeworkSend_SendNo(sendNo);
+            System.out.println(evaluation);
         if(optionalHomeworkSubmit.isPresent()){
             HomeworkSubmit homeworkSubmit =optionalHomeworkSubmit.get();
             homeworkSubmit.setEvaluation(evaluation);

@@ -239,36 +239,28 @@
                                     response.content.forEach(item => {
                                         let currentDate = new Date();
                                         tableContent += `
-                                            <div>
-                                        <div class="cute-card">
-                                            <div class="item-row">
-                                                <i class="fa fa-user"></i> <span>${item.name}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-book"></i> <span>${item.homeworkTitle}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-pencil"></i> <span>${item.homeworkContent}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-gamepad"></i> <span>${item.gameTitle}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-calendar"></i> <span>${item.dueDate}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-paper-plane"></i> <span>${item.sendNo}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-star"></i> <span>${item.currentLevel}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-clock-o"></i> <span>${item.sendDate}</span>
-                                            </div>
-                                            <div class="item-row">
-                                                <i class="fa fa-list"></i> <span>${item.homeworkNo}</span>
-                                            </div>
-                                        <hr class="cute-hr"/>
+                                      <div class="cute-card">
+
+                                      <div class="badge-container">
+                                        <span class="badge"><i class="fa fa-user"></i><span>${item.name}</span></span>
+                                        <span class="badge"><i class="fa fa-book"></i><span>${item.homeworkTitle}</span></span>
+                                    </div>
+                                      <div class="item-row">
+                                        <i class="fa fa-edit"></i> <label>숙제 내용</label><span>${item.homeworkContent}</span>
+                                      </div>
+                                      <div class="item-row">
+                                          <i class="fa fa-gamepad"></i> <label>게임 콘텐츠</label><span>${item.gameTitle}</span>
+                                      </div>
+                                      <div class="item-row">
+                                          <i class="fa fa-calendar"></i> <label>제출기한</label><span>${item.dueDate}</span>
+                                      </div>
+                                      <div class="item-row">
+                                        <i class="fa fa-star"></i> <label>진도</label><span>${item.currentLevel}</span>
+                                    </div>
+                                      <div class="item-row">
+                                          <i class="fa fa-paper-plane"></i> <label>전송일</label><span>${item.sendDate}</span>
+                                      </div>
+                                  <hr class="cute-hr"/>
                                         `;
 
                                         if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) < currentDate) {
@@ -290,14 +282,13 @@
                                                         <i class="fa fa-star-half-alt"></i>
                                                         <span>${item.evaluation ? item.evaluation : '평가 없음'}</span>
                                                     </div>
-                                                    <div class="dropdown cute-dropdown" style="${item.evaluation ? 'display: none;' : ''}">
-                                                        <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
-                                                            <option value="F" selected="selected">선택해주세요</option>
-                                                            <option value="A">우수</option>
-                                                            <option value="B">보통</option>
-                                                            <option value="C">미흡</option>
-                                                        </select>
-                                                    </div>
+                                                        <div class="dropdown cute-dropdown">
+                                                            <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                                <option value="A" ${item.evaluation === 'A' ? 'selected' : ''}>우수</option>
+                                                                <option value="B" ${item.evaluation === 'B' ? 'selected' : ''}>보통</option>
+                                                                <option value="C" ${item.evaluation === 'C' ? 'selected' : ''}>미흡</option>
+                                                            </select>
+                                                        </div>
                                                   </div>
                                                 </div>
                                             `;
@@ -305,7 +296,7 @@
                                             tableContent += `
                                                 <div class="no-submission-wrapper">
                                                     <div class="no-submission-message">제출된 숙제가 없습니다</div>
-                                                    <button class="cancel-btn" id="cancel-btn" data-sendno="${item.sendNo}" onclick="handleCancelClick(this)">전송 취소</button>
+                                                    <button type="button" class="cancel-btn" id="cancel-btn" data-sendno="${item.sendNo}" onclick="handleCancelClick(this)">전송 취소</button>
                                                 </div>
                                                 </div>
 
@@ -340,7 +331,6 @@
                                                 </div>
                                             <div class="dropdown cute-dropdown">
                                                 <select id="evaluation${item.sendNo}" class="form-select">
-                                                    <option value="F" selected="selected">선택해주세요</option>
                                                     <option value="C">미흡</option>
                                                 </select>
                                             </div>

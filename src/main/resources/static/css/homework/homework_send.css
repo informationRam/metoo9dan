@@ -51,3 +51,132 @@
     z-index: 5;
 }
 
+/* 테이블 컨테이너 */
+.nado-table-container {
+    border: 2px solid #ffc107;  /* 노란색 테두리 */
+    border-radius: 10px;
+    overflow: hidden;  /* 테두리 내부로 내용이 넘치지 않게 처리 */
+    padding: 10px;  /* 테이블과 컨테이너와의 간격 */
+}
+/*-----------------------------------------------------------------*/
+/* 테이블 스타일 */
+.nano-table {
+    width: 100%;  /* 전체 너비 사용 */
+    border-collapse: separate;  /* border-radius를 적용하기 위해 변경 */
+    border-spacing: 0;  /* 경계 간격 제거 */
+    border-radius: 10px;  /* 모서리 둥글게 */
+    overflow: hidden;  /* 둥근 모서리 내부로 내용이 넘치지 않게 처리 */
+}
+
+
+.nano-table, .nano-table th, .nano-table td {
+    border: 1px solid #ddd;  /* 테이블 경계 및 셀 경계 스타일 */
+    text-align: left;
+}
+
+.nano-table-hover tbody tr:hover {
+    background-color: #fff9e5;  /* 노란색 테마의 호버 색상 */
+    cursor: pointer;
+}
+
+/* 헤더 스타일 */
+.nano-thead th {
+    background-color: #ffc107;  /* 노란색 배경 */
+    color: #333;  /* 검은색 글씨 */
+    padding: 10px 15px;  /* 패딩 설정 */
+    cursor: pointer;  /* 클릭 가능성을 나타내기 위한 스타일 */
+}
+
+/* 본문 스타일 */
+.nado-tbody td {
+    padding: 10px 15px;  /* 패딩 설정 */
+    color: #333;  /* 검은색 글씨 */
+}
+
+/* 데이터가 없을 때의 메시지 */
+.nado-none {
+    text-align: center;  /* 텍스트 가운데 정렬 */
+    color: #888;  /* 회색 글씨 */
+    padding: 20px 0;  /* 위아래 패딩 */
+}
+
+.upperSection {
+    background-color: #ffdd57;
+    background-image: linear-gradient(to bottom, #ffee77, #ffdd66);
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin: 10px 10px 10px 10px; /* 마진 추가 */
+    border-radius: 25px; /* 둥근 모서리 추가 */
+}
+
+.curveEffect {
+    width: 220px;
+    height: 55px; /* 높이를 조금 늘림 */
+    position: absolute;
+    bottom: -20px; /* 위치를 약간 아래로 조정 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffdd66; /* 원래의 배경색으로 복원 */
+    border-radius: 50%; /* 원의 형태로 조절 */
+    z-index: 1;
+    color: fff;
+}
+
+.nado-card {
+    margin: 50px auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9); /* 90% 불투명도의 흰색 배경 */
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nado-card-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ffc107; /* 노란색을 기반으로 한 밑줄 */
+}
+
+.nado-card-header h2 {
+    margin: 0;
+    padding: 10px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.nado-card-body {
+    padding: 20px;
+}
+
+.pagination {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+.pagination .page-item {
+    margin: 0 2px;
+}
+
+.pagination .page-link {
+    border: none;
+    color: #333;
+    border-radius: 5px;
+    padding: 8px 12px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-item.active .page-link,
+.pagination .page-link:hover {
+    background-color: #ffc107;
+    color: #333;
+    border-color: #ffc107;
+}
+
+.pagination .page-item.disabled .page-link {
+    pointer-events: none;
+    cursor: default;
+    background-color: #f2f2e6;
+    color: #999;
+}

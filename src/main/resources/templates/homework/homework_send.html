@@ -9,13 +9,16 @@
 
         <div class="col-10" style="border: 1px solid black; padding:0px;"> <!--class에서 col-10은 빼면 안됨-->
             <form action="/homework/send" method="post">
+                <div class="px-3">
                 <div class="upperSection">
-                    <div class="card border-0 shadow-lg">
-                        <div class="card-body px-5 py-4">
-                            <h3 class="mb-4">Homeworks</h3>
-
+                    <div class="nado-card">
+                        <div class="">
+                            <div class="nado-card-header">
+                            <h2>숙제 전송</h2>
+                            </div>
+                            <div class="nado-card-body">
                             <div class="d-flex align-items-center mb-4">
-                                <label for="homeworkDropdown" class="form-label me-3">Filter by Title:</label>
+                                <label for="homeworkDropdown" class="form-label me-3">숙제명:</label>
                                 <select id="homeworkDropdown" onchange="filterHomeworks()" class="form-select" style="width:20%;">
                                     <option value="All" selected="selected">All</option>
                                     <option th:each="title : ${distinctHomeworkTitles}" th:value="${title}" th:text="${title}"></option>
@@ -23,36 +26,43 @@
                             </div>
 
                             <div class="table-responsive">
-                                <table class="table table-striped sendhwTable mt-3" id="homeworkTable">
-                                    <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>숙제명</th>
-                                        <th>숙제 내용</th>
-                                        <th>게임 컨텐츠명</th>
-                                        <th>진도</th>
-                                        <th>제출 기한</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="homeworkTableBody">
-                                    <!-- 숙제 목록 테이블 행 -->
-                                    <tr th:each="hw,start : ${homeworks}" th:data-hw-id="${hw.homeworkNo}">
-                                        <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
-                                        <td th:text="${hw.homeworkTitle}"></td>
-                                        <td th:text="${hw.homeworkContentPreview}"></td>
-                                        <td th:text="${hw.gameTitle}"></td>
-                                        <td th:text="${hw.progress} + '레벨'"></td>
-                                        <td th:text="${hw.dueDate}"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                    <table class="nano-table nano-table-hover" id="homeworkTable">
+                                        <thead class="nano-thead">
+                                        <tr>
+                                            <th></th>
+                                            <th>숙제명</th>
+                                            <th>숙제 내용</th>
+                                            <th>게임 컨텐츠명</th>
+                                            <th>진도</th>
+                                            <th>제출 기한</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="nado-tbody" id="homeworkTableBody">
+                                        <tr th:each="hw,start : ${homeworks}" th:data-hw-id="${hw.homeworkNo}">
+                                            <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
+                                            <td th:text="${hw.homeworkTitle}"></td>
+                                            <td th:text="${hw.homeworkContentPreview}"></td>
+                                            <td th:text="${hw.gameTitle}"></td>
+                                            <td th:text="${hw.progress} + '레벨'"></td>
+                                            <td th:text="${#dates.format(hw.dueDate, 'yyyy/MM/dd')}"></td>
+                                        </tr>
+                                        <!-- 목록이 없을 때의 메시지 -->
+                                        <tr th:if="${homeworks == null or homeworks.size() == 0}">
+                                            <td colspan="6">
+                                                <div id="noHomework" class="groupMessage mb-3 text-center">
+                                                    <img src="/css/homework/noHwIcon.png" alt="No data Icon" class="mb-2">
+                                                    <div>숙제 목록이 없습니다</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                             </div>
-
                             <div id="paginationContainer" class="d-flex justify-content-center mt-5">
                                 <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
                             </div>
-
-                            <div class="text-center mt-4">
+                            </div>
+                            <div class="curveEffect text-center mt-4">
                                 <i class="bi bi-chevron-double-down center-icon fs-3 text-muted"></i>
                             </div>
                         </div>
@@ -63,17 +73,17 @@
                     <!-- Group Students -->
                     <h3 class="mb-3">Study Groups</h3>
 
-                    <!-- Notification messages -->
-                    <div th:if="${successMessage != null}" class="alert alert-success mb-3">
-                        <strong>숙제가 성공적으로 전송되었습니다</strong>
+                        <!-- Notification messages -->
+                        <div th:if="${successMessage != null}" class="alert alert-success mb-3">
+                            <strong>숙제가 성공적으로 전송되었습니다</strong>
+                        </div>
                         <div th:if="${skippedEntries != null and not #lists.isEmpty(skippedEntries)}" class="alert alert-warning mt-2">
-                            <strong>주의!</strong> 다음 학생과 숙제의 조합은 이미 존재하여 저장되지 않았습니다:
+                            <strong>주의!</strong> 전송 내역이 존재하는 경우에는 중복 전송되지 않았습니다.
                             <ul>
                                 <!-- Each skipped combination -->
                                 <li th:each="entry : ${skippedEntries}" th:text="${entry}"></li>
                             </ul>
                         </div>
-                    </div>
 
                     <div class="mb-3" style="width: 30%;">
                         <div class="dropdown">
@@ -83,6 +93,7 @@
                             </select>
                         </div>
                     </div>
+                        <button id="selectAllButton" type="button" class="btn btn-secondary mt-2" onclick="toggleAllCheckboxes()">전체 선택/해제</button>
 
                     <div id="groupMessage" class="groupMessage mb-3 text-center">
                         <img src="/css/homework/groupIcon.png" alt="Group Icon" class="mb-2">
@@ -91,7 +102,7 @@
 
                     <!-- Responsive table -->
                     <div class="table-responsive">
-                        <button id="selectAllButton" type="button" class="btn btn-secondary mt-2" onclick="toggleAllCheckboxes()">전체 선택/해제</button>
+                        <div class="nado-table-container>"
                         <table class="table table-striped">
                             <thead>
                             <tr>
@@ -111,6 +122,7 @@
                             </tbody>
                         </table>
                     </div>
+                    </div>
                     <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
                     <input type="hidden" id="hiddenSelectedMembers" name="selectedMembers" value="">
 
@@ -121,7 +133,7 @@
 
                 </div>
             </form>
-
+        </div>
             <!-- 통합 모달창 -->
             <div id="hw-homeworkDetailModal">
                 <h2 id="modalTitle"></h2>

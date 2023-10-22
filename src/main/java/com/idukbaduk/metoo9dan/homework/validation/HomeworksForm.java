@@ -2,10 +2,7 @@ package com.idukbaduk.metoo9dan.homework.validation;
 
 import jakarta.persistence.Column;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -31,6 +28,7 @@ public class HomeworksForm {
 
     @Column
     @NotNull(message = "진도를 입력해주세요")
+    @Min(value = 0, message = "진도는 음수가 될 수 없습니다.") // 0 이상의 값만 허용
     private Integer progress;
 
     @Column(name="due_date")

@@ -179,7 +179,7 @@ public class HomeworkController {
     //--학생 숙제 페이지-------------------------------------------------------------------------------------------------------
 
     //숙제 초기 화면
-    @PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/submit")
     public String getHomeworkList(HwSubmitForm hwSubmitForm, Model model,Principal principal) {
         //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
@@ -189,7 +189,7 @@ public class HomeworkController {
     }
 
     //숙제 더블클릭 시, 전송할 객체
-    @PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/submit/detail/{sendNo}")
     public ResponseEntity<HomeworkSubmitDetailDTO> getHomeworkSubmitDetail(@PathVariable Integer sendNo) {
         HomeworkSubmitDetailDTO dto = homeworkService.getDetail(sendNo);
@@ -197,7 +197,7 @@ public class HomeworkController {
     }
 
     //숙제 제출 post
-    @PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @PostMapping("/submit/add")
     public ResponseEntity<?> submitHomework(@Valid HwSubmitForm hwSubmitForm, BindingResult result, Model model, Principal principal) {
         if (result.hasErrors()) {
@@ -225,7 +225,7 @@ public class HomeworkController {
     }
 
     //숙제 수정 post
-    @PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @PostMapping("/submit/edit")
     public ResponseEntity<?> editSubmitHomework(@Valid HwSubmitForm hwSubmitForm, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -249,7 +249,7 @@ public class HomeworkController {
     }
 
     //숙제 삭제 post
-    @PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @DeleteMapping("/submit/delete/{id}")
     public ResponseEntity<String> deleteHomeworkSubmitted(@PathVariable Integer id) {
         try {
@@ -439,7 +439,7 @@ public class HomeworkController {
     처음 화면에서는 게임 컨텐츠를 선택하기 전에는(첫 로드 시) 모든 숙제가 보여진다
     */
 
-    @PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/submit/past")
     public String pastHw(Model model, Principal principal){
         List<String> gameContents = homeworkService.findGameContentTitlesByMemberId(principal.getName()); // 모든 게임 컨텐츠를 가져옵니다.

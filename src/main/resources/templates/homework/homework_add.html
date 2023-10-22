@@ -9,6 +9,7 @@
 
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <div class="px-3">
                 <div class="row justify-content-center">
                     <div class="upperSection">
                         <div class="nado-card">
@@ -40,7 +41,7 @@
 
                                     <div class="mb-3">
                                         <label for="progress" class="nado-form-label">숙제 진도:</label>
-                                        <input type="number" class="nado-form-control" id="progress" th:field="*{progress}">
+                                        <input type="number" class="nado-form-control" style="width: 95%;" id="progress" th:field="*{progress}">
                                         <span class="ms-2">레벨</span>
                                         <div th:if="${#fields.hasErrors('progress')}" th:errors="*{progress}" class="text-danger">Invalid Progress</div>
                                     </div>
@@ -99,7 +100,7 @@
                         <td th:text="${hw.homeworkContentPreview}"></td>
                         <td th:text="${hw.gameTitle}"></td>
                         <td th:text="${hw.progress}"></td>
-                        <td th:text="${#dates.format(hw.dueDate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(hw.dueDate, 'yyyy/MM/dd')}"></td>
                         <td th:text="${hw.sent ? (hw.dueDate > #dates.createNow() ? '제출 진행 중' : '제출 기한 만료') : '전송 기록 없음'}"></td>
                     </tr>
                     <!-- 목록이 없을 때의 메시지 -->
@@ -139,6 +140,7 @@
 
             </div>
 
+            </div>
             <!-- 통합 모달창 -->
             <div id="hw-homeworkDetailModal" class="naod-modal">
                 <!--여기서 부터는 모달 안 내용은 건들지 말고-->
@@ -454,9 +456,7 @@
                                 $("#cannotDelete").remove();
                                 $("#editBtn").prop('disabled', true);
                                 $("#deleteBtn").prop('disabled', true);
-                                $("#nado-btnContainer").after(`
-                                '<p id="cannotDelete">전송한 숙제는 삭제할 수 없습니다</p>'
-                            `);
+                                ;
 
                             } else {
                                 $("#editBtn").prop('disabled', false);
@@ -485,7 +485,9 @@
                             $("#editNo").val(homeworkId);
                             $("#editTitle").val(data.homeworkTitle);
                             $("#editContent").text(data.homeworkContent);
-                            $("#editGametitle").val(data.gameTitle);
+                                // gameTitle 드롭다운의 선택된 값을 설정
+                            $("#editGametitle option").prop("selected", false);  // 기존 선택을 초기화
+                            $("#editGametitle option[value='" + data.gameTitle + "']").prop("selected", true);
                             $("#editProgress").val(data.progress);
                             $("#editMemo").val(data.homeworkMemo);
                             $("#editDueDate").val(data.dueDate.split("T")[0]);
