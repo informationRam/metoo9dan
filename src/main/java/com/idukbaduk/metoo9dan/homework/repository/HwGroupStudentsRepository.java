@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GroupStudentsRepository extends JpaRepository<GroupStudents, Integer> {
+public interface HwGroupStudentsRepository extends JpaRepository<GroupStudents, Integer> {
     List<GroupStudents> findByIsApprovedAndStudyGroupsGroupNo(Boolean isApproved, Integer groupNo);
 }

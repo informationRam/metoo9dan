@@ -8,11 +8,8 @@ import com.idukbaduk.metoo9dan.homework.validation.HomeworksEditForm;
 import com.idukbaduk.metoo9dan.homework.validation.HomeworksForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,19 +24,19 @@ public class HomeworkService {
     @Autowired
     private HomeworkSendRepository homeworkSendRepository;
     @Autowired
-    private MemberRepository memberRepository;
+    private HwMemberRepository hwMemberRepository;
     @Autowired
-    private GroupStudentsRepository groupStudentsRepository;
+    private HwGroupStudentsRepository hwGroupStudentsRepository;
     @Autowired
-    private StudyGroupsRepository studyGroupsRepository;
+    private HwStudyGroupsRepository hwStudyGroupsRepository;
 
     @Autowired
     private HomeworkSubmitRepository homeworkSubmitRepository;
     @Autowired
-    private PaymentRepository paymentRepository;
+    private HwPaymentRepository hwPaymentRepository;
 
     public List<GroupStudentDTO> getGroupStudentsWithLatestProgress(Integer groupNo) {
-        List<GroupStudents> groupStudents = groupStudentsRepository.findByIsApprovedAndStudyGroupsGroupNo(true,groupNo);
+        List<GroupStudents> groupStudents = hwGroupStudentsRepository.findByIsApprovedAndStudyGroupsGroupNo(true,groupNo);
         List<GroupStudentDTO> result = new ArrayList<>();
 
         for (GroupStudents student : groupStudents) {
@@ -65,10 +62,10 @@ public class HomeworkService {
         return result;
     }
     public List<StudyGroups> findStudyGroupsByMemberId(String memberId){
-        return studyGroupsRepository.findStudyGroupsByMemberId(memberId);
+        return hwStudyGroupsRepository.findStudyGroupsByMemberId(memberId);
     }
     public Member findMemberByMemberId(String memberId){
-        return memberRepository.findByMemberId(memberId);
+        return hwMemberRepository.findByMemberId(memberId);
     }
     public List<Homeworks> findHomeworksByMemberIdAndDueDateAfter(String name){
         return homeworkRepository.findHomeworksByMemberIdAndDueDateAfter(name,new Date());
@@ -161,7 +158,7 @@ public class HomeworkService {
         for (String homework : homeworks) {
             for (String member : members) {
                 Optional<Homeworks> hw = homeworkRepository.findById(Integer.parseInt(homework));
-                Optional<Member> mem = memberRepository.findById(Integer.parseInt(member));
+                Optional<Member> mem = hwMemberRepository.findById(Integer.parseInt(member));
 
                 if (hw.isPresent() && mem.isPresent()) {
                     // 이미 존재하는 조합인지 확인
@@ -349,7 +346,7 @@ public class HomeworkService {
 
 
     public List<String> findGameContentTitlesByMemberId(String memberId) {
-        List<String> titles =paymentRepository.findActiveGameContentTitlesByMemberId(memberId);
+        List<String> titles = hwPaymentRepository.findActiveGameContentTitlesByMemberId(memberId);
         return titles;
     }
 

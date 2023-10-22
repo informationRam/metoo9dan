@@ -1,12 +1,90 @@
 <!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <style>
+        .card {
+            border: 1px solid #eee;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/homework/homework_send.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <!-- 맡은 기능 구현 하시면 됩니다! -->
+        <div class="col-10" style="border: 1px solid black; padding:0px;"> <!--class에서 col-10은 빼면 안됨-->
+
+<select id="gameContentDropdown" th:field="*{gameContents}">
+    <option value="" selected>All Game Contents</option>
+    <!-- Thymeleaf로 게임 컨텐츠 드롭다운 항목 채우기 -->
+    <option th:each="gameContent : ${gameContents}" th:value="${gameContent}" th:text="${gameContent}"></option>
+</select>
+
+<div id="cardsContainer">
+    <!-- 여기에 숙제 카드들이 동적으로 생성됩니다 -->
+</div>
+
+<div id="pagination">
+    <button id="prevBtn" disabled>Previous</button>
+    <div id="pageNumbers"></div>
+    <button id="nextBtn" disabled>Next</button>
+</div>
+
+<script>
+    let currentPage = 0;
+    const PAGE_SIZE = 10;
+    const PAGES_PER_BLOCK = 5;
+
+    function loadHomeworks(gameTitle, page = 0, size = PAGE_SIZE, sort = "asc") {
+        $.get("/submit/past-list", { gameTitle: gameTitle, page: page, size: size, sort: sort }, function(data) {
+            // 카드 컨테이너 초기화
+            $("#cardsContainer").empty();
+            data.content.forEach(function(hw) {
+                let cardHtml = `
+                <div class="card">
+                    <h3>${hw.homeworkTitle}</h3>
+                    <p>Content: ${hw.homeworkContent}</p>
+                    <!-- 다른 정보들도 마찬가지 방법으로 추가 가능 -->
+                </div>`;
+                $("#cardsContainer").append(cardHtml);
+            });
+            updatePagination(data.totalPages, page);
+        });
+    }
+
+    function updatePagination(totalPages, currentPage) {
+        $("#pageNumbers").empty();
+        const startPage = Math.floor(currentPage / PAGES_PER_BLOCK) * PAGES_PER_BLOCK;
+        const endPage = Math.min(startPage + PAGES_PER_BLOCK - 1, totalPages - 1);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageNumberElem = $(`<button>${i + 1}</button>`);
+            pageNumberElem.click(function() {
+                loadHomeworks($("#gameContentDropdown").val(), i);
+            });
+            if (i === currentPage) {
+                pageNumberElem.addClass("active");
+            }
+            $("#pageNumbers").append(pageNumberElem);
+        }
+
+        // 이전 버튼 활성화/비활성화
+        $("#prevBtn").prop("disabled", currentPage <= 0);
+        $("#prevBtn").off("click").click(function() {
+            loadHomeworks($("#gameContentDropdown").val(), startPage - 1);
+        });
+
+        // 다음 버튼 활성화/비활성화
+        $("#nextBtn").prop("disabled", endPage >= totalPages - 1);
+        $("#nextBtn").off("click").click(function() {
+            loadHomeworks($("#gameContentDropdown").val(), endPage + 1);
+        });
+    }
+
+</script>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->

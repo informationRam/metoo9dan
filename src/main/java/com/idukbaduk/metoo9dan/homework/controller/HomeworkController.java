@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -35,26 +37,26 @@ public class HomeworkController {
     //--생성 페이지-------------------------------------------------------------------------------------------------------
 
     //숙제 생성 페이지 보여주기
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/add")
-    public String showCreateForm(Model model, HomeworksForm homeworksForm, HomeworksEditForm homeworksEditForm) {
+    public String showCreateForm(Model model, HomeworksForm homeworksForm, HomeworksEditForm homeworksEditForm,Principal principal) {
         //숙제 테이블 list객체
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
-        List<HomeworkDTO> homework =homeworkService.findAllHomeworkWithSendStatus("jung123");
-        List<String> titles = homeworkService.findGameContentTitlesByMemberId("jung123");
+        List<HomeworkDTO> homework =homeworkService.findAllHomeworkWithSendStatus(principal.getName());
+        List<String> titles = homeworkService.findGameContentTitlesByMemberId(principal.getName());
         model.addAttribute("homeworkList",homework);
         model.addAttribute("titles",titles);
         return "homework/homework_add";
     }
 
     //숙제 생성 폼 제출
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/add")
-    public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model, HomeworksEditForm homeworksEditForm) {
+    public String createHomework(@Valid HomeworksForm homeworksForm, BindingResult result, Model model, HomeworksEditForm homeworksEditForm,Principal principal) {
         //유효성 검사
         if (result.hasErrors()) {
-            model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus("jung123"));
-            List<String> titles = homeworkService.findGameContentTitlesByMemberId("jung123");
+            model.addAttribute("homeworkList", homeworkService.findAllHomeworkWithSendStatus(principal.getName()));
+            List<String> titles = homeworkService.findGameContentTitlesByMemberId(principal.getName());
             model.addAttribute("homeworksEditForm", homeworksEditForm);
             model.addAttribute("titles",titles);
             return "homework/homework_add";
@@ -62,13 +64,13 @@ public class HomeworkController {
 
         //만든 숙제 저장
         //멤버 아이디 로그인한 principle로 바꿔야함!!!!!!!!!!!!!
-        Member member = homeworkService.findMemberByMemberId("jung123");
+        Member member = homeworkService.findMemberByMemberId(principal.getName());
         homeworkService.saveHomework(homeworksForm,member);
         return "redirect:/homework/add";
     }
 
     //숙제 상세 정보 보내주기
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/detail/{homeworkId}")
     public ResponseEntity<HomeworkDTO> getHomeworkDetail(@PathVariable Integer homeworkId) {
         Homeworks homework=homeworkService.findById(homeworkId);
@@ -78,7 +80,7 @@ public class HomeworkController {
 
 
     //숙제 수정 폼 제출
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/edit")
     public ResponseEntity<?> editHomework(@Valid HomeworksEditForm homeworksEditForm, BindingResult result, Model model, HomeworksForm homeworksForm) {
         if (result.hasErrors()) {
@@ -100,7 +102,7 @@ public class HomeworkController {
     }
 
     //숙제 삭제
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteHomework(@PathVariable Integer id) {
         try {
@@ -115,14 +117,14 @@ public class HomeworkController {
     //--전송 페이지-------------------------------------------------------------------------------------------------------
 
     //전송 초기 화면
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/send")
-    public String showSendPage(Model model) {
+    public String showSendPage(Model model,Principal principal) {
         //로그인한 아이디로 바꿔야함!!!!!!!!!!!!!!!!!!!!!!
         //멤버 아이디로 생성한 숙제중에 제출기한이 지나지 않은 숙제를 가져옴 이거 디티오에 넣어줘야함(미리보기용)
-        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberIdAndDueDateAfter("jung123");
+        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberIdAndDueDateAfter(principal.getName());
         List<HomeworkDTO> homeworkDTO = homeworkService.toHomeworkDTOList(homeworks);
-        List<StudyGroups> studyGroups = homeworkService.findStudyGroupsByMemberId("jung123");
+        List<StudyGroups> studyGroups = homeworkService.findStudyGroupsByMemberId(principal.getName());
 
         List<String> distinctTitles = new ArrayList<>();
         for (Homeworks homework : homeworks) {
@@ -138,7 +140,7 @@ public class HomeworkController {
     }
 
     //학생 그룹 조회
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/group-students")
     public ResponseEntity<List<GroupStudentDTO>> getStrudentListByGroupNo(@RequestParam int studyGroupNo) {
         List<GroupStudentDTO> groupStudentDTOS = homeworkService.getGroupStudentsWithLatestProgress(studyGroupNo);
@@ -146,7 +148,7 @@ public class HomeworkController {
     }
 
     //숙제 전송
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/send")
     public String sendHomework(@RequestParam List<String> selectedHomeworks,
                                @RequestParam List<String> selectedMembers,
@@ -158,7 +160,7 @@ public class HomeworkController {
     }
 
     //숙제 전송 취소
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @DeleteMapping("/send/cancel/{sendNo}")
     public ResponseEntity<Map<String, Boolean>> sendCancel(@PathVariable Integer sendNo) {
         try {
@@ -177,17 +179,17 @@ public class HomeworkController {
     //--학생 숙제 페이지-------------------------------------------------------------------------------------------------------
 
     //숙제 초기 화면
-    //@PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT ')")
     @GetMapping("/submit")
-    public String getHomeworkList(HwSubmitForm hwSubmitForm, Model model) {
+    public String getHomeworkList(HwSubmitForm hwSubmitForm, Model model,Principal principal) {
         //아이디로 전송된 숙제 찾기 - 로그인 정보로 바꿔야함!!!!!!!!!!!
-        List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId("sedol");
+        List<HomeworkSend> homeworkSendList = homeworkService.findHomeworkSendByMemberId(principal.getName());
         model.addAttribute("homeworkSend", homeworkSendList);
         return "homework/homework_submit";
     }
 
     //숙제 더블클릭 시, 전송할 객체
-    //@PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT ')")
     @GetMapping("/submit/detail/{sendNo}")
     public ResponseEntity<HomeworkSubmitDetailDTO> getHomeworkSubmitDetail(@PathVariable Integer sendNo) {
         HomeworkSubmitDetailDTO dto = homeworkService.getDetail(sendNo);
@@ -195,9 +197,9 @@ public class HomeworkController {
     }
 
     //숙제 제출 post
-    //@PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT ')")
     @PostMapping("/submit/add")
-    public ResponseEntity<?> submitHomework(@Valid HwSubmitForm hwSubmitForm, BindingResult result, Model model) {
+    public ResponseEntity<?> submitHomework(@Valid HwSubmitForm hwSubmitForm, BindingResult result, Model model, Principal principal) {
         if (result.hasErrors()) {
             // 에러 메시지를 담을 Map 생성
             Map<String, String> errors = new HashMap<>();
@@ -215,7 +217,7 @@ public class HomeworkController {
         Homeworks homeworks =homeworkService.findById(hwSubmitForm.getHomeworkNo());
         HomeworkSend homeworkSend = homeworkService.getHomeworkSendById(hwSubmitForm.getSendNo()).get();//전송 번호가 null
         //로그인한 아이디로 바꿔야함!!!!!!!!!!!!!!!!!
-        hwSubmitForm.setMember(homeworkService.findMemberByMemberId("baduk"));
+        hwSubmitForm.setMember(homeworkService.findMemberByMemberId(principal.getName()));
         homeworkService.addHomeworkSubmit(hwSubmitForm,homeworks,homeworkSend);
 
         // 성공 응답 (HTTP 상태 코드 200 OK와 함께 메시지 반환)
@@ -223,7 +225,7 @@ public class HomeworkController {
     }
 
     //숙제 수정 post
-    //@PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT ')")
     @PostMapping("/submit/edit")
     public ResponseEntity<?> editSubmitHomework(@Valid HwSubmitForm hwSubmitForm, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -247,7 +249,7 @@ public class HomeworkController {
     }
 
     //숙제 삭제 post
-    //@PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT ')")
     @DeleteMapping("/submit/delete/{id}")
     public ResponseEntity<String> deleteHomeworkSubmitted(@PathVariable Integer id) {
         try {
@@ -260,11 +262,11 @@ public class HomeworkController {
     //--평가 페이지-------------------------------------------------------------------------------------------------------
 
     //숙제 평가
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/evaluate")
-    public String evaluateView(Model model){
+    public String evaluateView(Model model,Principal principal){
         //숙제 전송 리스트의 숙제중에 baduk 아이디로 만들어진 숙제 전송 기록 중에 Homeworks를 리스트로 가져온다
-        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberId("jung123");
+        List<Homeworks> homeworks = homeworkService.findHomeworksByMemberId(principal.getName());
         List<String> distinctTitles = new ArrayList<>();
         for (Homeworks homework : homeworks) {
             String title = homework.getHomeworkTitle();
@@ -277,9 +279,10 @@ public class HomeworkController {
     }
 
     //전송한 숙제 리스트
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/evaluate/hw-list")
     public ResponseEntity<?> getHomeworks(
+            Principal principal,
             @RequestParam(defaultValue = "All") String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -287,12 +290,12 @@ public class HomeworkController {
     ) {
         page=page-1;
         Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("sendDate").ascending() : Sort.by("sendDate").descending());
-        Page<HomeworkSendDTO> homeworksDto = homeworkService.findByHomeworks_HomeworkTitleAndHomeworks_Member_MemberId(title, "jung123", pageable);
+        Page<HomeworkSendDTO> homeworksDto = homeworkService.findByHomeworks_HomeworkTitleAndHomeworks_Member_MemberId(title, principal.getName(), pageable);
         return ResponseEntity.ok(homeworksDto);
     }
 
     //전송 내역
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/evaluate/submit-list")
     public ResponseEntity<?> getHomeworks(/*homeworkNo SendDate SendNo*/
             @RequestParam int homeworkNo,
@@ -325,7 +328,7 @@ public class HomeworkController {
     }
 
     //평가 대시보드 내용 - 제출
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/evaluate/dash-submit/{homeworkNo}/{sendDate}")
     public ResponseEntity<?> evalDashboard1(
             @PathVariable int homeworkNo,
@@ -356,6 +359,7 @@ public class HomeworkController {
     }
 
     //평가 대시보드 내용 - 평가
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/evaluate/dash-eval/{homeworkNo}/{sendDate}")
     public ResponseEntity<?> evalDashboard2(
             @PathVariable int homeworkNo,
@@ -412,7 +416,7 @@ public class HomeworkController {
     }
 
     //평가하기
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/evaluate/submit-evaluation")
     public ResponseEntity<?> submitEvaluation(@RequestBody List<EvaluationDTO> evaluations) {
         System.out.println(evaluations);
@@ -430,24 +434,24 @@ public class HomeworkController {
     //--지난 숙제 제출내용 조회 --------------------------------------------------------------------------------------------
 
     /*
-    기본으로 모든 숙제를 보여주고 모든 숙제에 대한 평가도(chart.js 사용)가 보여진다
     게임 컨텐츠 드롭다운을 제공하고
-    게임 컨텐츠를 선택하면 해당 게임 컨텐츠에 대해서 제출한 숙제와 평가도가 보여진다
-    처음 화면에서는 게임 컨텐츠 드롭다운을 제공하고
+    게임 컨텐츠를 선택하면 해당 게임 컨텐츠에 대해서 제출한 숙제가 보여진다
+    처음 화면에서는 게임 컨텐츠를 선택하기 전에는(첫 로드 시) 모든 숙제가 보여진다
     */
 
-    //@PreAuthorize("hasAuthority('STUDENT ')")
+    @PreAuthorize("hasAuthority('STUDENT ')")
     @GetMapping("/submit/past")
-    public String pastHw(Model model){
-        List<String> gameContents = homeworkService.findGameContentTitlesByMemberId("lee123"); // 모든 게임 컨텐츠를 가져옵니다.
+    public String pastHw(Model model, Principal principal){
+        List<String> gameContents = homeworkService.findGameContentTitlesByMemberId(principal.getName()); // 모든 게임 컨텐츠를 가져옵니다.
         model.addAttribute("gameContents", gameContents); // 뷰에 게임 컨텐츠 데이터를 전달합니다.
-        return "pastHw";
+        return "homework/homework_pastHw";
     }
 
     //제출내역
-    //@PreAuthorize("hasAuthority('EDUCATOR')")
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/submit/past-list")
     public ResponseEntity<?> getHomeworksResults(
+            Principal principal,
             @RequestParam String gameTitle,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -455,7 +459,7 @@ public class HomeworkController {
     ) {
         page-=1;
         //1. homeworkService찾기
-        List<HomeworkSend> homeworkSendList = homeworkService.findAllByGameTitleAndMemberId(gameTitle,"lee123");
+        List<HomeworkSend> homeworkSendList = homeworkService.findAllByGameTitleAndMemberId(gameTitle,principal.getName());
         //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
         List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
         //페이지네이션
