@@ -455,15 +455,14 @@ public class HomeworkController {
     ) {
         page-=1;
         //1. homeworkService찾기
-        //List<HomeworkSend> homeworkSendList = homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sd);
+        List<HomeworkSend> homeworkSendList = homeworkService.findAllByGameTitleAndMemberId(gameTitle,"lee123");
         //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
-        //List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
+        List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
         //페이지네이션
-        //Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("dueDate").ascending() : Sort.by("dueDate").descending());
-        //<HwSendSubmitDTO> submitDTOPage = new PageImpl<>(submitDTO, pageable, submitDTO.size());
+        Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("dueDate").ascending() : Sort.by("dueDate").descending());
+        Page<HwSendSubmitDTO> submitDTOPage = new PageImpl<>(submitDTO, pageable, submitDTO.size());
         //결과로 반환
-        //return ResponseEntity.ok(submitDTOPage);
-        return ResponseEntity.ok("a");
+        return ResponseEntity.ok(submitDTOPage);
     }
 
 }

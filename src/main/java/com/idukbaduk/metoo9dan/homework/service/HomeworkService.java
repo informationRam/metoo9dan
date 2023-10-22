@@ -380,4 +380,9 @@ public class HomeworkService {
             homeworkSubmitRepository.save(homeworkSubmit);
         }
     }
+
+    public List<HomeworkSend> findAllByGameTitleAndMemberId(String gameTitle, String memberId) {
+        //return homeworkSendRepository.findByHomeworks_HomeworkNoAndSendDate(homeworkNo,sendDate);
+        return homeworkSendRepository.findByHomeworks_GameTitleAndMember_MemberIdAndHomeworks_DueDateBefore(gameTitle, memberId, LocalDateTime.now());
+    }
 }
