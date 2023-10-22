@@ -6,10 +6,12 @@
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div style="border: 0px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <h3>[학습 그룹 수정 폼]</h3>
-            <p>[게임 콘텐츠 정보]</p>
+            <br/>
+            <h2>학습 그룹 수정</h2>
+            <br/>
+            <p><strong>[게임 콘텐츠 정보]</strong></p>
             <div>
                 <table class="table">
                     <thead class="table-dark">
@@ -34,11 +36,11 @@
                     </tbody>
                 </table>
             </div>
-
-            <p>[그룹 상세 정보]</p>
+            <br/>
+            <p><strong>[그룹 상세 정보]</strong></p>
             <p>교육자명 :  <strong><span th:text="${gameInfo.name}"></span></strong></p>
             <div th:if="${groupNum >= 1}" class="text-danger">
-                그룹에 가입된 학생이 있을 경우 그룹명만 수정 가능합니다.
+                <strong>그룹에 가입된 학생이 있을 경우 그룹명만 수정 가능합니다.</strong>
             </div>
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
                 <div th:replace="~{form_errors::formErrorsFragment}"></div>

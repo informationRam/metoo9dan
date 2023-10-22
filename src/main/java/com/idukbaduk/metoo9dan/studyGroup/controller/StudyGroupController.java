@@ -431,7 +431,7 @@ public class StudyGroupController {
 
 
         //페이지네이션
-        int pageSize = 5; // 페이지당 보여줄 아이템 개수
+        int pageSize = 6; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
         map.put("pageSize", pageSize);
         map.put("offset", offset);
@@ -442,6 +442,7 @@ public class StudyGroupController {
         model.addAttribute("totalCount",totalCount);
         model.addAttribute("totalPages",totalPages);
 
+        //학습 그룹 리스트
         List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList(map);
         model.addAttribute("groupJoinList",groupJoinList);
         System.out.println("groupJoinList="+groupJoinList);
@@ -472,7 +473,7 @@ public class StudyGroupController {
             map.put("member_no", member_no);
 
             //페이지네이션
-            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int pageSize = 6; // 페이지당 보여줄 아이템 개수
             int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
             map.put("pageSize", pageSize);
             map.put("offset", offset);

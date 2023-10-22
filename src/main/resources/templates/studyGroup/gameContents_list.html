@@ -3,9 +3,14 @@
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div style="border: 0px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <h3>[학습 그룹 등록]</h3>
+            <br/>
+            <p/>
+            <h2>학습 그룹 등록</h2>
+            <h5>게임 콘텐츠를 선택해서 학습 그룹을 만드세요.</h5>
+            <p/>
+            <br/>
             <div style="display: flex; align-items: center;">
                 <label for="selectGameContent" class="form-label" style="margin-right: 10px;">게임콘텐츠</label>
                 <select name="selectGameContent" id="selectGameContent" class="form-select"  style="width: 200px; margin-right: 10px;">
@@ -43,8 +48,11 @@
                     </tr>
                     </tbody>
                 </table>
+                <div style="display: flex; justify-content: right; align-items: center;">
+                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 상세 입력</button>
+                </div>
                 <!--페이지네이션-->
-                <div id="paginationContainer">
+                <div id="paginationContainer" style="display: flex; justify-content: center; align-items: center;">
                     <nav th:if="${totalCount} > 0">
                         <ul class="pagination">
                             <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
@@ -58,9 +66,6 @@
                             </li>
                         </ul>
                     </nav>
-                </div>
-                <div style="display: flex; justify-content: center; align-items: center;">
-                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 상세 입력</button>
                 </div>
             </div>
             <p/>

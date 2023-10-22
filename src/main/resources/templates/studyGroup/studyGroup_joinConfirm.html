@@ -1,11 +1,13 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:div="http://www.w3.org/1999/html">
 <div layout:fragment="content" class="container my-3">
     <div class="row">
-        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div th:replace="~{/studyGroup/testSidebar2::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div style="border: 0px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <h3>[학습 그룹 가입 확인]</h3>
+            <br/>
+            <h2>학습 그룹 가입 확인</h2>
+            <br/>
             <table class="table">
                 <thead class="table-dark">
                 <tr>
@@ -53,7 +55,9 @@
             <p/>
             <p/>
             <p/>
-            <h3>[학습 그룹 가입 이력]</h3>
+            <br/>
+            <h2>학습 그룹 가입 이력</h2>
+            <br/>
             <table class="table">
                 <thead class="table-dark">
                 <tr>

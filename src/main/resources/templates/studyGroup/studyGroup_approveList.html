@@ -4,9 +4,13 @@
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div style="border: 0px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <h3>[학습 그룹 신청 리스트]</h3>
+            <br/>
+            <p/>
+            <h2>학습 그룹 승인하기</h2>
+            <p/>
+            <br/>
             <div>
                 <div style="display: flex; align-items: center;">
                     <label for="selectSudyGroup" class="form-label" style="margin-right: 10px;">학습그룹:</label>
@@ -15,7 +19,7 @@
                     </select>
                     <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
                 </div>
-
+                <br/>
                 <div id="selectGroupGameResult">
                     <table class="table" id="table1">
                         <thead class="table">
@@ -68,7 +72,7 @@
                         </table>
                     </div>
                     <div style="display: flex; justify-content: right; align-items: center;">
-                        <button class="btn btn-outline-primary" id="viewButton" type="submit">저장 하기</button>
+                        <button class="btn btn-outline-primary" id="viewButton" type="submit">승인 하기</button>
                     </div>
                 </form>
             </div>

@@ -231,7 +231,7 @@
 
     <!--학습그룹 가입-학생(학습그룹 전체리스트)-->
     <select id="GroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
                  (SELECT COUNT(member_no)
                      FROM baduk.group_students gs
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
@@ -241,6 +241,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
         </if>
@@ -306,7 +307,7 @@
 
     <!--학습그룹명 조건 조회(학습 그룹 신청 리스트)-->
     <select id="SelectNameList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,,s.group_introduce,e.school_name,
             (SELECT COUNT(member_no)
                 FROM baduk.group_students gs
                 WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
@@ -316,6 +317,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
         WHERE s.group_no=#{group_no} AND s.group_finish_date >= CURDATE()
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
@@ -335,7 +337,7 @@
 
     <!--교육자명 조건 조회(학습 그룹 신청 리스트)-->
     <select id="SelectEducatorNameList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
                  (SELECT COUNT(member_no)
                      FROM baduk.group_students gs
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
@@ -345,6 +347,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
         WHERE m.member_no=#{member_no} AND s.group_finish_date >= CURDATE()
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
