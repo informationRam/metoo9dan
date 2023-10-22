@@ -110,28 +110,7 @@
                                             <div class="input-group-append custom-popover-container">
                                                 <button type="button" class="custom-button" data-bs-toggle="popover" data-bs-placement="right"
                                                         data-bs-html="true" data-bs-content="<div class='custom-popover'>
-                                                        <img src='your-image-source.jpg' alt='Discount' width='150' height='100'>
-                                                        <p>1. 학습인원 조건:
-                                                           - 10명: 5% 할인
-                                                           - 20명: 10% 할인
-                                                           - 30명: 15% 할인
-                                                           - 40명: 20% 할인
-                                                           - 50명: 25% 할인
-
-                                                        2. 구독기간 조건:
-                                                           - 30일: 5% 할인
-                                                           - 60일: 10% 할인
-                                                           - 90일: 15% 할인
-
-                                                        3. 기존 학습자료 개수 조건 (최대 5개):
-                                                           - 1개: 5% 할인
-                                                           - 2개: 10% 할인
-                                                           - 3개: 15% 할인
-                                                           - 4개: 20% 할인
-                                                           - 5개: 25% 할인
-
-                                                        이 조건을 조합하여 할인율을 설정할 수 있습니다. 예를 들어, 만약 학습인원이 30명, 구독기간이 60일, 그리고 기존 학습자료가 2개라면, 할인율은 15% + 10% = 25%가 될 것입니다. 이러한 방식으로 각 조건을 조합하여 할인율을 자동으로 설정할 수 있습니다. 최대 할인율은 30%로 설정될 수 있습니다.
-                                                        </p>
+                                                        <img src='/image/game/discount.png' alt='Discount' width='100%' height='100%'>
                                                         </div">
                                                     ?
                                                 </button>
@@ -209,26 +188,26 @@
                                                             <td class="education title" th:text="${education.resourceName}"></td>
                                                             <!-- 자료구분 -->
                                                             <td class="education resourceCate">
-                                                    <span th:switch="${education.resourceCate}">
-                                                        <span th:case="tutorial">튜토리얼</span>
-                                                        <span th:case="lecture">교육영상</span>
-                                                    </span>
+                                                                <span th:switch="${education.resourceCate}">
+                                                                    <span th:case="tutorial">튜토리얼</span>
+                                                                    <span th:case="lecture">교육영상</span>
+                                                                </span>
                                                             </td>
                                                             <!-- 자료유형 -->
                                                             <td class="education fileType">
-                                                   <span th:switch="${education.fileType}">
-                                                        <span th:case="'image'">이미지</span>
-                                                        <span th:case="'video'">동영상</span>
-                                                        <span th:case="'image/video'">이미지/동영상</span>
-                                                        <span th:case="'ect'">기타</span>
-                                                    </span>
+                                                               <span th:switch="${education.fileType}">
+                                                                    <span th:case="'image'">이미지</span>
+                                                                    <span th:case="'video'">동영상</span>
+                                                                    <span th:case="'image/video'">이미지/동영상</span>
+                                                                    <span th:case="'ect'">기타</span>
+                                                                </span>
                                                             </td>
                                                             <!-- 서비스구분 -->
                                                             <td class="education serviceType">
-                                                     <span th:switch="${education.serviceType}">
-                                                        <span th:case="full">유료</span>
-                                                        <span th:case=="short">무료</span>
-                                                    </span>
+                                                                 <span th:switch="${education.serviceType}">
+                                                                    <span th:case="full">유료</span>
+                                                                    <span th:case=="short">무료</span>
+                                                                </span>
                                                             </td>
                                                             <!-- 등록일 (수정하면 날짜 변경) -->
                                                             <td class="education date">
@@ -371,8 +350,6 @@
         xhr.send(params);
         }
 
-
-        // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
         // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
         document.querySelector("select[name='max_subscribers']").addEventListener('change', updateDiscountRate);
         document.querySelector("select[name='subscription_duration']").addEventListener('change', updateDiscountRate);
@@ -550,7 +527,6 @@ function closeModal() {
                         fileList.appendChild(listItem);
                     }
                 });
-
 
             </script>
         </div>

@@ -111,6 +111,7 @@ public class EducationService {
     // 교육자료명으로 교육자료 찾기
     public List<EducationalResources> search(String searchKeyword) {
         List<EducationalResources> resources = educationalRepository.findByResourceNameContains(searchKeyword);
+        System.out.println("searchKeyword서비스:"+searchKeyword);
         // 값이 있을 경우
         if (!resources.isEmpty()) {
             return resources;

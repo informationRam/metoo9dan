@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,6 @@ public class PaymentsService {
         return gameContents;
     }
 
-
     //목록조회 (페이징처리)
     public Page<Payments> getPay(int page) {
 
@@ -91,7 +91,6 @@ public class PaymentsService {
         return paymentsRepository.findAll(pageable);
     }
 
-
     //paymentNo 값으로 해당 결제내역의 상세정보를 가져옴
     public Payments getPayment(Integer paymentNo) {
 
@@ -100,6 +99,35 @@ public class PaymentsService {
         Payments payments = byId.get();
         return payments;
     }
+
+
+
+    // 월 별 데이터 조회 및 페이지네이션 처리
+    public Page<Object[]> getMonthlyTotalAmounts(LocalDateTime startDate, LocalDateTime endDate, int page) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("paymentDate"));     //결제일순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+        System.out.println("startDate?-서비스"+startDate);
+        System.out.println("endDate?-서비스"+endDate);
+
+        return paymentsRepository.getMonthlyTotalAmounts(startDate, endDate, pageable);
+
+
+    }
+
+    // 일별 데이터 조회 및 페이지네이션 처리
+    public Page<Object[]> getDailyPayments(LocalDateTime startDate, LocalDateTime endDate, int page) {
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("paymentDate"));   //오름차순
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+        // paymentsRepository를 사용하여 일별 데이터 조회
+        return paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate, pageable);
+    }
+
 
 
 

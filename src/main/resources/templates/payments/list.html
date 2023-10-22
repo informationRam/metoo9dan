@@ -160,8 +160,22 @@
                     </td>
                 </tr>
             </table>
-
-
-
+                </div>
+            </div>
         </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
+        var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
+          console.log('selectedGameContentNos',selectedGameContentNos)
+          if (selectedGameContentNos) {
+            // 페이지가 완전히 로드되면, 게임 구매할때 사용했던 GameContentNo값의 세션 스토리지를 삭제
+            sessionStorage.removeItem('selectedGameContentNos');
+            sessionStorage.removeItem('selectedSalePrices');
+
+          }
+     });
+</script>
+    </div>
 </html>

@@ -28,6 +28,11 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.Principal;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +47,6 @@ public class PaymentsController {
     private final PaymentsService paymentsService;
     private final MemberService memberService;
     private final MemberServiceImpl memberServicesimpl;
-
 
     // 결제하기 폼
     //@RequestMapping(value = "/paymentsform", method = {RequestMethod.GET, RequestMethod.POST})
@@ -94,73 +98,12 @@ public class PaymentsController {
         } catch (JSONException e) {
             // JSON 파싱 오류 처리
             e.printStackTrace();
-            // 오류 메시지를 반환하거나 오류 페이지로 리다이렉트할 수 있습니다.
-            return "redirect:error"; // 예: 오류 페이지로 리다이렉트
+
+            // ------! 오류 메시지를 반환하거나 오류 페이지로 리다이렉트할 수 있습니다.
+            return "redirect:error"; //
         }
     }
 
-      /*  if (selectedValues != null) { // Check if selectedValues is not null
-            if (!selectedValues.isEmpty()) {
-                System.out.println("존재함: " + selectedValues+selectedValues);
-            }
-        }
-
-        if (selectedValues != null && !selectedValues.isEmpty()) {
-            List<GameContents> selectedGameContents = new ArrayList<>();
-
-            int totalSalePrice = 0;
-
-            for (int gameno : selectedValues) {
-                System.out.println("gameno?"+gameno);
-                GameContents gameContents = gameService.getGameContents(gameno);
-                selectedGameContents.add(gameContents);
-                // salePrice의 합계 계산
-                totalSalePrice += (gameContents.getSalePrice());
-                System.out.println("totalSalePrice?" +totalSalePrice);
-                System.out.println("gameContents?" +gameContents);
-            }
-*/
-            // 세션에 선택한 게임 컨텐츠와 총 판매 가격 저장
-       /*     session.setAttribute("selectedGameContents", selectedGameContents);
-            System.out.println("selectedGameContents"+selectedGameContents);
-            session.setAttribute("totalSalePrice", totalSalePrice);
-
-        }*/
-   /*     return "redirect:payments/test";
-    }*/
-
-
-
-    /* @PostMapping("/paymentsform")
-    public String paymentsform(@RequestParam(value = "gameContentNo", required = false) List<Integer> gameContentNo,  @RequestParam("gameContentNos") List<Integer> gameContentNos,Model model, HttpSession session) {
-
-      if(!gameContentNos.isEmpty()){
-          System.out.println("존재함");
-      }
-
-
-        if (gameContentNo != null && !gameContentNo.isEmpty()) {
-            List<GameContents> selectedGameContents = new ArrayList<>();
-
-            int totalSalePrice = 0;
-
-            for (int gameno : gameContentNo) {
-                GameContents gameContents = gameService.getGameContents(gameno);
-                selectedGameContents.add(gameContents);
-                // salePrice의 합계 계산
-                totalSalePrice += (gameContents.getSalePrice());
-                System.out.println("totalSalePrice?" +totalSalePrice);
-            }
-
-            // 세션에 선택한 게임 컨텐츠와 총 판매 가격 저장
-            session.setAttribute("selectedGameContents", selectedGameContents);
-            session.setAttribute("totalSalePrice", totalSalePrice);
-
-        }
-        return "payments/paymentsform";
-    }
-
-*/
     // 결제하기
     @PostMapping("/payments")
     @Transactional
@@ -171,7 +114,6 @@ public class PaymentsController {
         int totalSalePrice = (int) session.getAttribute("totalSalePrice");
         System.out.println("totalSalePrice:?" +totalSalePrice);
         Member member = memberService.getUser(principal.getName());
-
 
         // paymentMethod 변수에 선택한 결제 방법이 무통장이면
         if(paymentMethod.equals("deposit")){
@@ -185,7 +127,6 @@ public class PaymentsController {
         }
         return "redirect:/payments/list";
     }
-
 
     //구매 목록조회
     @GetMapping("/list")
@@ -212,7 +153,6 @@ public class PaymentsController {
 
             gameContentsList.add(gameContentsForPayment);
         }
-
 
         int currentPage = paymentsPage.getPageable().getPageNumber();
         int totalPages = paymentsPage.getTotalPages();
@@ -292,5 +232,77 @@ public class PaymentsController {
     public String paymentsfail() {
         return "payments/fail";
     }
+
+
+    // 월별,월별 조회 기능 구현 및 페이지네이션 처리
+    @GetMapping("/showPayments")
+    public String showMonthlyPayments(@RequestParam(name = "startDate", defaultValue = "") String startDate,
+                                      @RequestParam(name = "endDate", defaultValue = "") String endDate,
+                                      @RequestParam(name = "view", defaultValue = "daily") String view,
+                                      @RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+
+
+        System.out.println("----------********** view?" + view);
+        System.out.println("----------********** startDate?" + startDate);
+        System.out.println("----------********** endDate?" + endDate);
+
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+
+        if (!startDate.isEmpty() && !endDate.isEmpty()) {
+           /* DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            startDateTime = LocalDate.parse(startDate, formatter).atStartOfDay();
+            endDateTime = LocalDate.parse(endDate, formatter).atTime(LocalTime.MAX);*/
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            startDateTime = LocalDate.parse(startDate, formatter).atStartOfDay();
+            endDateTime = LocalDate.parse(endDate, formatter).atTime(LocalTime.MAX);
+
+            System.out.println("---2.DateTimeFormatter?" + formatter);
+            System.out.println("---2.startDate?" + startDateTime);
+            System.out.println("---2.endDate?" + endDateTime);
+        } else {
+            LocalDate now = LocalDate.now();
+            startDateTime = now.withDayOfMonth(1).atStartOfDay();
+            endDateTime = now.withDayOfMonth(now.lengthOfMonth()).atTime(LocalTime.MAX);
+        }
+
+        Page<Object[]> paymentsPage;
+
+        if ("month".equals(view)) {
+            paymentsPage = paymentsService.getMonthlyTotalAmounts(startDateTime, endDateTime, page);
+        } else if("daily".equals(view)){
+            paymentsPage = paymentsService.getDailyPayments(startDateTime, endDateTime, page);
+        }else {
+            paymentsPage = paymentsService.getDailyPayments(startDateTime, endDateTime, page);
+        }
+
+        int currentPage = paymentsPage.getPageable().getPageNumber();
+        int totalPages = paymentsPage.getTotalPages();
+        int pageRange = 5; // 한 번에 보여줄 페이지 범위
+
+        int startPage = Math.max(0, currentPage - pageRange / 2);
+        int endPage = startPage + pageRange - 1;
+        if (endPage >= totalPages) {
+            endPage = totalPages - 1;
+            startPage = Math.max(0, endPage - pageRange + 1);
+
+        }
+        // 페이지 번호에 1을 더해줍니다.
+        startPage += 1;
+        endPage += 1;
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        //3.Model
+            model.addAttribute("paymentsPage", paymentsPage);
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
+            model.addAttribute("view", view);
+
+        return "payments/showPayments";
+    }
+
+
 
 }

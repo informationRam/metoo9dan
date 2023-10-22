@@ -330,44 +330,6 @@ public class GameController {
         return response;
     }
 
-/*
-    //page2
-    @PostMapping("/page2")
-    public String handlePage2Post(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult,
-                                  HttpSession session, Model model) {
-       // List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
-        //List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
-       // gameValidation = (GameValidation) session.getAttribute("gameValidation");
-
-
-       // model.addAttribute("educationalResources", educationalResources);
-       // model.addAttribute("originFileNames", originFileNames);
-       // model.addAttribute("gameValidation", gameValidation);
-
-        return "redirect:/game/page3"; // Page3로 리다이렉트
-    }
-
-// page3
-    @GetMapping("/page3")
-    public String getPage3(Model model,HttpSession session) {
-
-        // 세션에서 정보를 가져옵니다.
-       */
-/* List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
-        List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
-        GameValidation gameValidation = (GameValidation) session.getAttribute("gameValidation");
-
-        // 모델에 추가하여 뷰로 전달합니다.
-        model.addAttribute("educationalResources", educationalResources);
-        model.addAttribute("originFileNames", originFileNames);
-        model.addAttribute("gameValidation", gameValidation);*//*
-
-
-        return "game/page3";
-    }
-*/
-
-
     // 저장 처리 로직
     @PostMapping("/save")
     public String saveGame(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult, HttpSession session, @RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
@@ -443,35 +405,6 @@ public class GameController {
         session.removeAttribute("gameValidationPage1");
         return "redirect:/game/list";
     }
-/*
-
-    //게임컨텐츠 구매 할때 목록조회
-    @GetMapping("/alllist")
-    public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
-
-        // 게임컨텐츠 목록 조회
-        Page<GameContents> gamePage = this.gameService.getList(page);
-
-        for (GameContents gamecon : gamePage.getContent()) {
-            // 게임컨텐츠에 대한 파일 정보 가져오기
-            List<GameContentFiles> gameContentFilesList = gameFilesService.getGameFilesByGameContentNo(gamecon.getGameContentNo());
-            gamecon.setGameContentFilesList(gameContentFilesList);
-
-            // 게임컨텐츠에 대한 교육자료 정보 가져오기
-            List<EducationalResources> education = educationService.getEducation_togameno(gamecon.getGameContentNo());
-
-            for (EducationalResources educationalResource : education) {
-                List<ResourcesFiles> resourcesFilesByResourceNo = resourcesFilesService.getResourcesFilesByResourceNo(educationalResource.getResourceNo());
-                educationalResource.setResourcesFilesList(resourcesFilesByResourceNo);
-            }
-            gamecon.setEducationalResourcesList(education);
-
-        }
-        model.addAttribute("gamePage", gamePage);
-
-        return "cyborg-1.0.02/streams";
-    }
-*/
 
     //게임컨텐츠 구매 할때 목록조회 (페이지네이션)
     @GetMapping("/alllist")

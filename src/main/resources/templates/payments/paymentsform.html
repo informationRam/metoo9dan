@@ -11,7 +11,7 @@
       <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
         <form action="/payments/payments" method="post" id="payment-form">
           <div class="container my-5">
-            <h1>게임 구매하기</h1>
+            <h1>주문/결제</h1>
             <table class="table table-responsive">
               <thead>
               <tr class="text-center">
@@ -20,7 +20,7 @@
                 <th style="width: 10%;">구독 기간</th>
                 <th style="width: 10%;">구독 인원</th>
                 <th style="width: 30%;">패키지내용</th>
-                <th style="width: 10%;">구매 가격</th>
+                <th style="width: 10%;">상품금액(할인포함)</th>
               </tr>
               </thead>
               <tbody class="text-center">
@@ -43,38 +43,36 @@
               </tr>
               </tbody>
             </table>
+            <div class="col-lg-5">
+              <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>
 
-            <div class="row mt-4">
-              <div class="col-lg-7">
-                <label class="form-label">결제 수단</label>
+              <!-- 소수점 제거한 totalSalePrice 출력 -->
+              <h3 class="mb-3">총 <span th:text="${#lists.size(gameContentNos)}"></span> 건,
+                총 <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>원</h3>
+            </div>
+            <!-- 결제수단 선택 -->
+            <h4>결제수단</h4>
+            <div class="row mt-4" >
+              <div class="col-lg-7" style="border: 1px solid #dee2e6;">
+                <label class="form-label"></label>
                 <div class="form-check">
                   <input type="radio" name="paymentMethod" id="account" value="account" class="form-check-input" required>
                   <label for="account" class="form-check-label">계좌이체</label>
                 </div>
                 <div class="form-check">
-                  <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input" required>
+                  <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
                   <label for="deposit" class="form-check-label">무통장</label>
                 </div>
                 <div class="form-check">
-                  <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input" required>
+                  <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
                   <label for="pay" class="form-check-label">카카오페이</label>
                 </div>
-              </div>
-              <div class="col-lg-5">
-                <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>
-
-                <!-- 소수점 제거한 totalSalePrice 출력 -->
-                <h3 class="mb-3">총 <span th:text="${#lists.size(gameContentNos)}"></span> 건,
-                  총 <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>원</h3>
               </div>
             </div>
             <div>
               <div class="d-flex justify-content-center">
                 <input type="hidden" id="item_name" name="item_name" th:value="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"/>
                 <input type="hidden" id="total-amount" name="total_amount" th:value="${totalSalePrice}" />
-            <!--  <button type="submit" class="btn btn-primary mt-3">결제하기</button>-->
-              <!--  <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#paymentModal">결제하기</button>-->
-                <!-- 결제하기 버튼 -->
                 <button type="button" class="btn btn-primary mt-3" id="openModalBtn">결제하기</button>
               </div>
           </div>
@@ -194,7 +192,6 @@
       </div>
     </div>
   </div>
-
   <script>
       $('#openModalBtn').on('click', function() {
         var selectedPaymentMethod = $("input[name='paymentMethod']:checked").val();
