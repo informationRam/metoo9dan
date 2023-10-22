@@ -75,14 +75,14 @@
 
 
                     <div class="d-flex align-items-left mb-3" style="gap: 10px;">
-                        <div class="dropdown" style="flex: 0.3;"> <!-- 드롭다운의 길이를 조절하기 위해 flex 값을 조정 -->
+                        <div class="dropdown" style="width:20%;"> <!-- 드롭다운의 길이를 조절하기 위해 flex 값을 조정 -->
                             <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()" class="form-select">
                                 <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
                                 <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
                             </select>
                         </div>
                         <!-- 버튼 -->
-                        <button id="selectAllButton" type="button" class="btn btn btn-outline-secondary" onclick="toggleAllCheckboxes()">전체 선택/해제</button>
+                        <button id="selectAllButton" type="button" class="btn btn btn-outline-warning" onclick="toggleAllCheckboxes()">전체 선택/해제</button>
                     </div>
 
 

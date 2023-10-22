@@ -348,7 +348,7 @@ public class HomeworkController {
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
         int submitCnt = homeworkSubmitList.size();
         for(HomeworkSubmit hs : homeworkSubmitList){
-            if(hs.getSubmitDate()==LocalDateTime.of(1, 1, 1, 0, 0)){
+            if(hs.getHomeworkContent()==null){
                 submitCnt-=1;
             }
         }
@@ -370,7 +370,7 @@ public class HomeworkController {
         List<HomeworkSubmit> homeworkSubmitList = homeworkService.findSubmitsBySendNo(homeworkSendList);
         int submitCnt = homeworkSubmitList.size();
         for(HomeworkSubmit hs : homeworkSubmitList){
-            if(hs.getSubmitDate()==LocalDateTime.of(1, 1, 1, 0, 0)){
+            if(hs.getHomeworkContent()==null){
                 submitCnt-=1;
             }
         }

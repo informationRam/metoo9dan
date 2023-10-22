@@ -48,7 +48,7 @@
 }
 
 .cute-dropdown select.form-select {
-  padding: 10px 15px;
+  padding: 10px 30px 10px 15px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -61,18 +61,6 @@
 .cute-dropdown:hover select.form-select {
   border-color: #ffb300;
 }
-
-/* 아래의 스타일은 화살표를 재디자인하는 것에 관한 예제입니다. 기본 <select> 화살표를 숨기고, 직접 화살표를 디자인합니다. */
-.cute-dropdown::after {
-  content: '\25BC'; /* 화살표 아이콘 */
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none; /* 이건 화살표를 클릭했을 때 실제 select가 선택되게 합니다. */
-  font-size: 10px;
-}
-
 
 .no-submission-wrapper {
   display: flex;
@@ -104,26 +92,6 @@
 
 .cancel-btn:hover {
   background-color: #ff6f00; /* 조금 더 진한 주황색 */
-}
-
-.nado-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  background-color: #fff;
-  padding: 20px;
-  max-width: 800px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column; /* 세로 방향으로 요소를 배치 */
-  align-items: center; /* 중앙 정렬 */
-}
-
-.nado-card-title {
-  color: #ffd700;
-  font-size: 20px;
-  margin-bottom: 20px;
-  text-align: center;
-  width: 100%;
 }
 
 .charts-wrapper {
@@ -175,4 +143,166 @@
 
 .item-row i {
   margin-right: 5px;
+}
+
+/* 테이블 스타일 */
+.nano-table {
+    width: 100%;  /* 전체 너비 사용 */
+    border-collapse: separate;  /* border-radius를 적용하기 위해 변경 */
+    border-spacing: 0;  /* 경계 간격 제거 */
+    border-radius: 10px;  /* 모서리 둥글게 */
+    overflow: hidden;  /* 둥근 모서리 내부로 내용이 넘치지 않게 처리 */
+}
+
+
+.nano-table, .nano-table th, .nano-table td {
+    border: 1px solid #ddd;  /* 테이블 경계 및 셀 경계 스타일 */
+    text-align: left;
+}
+
+.nano-table-hover tbody tr:hover {
+    background-color: #fff9e5;  /* 노란색 테마의 호버 색상 */
+    cursor: pointer;
+}
+
+/* 헤더 스타일 */
+.nano-thead th {
+    background-color: #ffc107;  /* 노란색 배경 */
+    color: #333;  /* 검은색 글씨 */
+    padding: 10px 15px;  /* 패딩 설정 */
+    cursor: pointer;  /* 클릭 가능성을 나타내기 위한 스타일 */
+}
+
+/* 본문 스타일 */
+.nado-tbody td {
+    padding: 10px 15px;  /* 패딩 설정 */
+    color: #333;  /* 검은색 글씨 */
+}
+
+/* 데이터가 없을 때의 메시지 */
+.nado-none {
+    text-align: center;  /* 텍스트 가운데 정렬 */
+    color: #888;  /* 회색 글씨 */
+    padding: 20px 0;  /* 위아래 패딩 */
+}
+
+.upperSection {
+    background-color: #ffdd57;
+    background-image: linear-gradient(to bottom, #ffee77, #ffdd66);
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin: 10px 10px 10px 10px; /* 마진 추가 */
+    border-radius: 25px; /* 둥근 모서리 추가 */
+}
+
+.curveEffect {
+    width: 220px;
+    height: 55px; /* 높이를 조금 늘림 */
+    position: absolute;
+    bottom: -20px; /* 위치를 약간 아래로 조정 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffdd66; /* 원래의 배경색으로 복원 */
+    border-radius: 50%; /* 원의 형태로 조절 */
+    z-index: 1;
+    color: fff;
+}
+
+.nado-card {
+    margin: 50px auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9); /* 90% 불투명도의 흰색 배경 */
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nado-card-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ffc107; /* 노란색을 기반으로 한 밑줄 */
+}
+
+.nado-card-header h2 {
+    margin: 0;
+    padding: 10px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.nado-card-body {
+    padding: 20px;
+}
+
+.pagination {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+.pagination .page-item {
+    margin: 0 2px;
+}
+
+.pagination .page-link {
+    border: none;
+    color: #333;
+    border-radius: 5px;
+    padding: 8px 12px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-item.active .page-link,
+.pagination .page-link:hover {
+    background-color: #ffc107;
+    color: #333;
+    border-color: #ffc107;
+}
+
+.pagination .page-item.disabled .page-link {
+    pointer-events: none;
+    cursor: default;
+    background-color: #f2f2e6;
+    color: #999;
+}
+
+.nado-table-container {
+    border: 2px solid #ffc107;  /* 노란색 테두리 */
+    border-radius: 10px;
+    overflow: hidden;  /* 테두리 내부로 내용이 넘치지 않게 처리 */
+    padding: 10px;  /* 테이블과 컨테이너와의 간격 */
+}
+
+.btn-nado-primary {
+    padding: 15px 60px;       /* 패딩을 조금 더 크게 설정 */
+    background-color: #ffc107;
+    border: none;
+    border-radius: 35px;     /* 둥근 모양을 만들기 위해 값을 크게 조정 */
+    color: #333;
+    font-size: 18px;         /* 글자 크기 조절 */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-block;   /* 인라인 블록으로 설정하여 가운데 정렬이 가능하도록 함 */
+}
+
+.btn-nado-primary:hover {
+    background-color: #ffa000;
+}
+
+.groupMessage {
+    padding: 20px;
+    background-color: transparent; /* 배경을 투명하게 변경 */
+    font-size: 18px; /* 글자 크기 증가 */
+    font-weight: bold; /* 글자를 굵게 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    color: #495057; /* 부트스트랩의 dark text color */
+    margin-top: 20px; /* 위쪽 여백 */
+    border: none; /* 테두리 제거 */
+}
+
+.groupMessage img {
+    width: 15%; /* 이미지 넓이를 50%로 설정 */
+    display: block; /* 이미지를 block 요소로 설정하여 중앙 정렬하기 쉽게 함 */
+    margin: 10px auto; /* 위 아래 10px의 여백을 주고 좌우는 자동으로 설정하여 중앙 정렬 */
 }
