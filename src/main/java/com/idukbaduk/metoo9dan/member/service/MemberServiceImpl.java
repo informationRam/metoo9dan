@@ -143,7 +143,7 @@ public class MemberServiceImpl implements MemberService {
             throw new DataNotFoundException("해당 이메일에 일치하는 회원이 없습니다.");
         }
     }
-    // 회원 가입시 이메일 중복 여부 확인 or id 찾기에 사용
+    // 회원 가입시 이메일 중복 여부 확인
     @Override
     @Transactional(readOnly = true)
     public boolean checkEmailDuplication(String email) {

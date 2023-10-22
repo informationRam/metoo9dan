@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -110,8 +111,19 @@ public class memberController {
         return response;
 
     }
-}
 
+    //이메일 중복검사
+    @PostMapping("/checkEmailDuplication")
+    public ResponseEntity<Map<String, Boolean>> checkEmailDuplication(@RequestBody Map<String, String> request) {
+        String email = request.get("valiEmail");
+        boolean isDuplicate = memberService.checkEmailDuplication(email);
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicate", isDuplicate);
+
+        return ResponseEntity.ok(response);
+    }
+}
 //회원가입 처리하기
 //    //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
 //    @PostMapping("/join")

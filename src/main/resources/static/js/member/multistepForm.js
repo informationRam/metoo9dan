@@ -5,6 +5,13 @@
             registerTab.show();
         });
 
+        //회원가입시 enter키 막기
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Enter 키의 기본 동작(폼 제출)을 중지합니다.
+            }
+        });
+
 
 
         // 사용자가 'Next' 버튼을 클릭하면 호출되는 함수
@@ -49,7 +56,7 @@
                     if (n == 1) {
                         if (!validateForm()) return false; // 현재 탭의 폼 유효성 검사가 실패하면 함수를 종료합니다.
                         if (currentTab === 1) { // 두 번째 스텝인 경우
-                            if (!emailVerificationIsSuccessful && !phoneVerificationIsSuccessful) { //둘다 인증되지 않으면 안넘어감, 하나라도 인증되면 넘어감
+                            if (!emailVerificationIsSuccessful && !phoneVerificationIsSuccess) { //둘다 인증되지 않으면 안넘어감, 하나라도 인증되면 넘어감
                                 alert("본인 인증 단계를 완료하세요.");
                                 return false; // 인증이 실패한 경우 다음으로 진행하지 않습니다.
                             }
