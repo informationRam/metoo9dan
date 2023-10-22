@@ -273,31 +273,33 @@
 
                                         if(item.homeworkSubmitNo !== 0 && new Date(item.dueDate) < currentDate) {
                                             tableContent += `
-                                               <div class="cute-card-submit">
-                                                <div class="item-row">
-                                                    <i class="fa fa-list-ol"></i> <span>${item.homeworkSubmitNo}</span>
+                                                 <div class="cute-card-submit">
+                                                    <div class="item-row">
+                                                        <i class="fa fa-file-alt"></i>
+                                                        <span>${item.submitContent ? item.submitContent : '내용 없음'}</span>
+                                                    </div>
+                                                    <div class="item-row">
+                                                        <i class="fa fa-comments"></i>
+                                                        <span>${item.additionalQuestions ? item.additionalQuestions : '추가 질의 없음'}</span>
+                                                    </div>
+                                                    <div class="item-row">
+                                                        <i class="fa fa-calendar-check"></i>
+                                                        <span>${(item.submitDate === "0001-01-01T00:00:00") ? '제출 안함' : item.submitDate}</span>
+                                                    </div>
+                                                    <div class="item-row">
+                                                        <i class="fa fa-star-half-alt"></i>
+                                                        <span>${item.evaluation ? item.evaluation : '평가 없음'}</span>
+                                                    </div>
+                                                    <div class="dropdown cute-dropdown" style="${item.evaluation ? 'display: none;' : ''}">
+                                                        <select id="evaluation${item.homeworkSubmitNo}" class="form-select">
+                                                            <option value="F" selected="selected">선택해주세요</option>
+                                                            <option value="A">우수</option>
+                                                            <option value="B">보통</option>
+                                                            <option value="C">미흡</option>
+                                                        </select>
+                                                    </div>
+                                                  </div>
                                                 </div>
-                                                <div class="item-row">
-                                                    <i class="fa fa-file-alt"></i> <span>${item.submitContent}</span>
-                                                </div>
-                                                <div class="item-row">
-                                                    <i class="fa fa-comments"></i> <span>${item.additionalQuestions}</span>
-                                                </div>
-                                                <div class="item-row">
-                                                    <i class="fa fa-calendar-check"></i> <span>${item.submitDate}</span>
-                                                </div>
-                                                <div class="item-row">
-                                                    <i class="fa fa-star-half-alt"></i> <span>${item.evaluation}</span>
-                                                </div>
-                                            <div class="dropdown cute-dropdown">
-                                                <select id="evaluation${item.sendNo}" class="form-select">
-                                                    <option value="F" selected="selected">선택해주세요</option>
-                                                    <option value="A">우수</option>
-                                                    <option value="B">보통</option>
-                                                    <option value="C">미흡</option>
-                                                </select>
-                                            </div>
-                                            </div>
                                             `;
                                         } else if(item.homeworkSubmitNo === 0 && new Date(item.dueDate) > currentDate) {
                                             tableContent += `

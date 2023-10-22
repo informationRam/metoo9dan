@@ -373,7 +373,7 @@ public class HomeworkService {
             homeworkSubmit.setHomeworkSend(homeworkSend);
             homeworkSubmit.setEvaluation(evaluation);
             homeworkSubmit.setHomeworks(homeworkSend.getHomeworks());
-            homeworkSubmit.setHomeworkContent("");
+            //homeworkSubmit.setHomeworkContent();
             homeworkSubmit.setMember(homeworkSend.getMember());
             homeworkSubmit.setProgress(homeworkSend.getCurrentLevel());
             homeworkSubmit.setSubmitDate(LocalDateTime.of(1, 1, 1, 0, 0));

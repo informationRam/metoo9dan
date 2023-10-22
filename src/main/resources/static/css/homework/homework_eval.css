@@ -1,113 +1,178 @@
-.cute-card, .cute-card-submit {
-    padding: 20px;
-    border: 1px solid #e6e6e6;
-    border-radius: 10px;
-    background-color: #fff8e1; /* 노랑색 톤의 배경색 */
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+.cute-card,
+.cute-card-submit {
+  padding: 20px;
+  border: 1px solid #ffb300;
+  border-radius: 10px;
+  background-color: #fff; /* 노랑색 톤의 배경색 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.badge-container {
+  display: flex;
+  justify-content: left; /* 뱃지를 가운데 정렬 */
+  gap: 10px; /* 뱃지 사이의 간격 */
+  margin-bottom: 20px; /* 다른 항목들과의 간격 */
+}
+
+.badge {
+  padding: 5px 15px;
+  background-color: #ffb300; /* 배경색 */
+  color: white; /* 글자색 */
+  border-radius: 20px; /* 둥근 모서리 */
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .item-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .item-row i {
-    margin-right: 10px;
-    color: #ffb300; /* 노란색 아이콘 */
+  margin-right: 15px;
+  margin-top: 5px;
+  color: #ffb300; /* 노란색 아이콘 */
 }
 
 .cute-hr {
-    border-top: 1px dashed #ffb300; /* 노란색 점선 */
-    margin-top: 20px;
-    margin-bottom: 20px;
+  border-top: 1px dashed #ffb300; /* 노란색 점선 */
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .cute-dropdown {
-    margin-top: 10px;
+  position: relative;
+  display: inline-block;
 }
 
+.cute-dropdown select.form-select {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none; /* 이건 브라우저 기본 스타일을 제거하기 위해 사용합니다. */
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.cute-dropdown:hover select.form-select {
+  border-color: #ffb300;
+}
+
+/* 아래의 스타일은 화살표를 재디자인하는 것에 관한 예제입니다. 기본 <select> 화살표를 숨기고, 직접 화살표를 디자인합니다. */
+.cute-dropdown::after {
+  content: '\25BC'; /* 화살표 아이콘 */
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* 이건 화살표를 클릭했을 때 실제 select가 선택되게 합니다. */
+  font-size: 10px;
+}
+
+
 .no-submission-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #fffde7; /* 더 연한 노랑색 배경 */
-    border-radius: 10px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-    margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #fffde7; /* 더 연한 노랑색 배경 */
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
 }
 
 .no-submission-message {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 15px;
 }
 
 .cancel-btn {
-    background-color: #ff8f00; /* 노랑색과 어울리는 주황색 */
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  background-color: #ff8f00; /* 노랑색과 어울리는 주황색 */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .cancel-btn:hover {
-    background-color: #ff6f00; /* 조금 더 진한 주황색 */
+  background-color: #ff6f00; /* 조금 더 진한 주황색 */
 }
 
-        .nado-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            background-color: #fff;
-            padding: 20px;
-            max-width: 800px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column; /* 세로 방향으로 요소를 배치 */
-            align-items: center; /* 중앙 정렬 */
-        }
+.nado-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 20px;
+  max-width: 800px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column; /* 세로 방향으로 요소를 배치 */
+  align-items: center; /* 중앙 정렬 */
+}
 
-        .nado-card-title {
-            color: #FFD700;
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
-        }
+.nado-card-title {
+  color: #ffd700;
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+}
 
-        .charts-wrapper {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
+.charts-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
 
-        .chart-container {
-            display: flex;
-            align-items: center;
-            margin: 10px;
-            width: 45%; /* 차트와 내용의 너비 조정 */
-        }
+.chart-container {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+  width: 45%; /* 차트와 내용의 너비 조정 */
+}
 
-        .chart-container canvas {
-            max-width: 180px;
-            max-height: 180px;
-        }
+.chart-container canvas {
+  max-width: 180px;
+  max-height: 180px;
+}
 
-        .chart-detail {
-            margin-left: 20px;
-        }
+.chart-detail {
+  margin-left: 20px;
+}
 
-        .chart-detail h4 {
-            color: #333;
-            margin: 10px 0;
-        }
+.chart-detail h4 {
+  color: #333;
+  margin: 10px 0;
+}
 
-        .chart-detail p {
-            color: #888;
-            font-size: 14px;
-        }
+.chart-detail p {
+  color: #888;
+  font-size: 14px;
+}
+/*추가된 부분*/
+
+.item-row {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 14px;
+}
+
+.item-row label {
+  font-weight: bold;
+  margin-right: 10px;
+  width: 120px; /* 라벨의 너비를 조정합니다. */
+  display: inline-block;
+}
+
+.item-row i {
+  margin-right: 5px;
+}
