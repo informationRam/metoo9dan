@@ -199,7 +199,7 @@ public class StudyGroupController {
         model.addAttribute("groupNum",groupNum);
         System.out.println("groupNum="+groupNum);
 
-        return "studygroup/studyGroup_modifyForm";
+        return "studyGroup/studyGroup_modifyForm";
     }
 
     //학습 그룹 수정 처리
@@ -601,7 +601,13 @@ public class StudyGroupController {
     // alert창(사용자에게 메시지를 전달하고, 페이지를 리다이렉트 함)
     private String showMessageAndRedirect(final MessageDto params, Model model) {
         model.addAttribute("params", params);
-        return "studygroup/messageRedirect";
+        return "studyGroup/messageRedirect";
     }
+
+   /* @RequestMapping("/studygroup/error")
+    public String studygroupError(){
+        return "studyGroup/error_forbidden";
+    }*/
+
 
 }
