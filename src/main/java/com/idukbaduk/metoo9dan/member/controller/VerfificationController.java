@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequestMapping("/api")
@@ -42,14 +43,18 @@ public class VerfificationController {
 
     @PostMapping("/verifyEmailCode")
     public ResponseEntity<?> verifyEmailCode(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
+        String email = request.get("valiEmail");  // 변경: 클라이언트에서 "valiEmail"로 보낸 값을 검색합니다.
         String inputCode = request.get("emailCode");
+        System.out.println("사용자입력코드:"+inputCode);
         if (mailService.verifyEmailCode(email, inputCode)) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body("{\"success\": true}");
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증번호를 다시 확인하세요");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "인증번호를 다시 확인하세요");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);  // 변경: JSON 형식의 응답 및 400 상태 코드 반환
         }
     }
+
 
     // 휴대폰 인증번호 발송
     @PostMapping("/sendSMS-code")

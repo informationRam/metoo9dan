@@ -305,117 +305,124 @@ var emailVerified = false;
          nextPrev(1);
      }
 
-// 인증 코드 확인 함수
-let verificationIsSuccessful = false; // Initialize the variable
+    // 인증 코드 확인 함수
+    let verificationIsSuccessful = false; // Initialize the variable
 
-function verifyCode() {
-    // 사용자가 입력한 인증 코드 가져오기
-    const verificationCode = document.getElementById("verificationCode").value;
+    function verifyCode() {
+        // 사용자가 입력한 인증 코드 가져오기
+        const verificationCode = document.getElementById("verificationCode").value;
 
-    // API 요청을 위한 데이터 준비
-    const requestData = {
-        verificationCode: verificationCode
-    };
+        // API 요청을 위한 데이터 준비
+        const requestData = {
+            verificationCode: verificationCode
+        };
 
-    // 서버로 POST 요청 보내기
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/verifyCode", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
+        // 서버로 POST 요청 보내기
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/verifyCode", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                     alert("본인 인증이 완료되었습니다.");
-                      verificationIsSuccessful = true;
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                         alert("본인 인증이 완료되었습니다.");
+                          verificationIsSuccessful = true;
 
-                    // 세션에 저장된 이름과 휴대폰 번호 가져오기
-                    const userName = response.userName;
-                    const userPhone = response.userPhone;
-                    console.log("세션저장 이름:",userName);
-                    console.log("세션저장 Phone:",userPhone);
-                     // 다음 단계로 이동하려면 다음Prev 함수를 호출합니다.
-                    nextPrev(1);
+                        // 세션에 저장된 이름과 휴대폰 번호 가져오기
+                        const userName = response.userName;
+                        const userPhone = response.userPhone;
+                        console.log("세션저장 이름:",userName);
+                        console.log("세션저장 Phone:",userPhone);
+                         // 다음 단계로 이동하려면 다음Prev 함수를 호출합니다.
+                        nextPrev(1);
 
-                    // 화면에 이름과 휴대폰 번호 출력
-                    //document.getElementById("verificationSuccess").style.display = "block";
-                    //document.getElementById("verificationSuccess").style.display = "block";
-                    document.getElementById("userNameInput").value = userName;
-                    document.getElementById("userPhoneInput").value = userPhone;
-                    // 입력 필드를 읽기 전용으로 설정
-                    document.getElementById("userNameInput").readOnly = true;
-                    document.getElementById("userPhoneInput").readOnly = true;
+                        // 화면에 이름과 휴대폰 번호 출력
+                        //document.getElementById("verificationSuccess").style.display = "block";
+                        //document.getElementById("verificationSuccess").style.display = "block";
+                        document.getElementById("userNameInput").value = userName;
+                        document.getElementById("userPhoneInput").value = userPhone;
+                        // 입력 필드를 읽기 전용으로 설정
+                        document.getElementById("userNameInput").readOnly = true;
+                        document.getElementById("userPhoneInput").readOnly = true;
+                    } else {
+                        alert("인증을 완료해주세요.");
+                         verificationIsSuccessful = false;
+                    }
                 } else {
-                    alert("인증을 완료해주세요.");
+                    alert("인증에 실패했습니다.");
                      verificationIsSuccessful = false;
                 }
-            } else {
-                alert("인증에 실패했습니다.");
-                 verificationIsSuccessful = false;
             }
+        };
+
+        xhr.send(JSON.stringify(requestData));
+    }
+
+    //이메일 인증번호 발송
+    function sendEmailVerificationCode() {
+        var email = document.getElementById("valiEmail").value;
+        var emailName = document.getElementById("emailName").value;
+          fetch("/api/sendEmailVerification", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    valiEmail: email  //valiEmail이 서버 전송 변수
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("인증 코드가 이메일로 전송되었습니다.");
+                } else {
+                    alert("이메일 전송 실패. 다시 시도해주세요.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+            });
         }
-    };
 
-    xhr.send(JSON.stringify(requestData));
-}
+    //이메일 본인인증 확인
+    function verifyEmailCode() {
+      var email = document.getElementById("valiEmail").value;
+      var name = document.getElementById("emailName").value;
+      var inputCode = document.getElementById("emailVerificationCode").value;
 
-//이메일 인증번호 발송
-function sendEmailVerificationCode() {
-    var email = document.getElementById("valiEmail").value;
-    var emailName = document.getElementById("emailName").value;
-      fetch("/api/sendEmailVerification", {
-            method: "POST",
+        // 서버로 인증 코드 검증 요청
+        fetch('/api/verifyEmailCode', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                valiEmail: email  //valiEmail이 서버 전송 변수
+             body: JSON.stringify({
+                      valiEmail: email,
+                      emailCode: inputCode
+                  })
+        })
+        .then(response => {
+                const contentType = response.headers.get("Content-Type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("서버에서 유효하지 않은 형식의 응답이 왔습니다.");
+                }
+
+                if (response.status !== 200) {
+                    // 성공적인 응답이 아니라면 JSON을 파싱하지 않고 에러를 던져줍니다.
+                    throw new Error("인증번호를 다시 확인하세요");
+                }
+                return response.json();
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("인증 코드가 이메일로 전송되었습니다.");
-            } else {
-                alert("이메일 전송 실패. 다시 시도해주세요.");
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("오류가 발생했습니다. 다시 시도해주세요.");
-        });
-    }
-
-//이메일 본인인증 확인
-function verifyEmailCode() {
-  var email = document.getElementById("valiEmail").value;
-  var name = document.getElementById("emailName").value;
-  var inputCode = document.getElementById("emailVerificationCode").value;
-
-    // 서버로 인증 코드 검증 요청
-    fetch('/api/verifyEmailCode', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-         body: JSON.stringify({
-                  valiEmail: email,
-                  emailCode: inputCode
-              })
-    })
-   .then(response => response.json())
-       .then(data => {
-           if (response.status === 200) { // 이메일 인증이 성공한 경우
-               document.getElementById("userNameInput").value = emailName; // 이전 입력폼에서의 이름을 가져와서 설정
-               document.getElementById("email").value = email; // 이전 입력폼에서의 이메일을 가져와서 설정
-               nextPrev(1); // 다음 단계로 이동
-           } else { // 인증 실패
-               alert("인증번호를 다시 확인하세요");
-           }
-       })
-       .catch(error => {
-           console.error("Error:", error);
-           alert("오류가 발생했습니다. 다시 시도해주세요.");
-       });
+            .then(data => {
+                document.getElementById("userNameInput").value = name;
+                document.getElementById("email").value = email;
+                nextPrev(1);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+            });
    }

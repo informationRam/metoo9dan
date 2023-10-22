@@ -35,7 +35,7 @@ public class MailService {
         //2.MailDTO.content 영역에 6자리 난수를 생성해 저장
         String mailCode = createCode();
         httpSession.setAttribute(valiEmail, mailCode); // 생성된 코드를 세션에 저장
-
+        System.out.println("Generated email verification code for " + valiEmail + ": " + mailCode); // 이 부분을 추가
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom("yujinahn95@gmail.com");
@@ -54,6 +54,7 @@ public class MailService {
 
     // 사용자가 입력한 인증 코드 검증
     public boolean verifyEmailCode(String valiEmail, String inputCode) {
+        System.out.println("인증서비스 진입");
         Object codeInSession = httpSession.getAttribute(valiEmail);
 
         //세션저장 코드 = 사용자 입력코드
