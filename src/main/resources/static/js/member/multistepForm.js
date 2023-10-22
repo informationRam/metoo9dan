@@ -14,14 +14,14 @@
 
 
 
-        // 사용자가 'Next' 버튼을 클릭하면 호출되는 함수
-        function enableInputFields() {
-            document.getElementById("memberIdInput").removeAttribute("readonly");
-            document.getElementById("password").removeAttribute("readonly");
-            document.getElementById("confirmPassword").removeAttribute("readonly");
-            document.getElementById("birth").removeAttribute("readonly");
-            document.getElementById("email").removeAttribute("readonly");
-        }
+//        // 사용자가 'Next' 버튼을 클릭하면 호출되는 함수
+//        function enableInputFields() {
+//            document.getElementById("memberIdInput").removeAttribute("readonly");
+//            document.getElementById("password").removeAttribute("readonly");
+//            document.getElementById("confirmPassword").removeAttribute("readonly");
+//            document.getElementById("birth").removeAttribute("readonly");
+//            document.getElementById("emailInput").removeAttribute("readonly");
+//        }
 
     //mulitStep-form 작동
 

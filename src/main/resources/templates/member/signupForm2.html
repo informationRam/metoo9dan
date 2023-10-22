@@ -165,7 +165,7 @@
                                                         <div class="col-11">
                                                             <label class="form-check-label" for="agreement3">개인정보 선택항목에 대한 처리 및 이용 <span class="text-secondary" style="font-size: smaller;">선택</span></label>
                                                             <div class="details">
-                                                                <p>개인정보 마케팅 및 광고 활용 상세 내용...</p>
+                                                                <p>개인정보 선택항목에 대한 처리 및 이용 ...</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -264,8 +264,8 @@
                                             <!-- 이름 불러오기 -->
 <!--                                            <div id="verificationSuccess" style="display: none;">-->
                                                 <div class="mb-3">
-                                                    <label for="userNameInput" class="form-label">이름</label>
-                                                    <input type="text" name="name" id="userNameInput"  class="form-control" >
+                                                    <label for="userName" class="form-label">이름</label>
+                                                    <input type="text" name="name" id="userName"  class="form-control" >
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="userPhoneInput" class="form-label">휴대폰 번호</label>
@@ -276,7 +276,7 @@
                                             <div class="mb-3">
                                                 <label for="memberIdInput" class="form-label">아이디</label>
                                                 <div class="input-group">
-                                                    <input type="text" th:field="*{memberId}" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput" readonly required>
+                                                    <input type="text" th:field="*{memberId}" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput" required>
                                                     <div class="input-group-append">
                                                         <button type="button" class="btn btn-primary" id="chechMemberId">ID 중복 확인</button>
                                                     </div>
@@ -286,13 +286,13 @@
                                             <!-- 비밀번호 입력란 -->
                                             <div class="mb-3">
                                                 <label for="password" class="form-label">비밀번호</label>
-                                                <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password" readonly required >
+                                                <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password"  required >
                                             </div>
                                                 <span th:if="${#fields.hasErrors('pwd1')}" th:errors="*{pwd1}" class="error-message text-danger"></span>
                                             <!-- 비밀번호 확인 입력란 -->
                                             <div class="mb-3">
                                                 <label for="confirmPassword" class="form-label">비밀번호 확인</label>
-                                                <input type="password" th:field="*{pwd2}" placeholder="비밀번호와 일치하게 입력하세요" autocomplete="new-password"    oninput="this.className = ''" class="form-control" id="confirmPassword" name="confirmPassword" readonly required>
+                                                <input type="password" th:field="*{pwd2}" placeholder="비밀번호와 일치하게 입력하세요" autocomplete="new-password"    oninput="this.className = ''" class="form-control" id="confirmPassword" name="confirmPassword"  required>
                                             </div>
                                                 <span th:if="${#fields.hasErrors('pwd2')}" th:errors="*{pwd2}" class="error-message text-danger"></span>
                                                 <span th:if="${passwordMismatch}" class="error-message text-danger">비밀번호가 일치하지 않습니다.</span>
@@ -300,14 +300,14 @@
                                             <!-- 생년월일 입력란 -->
                                             <div class="mb-3">
                                                 <label for="birth" class="form-label">생년월일</label>
-                                                <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"  readonly required>
+                                                <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"   required>
                                                 <span th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" class="error-message text-danger"></span>
                                             </div>
 
                                             <!-- 이메일 주소 입력란 -->
                                             <div class="mb-3">
                                                 <label for="email" class="form-label">이메일 주소</label>
-                                                <input type="email"  th:field="*{email}" placeholder="12345@gmail.com" oninput="this.className = ''" class="form-control" id="email" name="email" readonly required>
+                                                <input type="email"  th:field="*{email}" placeholder="12345@gmail.com" oninput="this.className = ''" class="form-control" id="emailInput" name="email"  required>
                                                 <span th:if="${emailDuplicate}" class="error-message text-danger">이 이메일을 이미 사용중인 아이디가 있습니다.</span>
                                             </div>
 
@@ -381,7 +381,7 @@
                                 <!-- start previous / next buttons -->
                                 <div class="form-footer d-flex">
                                     <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                                    <button type="button" id="nextBtn" onclick="nextPrev(1);  enableInputFields();">Next</button>
+                                    <button type="button" id="nextBtn" onclick="nextPrev(1); ">Next</button>
                                 </div>
 
                             </form> <!-- SingUpform 형식 끝 -->
@@ -393,6 +393,7 @@
 <!--    </div> &lt;!&ndash; row &ndash;&gt;-->
 
     <script th:src="@{/js/member/multistepForm.js}"></script>
+    <script th:src="@{/js/member/joinValidation.js}"></script>
     <script th:src="@{/js/member/AgreenAuth.js}"></script>
     <script src="/js/member/educatorSido.js"></script>
 

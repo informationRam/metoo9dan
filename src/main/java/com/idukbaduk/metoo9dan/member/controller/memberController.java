@@ -62,32 +62,31 @@ public class memberController {
     //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
     @PostMapping("/join")
     public String createUser(@Valid UserCreateForm form, BindingResult bindingResult, Model model) {
-
-//        if (bindingResult.hasErrors()) {
-//            return "/member/signupForm2";
-//        }
-
         ModelMapper modelMapper = new ModelMapper();
-        System.out.println("join컨트롤러 진입");
+        System.out.println("회원가입 컨트롤러 진입");
+
+        //패스워드 암호화
         MemberDTO memberDTO = modelMapper.map(form, MemberDTO.class);
         memberDTO.setPassword(passwordEncoder.encode(form.getPwd1()));
 
-        if ("EDUCATOR".equals(form.getRole())) {
-            EducatorInfoDTO educatorInfoDTO = modelMapper.map(form, EducatorInfoDTO.class);
-
+        if ("EDUCATOR".equals(memberDTO.getRole())) {
+            // EducatorInfoDTO에 관련 정보를 매핑합니다.
+            EducatorInfoDTO educatorInfoDTO = new EducatorInfoDTO();
+            educatorInfoDTO.setSido(form.getSido());
+            educatorInfoDTO.setSigungu(form.getSigungu());
+            educatorInfoDTO.setSchoolName(form.getSchoolName());
+            // EducatorInfoDTO 데이터를 EducatorInfo 엔티티로 이동
+            EducatorInfo educatorInfo = modelMapper.map(educatorInfoDTO, EducatorInfo.class);
             // MemberDTO 데이터를 Member 엔티티로 이동
             Member member = modelMapper.map(memberDTO, Member.class);
 
-            // EducatorInfoDTO 데이터를 EducatorInfo 엔티티로 이동
-            EducatorInfo educatorInfo = modelMapper.map(educatorInfoDTO, EducatorInfo.class);
-
             memberService.createUserWithEducatorInfo(member, educatorInfo);
+
         } else {
             // MemberDTO 데이터를 Member 엔티티로 이동
             Member member = modelMapper.map(memberDTO, Member.class);
             memberService.createUser(member);
         }
-
         return "redirect:/member/login"; //회원가입 후 로그인 페이지
     }
 
@@ -122,6 +121,16 @@ public class memberController {
         response.put("isDuplicate", isDuplicate);
 
         return ResponseEntity.ok(response);
+    }
+
+    //아이디 중복검사
+    @PostMapping("/member/checkMemberIdDuplication")
+    public Map<String, Boolean> checkMemberIdDuplication(@RequestBody Map<String, String> request) {
+        String memberId = request.get("memberId");
+        boolean isDuplicated = memberService.checkmemberIdDuplication(memberId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicated", isDuplicated);
+        return response;
     }
 }
 //회원가입 처리하기

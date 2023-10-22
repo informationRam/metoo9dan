@@ -100,7 +100,7 @@ public class MemberServiceImpl implements MemberService {
         return members;
     }
 
-    //회원가입 처리 : role이 educator일때
+    //교육자 회원가입 처리 : role이 educator일때
     @Transactional
     public void createUserWithEducatorInfo(Member member, EducatorInfo educatorInfo) {
 
@@ -116,6 +116,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void createUser(Member member) {
 
+        member.setJoinDate(LocalDateTime.now()); // 현재 날짜 및 시간을 설정
         member.setJoinDate(LocalDateTime.now()); // 현재 날짜 및 시간을 설정
         // Member 엔터티 저장
         memberRepository.save(member);

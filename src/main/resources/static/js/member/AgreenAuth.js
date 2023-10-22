@@ -38,9 +38,36 @@ function toggleAuthMethod(selectedMethod) {
     if (selectedMethod === "phone") {
         document.getElementById("phoneForm").style.display = "block";
         document.getElementById("emailForm").style.display = "none";
+
+        // phoneForm의 모든 입력 필드를 활성화
+            let phoneInputs = document.querySelectorAll("#phoneForm input");
+            phoneInputs.forEach(input => {
+                input.removeAttribute("disabled");
+            });
+
+            // emailForm의 모든 입력 필드를 비활성화 및 required 속성 제거
+            let emailInputs = document.querySelectorAll("#emailForm input");
+            emailInputs.forEach(input => {
+                input.setAttribute("disabled", true);
+                input.removeAttribute("required");
+            });
+
     } else if (selectedMethod === "email") {
         document.getElementById("emailForm").style.display = "block";
         document.getElementById("phoneForm").style.display = "none";
+
+          // emailForm의 모든 입력 필드를 활성화
+                let emailInputs = document.querySelectorAll("#emailForm input");
+                emailInputs.forEach(input => {
+                    input.removeAttribute("disabled");
+                });
+
+                // phoneForm의 모든 입력 필드를 비활성화 및 required 속성 제거
+                let phoneInputs = document.querySelectorAll("#phoneForm input");
+                phoneInputs.forEach(input => {
+                    input.setAttribute("disabled", true);
+                    input.removeAttribute("required");
+                });
     }
 }
 
@@ -383,10 +410,10 @@ var emailVerified = false;
                         // 화면에 이름과 휴대폰 번호 출력
                         //document.getElementById("verificationSuccess").style.display = "block";
                         //document.getElementById("verificationSuccess").style.display = "block";
-                        document.getElementById("userNameInput").value = userName;
+                        document.getElementById("userName").value = userName;
                         document.getElementById("userPhoneInput").value = userPhone;
                         // 입력 필드를 읽기 전용으로 설정
-                        document.getElementById("userNameInput").readOnly = true;
+                        document.getElementById("userName").readOnly = true;
                         document.getElementById("userPhoneInput").readOnly = true;
                     } else {
                         alert("인증을 완료해주세요.");
@@ -402,8 +429,8 @@ var emailVerified = false;
 
     //이메일 인증번호 발송
     function sendEmailVerificationCode() {
-        var email = document.getElementById("valiEmail").value;
-        var emailName = document.getElementById("emailName").value;
+        var email = document.getElementById("valiEmail").value; //사용자 이메일
+        var emailName = document.getElementById("emailName").value; //사용자이름
           fetch("/api/sendEmailVerification", {
                 method: "POST",
                 headers: {
@@ -458,11 +485,11 @@ var emailVerified = false;
             })
             .then(data => {
                 alert("본인 인증이 완료되었습니다.")
-                document.getElementById("userNameInput").value = name;
-                document.getElementById("email").value = email;
+                document.getElementById("userName").value = name;
+                document.getElementById("emailInput").value = email;
                  // 입력 필드를 읽기 전용으로 설정
-                document.getElementById("userNameInput").readOnly = true;
-                document.getElementById("email").readOnly = true;
+                document.getElementById("userName").readOnly = true;
+                document.getElementById("emailInput").readOnly = true;
                 emailVerificationIsSuccessful = true;
                 nextPrev(1);
             })
