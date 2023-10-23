@@ -2,12 +2,11 @@
 <div th:fragment="sidebar"  class="col-2" th:unless="${memberRole}==ADMIN"> <!--class에서 col-2은 빼면 안됨-->
     <!--이용안내용 사이드바-->
     <ul>
-        <li><a th:href="@{#}">사이트 소개(yet)</a></li>
-        <li><a th:href="@{#}">이용 가이드(yet)</a></li>
-        <li><a th:href="@{/member/login}">로그인 및 회원가입</a></li>
-        <li><a th:href="@{#}">상품 소개(yet)</a></li>
-        <li><a th:href="@{/notice/list}">공지</a></li>
-        <li><a th:href="@{/notice/faq}">FAQ</a></li>
-        <li><a th:href="@{/qna/list}">QnA</a></li>
+        <li><a th:href="@{/#service}">사이트 소개</a></li>
+        <li><a th:href="@{/#meetings}">상품 소개</a></li>
+        <li><a th:href="@{/#guide}">이용 가이드</a></li>
+        <li><a th:href="@{/notice/list}">공지사항</a></li>
+        <li><a th:href="@{/notice/faq}">자주묻는질문</a></li>
+        <li><a th:href="@{/qna/list}">문의사항</a></li>
     </ul>
 </div>
