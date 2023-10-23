@@ -17,7 +17,7 @@ public class Payments {
     private Integer paymentNo;       //int  NOT NULL    AUTO_INCREMENT COMMENT '결제 번호',
 
     @Column(name="order_number")
-    private String orderNumber;     //varchar(50) NOT NULL    COMMENT '주문 번호',
+    private Integer orderNumber;     //varchar(50) NOT NULL    COMMENT '주문 번호',
 
     @Column
     private String contact;          //varchar(20)  NOT NULL    COMMENT '연락처',

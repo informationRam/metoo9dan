@@ -2,10 +2,13 @@ package com.idukbaduk.metoo9dan.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 //게임콘텐츠 파일 테이블 - PRIMARY KEY (file_no)
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "game_content_files")
 public class GameContentFiles {
     @Id
@@ -22,5 +25,6 @@ public class GameContentFiles {
     @ManyToOne(fetch = FetchType.LAZY) // 게임콘텐츠-다대일 관계
     @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no") // 외래 키 설정
     private GameContents gameContents;
+
 
 }
