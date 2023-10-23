@@ -1,0 +1,151 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/game/list.css" />
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <div class="col">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
+                    <button class="btn btn-warning" type="button" onclick="searchGames()">검색</button>
+                </div>
+            </div>
+            <div>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">게임이미지</th>
+                    <th scope="col">게임콘텐츠명</th>
+                    <th scope="col">학습난이도</th>
+                    <th scope="col">구독기간</th>
+                    <th scope="col">구독가능인원</th>
+                    <th scope="col">교육자료</th>
+                    <th scope="col">정가</th>
+                    <th scope="col">할인율</th>
+                    <th scope="col">판매가</th>
+                    <th scope="col" colspan="3">등록일</th>
+                </tr>
+                </thead>
+                <tbody class="table-light">
+                <tr th:each="game, loop : ${gamePage}">
+                    <!-- 페이지 번호 -->
+                    <td class="game no"
+                        th:text="${gamePage.getTotalElements() - (gamePage.getNumber() * gamePage.getSize()) - loop.index}"></td>
+                    <!-- 이미지 (only the first image if available) -->
+                    <td class="gameContents image">
+                        <img th:if="${game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                             th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" alt="" width="100" height="100">
+                    </td>
+                    <!-- 게임 제목 -->
+                    <td class="game title">
+                        <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a>
+                    </td>
+                    <!-- 난이도 -->
+                    <td class="game difficulty">
+                        <span th:switch="${game.difficulty}">
+                            <span th:case="'beginner'">초급</span>
+                            <span th:case="'intermediate'">중급</span>
+                            <span th:case="'advanced'">고급</span>
+                        </span>
+                    </td>
+                    <!-- 구독기간 -->
+                    <td class="game subscriptionDuration"
+                        th:text="${game.subscriptionDuration}">
+                    </td>
+                    <!-- 구독가능인원 -->
+                    <td class="game maxSubscribers"
+                        th:text="|${game.maxSubscribers} 명|">
+                    </td>
+                    <!-- 교육자료 -->
+                    <td class="game educationalResources">
+                        <ul>
+                            <li th:each="educationResource : ${game.educationalResourcesList}">
+                                <a th:href="@{|/education/details/${educationResource.resourceNo}|}" th:text="${educationResource.resourceName}"></a>
+                            </li>
+                        </ul>
+                    </td>
+                    <!-- 정가 -->
+                    <td class="game originalPrice">
+                        <span th:text="${game.originalPrice <= 999 ? #numbers.formatInteger(game.originalPrice.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(game.originalPrice.intValue(), 3, 'COMMA') + '원'}"></span>
+                    </td>
+                    <!-- 할인율 -->
+                    <td class="game discountRate"
+                        th:text="|${game.discountRate}%|">
+                    </td>
+                    <!-- 판매가 -->
+                    <td class="game salePrice">
+                        <span th:text="${game.salePrice <= 999 ? #numbers.formatInteger(game.salePrice.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(game.salePrice.intValue(), 3, 'COMMA') + '원'}"></span>
+                    </td>
+                    <!-- 게임 등록일 -> 수정하면 날짜 변경. -->
+                    <td class="game date">
+                        <span th:text="${#temporals.format(game.creationDate,'yyyy-MM-dd HH:mm')}">
+                    </td>
+                    <!-- 액션 -->
+                    <td>
+                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-outline-secondary btn-sm mx-1">Edit</a>
+                        <span th:unless="${game.paymentsList.isEmpty()}">Edit</span> <!-- 결제내역이 있는 경우 수정 버튼 비활성화 -->
+                    </td>
+                    <td>
+                        <a th:href="@{/game/delete/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-outline-secondary btn-sm mx-1" onclick="return confirm('삭제하시겠습니까?')">Delete</a>
+                        <span th:unless="${game.paymentsList.isEmpty()}">Delete</span> <!-- 결제내역이 있는 경우 삭제 버튼 비활성화 -->
+                    </td>
+                     </td>-->
+                </tr><!-- 1페이지당 출력할 게시물수만큼 반복끝 -->
+                </tbody>
+            </table>
+            </div>
+            <!-- 게임컨텐츠 등록하기 -->
+            <div class="text-end ms-auto">
+                <a th:href="@{/game/addForm}" class="btn btn-outline-warning">작성하기</a>
+            </div>
+            <!-- Pagination 부분 영역 시작 -->
+            <!-- 페이지 네이션 처리 -->
+            <div id="pagination">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <!-- 이전 페이지 링크 -->
+                        <li class="page-item" th:classappend="${gamePage.pageable.pageNumber == 0} ? 'disabled'">
+                            <a class="page-link" href="#" th:href="@{/game/list2(page=${gamePage.pageable.pageNumber - 1}, searchText=${searchText})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <!-- 페이지 번호 링크 -->
+                        <li class="page-item" th:classappend="${i - 1 == gamePage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                            <a class="page-link" href="#" th:href="@{/game/list2(page=${i - 1}, searchText=${searchText})}" th:text="${i}"></a>
+                        </li>
+                        <!-- 다음 페이지 링크 -->
+                        <li class="page-item" th:classappend="${gamePage.totalPages == gamePage.pageable.pageNumber + 1} ? 'disabled'">
+                            <a class="page-link" href="#" th:href="@{/game/list2(page=${gamePage.pageable.pageNumber + 1}, searchText=${searchText})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <script layout:fragment="script">
+        //삭제 버튼 클릭시 호출
+        const delElements = document.getElementsByClassName("delete");
+        Array.from(delElements).forEach(function(element){
+
+            element.addEventListener("click",function(){
+                if(confirm("삭제하시겠습니까?")){   //확인버튼을 클릭하면
+
+                    location.href=this.dataset.uri;
+
+                };
+            });
+        });
+    </script>
+    <script>
+        function searchGames() {
+          var searchText = document.getElementById('searchText').value;
+          window.location.href = '/game/list2?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+        }
+    </script>
+</div>
+</html>

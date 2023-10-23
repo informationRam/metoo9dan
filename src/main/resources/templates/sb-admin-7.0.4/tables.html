@@ -1,0 +1,107 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/game/styles.css" />
+    <script src="/js/game/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script src="/js/game/datatables-simple-demo.js"></script>
+    <script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Korean.json"></script>
+
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/game/gameSidebar::sidebar}"></div>
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+
+    <body class="sb-nav-fixed">
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">게임콘텐츠</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Tables</li>
+                        </ol>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                게임콘텐츠 목록
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple" class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                           <!-- <th>No.</th>-->
+                                            <th>썸네일</th>
+                                            <th>게임콘텐츠명</th>
+                                            <th>학습난이도</th>
+                                            <th>구독기간</th>
+                                            <th>구독가능인원</th>
+                                            <th>정가</th>
+                                            <th>할인율</th>
+                                            <th>판매가</th>
+                                            <th>등록일</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="game : ${gameList}">
+                                       <!-- &lt;!&ndash; 페이지 번호 &ndash;&gt;
+                                        <td class="game no"
+                                            th:text="${gamePage.getTotalElements() - (gamePage.getNumber() * gamePage.getSize()) - loop.index}"></td>-->
+                                        <!-- 이미지 (only the first image if available) -->
+                                        <td class="gameContents image">
+                                            <img th:if="${game != null and game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
+                                                 th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" alt="" width="100" height="100">
+                                        </td>
+
+                                        <!-- 게임 제목 -->
+                                        <td class="game title">
+                                            <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a>
+                                        </td>
+                                        <!-- 난이도 -->
+                                        <td class="game difficulty">
+                                            <span th:switch="${game.difficulty}">
+                                                <span th:case="'beginner'">초급</span>
+                                                <span th:case="'intermediate'">중급</span>
+                                                <span th:case="'advanced'">고급</span>
+                                            </span>
+                                        </td>
+                                        <!-- 구독기간 -->
+                                        <td class="game subscriptionDuration"
+                                            th:text="${game.subscriptionDuration}">
+                                        </td>
+                                        <!-- 구독가능인원 -->
+                                        <td class="game maxSubscribers"
+                                            th:text="|${game.maxSubscribers} 명|">
+                                        </td>
+                                        <!-- 정가 -->
+                                        <td class="game originalPrice">
+                                            <span th:text="${game.originalPrice <= 999 ? #numbers.formatInteger(game.originalPrice.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(game.originalPrice.intValue(), 3, 'COMMA') + '원'}"></span>
+                                        </td>
+                                        <!-- 할인율 -->
+                                        <td class="game discountRate"
+                                            th:text="|${game.discountRate}%|">
+                                        </td>
+                                        <!-- 판매가 -->
+                                        <td class="game salePrice">
+                                            <span th:text="${game.salePrice <= 999 ? #numbers.formatInteger(game.salePrice.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(game.salePrice.intValue(), 3, 'COMMA') + '원'}"></span>
+                                        </td>
+                                        <!-- 게임 등록일 -> 수정하면 날짜 변경. -->
+                                        <td class="game date">
+                                            <span th:text="${#temporals.format(game.creationDate,'yyyy-MM-dd HH:mm')}">
+                                        </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>
