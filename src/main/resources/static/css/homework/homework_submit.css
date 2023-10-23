@@ -106,14 +106,6 @@ transform: scale(1.1);
                     background-color: #ffeeba;
                 }
 
-.bs-modal-title {
-    font-size: 24px;       /* 글자 크기 조정 */
-    font-weight: bold;     /* 글자 굵기 설정 */
-    color: #333;           /* 글자 색상 설정 */
-    padding: 15px 0;       /* 상하 패딩으로 여백 추가 */
-    border-bottom: 2px solid #6bc957;  /* 아래쪽 테두리를 연두색으로 변경 */
-    margin-bottom: 20px;  /* 제목 아래로 여백 추가 */
-}
 
 /*책관련*/
         .book {
@@ -213,77 +205,7 @@ transform: scale(1.1);
 }
 
 /**/
-.homework-details {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 600px;
-    margin: auto;
-}
 
-.detail-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.detail-item label {
-    font-weight: bold;
-    margin-right: 20px;
-}
-
-.detail-item span {
-    flex-grow: 1;
-    border-bottom: 1px dashed #ccc;
-    padding: 0 10px;
-}
-
-.homework-submission {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 600px;
-    margin: auto;
-    margin-top: 20px;  /* 간격 조정을 위해 추가 */
-}
-
-.text-area-container {
-    margin-bottom: 20px;
-}
-
-.text-area-container textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    min-height: 100px;
-}
-
-.error-message {
-    color: red;
-    margin-top: 5px;
-    display: block;
-}
-
-.submit-button-container {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.submit-button-container button {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.submit-button-container button:hover {
-    background-color: #0056b3;
-}
 
 .pagination {
     padding-left: 0;
@@ -408,4 +330,100 @@ transform: scale(1.1);
     width: 500px;
     z-index: 1000;
     display: none;
+}
+/**/
+/* 숙제 상세 정보 스타일 */
+.homework-details,
+.detail-item {
+    padding: 12px;
+    border-bottom: 1px dashed #b3b3b3; /* 회색 계열의 점선 */
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item label {
+    font-weight: bold;
+    margin-right: 15px;
+    font-size: 0.95em;
+    color: #777; /* 회색 계열 */
+}
+
+.content-box {
+    background-color: #f1f1f1; /* 연한 회색 */
+    border: 1px solid #ccc; /* 회색 계열 */
+    padding: 10px;
+    margin-top: 7px;
+}
+
+.text-area-container {
+    margin-top: 12px;
+}
+
+.text-area-container label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+    color: #777;
+}
+
+textarea {
+    width: 100%;
+    height: 120px; /* 높이 값을 조정 */
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #b3b3b3; /* 회색 계열 */
+    background-color: #f8f8f8; /* 매우 연한 회색 */
+    resize: none; /* 늘리지 못하게 설정 */
+    border-radius: 5px;
+}
+
+.error-message {
+    color: #a5a5a5; /* 회색 계열 */
+    font-size: 0.8em;
+}
+
+.submit-button-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center; /* 추가된 코드 */
+}
+
+.celebration-modal {
+    background-color: #FFFAE5;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    max-width: 400px; /* 넓이를 더 크게 조정 */
+    margin: 20px auto;
+    padding: 20px; /* 추가 패딩으로 내용이 너무 가장자리에 붙지 않게 */
+}
+
+.bs-modal-header {
+    background-color: #FFD580;
+    padding: 10px 15px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex; /* Flexbox를 사용하여 요소를 수평으로 정렬 */
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+.bs-modal-title {
+    margin: 0;
+    color: #704214;
+}
+
+
+.celebration-icon {
+    width: 70px; /* 아이콘 크기 */
+    height: auto;
+}
+
+.celebration-text {
+    font-size: 1.1em; /* 텍스트 크기 증가 */
+    color: #704214; /* 갈색 계열의 텍스트 */
+    font-weight: bold; /* 볼드 스타일 */
+    margin-top: 10px;
 }

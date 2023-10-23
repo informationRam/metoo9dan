@@ -10,13 +10,13 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
 
-        <div style="border: 1px solid black;" class="col-10 px-3">
+        <div class="col-10 px-3">
             <div style="display:none;">
                 <button id="startButton"></button>
                 <button id="stopButton"></button>
             </div>
 
-            <div class="row justify-content-center">
+            <div class="row justify-content-center mt-5">
                 <div class="upperSection px-3">
                     <div class="nado-card">
                         <div class="nado-card-header">
@@ -121,7 +121,9 @@
                                 </div>
                                 <div class="detail-item">
                                     <label>숙제 내용:</label>
+                                    <div class="content-box">
                                     <span class="homework-content"></span>
+                                    </div>
                                 </div>
                                 <div class="detail-item">
                                     <label>교육자:</label>
@@ -151,7 +153,7 @@
                                     <textarea name="additionalQuestions" placeholder="추가 질의 사항을 입력하세요."></textarea>
                                 </div>
                                 <div class="submit-button-container">
-                                    <button type="submit">제출</button>
+                                    <button type="submit" class="btn btn-warning text-white mx-2">제출</button>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +179,7 @@
                             </div>
                             <div class="detail-item">
                                 <label>진도:</label>
-                                <span class="my-progress"></span>레벨
+                                <span class="my-progress"></span> 레벨
                             </div>
                             <div class="detail-item">
                                 <label>교육자:</label>
@@ -185,7 +187,9 @@
                             </div>
                             <div class="detail-item">
                                 <label>숙제 내용:</label>
-                                <span class="homework-content"></span>
+                                <div class="content-box">
+                                    <span class="homework-content"></span>
+                                </div>
                             </div>
                             <div class="detail-item">
                                 <label>제출 기한:</label>
@@ -200,22 +204,25 @@
                             <div class="homework-submission">
                                 <div class="detail-item">
                                     <label>진도:</label>
-                                    <span class="currentLevel"></span>레벨
+                                    <span class="currentLevel"></span> 레벨
                                 </div>
-                                <input type="hidden" name="homeworkNo"/>
-                                <input type="hidden" name="homeworkSubmitNo"/>
-                                <input type="hidden" name="sendNo"/>
+                                <input type="hidden" name="homeworkNo" />
+                                <input type="hidden" name="homeworkSubmitNo" />
+                                <input type="hidden" name="sendNo" />
                                 <div class="text-area-container">
-                                    <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                                    <label for="homeworkContent">숙제 내용:</label>
+                                    <textarea id="homeworkContent" name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
                                     <span id="homeworkEditContentError" class="error-message"></span>
                                 </div>
                                 <div class="text-area-container">
-                                    <textarea name="additionalQuestions" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                                    <label for="additionalQuestions">추가 질의 사항:</label>
+                                    <textarea id="additionalQuestions" name="additionalQuestions" placeholder="추가 질의 사항을 입력하세요."></textarea>
                                 </div>
                                 <div class="submit-button-container">
-                                    <button type="submit">수정</button>
-                                    <button type="button" id="deleteBtn">삭제</button>
+                                    <button type="submit" class="btn btn-warning text-white mx-2">수정</button>
+                                    <button type="button" id="deleteBtn" class="btn btn-outline-secondary mx-2">삭제</button>
                                 </div>
+
                             </div>
                         </form>
                     </div>
@@ -223,15 +230,16 @@
             </div>
 
 
-            <div id="successModal" class="naod-modal">
+            <div id="successModal" class="naod-modal celebration-modal">
                 <div class="bs-modal-header">
-                    <h5 class="bs-modal-title">제출 성공!</h5>
+                    <h5 class="bs-modal-title">🎉 제출 성공! 🎉</h5>
                 </div>
-                    <div class="groupMessage mb-3 text-center">
-                        <img src="/css/homework/searchNoneIcon.png" alt="Group Icon" class="mb-2">
-                        <div>나도 구단이 될 수 있다!!</div>
-                    </div>
+                <div class="groupMessage mb-3 text-center">
+                    <img src="/css/homework/goodanIcon.png" alt="Group Icon" class="celebration-icon mb-2">
+                    <div class="celebration-text">나도 구단이 될 수 있다!!</div>
+                </div>
             </div>
+
             <div id="hw-backdrop"></div>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
             <script src="https://tistory4.daumcdn.net/tistory/3134841/skin/images/confetti_v2.js"></script>
@@ -394,7 +402,10 @@
                     homeworkUpdateTableDisplay();
                 });
 
-
+                function formatDate(inputDate) {
+                    const parts = inputDate.split("T")[0].split("-");
+                    return parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일";
+                }
               function loadForm(element) {
                   let hwSendNo = element.getAttribute("data-send-no");
                   let isSubmitted = element.classList.contains("nado-table-success");
@@ -409,17 +420,17 @@
                           document.querySelector(".submit-form input[name='sendNo']").value = data.sendNo;
 
                           document.querySelector(".submit-form span.homework-title").textContent = data.homeworkTitle;
-                          document.querySelector(".submit-form span.homework-content").textContent = data.homeworkContent;
+                          document.querySelector(".submit-form span.homework-content").innerHTML = data.homeworkContent.replace(/\n/g, '<br>');
                           document.querySelector(".submit-form span.member-name").textContent = data.memberName;
                           document.querySelector(".submit-form span.game-title").textContent = data.gameTitle;
                           document.querySelector(".submit-form span.my-progress").textContent = data.progress;
-                          document.querySelector(".submit-form span.due-date").textContent = data.dueDate;
+                          document.querySelector(".submit-form span.due-date").textContent = formatDate(data.dueDate);
                           document.querySelector(".edit-form span.homework-title").textContent = data.homeworkTitle;
-                          document.querySelector(".edit-form span.homework-content").textContent = data.homeworkContent;
+                          document.querySelector(".edit-form span.homework-content").innerHTML = data.homeworkContent.replace(/\n/g, '<br>');
                           document.querySelector(".edit-form span.member-name").textContent = data.memberName;
                           document.querySelector(".edit-form span.game-title").textContent = data.gameTitle;
                           document.querySelector(".edit-form span.my-progress").textContent = data.progress;
-                          document.querySelector(".edit-form span.due-date").textContent = data.dueDate;
+                          document.querySelector(".edit-form span.due-date").textContent = formatDate(data.dueDate);
 
                           document.querySelector(".edit-form span.currentLevel").textContent = data.progress;
                           document.querySelector(".submit-form span.currentLevel").textContent = data.progress;
@@ -468,8 +479,8 @@
 
                         $(".edit-form").one('animationend', function() {
                             $('.edit-form').hide().removeClass('animate__animated animate__zoomOut');
+                            $("#firstBottom").show();
                         });
-                        $("#firstBottom").show();
                    });
 
                    $('.submitIndex').click(function() {
@@ -477,8 +488,8 @@
 
                         $(".submit-form").one('animationend', function() {
                             $('.submit-form').hide().removeClass('animate__animated animate__zoomOut');
+                            $("#firstBottom").show();
                         });
-                        $("#firstBottom").show();
                     });
                 });
 

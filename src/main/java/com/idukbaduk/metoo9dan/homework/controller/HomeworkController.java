@@ -430,39 +430,55 @@ public class HomeworkController {
     //--지난 숙제 제출내용 조회 --------------------------------------------------------------------------------------------
 
     /*
-    게임 컨텐츠 드롭다운을 제공하고
-    게임 컨텐츠를 선택하면 해당 게임 컨텐츠에 대해서 제출한 숙제가 보여진다
-    처음 화면에서는 게임 컨텐츠를 선택하기 전에는(첫 로드 시) 모든 숙제가 보여진다
+모든 숙제 제출 내역에 대해서 카드 형식으로 페이지 네이션이 있도록 제공한다
     */
-
     @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/submit/past")
-    public String pastHw(Model model, Principal principal){
-        List<String> gameContents = homeworkService.findGameContentTitlesByMemberId(principal.getName()); // 모든 게임 컨텐츠를 가져옵니다.
-        model.addAttribute("gameContents", gameContents); // 뷰에 게임 컨텐츠 데이터를 전달합니다.
+    public String pastHw(
+            Model model,
+            Principal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(defaultValue = "desc") String sort
+    ) {
+        //1. homeworkService찾기
+        //List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sd);
+        List<HomeworkSubmit> homeworkSubmitList =homeworkService.findSubmitsByMemberId(principal.getName());
+        //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
+        List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTOWithSubmits(homeworkSubmitList);
+
+        //페이지네이션
+        Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("dueDate").ascending() : Sort.by("dueDate").descending());
+        Page<HwSendSubmitDTO> submitDTOPage = new PageImpl<>(submitDTO, pageable, submitDTO.size());
+        model.addAttribute("submitDTOPage", submitDTOPage);
+        model.addAttribute("formatter", DateTimeFormatter.ofPattern("yyyy/MM/dd"));
         return "homework/homework_pastHw";
     }
 
-    //제출내역
-    @PreAuthorize("hasAuthority('EDUCATOR')")
-    @GetMapping("/submit/past-list")
-    public ResponseEntity<?> getHomeworksResults(
+    @PreAuthorize("hasAuthority('STUDENT')")
+    @GetMapping("/submit/submit-list")
+    public ResponseEntity<?> viewEval(/*homeworkNo SendDate SendNo*/
             Principal principal,
-            @RequestParam String gameTitle,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "asc") String sort
     ) {
         page-=1;
+
+
         //1. homeworkService찾기
-        List<HomeworkSend> homeworkSendList = homeworkService.findAllByGameTitleAndMemberId(gameTitle,principal.getName());
+        //List<HomeworkSend> homeworkSendList =homeworkService.findAllBySendDateAndHomeworks_HomeworkNo(homeworkNo,sd);
+        List<HomeworkSubmit> homeworkSubmitList =homeworkService.findSubmitsByMemberId(principal.getName());
         //DTO순환하면서 homeworkSubmit 찾고, 없으면 혼자 DTO변환 있으면 같이 DTO변환해서 리스트에 추가
-        List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTO(homeworkSendList);
+        List<HwSendSubmitDTO> submitDTO = homeworkService.toSubmitDTOWithSubmits(homeworkSubmitList);
+
         //페이지네이션
         Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("dueDate").ascending() : Sort.by("dueDate").descending());
         Page<HwSendSubmitDTO> submitDTOPage = new PageImpl<>(submitDTO, pageable, submitDTO.size());
+
         //결과로 반환
         return ResponseEntity.ok(submitDTOPage);
     }
+
 
 }
