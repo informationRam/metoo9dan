@@ -12,69 +12,81 @@
             <div class="py-2">
                 <div>
                     <div id="noticeHeader"> <!--글상세 헤더정보-->
-                        <a th:if="${notice.noticeType.equals('noti')}" th:text="공지"></a>
-                        <a th:if="${!notice.noticeType.equals('noti')}" th:text="자주묻는질문"></a>
-                        <a th:text="${notice.status}">상태</a><br/><!--운영관리자한테만-->
-                        <h4 th:text="${notice.noticeTitle}">제목</h4><hr/>
-                        <a th:text="|작성자: ${notice.member.memberId}|">작성자</a>
-                        <a th:text="|작성일: ${#temporals.format(notice.writeDate, 'yyy-MM-dd HH:mm')}|">작성일</a><!--운영관리자한테만-->
-                        <a th:text="|게시일: ${#temporals.format(notice.postDate, 'yyy-MM-dd HH:mm')}|">게시일</a>
-                        <a th:text="|조회수: ${notice.readCnt}|">조회수</a>
+                        <span th:if="${notice.noticeType.equals('noti')}" class="badge text-bg-light" th:text="공지"></span>
+                        <span th:if="${!notice.noticeType.equals('noti')}" class="badge text-bg-light" th:text="자주묻는질문"></span>
+                        <span th:if="${memberRole == 'ADMIN' and notice.status == 'post'}" class="badge text-bg-success">게시</span>
+                        <span th:if="${memberRole == 'ADMIN' and notice.status != 'post'}" class="badge text-bg-danger">예약</span><br/><!--운영관리자한테만-->
+                        <h4 class="mt-2" th:text="${notice.noticeTitle}">제목</h4><hr/>
+                        <div class="d-flex justify-content-between form-text">
+                            <div>
+                                <p th:text="|작성자: ${notice.member.memberId}|">작성자</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="mx-2" th:if="${memberRole}==ADMIN" th:text="|작성일: ${#temporals.format(notice.writeDate, 'yyy-MM-dd HH:mm')}|">작성일</p><!--운영관리자한테만-->
+                                <p class="mx-2" th:text="|게시일: ${#temporals.format(notice.postDate, 'yyy-MM-dd')}|">게시일</p>
+                                <svg class="form-text mx-1" style="fill: gray;" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512"><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/></svg>
+                                <p th:text="${notice.readCnt}">조회수</p>
+                            </div>
+                        </div>
+
                         <input type="hidden" th:value="${notice.noticeNo}">
                     </div>
-                    <div id="attachFiles" th:each="file : ${filesList}"><!--첨부파일 있으면 여기에 추가-->
+                    <div class="d-flex justify-content-end form-text" id="attachFiles" th:each="file : ${filesList}"><!--첨부파일 있으면 여기에 추가-->
                         <label th:for="|id${file.originFileName}|">
-                            <svg th:if="${file}!=null" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M21.586 10.461l-10.05 10.075c-1.95 1.949-5.122 1.949-7.071 0s-1.95-5.122 0-7.072l10.628-10.585c1.17-1.17 3.073-1.17 4.243 0 1.169 1.17 1.17 3.072 0 4.242l-8.507 8.464c-.39.39-1.024.39-1.414 0s-.39-1.024 0-1.414l7.093-7.05-1.415-1.414-7.093 7.049c-1.172 1.172-1.171 3.073 0 4.244s3.071 1.171 4.242 0l8.507-8.464c.977-.977 1.464-2.256 1.464-3.536 0-2.769-2.246-4.999-5-4.999-1.28 0-2.559.488-3.536 1.465l-10.627 10.583c-1.366 1.368-2.05 3.159-2.05 4.951 0 3.863 3.13 7 7 7 1.792 0 3.583-.684 4.95-2.05l10.05-10.075-1.414-1.414z"/></svg>
+                            <svg th:if="${file}!=null" xmlns="http://www.w3.org/2000/svg" width="1em" viewBox="0 0 24 24"><path d="M21.586 10.461l-10.05 10.075c-1.95 1.949-5.122 1.949-7.071 0s-1.95-5.122 0-7.072l10.628-10.585c1.17-1.17 3.073-1.17 4.243 0 1.169 1.17 1.17 3.072 0 4.242l-8.507 8.464c-.39.39-1.024.39-1.414 0s-.39-1.024 0-1.414l7.093-7.05-1.415-1.414-7.093 7.049c-1.172 1.172-1.171 3.073 0 4.244s3.071 1.171 4.242 0l8.507-8.464c.977-.977 1.464-2.256 1.464-3.536 0-2.769-2.246-4.999-5-4.999-1.28 0-2.559.488-3.536 1.465l-10.627 10.583c-1.366 1.368-2.05 3.159-2.05 4.951 0 3.863 3.13 7 7 7 1.792 0 3.583-.684 4.95-2.05l10.05-10.075-1.414-1.414z"/></svg>
                             <a th:if="${file}!=null"
                                th:href="@{|/notice/download?fileName=${file.fileUrl}/${file.copyFileName}_${file.originFileName}|}" th:id="|id${file.originFileName}|">
                                 <span th:text="${file.originFileName}"></span>
                             </a>
                         </label>
                     </div>
-                    <div th:text="${notice.noticeContent}" style="white-space: pre;">내용</div>
+                    <div th:text="${notice.noticeContent}" class="p-2" style="white-space: pre;">내용</div>
                     <!--글 작성자만 수정 삭제 버튼 보여져야 함-->
-                    <div sec:authorize="isAuthenticated()"
+                    <div class="d-flex justify-content-end"
+                         sec:authorize="isAuthenticated()"
                          th:if="${ notice.member!=null and #authentication.getPrincipal().getUsername()==notice.member.memberId }">
-                        <a th:href="@{|/notice/modify/${noticeNo}|}" class="btn btn-secondary">수정</a>
+                        <a th:href="@{|/notice/modify/${noticeNo}|}" class="btn btn-sm btn-outline-secondary mx-2">수정</a>
                         <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.noticeNo}|}"
-                           class="delete btn btn-outline-danger"
-                           th:text="삭제">
+                           class="btn btn-sm btn-outline-secondary"
+                           th:text="삭제">삭제
                         </a>
                     </div>
                 </div>
                 <hr/>
                 <!--댓글 등록 폼-->
-                <form id="replyForm" sec:authorize="isAuthenticated()"  th:object="${noticeReplyForm}" th:action="@{|/reply/add/${notice.noticeNo}|}" method="post">
+                <form id="replyForm" sec:authorize="isAuthenticated()"  th:object="${noticeReplyForm}" th:action="@{|/reply/add/${notice.noticeNo}|}" method="post" class="mb-3">
                     <div th:replace="~{form_errors::formErrorsFragment}"></div>
                     <div class="d-flex justify-content-around">
-                        <textarea th:field="*{content}" rows="2" class="form-control"></textarea>
-                        <input type="submit" value="댓글 등록" class="btn btn-primary">
+                        <textarea th:field="*{content}" rows="2" class="form-control mx-2"></textarea>
+                        <input type="submit" value="댓글 등록" class="btn btn-warning text-white mx-2">
                     </div>
                 </form>
                 <!--댓글개수 출력-->
-                <h6 th:text="|${#lists.size(notice.noticeReplies)}개의 댓글|"></h6>
+                <h6 class="mb-3 form-text" th:text="|${#lists.size(notice.noticeReplies)}개의 댓글|"></h6>
+
                 <!--댓글목록 시작-->
-                <div class="card" th:each="reply : ${notice.noticeReplies}" th:id="|replyWrapNo${reply.noticeReplyNo}|">
+                <div class="card mb-3" th:each="reply : ${notice.noticeReplies}" th:id="|replyWrapNo${reply.noticeReplyNo}|">
                     <div class="card-body" th:id="|replyNo${reply.noticeReplyNo}|">
                         <div class="d-flex justify-content-between">
-                            <span class="badge bg-primary p-2 text-start" th:text="${reply.member.memberId}">작성자</span>
+                            <span class="badge bg-warning p-2 text-start" th:text="${reply.member.memberId}">작성자</span>
                             <span class="badge bg-light text-dark p-2 text-start" th:text="${#temporals.format(reply.writeDate, 'yyyy-MM-dd HH:mm')}">작성일</span>
                         </div>
-                        <div class="card-text" th:text="${reply.content}" style="white-space: pre;">댓글내용</div>
+                        <div class="card-text p-2" th:text="${reply.content}" style="white-space: pre;">댓글내용</div>
                         <div class="d-flex justify-content-end">
-                            <a th:id="|replyModify${reply.noticeReplyNo}|" class="btn btn-sm btn-secondary"
+                            <a th:id="|replyModify${reply.noticeReplyNo}|" class="btn btn-sm btn-outline-secondary mx-2"
                                sec:authorize="isAuthenticated()"
                                th:if="${ reply.member!=null and #authentication.getPrincipal().getUsername()==reply.member.memberId }">수정</a>
-                            <a href="javascript:void(0);" class="delete btn btn-sm btn-outline-danger"
+                            <a href="javascript:void(0);" class="delete btn btn-sm btn-outline-secondary"
                                th:data-uri="@{|/reply/delete/${reply.noticeReplyNo}|}"
                                sec:authorize="isAuthenticated()"
                                th:if="${ reply.member!=null and #authentication.getPrincipal().getUsername()==reply.member.memberId or memberRole=='ADMIN'}"
-                               th:text="삭제">
+                               th:text="삭제">삭제
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
+
 
         </div><!--콘텐츠영역끝-->
     </div><!--row-->

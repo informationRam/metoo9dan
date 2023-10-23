@@ -1,6 +1,84 @@
-<nav th:fragment="navbarFragment" >
-    <div layout:fragment="navbar" class="container-fluid">
-        <div class="d-flex justify-content-between mt-2">
+<nav th:fragment="navbarFragment">
+    <div layout:fragment="navbar" class="">
+        <div class="header-area header-sticky">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <nav class="main-nav">
+                            <!-- ***** Logo Start ***** -->
+                            <a th:href="@{/}" class="logo pl-2">
+                                <img src="/image/nadoLogo3.png" width="200px;" class="">
+                            </a>
+                            <!-- ***** Logo End ***** -->
+                            <!-- ***** Menu Start ***** -->
+                            <ul class="nav">
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">이용안내</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/#service}">사이트 소개</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/#meetings}">상품소개</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/#guide}">이용가이드</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/notice/list}">공지사항</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/notice/faq}">자주묻는질문</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/qna/list}">문의사항</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">구독서비스</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/game/alllist}">게임콘텐츠 구매</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/payments/list}">내 게임콘텐츠 조회</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">학습서비스</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/groupJoinList}">학습그룹 가입신청</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/joinConfirm}">학습그룹 가입확인</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/submit}">숙제 제출</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">교육자마당</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/gameList}">학습그룹 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/list}">학습그룹 조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/approveList}">학습그룹 가입 승인</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/add}">숙제 생성</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/send}">숙제 전송</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/evaluate}">숙제 평가</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">운영자마당</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/game/addForm}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
+                                        <li>
+                                            <a class="dropdown-item" th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a>
+                                        </li>
+                                        <li><a class="dropdown-item" th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{#}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
+                                    </ul>
+                                </li>
+
+                                <li><a th:href="@{/member/login}" sec:authorize="isAnonymous()" class="active me-sm-2"> login/join</a></li>
+                                <li><a th:href="@{/logout}" sec:authorize="isAuthenticated()" class="active me-sm-2"> logout</a></li>
+                            </ul>
+                            <a class='menu-trigger'>
+                                <span>Menu</span>
+                            </a>
+                            <!-- ***** Menu End ***** -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="d-flex justify-content-between mt-2">
             <div class="col-2">
                 <a th:href="@{/}" ><img src="/image/nadoLogo3.png" width="200px;" class="pl-2"></a>
             </div>
@@ -62,74 +140,7 @@
                     <li><a class="dropdown-item" th:href="@{/admin/listMember}">회원관리</a></li>
                 </ul>
             </li>
-        </ul>
-
-        <!--<a class="navbar-brand" th:href="@{/}"><img src="/image/nadoLogo2.png" style="width:150px;"></a>
-        &lt;!&ndash;반응형, 햄버거 메뉴&ndash;&gt;
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarColor02">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">이용안내</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">사이트 소개</a>
-                        <a class="dropdown-item" href="#">이용가이드</a>
-                        <a class="dropdown-item" href="#">상품소개</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" th:href="@{/notice/list}">공지사항</a>
-                        <a class="dropdown-item" th:href="@{/notice/faq}">자주묻는질문</a>
-                        <a class="dropdown-item" th:href="@{/qna/list}">문의사항</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">구독서비스</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" th:href="@{/game/alllist}">게임콘텐츠 구매</a>
-                        <a class="dropdown-item" th:href="@{/payments/list}">내 게임콘텐츠 조회</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">학습서비스</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" th:href="@{/studygroup/groupJoinList}">학습그룹 가입[학생](학습그룹 가입신청)</a>
-                        <a class="dropdown-item" th:href="@{/studygroup/joinConfirm}">학습그룹 가입확인[학생]</a>
-                        <a class="dropdown-item" th:href="@{/homework/submit}">숙제 제출(숙제진도등록)</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">교육자마당</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" th:href="@{/studygroup/gameList}">학습그룹 등록[교육자]</a>
-                        <a class="dropdown-item" th:href="@{/studygroup/list}">학습그룹 리스트[교육자](학습그룹 조회)</a>
-                        <a class="dropdown-item" th:href="@{/studygroup/approveList}">학습그룹 신청 리스트[교육자](학습그룹 가입 승인)</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" th:href="@{/homework/add}">숙제 생성</a></a>
-                        <a class="dropdown-item" th:href="@{/homework/send}">숙제 전송</a>
-                        <a class="dropdown-item" th:href="@{/homework/evaluate}">숙제 평가(숙제 학습진도 조회)</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">운영마당</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" th:href="@{/game/addForm}">게임콘텐츠 등록</a>
-                        <a class="dropdown-item" th:href="@{/game/list}">게임콘텐츠 조회</a>
-                        <a class="dropdown-item" th:href="@{/education/addForm}">교육자료 등록</a>
-                        <a class="dropdown-item" th:href="@{/education/list}">교육자료 조회</a>
-                        <a class="dropdown-item" th:href="@{/notice/list}">공지 및 FAQ 등록</a>
-                        <a class="dropdown-item" th:href="@{/qna/list}">QnA 답변 등록</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">매출조회</a>
-                        <a class="dropdown-item" th:href="@{/admin/listMember}">회원관리</a>
-                    </div>
-                </li>
-            </ul>
-            <div class="d-flex">
-                <a th:href="@{/member/login}" sec:authorize="isAnonymous()" class="me-sm-2"> 로그인&회원가입</a>
-                <a th:href="@{/logout}" sec:authorize="isAuthenticated()" class="me-sm-2"> 로그아웃</a>
-            </div>
-        </div>-->
+        </ul>-->
     </div>
 
 </nav>
