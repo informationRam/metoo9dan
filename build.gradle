@@ -70,6 +70,8 @@ dependencies {
 	// 메일발송
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	testImplementation 'junit:junit:4.13.1'
+	//Redis추가
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	//BR: quartz
 	implementation 'org.quartz-scheduler:quartz:2.3.2'

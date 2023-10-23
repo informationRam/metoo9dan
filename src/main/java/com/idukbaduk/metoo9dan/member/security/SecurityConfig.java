@@ -30,7 +30,7 @@ import java.io.IOException;
 @EnableWebSecurity  // 모든 요청 url이 스프링 시큐리티의 제어를 받도록 만든다.
 public class SecurityConfig {
 
-    private final UserSecurityService userSecurityService;
+    private final UserSecurityService userDetailsService;
 
     //UserSecurityService와 PasswordEncoder가 자동으로 설정
     @Bean
@@ -64,20 +64,27 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf().disable()
-            .authorizeHttpRequests()
-                //.requestMatchers( new AntPathRequestMatcher("/member/mypage")).hasRole("STUDENT")
-                .requestMatchers( new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
-                .requestMatchers( new AntPathRequestMatcher("/edu/**")).hasRole("EDUCATOR")
-                .requestMatchers(new AntPathRequestMatcher("/member/join#pills-register")).denyAll() //로그인 후 회원가입접근불가
+        http.csrf().disable();
+        http.authorizeHttpRequests((authorize) -> authorize
+                //.requestMatchers("/member/**").authenticated() //로그인 인증받은 회원만 접근가능
+                .requestMatchers("/student/**").hasAuthority("STUDENT")
+                .requestMatchers( "/admin/**").hasAuthority("ADMIN")
+                .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
+                .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
                 //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
                 .anyRequest().permitAll()
-
-        .and()
-             .formLogin()
+                );
+//        http
+//                .sessionManagement()
+//                .sessionFixation()
+//                .migrateSession() // 세션 변조 공격 방지
+//                .invalidSessionUrl("/logout") // 세션 만료 시 리디렉션할 URL
+//                .maximumSessions(1) // 한 사용자당 최대 1개의 세션 허용 (동시 다중 로그인 방지)
+//                .maxSessionsPreventsLogin(false); // 다른 장치에서 로그인하면 이전 세션 만료
+        http.
+             formLogin()
                   .loginPage("/member/login")               // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
-                  .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지
+                  .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지 :/loginSuccess
                   .permitAll()                              //인증받지 않아도 모두 접근가능:없으면 무한루프생김
                   .failureUrl("/member/login")              // 로그인 실패 후 이동 페이지
                   .usernameParameter("memberId")                   // 아이디 파라미터명 설정
@@ -92,23 +99,16 @@ public class SecurityConfig {
                 .failureHandler(new AuthenticationFailureHandler() {
                     @Override
                     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                        System.out.println("exception" + exception.getMessage());  //인증 실패 메세지 출력
+                        System.out.println("exception" + exception.getMessage());  //인증 실패 메세지 출력(콘솔)
                         response.sendRedirect("/member/login");  // 로그인 실패 후 이동 페이지
                     }
                 });
 
-
         http
                 .logout()
-                .logoutUrl("/logout");
-//                .logoutSuccessUrl("/")
-//                .addLogoutHandler(new LogoutHandler() {
-//                    @Override
-//                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-//                        HttpSession session = request.getSession();
-//                        session.invalidate();
-//                    }
-//                })
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/");
+
 //        // RememberMe
 //        .and()
 //                .rememberMe()
@@ -116,20 +116,6 @@ public class SecurityConfig {
 //                .tokenValiditySeconds(3600) //1시간
 //                .userDetailsService(userDetailsService); //Autowired
 
-//        //d예외처리
-//        http.exceptionHandling()
-//                .authenticationEntryPoint(new AuthenticationEntryPoint() {
-//                    @Override
-//                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-//
-//                    }
-//                })
-//                .accessDeniedHandler(new AccessDeniedHandler() {
-//                    @Override
-//                    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-//                        response.sendRedirect("/denied");
-//                    }
-//                });
 
         return http.build();
 

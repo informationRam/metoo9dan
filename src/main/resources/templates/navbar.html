@@ -60,7 +60,7 @@
                                             <a class="dropdown-item" th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a>
                                         </li>
                                         <li><a class="dropdown-item" th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
-                                        <li><a class="dropdown-item" th:href="@{#}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/payments/showPayments}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
                                         <li><a class="dropdown-item" th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
                                     </ul>
                                 </li>
@@ -77,87 +77,7 @@
                 </div>
             </div>
         </div>
-
-        <!--<div class="d-flex justify-content-between mt-2">
-            <div class="col-2">
-                <a th:href="@{/}" ><img src="/image/nadoLogo3.png" width="200px;" class="pl-2"></a>
-            </div>
-
-                <a th:href="@{/member/login}" sec:authorize="isAnonymous()" class="me-sm-2"> 로그인&회원가입</a>
-                <a th:href="@{/logout}" sec:authorize="isAuthenticated()" class="me-sm-2"> 로그아웃</a>
-        </div>
-        <ul class="nav nav-underline d-flex justify-content-evenly my-3">
-            <li class="nav-item dropdown">
-                <a class="nav-link" aria-current="page" href="#" id="menu1" data-bs-toggle="dropdown" aria-expanded="false">이용안내</a>
-                <ul class="dropdown-menu" aria-labelledby="menu1">
-                    <li><a class="dropdown-item" href="#">사이트 소개</a></li>
-                    <li><a class="dropdown-item" href="#">이용가이드</a></li>
-                    <li><a class="dropdown-item" href="#">상품소개</a></li>
-                    <div class="dropdown-divider"></div>
-                    <li><a class="dropdown-item" th:href="@{/notice/list}">공지사항</a></li>
-                    <li><a class="dropdown-item" th:href="@{/notice/faq}">자주묻는질문</a></li>
-                    <li><a class="dropdown-item" th:href="@{/qna/list}">문의사항</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#" id="menu2" data-bs-toggle="dropdown" aria-expanded="false">구독서비스</a>
-                <ul class="dropdown-menu" aria-labelledby="menu2">
-                    <li><a class="dropdown-item" th:href="@{/game/alllist}">게임콘텐츠 구매</a></li>
-                    <li><a class="dropdown-item" th:href="@{/payments/list}">내 게임콘텐츠 조회</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#" id="menu3" data-bs-toggle="dropdown" aria-expanded="false">학습서비스</a>
-                <ul class="dropdown-menu" aria-labelledby="menu3">
-                    <li><a class="dropdown-item" th:href="@{/studygroup/groupJoinList}">학습그룹 가입[학생](학습그룹 가입신청)</a></li>
-                    <li><a class="dropdown-item" th:href="@{/studygroup/joinConfirm}">학습그룹 가입확인[학생]</a></li>
-                    <li><a class="dropdown-item" th:href="@{/homework/submit}">숙제 제출(숙제진도등록)</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#" id="menu4" data-bs-toggle="dropdown" aria-expanded="false">교육자마당</a>
-                <ul class="dropdown-menu" aria-labelledby="menu4">
-                    <li><a class="dropdown-item" th:href="@{/studygroup/gameList}">학습그룹 등록[교육자]</a></li>
-                    <li><a class="dropdown-item" th:href="@{/studygroup/list}">학습그룹 리스트[교육자](학습그룹 조회)</a></li>
-                    <li><a class="dropdown-item" th:href="@{/studygroup/approveList}">학습그룹 신청 리스트[교육자](학습그룹 가입 승인)</a></li>
-                    <div class="dropdown-divider"></div>
-                    <li><a class="dropdown-item" th:href="@{/homework/add}">숙제 생성</a></li>
-                    <li><a class="dropdown-item" th:href="@{/homework/send}">숙제 전송</a></li>
-                    <li><a class="dropdown-item" th:href="@{/homework/evaluate}">숙제 평가(숙제 학습진도 조회)</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#" id="menu5" data-bs-toggle="dropdown" aria-expanded="false">운영마당</a>
-                <ul class="dropdown-menu" aria-labelledby="menu5">
-                    <li><a class="dropdown-item" th:href="@{/game/addForm}">게임콘텐츠 등록</a></li>
-                    <li><a class="dropdown-item" th:href="@{/game/list}">게임콘텐츠 조회</a></li>
-                    <li><a class="dropdown-item" th:href="@{/education/addForm}">교육자료 등록</a></li>
-                    <li><a class="dropdown-item" th:href="@{/education/list}">교육자료 조회</a></li>
-                    <li><a class="dropdown-item" th:href="@{/notice/list}">공지 및 FAQ 등록</a></li>
-                    <li><a class="dropdown-item" th:href="@{/qna/list}">QnA 답변 등록</a></li>
-                    <div class="dropdown-divider"></div>
-                    <li><a class="dropdown-item" href="/payments/showPayments">매출조회</a></li>
-                    <li><a class="dropdown-item" th:href="@{/admin/listMember}">회원관리</a></li>
-                </ul>
-            </li>
-        </ul>-->
     </div>
 
 </nav>
-<div layout:fragment="script">
-    <script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        var dropdowns = document.querySelectorAll('.nav-item.dropdown');
-
-        dropdowns.forEach(function (dropdown) {
-            dropdown.addEventListener('mouseover', function () {
-                dropdown.querySelector('.dropdown-menu').classList.add('show');
-            });
-
-            dropdown.addEventListener('mouseout', function () {
-                dropdown.querySelector('.dropdown-menu').classList.remove('show');
-            });
-        });
-    });
-</script>
-</div>
+</nav>

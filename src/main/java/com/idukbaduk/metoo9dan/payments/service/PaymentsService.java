@@ -5,7 +5,7 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Payments;
 import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
 import com.idukbaduk.metoo9dan.game.service.GameService;
-import com.idukbaduk.metoo9dan.payments.reprository.PaymentsRepository;
+import com.idukbaduk.metoo9dan.payments.repository.PaymentsRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
