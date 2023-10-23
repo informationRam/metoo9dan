@@ -24,8 +24,8 @@
                           </div>
                           <div class="col">
                             <div class="input-group">
-                              <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
-                              <button class="btn btn-primary" type="button" onclick="searchGames()">검색</button>
+                              <input type="text" class="form-control form-control-sm" id="searchText" placeholder="게임명을 검색해주세요" th:value="${searchText}">
+                              <button class="btn btn-warning" type="button" onclick="searchGames()">검색</button>
                             </div>
                           </div>
                         </div>
@@ -50,7 +50,17 @@
                                           </span>
                                         </p>
                                         <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration}"></span></p>
-                                        <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
+                                        <p class="card-text"><strong>구독가능인원:</strong> <span th:text="${game.maxSubscribers}"></span></p>
+                                        <p class="card-text"><strong>포함된 교육자료:</strong>
+                                        <span th:if="${#lists.size(game.educationalResourcesList) > 0}">
+                                            <span th:each="resource, iterStat : ${game.educationalResourcesList}">
+                                                <span th:text="${resource.resourceName}"></span>
+                                                <span th:if="${!iterStat.last}">, </span>
+                                            </span>
+                                        </span>
+                                        <span th:unless="${#lists.size(game.educationalResourcesList) > 0}">없음</span>
+                                      </p>
+                                      <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
                                         <p class="card-text">
                                         <span th:text="${#strings.length(game.packageDetails) > 50 ? #strings.substring(game.packageDetails, 0, 50) + '...' : game.packageDetails}"
                                                 data-toggle="popover" data-content="${game.packageDetails}"
@@ -121,8 +131,8 @@
       </div>
     </div>
   </div>
-  <script>
- // !!----------- 체크 박스 선택할 때 발생되는 이벤트
+<!--  <script>
+ // !!-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; 체크 박스 선택할 때 발생되는 이벤트
 var checkboxes = document.querySelectorAll('input[type="checkbox"]');
 var selectedGameContentNos = JSON.parse(sessionStorage.getItem("selectedGameContentNos")) || [];  // 게임 번호
 var selectedSalePrices = JSON.parse(sessionStorage.getItem("selectedSalePrices")) || []; // salePrice
@@ -187,29 +197,37 @@ checkboxes.forEach(function (checkbox) {
     });
 });
 
-// 페이지 로드 시 선택된 항목과 salePrice를 복원합니다.
-function restoreSelectedItems() {
-    checkboxes.forEach(function (checkbox) {
-        var gameContentNo = checkbox.value;
-        if (selectedGameContentNos.includes(gameContentNo)) {
-            checkbox.checked = true;
-            // 이미 선택된 항목의 가격을 "total" 변수에 더합니다.
-            total += parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
-        }
-    });
-     // 합계를 HTML 요소에 업데이트
-    if (totalPriceElement) {
-        totalPriceElement.innerText = total + " 원";
-    }
-}
-
 // 페이지 로드 이벤트에 복원 함수를 연결합니다.
 window.addEventListener("load", restoreSelectedItems);
+// 페이지 로드 시 선택된 항목과 salePrice를 복원합니다.
+function restoreSelectedItems() {
+  var selectedGameContentNos = JSON.parse(sessionStorage.getItem("selectedGameContentNos")) || [];
+  var selectedSalePrices = JSON.parse(sessionStorage.getItem("selectedSalePrices")) || [];
+  var totalPriceElement = document.getElementById("totalPrice");
+
+  if (selectedGameContentNos.length > 0) {
+    // 페이지의 체크박스 초기화
+    checkboxes.forEach(function (checkbox) {
+      if (selectedGameContentNos.includes(checkbox.value)) {
+        checkbox.checked = true;
+      }
+    });
+
+    // 총 합계 계산
+    var total = selectedSalePrices.reduce(function (acc, price) {
+      return acc + price;
+    }, 0);
+
+    if (totalPriceElement) {
+      totalPriceElement.innerText = total + " 원";
+    }
+  }
+}
 
   </script>
 <script>
 
-  //----------- 결제하기 버튼 누를때 실행
+  //-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; 결제하기 버튼 누를때 실행
     function subscribe() {
         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
         var selectedGameContentNos = JSON.parse(sessionStorage.getItem("selectedGameContentNos")) || []; // 기존에 저장된 값 또는 빈 배열
@@ -232,7 +250,7 @@ window.addEventListener("load", restoreSelectedItems);
         document.getElementById("nadopayment").submit();
       }
 
-  //----------- 페이지네이션시 값을 다시 불러온다.
+  //-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; 페이지네이션시 값을 다시 불러온다.
     window.onload = function () {
     var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
     var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
@@ -265,182 +283,132 @@ window.addEventListener("load", restoreSelectedItems);
 };
 
 
-</script>
-
-
-  <!--    <script>
-     function subscribe() {
-       var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-       var atLeastOneSelected = false;
-
-       checkboxes.forEach(function (checkbox) {
-         if (checkbox.checked) {
-           atLeastOneSelected = true;
-         }
-       });
-
-       if (atLeastOneSelected) {
-         document.getElementById("nadopayment").submit();
-       } else {
-         alert("선택한 상품이 없습니다.");
-       }
-     }
-  </script>-->
-  <!--<script>
-    function subscribe() {
-      var hiddenField = document.getElementById("hiddenGameContentNos");
-      var storedValues = JSON.parse(sessionStorage.getItem("selectedValues"));
-      console.log('storedValues', storedValues);
-
-      // Convert the storedValues to an array of integers
-      var integerValues = storedValues.map(function (value) {
-        return parseInt(value);
-      });
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", "/payments/paymentsform", true);
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-      var data = JSON.stringify(integerValues);
-
-      xhr.send(data);
-
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          console.log('서버 응답:', xhr.responseText);
-        }
-      };
-    }
-  </script>
+</script>-->
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-      var totalPriceElement = document.getElementById("totalPrice");
-      var totalItemsElement = document.getElementById("totalItems");
+    // !!----------- 체크 박스 선택할 때 발생되는 이벤트
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    var selectedGameContentNos = JSON.parse(sessionStorage.getItem("selectedGameContentNos")) || [];  // 게임 번호
+    var selectedSalePrices = JSON.parse(sessionStorage.getItem("selectedSalePrices")) || []; // salePrice
+    var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
 
-      checkboxes.forEach(function (checkbox) {
-        var gameContentNo = checkbox.getAttribute("data-game-content-no");
-        console.log('gameContentNo???', gameContentNo);
-        if (selectedValues.includes(parseInt(gameContentNo))) {
-          checkbox.checked = true;
-        }
+    // 합계와 선택된 게임 콘텐츠를 초기화합니다.
+    var total = 0;
 
+    checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
-          updateTotalPrice();
-        });
-      });
+            var salePrice = parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
 
-      // Page load: Restore selected prices and update the total
-      updateTotalPrice();
+            // 체크 박스가 선택된 경우
+            if (checkbox.checked) {
+                var gameContentNo = checkbox.value;
+                total += salePrice;
 
-      function updateTotalPrice() {
-        var total = 0;
-        var selectedGameContentNos = [];
-
-        checkboxes.forEach(function (checkbox) {
-          if (checkbox.checked) {
-            var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
-            var gameContentNo = checkbox.value;
-
-            if (priceElement && gameContentNo) {
-              var price = parseFloat(priceElement.textContent);
-              selectedPrices[gameContentNo] = price;
-              selectedValues.push(gameContentNo);
-              selectedGameContentNos.push(parseInt(gameContentNo));
-              console.log('gameContentNo', gameContentNo);
-              console.log('selectedValues', selectedValues);
-              console.log('selectedGameContentNos', selectedGameContentNos);
+                // 선택된 게임 콘텐츠 번호와 salePrice를 배열에 추가하고 세션 스토리지에 저장
+                if (!selectedGameContentNos.includes(gameContentNo)) {
+                    selectedGameContentNos.push(gameContentNo);
+                    selectedSalePrices.push(salePrice);
+                    sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+                    sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
+                }
             } else {
-              delete selectedPrices[gameContentNo];
-              selectedValues = selectedValues.filter(function (value) {
-                return value !== gameContentNo;
-              });
+                var gameContentNo = checkbox.value;
+                total -= salePrice;
+
+                // 선택 해제된 게임 콘텐츠 번호와 salePrice를 배열에서 제거하고 세션 스토리지를 업데이트
+                selectedGameContentNos = selectedGameContentNos.filter(function (value) {
+                    return value !== gameContentNo;
+                });
+
+                var salePriceIndex = selectedGameContentNos.indexOf(gameContentNo);
+                if (salePriceIndex !== -1) {
+                    selectedSalePrices.splice(salePriceIndex, 1);
+                }
+
+                sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+                sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
             }
-          }
+
+            // 합계를 HTML 요소에 업데이트
+            if (totalPriceElement) {
+                totalPriceElement.innerText = total + " 원";
+                sessionStorage.setItem("totalPrice", JSON.stringify(total));
+            }
         });
+    });
 
-        // Calculate the total from the selected prices
-        for (var contentNo in selectedPrices) {
-          total += selectedPrices[contentNo];
+    // 페이지 로드 이벤트에 복원 함수를 연결합니다.
+    window.addEventListener("load", restoreSelectedItems);
+
+    // 페이지 로드 시 선택된 항목과 salePrice를 복원합니다.
+    function restoreSelectedItems() {
+        var selectedGameContentNos = JSON.parse(sessionStorage.getItem("selectedGameContentNos")) || [];
+        var selectedSalePrices = JSON.parse(sessionStorage.getItem("selectedSalePrices")) || [];
+
+        if (selectedGameContentNos.length > 0) {
+            // 페이지의 체크박스 초기화
+            checkboxes.forEach(function (checkbox) {
+                if (selectedGameContentNos.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // 총 합계 계산
+            var total = selectedSalePrices.reduce(function (acc, price) {
+                return acc + price;
+            }, 0);
+
+            if (totalPriceElement) {
+                totalPriceElement.innerText = total + " 원";
+            }
         }
+    }
 
-        // Update session storage with the selected prices and values
-        sessionStorage.setItem("selectedPrices", JSON.stringify(selectedPrices));
-        sessionStorage.setItem("selectedValues", JSON.stringify(selectedValues));
-        sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
-        console.log('selectedValues', JSON.stringify(selectedValues));
+    // !!----------- 결제하기 버튼 누를때 실행
+    function subscribe() {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var selectedGameContentNos = JSON.parse(sessionStorage.getItem("selectedGameContentNos")) || []; // 기존에 저장된 값 또는 빈 배열
 
-        if (totalPriceElement) {
-          totalPriceElement.innerText = total + " 원";
+        // 숨겨진 필드에 할당
+        document.getElementById("hiddenGameContentNos").value = JSON.stringify(selectedGameContentNos);
+
+        // 폼 제출
+        document.getElementById("nadopayment").submit();
+    }
+
+    // !!----------- 페이지네이션시 값을 다시 불러온다.
+    window.addEventListener("load", function () {
+        var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
+        var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
+        var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
+
+        if (selectedGameContentNos) {
+            selectedGameContentNos = JSON.parse(selectedGameContentNos);
+
+            // 페이지의 선택된 항목 체크하기
+            checkboxes.forEach(function (checkbox) {
+                if (selectedGameContentNos.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // 총 합계를 계산하기 위한 변수를 만들어야 합니다.
+            var total = 0;
+
+            checkboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    var salePrice = parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
+                    total += salePrice;
+                }
+            });
+
+            // 합계를 HTML 요소에 업데이트
+            if (totalPriceElement) {
+                totalPriceElement.innerText = total + " 원";
+            }
         }
-
-        if (totalItemsElement) {
-          var itemsCount = selectedValues.length;
-          totalItemsElement.innerText = itemsCount + " 건";
-        }
-      }
     });
   </script>
-
-  <script>
-    // 로컬 스토리지 초기화 함수
-    function clearLocalStorage() {
-      if (confirm("로컬 스토리지의 데이터를 모두 삭제하시겠습니까?")) {
-        localStorage.removeItem("selectedPrices");
-         localStorage.removeItem("selectedValues");
-        localStorage.clear(); // 로컬 스토리지 초기화
-        alert("로컬 스토리지가 초기화되었습니다.");
-
-        // 아래 두 줄은 선택한 가격과 건수를 초기화합니다.
-        document.getElementById("totalPrice").innerText = "0 원";
-        document.getElementById("totalItems").innerText = "0 건";
-      }
-    }
-  </script>
--->
-  <!--<script>
-          var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-          var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
-          var totalItemsElement = document.getElementById("totalItems"); // 선택한 항목의 수를 표시할 요소
-          var nadoSalePriceElement = document.getElementById("nado-salePrice"); // Sale Price element
-
-          checkboxes.forEach(function (checkbox) {
-              checkbox.addEventListener('change', function () {
-                  var selectedValues = [];
-                  checkboxes.forEach(function (checkbox) {
-                      if (checkbox.checked) {
-                          var priceElement = checkbox.closest(".card").querySelector("#nado-salePrice");
-                          if (priceElement) {
-                              selectedValues.push(parseFloat(priceElement.textContent));
-                          }
-                      }
-                  });
-
-                  // Calculate the total in JavaScript
-                  var total = selectedValues.reduce(function (accumulator, currentValue) {
-                      return accumulator + currentValue;
-                  }, 0);
-
-                  // Update the displayed total
-                  if (totalPriceElement) {
-                      totalPriceElement.innerText = total + " 원";
-                  }
-
-                  // Update the displayed number of selected items
-                  if (totalItemsElement) {
-                      totalItemsElement.innerText = selectedValues.length + " 건";
-                  }
-
-                  if (checkbox.checked) {
-                      alert("상품이 선택되었습니다.");
-                  } else {
-                      alert("선택을 취소했습니다.");
-                  }
-              });
-          });
-
-  </script>-->
   <script>
     function searchGames() {
       var searchText = document.getElementById('searchText').value;
