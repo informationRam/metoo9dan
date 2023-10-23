@@ -7,25 +7,25 @@
 
 
 
-            function attachCheckboxEventListeners() {
-             // 전체 선택 체크박스 클릭 시 모든 체크박스 선택/해제
-                     const selectAllCheckbox = document.getElementById("selectAllCheckbox");
-                     memberCheckboxes = document.querySelectorAll(".memberCheckbox");
+        function attachCheckboxEventListeners() {
+         // 전체 선택 체크박스 클릭 시 모든 체크박스 선택/해제
+                 const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+                 memberCheckboxes = document.querySelectorAll(".memberCheckbox");
 
-                 selectAllCheckbox.addEventListener("change", function() {
-                     memberCheckboxes.forEㅣach(function(checkbox) {
-                         checkbox.checked = selectAllCheckbox.checked;
-                     });
+             selectAllCheckbox.addEventListener("change", function() {
+                 memberCheckboxes.forEㅣ ach(function(checkbox) {
+                     checkbox.checked = selectAllCheckbox.checked;
                  });
+             });
 
-                 // 개별 체크박스 클릭 시 전체 선택 체크박스 업데이트
-                 memberCheckboxes.forEach(function(checkbox) {
-                     checkbox.addEventListener("change", function() {
-                         const allChecked = [...memberCheckboxes].every(checkbox => checkbox.checked);
-                         selectAllCheckbox.checked = allChecked;
-                     });
+             // 개별 체크박스 클릭 시 전체 선택 체크박스 업데이트
+             memberCheckboxes.forEach(function(checkbox) {
+                 checkbox.addEventListener("change", function() {
+                     const allChecked = [...memberCheckboxes].every(checkbox => checkbox.checked);
+                     selectAllCheckbox.checked = allChecked;
                  });
-             }
+             });
+         }
 
          // 삭제 버튼 클릭 이벤트
          const deleteButton = document.getElementById("deleteMembersButton");
@@ -88,8 +88,6 @@
                     console.error('삭제 실패:', error);
                 });
         }
-   // })
-
 
 //검색버튼 이벤트
         document.getElementById('searchBtn').addEventListener('click', function(event){
@@ -111,10 +109,6 @@
             };
         }
 
-//     //검색없어도 페이지 로드시 페이지네이션 생성
-//       window.addEventListener('DOMContentLoaded', (event) => {
-//                fetchSearchResults();
-//            });
         //AJAX 검색결과 가져오기
     /*  content: 실제 데이터(회원 목록)를 포함하는 배열
         totalElements: 전체 데이터 수
@@ -151,8 +145,8 @@
                 });
         }
 
-          //가입일 형식 변환
-          function formatJoinDate(joinDate) {
+        //가입일 형식 변환
+        function formatJoinDate(joinDate) {
               // 입력된 문자열을 Date 객체로 변환
               const date = new Date(joinDate);
 
@@ -165,7 +159,7 @@
               const formattedDate = `${year}.${month}.${day}`;
 
               return formattedDate;
-          }
+        }
 
         // 검색 결과가 없는 경우 메시지 표시
         function displayNoResultsMessage() {
@@ -292,16 +286,3 @@
             nextLi.appendChild(nextButton);
             paginationContainer.appendChild(nextLi);
         }
-
-//        //페이지 변경시 검색결과 갱신
-//        function changePage(pageNumber) {
-//            let params = getSearchParams();
-//            params.page = pageNumber;
-//            let queryString = new URLSearchParams(params).toString();
-//
-//            fetch(`/search?${queryString}`)
-//            .then(response => response.json())
-//            .then(data => {
-//                displayResults(data.members);
-//            });
-//

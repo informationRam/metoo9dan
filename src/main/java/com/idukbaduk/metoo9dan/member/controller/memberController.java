@@ -2,9 +2,11 @@ package com.idukbaduk.metoo9dan.member.controller;
 
 
 import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
+import com.idukbaduk.metoo9dan.common.entity.GroupStudents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.member.dto.EducatorInfoDTO;
 import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
+import com.idukbaduk.metoo9dan.member.repository.GroupStudentsRepository;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.member.validation.UserCreateForm;
 import jakarta.validation.Valid;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ import java.util.Map;
 public class memberController {
 
     private final MemberService memberService;
+    private final GroupStudentsRepository groupStudentsRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -50,6 +54,21 @@ public class memberController {
         model.addAttribute("memberName", memname); // 로그인 회원 이름
         return "/member/myPage";
     }
+
+    //id찾기
+    @PostMapping("/idSearch")
+    public ResponseEntity<String> searchId(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String memberId = memberService.findMemberIdByEmail(email);
+        if (memberId != null) {
+            return ResponseEntity.ok(memberId);
+        } else {
+            return ResponseEntity.ok("해당 이메일로 가입한 사용자가 없습니다.");
+        }
+    }
+
+
+
 
     //로그인 & 회원가입 폼 화면 보여주기
     @GetMapping("/login")
@@ -94,7 +113,7 @@ public class memberController {
     @GetMapping("/idpwSearch")
     public String searchidform() {
 
-        return "/member/forgotAccount";
+        return "member/forgotAccount";
 
     }
 
@@ -113,6 +132,7 @@ public class memberController {
 
     //이메일 중복검사
     @PostMapping("/checkEmailDuplication")
+    @ResponseBody //json응답반환
     public ResponseEntity<Map<String, Boolean>> checkEmailDuplication(@RequestBody Map<String, String> request) {
         String email = request.get("valiEmail");
         boolean isDuplicate = memberService.checkEmailDuplication(email);
@@ -124,7 +144,8 @@ public class memberController {
     }
 
     //아이디 중복검사
-    @PostMapping("/member/checkMemberIdDuplication")
+    @ResponseBody
+    @PostMapping("/checkMemberIdDuplication")
     public Map<String, Boolean> checkMemberIdDuplication(@RequestBody Map<String, String> request) {
         String memberId = request.get("memberId");
         boolean isDuplicated = memberService.checkmemberIdDuplication(memberId);
@@ -132,52 +153,26 @@ public class memberController {
         response.put("isDuplicated", isDuplicated);
         return response;
     }
+
+    @GetMapping("/loginSuccess")
+    public String handleLoginSuccess(Principal principal) {
+        Member member = memberService.getUser(principal.getName());
+
+        if ("STUDENT".equals(member.getRole())) {
+            // 학습 그룹 가입 여부 확인
+            Optional<GroupStudents> groupStudents = groupStudentsRepository.findByMemberAndIsApprovedIsFalse(member);
+            if (groupStudents.isPresent()) {
+                // 가입되지 않은 학습 그룹이 있다면 가입신청 페이지로 리디렉션
+                return "redirect:/applygroup";
+            }
+        } else if ("NORMAL".equals(member.getRole()) || "EDUCATOR".equals(member.getRole())) {
+            if ("무료회원".equals(member.getMembershipStatus())) {
+                // 무료 회원인 경우 게임 구매 페이지로 리디렉션
+                return "redirect:/game/purchase";
+            }
+        }
+
+        // 그 외의 경우에는 메인페이지
+        return "redirect:/";
+    }
 }
-//회원가입 처리하기
-//    //사용자 정보를 memberDTO에 받고,이를 member Entity에 옮기고 DB에 저장한다.
-//    @PostMapping("/join")
-//    public String createUser(@Valid UserCreateForm userCreateForm, BindingResult bindingResult, Model model) {
-//
-//        // userCreateForm 검증 실패시 다시 입력폼
-//        if (bindingResult.hasErrors()) {
-//            return "member/signupForm2";
-//        }
-//
-//        ModelMapper modelMapper = new ModelMapper();
-//        System.out.println("join컨트롤러 진입");
-//        MemberDTO memberDTO = modelMapper.map(userCreateForm, MemberDTO.class);
-//        memberDTO.setPassword(passwordEncoder.encode(userCreateForm.getPwd1()));
-//
-//        //비밀번호 일치여부 검사
-//        if (!userCreateForm.getPwd1().equals(userCreateForm.getPwd2())) {
-//            model.addAttribute("passwordMismatch", true);
-//            return "member/signupForm2";
-//        }
-//        //아이디 중복 검사
-//        if (memberService.checkmemberIdDuplication(userCreateForm.getMemberId())) {
-//            model.addAttribute("memberIdDuplicate", true);
-//            return "member/signupForm2";
-//        }
-//        //이메일 중복 검사
-//        if (memberService.checkEmailDuplication(userCreateForm.getEmail())) {
-//            model.addAttribute("emailDuplicate", true);
-//            return "member/signupForm2";
-//        }
-//
-//        if ("EDUCATOR".equals(userCreateForm.getRole())) {
-//            // MemberDTO 데이터를 Member 엔티티로 이동
-//            Member member = modelMapper.map(memberDTO, Member.class);
-//
-//            // EducatorInfoDTO 데이터를 EducatorInfo 엔티티로 이동
-//            EducatorInfoDTO educatorInfoDTO = modelMapper.map(userCreateForm, EducatorInfoDTO.class);
-//            EducatorInfo educatorInfo = modelMapper.map(educatorInfoDTO, EducatorInfo.class);
-//
-//            memberService.createUserWithEducatorInfo(member, educatorInfo);
-//        } else {
-//            // MemberDTO 데이터를 Member 엔티티로 이동
-//            Member member = modelMapper.map(memberDTO, Member.class);
-//            memberService.createUser(member);
-//        }
-//
-//        return "redirect:/member/login"; //회원가입 후 로그인 페이지
-//    }

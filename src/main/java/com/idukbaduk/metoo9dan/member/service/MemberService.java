@@ -35,6 +35,7 @@ public interface MemberService {
 
     //이메일 넣어 회원정보 찾기
     Member getUserbyEmail (String email);
+    public String findMemberIdByEmail(String email);
 
     //회원가입 이메일 중복 확인
     boolean checkEmailDuplication(String email);
@@ -48,10 +49,7 @@ public interface MemberService {
     //휴대폰 중복여부 확인
     boolean checkmemberTelDuplication(String tel);
 
-    //아이디 찾기 - 이메일로 찾기
-    String searchId(String email);
-
-    //비밀번호찾기 - id & email값 동시에 일치하는 회원이 있는지
+     //비밀번호찾기 - id & email값 동시에 일치하는 회원이 있는지
     boolean searchPwd(String memberId,String email);
 
     // 임시 비번 변경

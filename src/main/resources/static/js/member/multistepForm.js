@@ -87,22 +87,40 @@
                    x = document.getElementsByClassName("step");
                    y = x[currentTab].getElementsByTagName("input");  //input 태그 검사
 
-                   for (i = 0; i < y.length; i++) {
-                      // phoneForm이 비활성화되었을 때, 해당 폼의 모든 input 필드를 생략
-                         if (document.getElementById("phoneForm").style.display === "none" && y[i].closest("#phoneForm")) continue;
-                      // emailForm이 비활성화되었을 때, 해당 폼의 모든 input 필드를 생략
-                         if (document.getElementById("emailForm").style.display === "none" && y[i].closest("#emailForm")) continue;
-                     //그 외는 검사
-                     if (y[i].value == "") {
-                       y[i].className += " invalid"; // 빈 필드에 "invalid" 클래스를 추가하여 사용자에게 알립니다.
-                       valid = false;
-                     }
+                   // 현재 탭이 마지막 스텝인 경우 추가적인 유효성 검사를 실행
+                   if (currentTab === x.length - 1) {
+                        // input 필드가 빈 경우 체크
+                           var emptyFields = document.querySelectorAll("#lastStepForm input:required:invalid");
+
+                           // error-message가 존재하는 경우 체크
+                           var errorFields = document.querySelectorAll("#lastStepForm .error-message:not(:empty)");
+
+                           // 시도와 시군구 선택 체크
+                           var sido = document.getElementById("sido");
+                           var sigungu = document.getElementById("sigungu");
+
+                           if (sido.value === "" || sigungu.value === "" || emptyFields.length > 0 || errorFields.length > 0) {
+                               alert("필수입력정보를 확인하세요");
+                               return false;
+                           }
                    }
-                   if (valid) {
-                     var stepIndicators = document.getElementsByClassName("stepIndicator");
-                     stepIndicators[currentTab].className += " finish"; // 유효한 데이터가 입력되면 해당 단계를 완료로 표시합니다.
-                   }
-                   return valid;
+
+                       for (i = 0; i < y.length; i++) {
+                          // phoneForm이 비활성화되었을 때, 해당 폼의 모든 input 필드를 생략
+                             if (document.getElementById("phoneForm").style.display === "none" && y[i].closest("#phoneForm")) continue;
+                          // emailForm이 비활성화되었을 때, 해당 폼의 모든 input 필드를 생략
+                             if (document.getElementById("emailForm").style.display === "none" && y[i].closest("#emailForm")) continue;
+                         //그 외는 검사
+                         if (y[i].value == "") {
+                           y[i].className += " invalid"; // 빈 필드에 "invalid" 클래스를 추가하여 사용자에게 알립니다.
+                           valid = false;
+                         }
+                       }
+                       if (valid) {
+                         var stepIndicators = document.getElementsByClassName("stepIndicator");
+                         stepIndicators[currentTab].className += " finish"; // 유효한 데이터가 입력되면 해당 단계를 완료로 표시합니다.
+                       }
+                       return valid;
                  }
 
                  function fixStepIndicator(n) {

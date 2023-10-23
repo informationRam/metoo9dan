@@ -70,7 +70,7 @@ public class SecurityConfig {
                 .requestMatchers("/student/**").hasAuthority("STUDENT")
                 .requestMatchers( "/admin/**").hasAuthority("ADMIN")
                 .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
-                //.requestMatchers(new AntPathRequestMatcher("/member/join#pills-register")).denyAll() //로그인 후 회원가입접근불가
+                .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
                 //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
                 .anyRequest().permitAll()
                 );
@@ -84,7 +84,7 @@ public class SecurityConfig {
         http.
              formLogin()
                   .loginPage("/member/login")               // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
-                  .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지
+                  .defaultSuccessUrl("/loginSuccess")                   // 로그인 성공 후 이동 페이지 :/loginSuccess
                   .permitAll()                              //인증받지 않아도 모두 접근가능:없으면 무한루프생김
                   .failureUrl("/member/login")              // 로그인 실패 후 이동 페이지
                   .usernameParameter("memberId")                   // 아이디 파라미터명 설정
@@ -104,18 +104,11 @@ public class SecurityConfig {
                     }
                 });
 
-
         http
                 .logout()
-                .logoutUrl("/logout");
-//                .logoutSuccessUrl("/")
-//                .addLogoutHandler(new LogoutHandler() {
-//                    @Override
-//                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-//                        HttpSession session = request.getSession();
-//                        session.invalidate();
-//                    }
-//                })
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/");
+
 //        // RememberMe
 //        .and()
 //                .rememberMe()
@@ -123,20 +116,6 @@ public class SecurityConfig {
 //                .tokenValiditySeconds(3600) //1시간
 //                .userDetailsService(userDetailsService); //Autowired
 
-//        //d예외처리
-//        http.exceptionHandling()
-//                .authenticationEntryPoint(new AuthenticationEntryPoint() {
-//                    @Override
-//                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-//
-//                    }
-//                })
-//                .accessDeniedHandler(new AccessDeniedHandler() {
-//                    @Override
-//                    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-//                        response.sendRedirect("/denied");
-//                    }
-//                });
 
         return http.build();
 

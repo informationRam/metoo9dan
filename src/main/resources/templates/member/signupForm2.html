@@ -13,7 +13,7 @@
 <!--        <div style="border: 1px solid black;" class="col-10"> &lt;!&ndash;class에서 col-10은 빼면 안됨&ndash;&gt;-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <div class="d-flex justify-content-center align-items-center mt-5">
-                <div class="row">
+                <div class="row LoginRegisterForm">
                     <!-- Pills navs -->
                     <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -31,7 +31,6 @@
                                 <img src="/img/metooLogo.png" alt="나도9단" class="img-fluid">
                             </div>
                             <!-- 로고 영역 끝 -->
-
                     <!-- Pills content -->
                     <div class="tab-content" id="pills-tabContent">
 
@@ -63,7 +62,7 @@
                                     <div class="col-md-6 d-flex justify-content-center">
                                         <!-- Checkbox -->
                                         <div class="form-check mb-3 mb-md-0">
-                                            <input class="form-check-input" type="checkbox" value="" id="loginCheck" checked />
+                                            <input class="form-check-input" type="checkbox" value="true" name="remember-me" id="loginCheck" checked />
                                             <label class="form-check-label" for="loginCheck"> 로그인 정보 저장 </label>
                                         </div>
                                     </div>
@@ -264,85 +263,80 @@
                                 <div class="step" id="lastStepForm">
                                     <div class="row">
                                         <div class="col-12">
-                                            <p class="text-center mt-4"> 개인정보를 입력해주세요</p>
+                                            <p class="text-center mt-4"><strong>개인정보를 입력해주세요</strong><br><span class="text-danger" style="font-size: smaller;"> * 은 필수 입력 항목입니다</span></p>
 
                                             <!-- 이름 불러오기 -->
 <!--                                            <div id="verificationSuccess" style="display: none;">-->
                                                 <div class="mb-3">
-                                                    <label for="userName" class="form-label">이름</label>
+                                                    <label for="userName" class="form-label">이름<span class="text-danger" style="font-size: smaller;"> * </span></label>
                                                     <input type="text" name="name" id="userName"  class="form-control" >
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="userPhoneInput" class="form-label">휴대폰 번호</label>
-                                                    <input type="text" id="userPhoneInput" class="form-control" name="tel" >
+                                                    <label for="userPhoneInput" class="form-label">휴대폰 번호<span class="text-danger" style="font-size: smaller;"> * </span></label>
+                                                    <input type="text" id="userPhoneInput" class="form-control" name="tel" oninput="validateUserPhoneNumber(this);">
+                                                    <span class="error-message" id="tel-duplication-error-message"></span>
                                                 </div>
 <!--                                            </div>-->
                                             <!-- 아이디 입력란 -->
                                             <div class="mb-3">
-                                                <label for="memberIdInput" class="form-label">아이디</label>
+                                                <label for="memberIdInput" class="form-label">아이디<span class="text-danger" style="font-size: smaller;"> * </span></label>
                                                 <div class="input-group">
                                                     <input type="text" th:field="*{memberId}" placeholder="영문 또는 영문,숫자 조합으로 입력하세요" oninput="this.className = ''" class="form-control" id="memberIdInput" name="memberIdInput" required>
                                                     <div class="input-group-append">
-                                                        <button type="button" class="btn btn-primary" id="chechMemberId">ID 중복 확인</button>
+                                                        <button type="button" class="btn btn-primary" id="checkMemberId">ID 중복 확인</button>
                                                     </div>
                                                 </div>
-                                                <span class="error-message" id="memberId-duplication-error-message"></span>
+                                                        <span class="error-message" id="memberId-duplication-error-message"></span>
                                             </div>
                                             <!-- 비밀번호 입력란 -->
                                             <div class="mb-3">
-                                                <label for="password" class="form-label">비밀번호</label>
+                                                <label for="password" class="form-label">비밀번호<span class="text-danger" style="font-size: smaller;"> * </span></label>
                                                 <input type="password" th:field="*{pwd1}" placeholder="6자리이상,숫자, 문자, 특수문자 각각 1개 이상 포함" autocomplete="new-password" oninput="this.className = ''" class="form-control" id="password" name="password"  required >
                                             </div>
-                                                <span th:if="${#fields.hasErrors('pwd1')}" th:errors="*{pwd1}" class="error-message text-danger"></span>
+                                                <span class="pw1-error-message text-danger"></span>
                                             <!-- 비밀번호 확인 입력란 -->
                                             <div class="mb-3">
-                                                <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+                                                <label for="confirmPassword" class="form-label">비밀번호 확인<span class="text-danger" style="font-size: smaller;"> * </span></label>
                                                 <input type="password" th:field="*{pwd2}" placeholder="비밀번호와 일치하게 입력하세요" autocomplete="new-password"    oninput="this.className = ''" class="form-control" id="confirmPassword" name="confirmPassword"  required>
                                             </div>
-                                                <span th:if="${#fields.hasErrors('pwd2')}" th:errors="*{pwd2}" class="error-message text-danger"></span>
-                                                <span th:if="${passwordMismatch}" class="error-message text-danger">비밀번호가 일치하지 않습니다.</span>
+                                                <span class="pw2-pwMismatch-error-message text-danger"></span>
 
                                             <!-- 생년월일 입력란 -->
                                             <div class="mb-3">
-                                                <label for="birth" class="form-label">생년월일</label>
+                                                <label for="birth" class="form-label">생년월일<span class="text-danger" style="font-size: smaller;"> * </span></label>
                                                 <input type="date" th:field="*{birth}" oninput="this.className = ''" class="form-control" id="birth" name="birth"   required>
                                                 <span th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" class="error-message text-danger"></span>
                                             </div>
-
                                             <!-- 이메일 주소 입력란 -->
                                             <div class="mb-3">
-                                                <label for="email" class="form-label">이메일 주소</label>
-                                                <input type="email"  th:field="*{email}" placeholder="12345@gmail.com" oninput="this.className = ''" class="form-control" id="emailInput" name="email"  required>
-                                                <span th:if="${emailDuplicate}" class="error-message text-danger">이 이메일을 이미 사용중인 아이디가 있습니다.</span>
+                                                <label for="emailInput" class="form-label">이메일 주소<span class="text-danger" style="font-size: smaller;"> * </span></label>
+                                                <input type="email" th:field="*{email}" placeholder="12345@gmail.com" oninput="validateEmailInput(this)" class="form-control" id="emailInput" name="email" required>
+                                                <span class="email-duplicate-error-message text-danger"> </span>
                                             </div>
-
                                             <!-- 성별 -->
                                             <div class="mb-3">
-                                                <div class="gender d-flex justify-content-start">
-                                                    <label class="form-label">성별</label>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" th:field="*{gender}" th:value="M" type="radio" name="gender" id="male" >
+                                                <label class="form-label" d-flex align-items-cente>성별</label>
+                                                <div class="d-flex">
+                                                     <div class="form-check">
+                                                        <input class="form-check-input" th:field="*{gender}" th:value="M" type="radio" name="gender" id="male">
                                                         <label class="form-check-label" for="male">남성</label>
                                                     </div>
-                                                    <div class="form-check form-check-inline">
+                                                    <div class="form-check">
                                                         <input class="form-check-input" th:field="*{gender}" th:value="F" type="radio" name="gender" id="female" >
                                                         <label class="form-check-label" for="female">여성</label>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="error-message text-danger"></span>
                                             <!-- 수신동의 (이메일 및 SMS 중 선택) -->
                                             <div class="mb-3">
-                                                <label class="form-label d-flex align-items-center">수신 동의 </label>
-                                                <p>: 이벤트, 커리큘럼, 신규 콘텐츠 등 광고 메시지 수신</p>
-
+                                                <label class="form-label d-flex align-items-center">수신 동의 <br/><span class="text-secondary" style="font-size: smaller;"> 이벤트, 커리큘럼, 신규 콘텐츠 등 광고 메시지 수신 </span></label>
                                                 <div class="d-flex">
-                                                    <div class="form-check me-3">
-                                                        <input class="form-check-input" th:field="*{emailConsent}" type="checkbox" id="emailConsent" name="emailConsent" th:value="1">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" th:field="*{emailConsent}" type="radio" id="emailConsent" name="emailConsent" th:value="1" >
                                                         <label class="form-check-label" for="emailConsent">이메일</label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" th:field="*{smsConsent}" type="checkbox" id="smsConsent" name="smsConsent" th:value="1">
+                                                        <input class="form-check-input" th:field="*{smsConsent}" type="radio" id="smsConsent" name="smsConsent" th:value="1">
                                                         <label class="form-check-label" for="smsConsent">SMS</label>
                                                     </div>
                                                 </div>
@@ -353,29 +347,29 @@
                                                 <hr/>
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
-                                                        <label for="schoolName">소속 학원명:</label>
+                                                        <label for="schoolName">소속 학원명<span class="text-danger" style="font-size: smaller;"> * </span></label>
                                                         <input type="text"  th:field="*{schoolName}" id="schoolName" name="schoolName" class="form-control">
                                                         <span th:if="${#fields.hasErrors('schoolName')}" th:errors="*{schoolName}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label for="sido">시도:</label>
-                                                        <select id="sido" name="sido" class="form-control">
+                                                        <label for="sido">시도<span class="text-danger" style="font-size: smaller;"> * </span></label>
+                                                        <select id="sido" name="sido" class="form-control" required>
                                                             <option value="" selected disabled>시도 선택</option>
                                                             <!-- 시도 옵션들을 여기에 추가 -->
                                                         </select>
-                                                        <span th:if="${#fields.hasErrors('sido')}" th:errors="*{sido}" class="error-message text-danger"></span>
+                                                        <span th:errors="*{sido}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-6 ">
                                                     <div class="mb-3">
-                                                        <label for="sigungu">시군구:</label>
+                                                        <label for="sigungu">시군구<span class="text-danger" style="font-size: smaller;"> * </span></label>
                                                         <select id="sigungu" name="sigungu" class="form-control">
                                                             <option value="" selected disabled>시군구 선택</option>
                                                             <!-- 시군구 옵션들을 여기에 추가 -->
                                                         </select>
-                                                        <span th:if="${#fields.hasErrors('sigungu')}" th:errors="*{sigungu}" class="error-message text-danger"></span>
+                                                        <span th:errors="*{sigungu}" class="error-message text-danger"></span>
                                                     </div>
                                                 </div>
                                             </div>

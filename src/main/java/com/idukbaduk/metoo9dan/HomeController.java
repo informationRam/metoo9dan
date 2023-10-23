@@ -1,4 +1,4 @@
-package com.idukbaduk.metoo9dan.member.controller;
+package com.idukbaduk.metoo9dan;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

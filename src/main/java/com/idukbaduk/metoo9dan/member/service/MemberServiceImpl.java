@@ -170,7 +170,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public boolean checkmemberIdDuplication(String memberId) {
         System.out.println("서비스들어옴");
-        boolean emailDuplicate = memberRepository.existsBymemberId(memberId);
+        boolean emailDuplicate = memberRepository.existsByMemberId(memberId);
         return emailDuplicate;
     }
 
@@ -186,16 +186,11 @@ public class MemberServiceImpl implements MemberService {
 
     //아이디 찾기 - 이메일로 찾기
     @Override
-    public String searchId(String email) {
-        System.out.println("searchId서비스 진입");
-        Optional<Member> idSearchMem = memberRepository.findByEmail(email);
-        if (idSearchMem.isPresent()) {
-            Member member = idSearchMem.get();
-            return member.getMemberId();
-        } else {
-            return null; // 해당 이메일을 가진 사용자가 없을 경우
-        }
+    public String findMemberIdByEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        return member.map(Member::getMemberId).orElse(null);
     }
+
 
     //비밀번호찾기 - id & email값 동시에 일치하는 회원이 있는지
     @Override

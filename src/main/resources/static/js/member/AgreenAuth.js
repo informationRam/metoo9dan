@@ -244,7 +244,7 @@ function toggleAuthMethod(selectedMethod) {
             })
             .catch(error => {
                 console.error("Error:", error);
-                //validateEmailBtn(); // AJAX 요청이 완료된 이후에 호출
+
             });
         }
 

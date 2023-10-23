@@ -19,7 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     Optional<Member> findByMemberId(String memberId);
 
     //회원가입시 아이디 중복 확인
-    boolean existsBymemberId(String memberId);
+    boolean existsByMemberId(String memberId);
 
     //회원가입시 이메일 중복 확인
     boolean existsByEmail(String email);
