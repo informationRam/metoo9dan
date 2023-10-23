@@ -1,0 +1,110 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <h1 class="mt-4">교육자료등록</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item"><a href="index.html">운영마당</a></li>
+                <li class="breadcrumb-item active">교육자료 등록</li>
+            </ol>
+            <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <form id="educationadd" class="my-2" th:object="${educationVaildation}" th:action="@{/education/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data">
+            <div>
+                <!-- 교육자료명 -->
+                <div class="mb-3 row">
+                    <label for="resource_name" class="col-sm-2 col-form-label">교육자료명</label>
+                    <div class="col-sm-5">
+                        <input type="text" th:field="*{resource_name}" class="form-control">
+                        <span th:if="${#fields.hasErrors('resource_name')}" th:errors="*{resource_name}" class="error-message text-danger"></span>
+                    </div>
+                </div>
+                <!-- 자료구분 -->
+                <div class="mb-3 row">
+                    <label for="difficulty" class="col-sm-2 col-form-label">자료구분</label>
+                    <div class="col-sm-3">
+                        <select th:field="*{resource_cate}" class="form-select">
+                            <option value="tutorial">튜토리얼</option>
+                            <option value="lecture">교육영상</option>
+                        </select>
+                    </div>
+                </div>
+            <!-- 자료유형 -->
+                    <div class="mb-3 row">
+                        <label for="file_type" class="col-sm-2 col-form-label">자료유형</label>
+                        <div class="col-sm-3">
+                            <select th:field="*{file_type}" class="form-select">
+                                <option value="image">이미지</option>
+                                <option value="video">동영상</option>
+                                <option value="image/video">이미지/동영상</option>
+                                <option value="ect">기타</option>
+                            </select>
+                        </div>
+                    </div>
+            <!-- 서비스 구분 -->
+                    <div class="mb-3 row">
+                        <label for="max_subscribers" class="col-sm-2 col-form-label">서비스구분</label>
+                        <div class="col-sm-3">
+                            <select th:field="*{service_type}" class="form-select">
+                                <option value="full">유료</option>
+                                <option value="short">무료</option>
+                            </select>
+                        </div>
+                    </div>
+                <!-- 자료내용 -->
+                <div class="mb-3 row">
+                    <label for="description" class="col-sm-2 col-form-label">패키지내용</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요."></textarea>
+                    </div>
+                </div>
+                <!-- 썸네일 -->
+                <div class="mb-5 row">
+                    <label for="thumFileInput" class="col-sm-2 col-form-label">썸네일</label>
+                    <div class="col-sm-5">
+                        <input class="form-control" type="file" th:field="*{thumFile}" onchange="displayFileName(this, 'thumFileName')" required>
+                        <div id="thumFileName"></div>
+                        <span th:if="${#fields.hasErrors('thumFile')}" th:errors="*{thumFile}" class="error-message text-danger"></span>
+                    </div>
+                </div>
+                <!-- 교육자료 파일 -->
+                <div class="mb-5 row">
+                    <label for="boardFile" class="col-sm-2 col-form-label">교육자료파일</label>
+                    <div class="col-sm-5">
+                        <input class="form-control" type="file" th:field="*{boardFile}" onchange="displayFileName2(this, 'boardFileName')" required>
+                        <div id="boardFileName"></div>
+                        <span th:if="${#fields.hasErrors('boardFile')}" th:errors="*{boardFile}" class="error-message text-danger"></span>
+                    </div>
+                </div>
+                <div class="mb-3 text-center">
+                    <button type="submit" class="btn btn-primary">등록하기</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        function displayFileName(input, targetId) {
+            var fileInput = input;
+            var fileName = fileInput.value.split("\\").pop(); // 파일 경로에서 파일 이름만 추출
+            var targetElement = document.getElementById(targetId); // 표시할 요소
+            targetElement.textContent = fileName; // 파일 이름을 요소에 설정
+        }
+    function displayFileName2(input, targetId) {
+    var fileInput = input;
+    var fileList = Array.from(fileInput.files);
+
+    var targetElement = document.getElementById(targetId); // 표시할 요소
+    targetElement.innerHTML = ''; // 기존 내용 초기화
+
+    fileList.forEach(function (file) {
+        var fileNameDiv = document.createElement('div');
+        fileNameDiv.textContent = file.name;
+        targetElement.appendChild(fileNameDiv);
+    });
+}
+
+    </script>
+</div>
+</html>

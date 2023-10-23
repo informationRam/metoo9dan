@@ -1,4 +1,4 @@
-package com.idukbaduk.metoo9dan.studyGroup.config;
+/*package com.idukbaduk.metoo9dan.studyGroup.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -15,8 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
         //다른 이미지 업로드를 위한 경로
         registry.addResourceHandler("/upload/game/**")
                 .addResourceLocations("file:///Users/ryuahn/Desktop/baduk/");
-     /*   registry.addResourceHandler("/ckUpload/**")
-                .addResourceLocations("/resources/ckUpload/");*/
+     *//*   registry.addResourceHandler("/ckUpload/**")
+                .addResourceLocations("/resources/ckUpload/");*//*
 
     }
-}
+}*/

@@ -1,0 +1,277 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+  <link rel="stylesheet" href="/css/game/paymentsform.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <div class="row">
+    <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+    <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+      <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <form action="/payments/payments" method="post" id="payment-form">
+          <div class="container my-5">
+            <h1>주문/결제</h1>
+            <table class="table table-responsive">
+              <thead>
+              <tr class="text-center">
+                <th style="width: 20%;">게임명</th>
+                <th style="width: 10%;">난이도</th>
+                <th style="width: 10%;">구독 기간</th>
+                <th style="width: 10%;">구독 인원</th>
+                <th style="width: 30%;">패키지내용</th>
+                <th style="width: 10%;">상품금액(할인포함)</th>
+              </tr>
+              </thead>
+              <tbody class="text-center">
+              <!-- 반복문을 사용하여 구매한 각 상품 표시 -->
+              <tr th:each="gamecon : ${gameContents}">
+                <td th:text="${gamecon.gameName}"></td>
+                <td class="game difficulty">
+                  <span th:switch="${gamecon.difficulty}">
+                    <span th:case="'beginner'">초급</span>
+                    <span th:case="'intermediate'">중급</span>
+                    <span th:case="'advanced'">고급</span>
+                  </span>
+                </td>
+                <td th:text="${gamecon.subscriptionDuration}"></td>
+                <td th:text="${gamecon.maxSubscribers}"></td>
+                <td th:text="${gamecon.packageDetails}"></td>
+                <td class="game salePrice">
+                  <span th:text="${gamecon.salePrice <= 999 ? #numbers.formatInteger(gamecon.salePrice.intValue(), 0, 'COMMA') : #numbers.formatInteger(gamecon.salePrice.intValue(), 3, 'COMMA')}"></span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <div class="col-lg-5">
+              <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>
+
+              <!-- 소수점 제거한 totalSalePrice 출력 -->
+              <h3 class="mb-3">총 <span th:text="${#lists.size(gameContentNos)}"></span> 건,
+                총 <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>원</h3>
+            </div>
+            <!-- 결제수단 선택 -->
+            <h4>결제수단</h4>
+            <div class="row mt-4" >
+              <div class="col-lg-7" style="border: 1px solid #dee2e6;">
+                <label class="form-label"></label>
+                <div class="form-check">
+                  <input type="radio" name="paymentMethod" id="account" value="account" class="form-check-input" required>
+                  <label for="account" class="form-check-label">계좌이체</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
+                  <label for="deposit" class="form-check-label">무통장</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
+                  <label for="pay" class="form-check-label">카카오페이</label>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="d-flex justify-content-center">
+                <input type="hidden" id="item_name" name="item_name" th:value="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"/>
+                <input type="hidden" id="total-amount" name="total_amount" th:value="${totalSalePrice}" />
+                <button type="button" class="btn btn-primary mt-3" id="openModalBtn">결제하기</button>
+              </div>
+          </div>
+            <!-- 반품 규정 안내 -->
+          <div class="mt-5 p-3 border rounded bg-light">
+              <h4 class="text">확인해주세요!</h4>
+              <p class="text">- 구매한 상품의 반품 규정을 안내합니다. 구체적인 내용을 여기에 추가하세요.</p>
+          </div>
+          </div>
+        </form>
+  </div>
+</div>
+    <!-- 계좌이체 모달 창 정의 -->
+  <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="paymentModalLabel">결제하기</h5>
+          <div>
+            <p class="text-muted fw-light">더 많은 컨텐츠를 구매해 바둑을 재밌게 경험해보세요!</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="pricing p-3 rounded mt-4 d-flex justify-content-between">
+            <div class="images d-flex flex-row align-items-center">
+              <img src="/image/game/baduk_icon_06.png" class="rounded" width="60">
+              <div class="d-flex flex-column ml-4">
+                <span class="business" th:text="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"></span>
+                <span class="plan">content purchase</span>
+              </div>
+            </div>
+            <div class="d-flex flex-column ml-4">
+              <span class="business" th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"> 원</span>
+            </div>
+          </div>
+          <div class="credit rounded mt-4">
+            <label for="bankSelect">출금 계좌 선택</label>
+            <select class="form-select" id="bankSelect" required>
+              <option value="1">국민은행</option>
+              <option value="2">우리은행</option>
+              <option value="3">농협은행</option>
+              <option value="4">하나은행</option>
+              <option value="5">기업은행</option>
+              <option value="6">신한은행</option>
+              <option value="7">새마을금고</option>
+              <option value="8">우체국</option>
+              <option value="9">케이뱅크</option>
+              <option value="10">제주은행</option>
+            </select>
+            <label for="accountNumber">계좌번호</label>
+            <input type="text" class="form-control" id="accountNumber" placeholder="계좌번호입력" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-block" data-bs-dismiss="modal">취소</button>
+          <button type="button" class="btn btn-primary btn-block payment-button">결제하기<i class="fa fa-long-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 무통장 모달 창 정의 -->
+  <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="depositModalLabel">결제하기</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>더 많은 컨텐츠를 구매해 바둑을 재밌게 경험해보세요!</p>
+          <div class="pricing p-3 rounded mt-4 d-flex justify-content-between">
+            <div class="images d-flex flex-row align-items-center">
+              <img src="/image/game/baduk_icon_06.png" class="rounded" width="60">
+              <div class="d-flex flex-column ml-4">
+                <!-- 이 부분을 Thymeleaf로 변경 -->
+                <span class="business"
+                      th:text="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"></span>
+                <span class="plan">content purchase</span>
+              </div>
+            </div>
+            <div class="d-flex flex-column ml-4">
+              <span class="business" th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"> 원</span>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h4>입금계좌 안내</h4>
+            <div class="border mb-3 p-3 rounded">
+              <div class="mb-3">
+                <label class="form-label">은행</label>
+                <p>우리은행</p>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">계좌</label>
+                <p>1002-149-760000</p>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">예금주</label>
+                <p>000</p>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">입금기한</label>
+                <p id="depositDeadline"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="col-12 p-3 border rounded bg-light">
+            <h4 class="text">무통장 입금 안내사항</h4>
+            <p class="text">- 24시간 이내에 위 안내드린 계좌번호로 입금해주세요.<br>
+              - 입금자명은 가입자분 성함으로 입금해주셔야 정상처리 됩니다.</p>
+          </div>
+          <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">취소</button>
+          <button type="button" class="btn btn-primary w-100 payment-button">확인<i class="fa fa-long-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+      $('#openModalBtn').on('click', function() {
+        var selectedPaymentMethod = $("input[name='paymentMethod']:checked").val();
+
+         console.log('selectedPaymentMethod', selectedPaymentMethod);
+        // 결제 정보를 준비
+            var paymentData = {
+            item_name: $('#item_name').val(),
+            total_amount: $('#total-amount').val()
+          };
+          console.log('paymentData', paymentData);
+
+           if (selectedPaymentMethod === undefined) {
+              alert("결제수단을 선택해주세요.");
+              return;
+            }
+
+        if (selectedPaymentMethod === "account") {
+          $('#paymentModal').modal('show');
+        } else if (selectedPaymentMethod === "deposit") {
+          $('#depositModal').modal('show');
+        } else if (selectedPaymentMethod === "pay") { // 카카오페이를 선택한 경우
+            // /kakaopay/ready 엔드포인트로 Ajax POST 요청 보내기
+            $.ajax({
+              url: '/kakaopay/ready',
+              method: 'POST',
+              data: paymentData,
+              success: function (response) {
+                // 카카오페이 페이지로 이동
+                location.href = response.next_redirect_pc_url;
+              },
+              error: function () {
+                alert('결제 준비 중 오류가 발생했습니다.');
+              }
+            });
+       }
+  });
+  </script>
+  <script>
+    $('#paymentModal .payment-button').on('click', function () {
+     var accountNumber = $('#accountNumber').val().trim(); // Get and trim the account number value
+
+
+     var regex = /^[0-9\-]+$/;
+
+     if (accountNumber === "") {
+       alert("계좌번호를 입력해주세요.");
+     } else if (!regex.test(accountNumber)) {
+       alert("계좌를 확인해주세요. 숫자와 '-'만 입력 가능합니다.");
+     } else {
+
+       $('#payment-form').submit();
+       $('#paymentModal').modal('hide');
+     }
+   });
+
+
+        // 무통장 결제하기 버튼을 클릭할 때
+        $('#depositModal .payment-button').on('click', function() {
+          // 폼을 실행
+          $('#payment-form').submit();
+
+          // 모달을 닫음
+          $('#depositModal').modal('hide');
+        });
+
+  </script>
+  <script>
+    // JavaScript를 사용하여 현재 날짜 및 시간 가져오기
+    var now = new Date();
+
+    // 24시간을 밀리초로 계산
+    var twentyFourHoursLater = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    // 날짜 및 시간을 원하는 형식으로 포맷
+    var deadline = twentyFourHoursLater.toLocaleString(); // 또는 다른 원하는 포맷
+
+    // "입금 기한"을 업데이트
+    document.getElementById("depositDeadline").textContent = deadline;
+  </script>
+
+</div>
+</html>

@@ -1,0 +1,17 @@
+  /* Custom CSS for the red circular popover */
+.custom-button {
+    background-color: rgb(98, 161, 212);
+    color: white; /* Text color */
+    border: none;
+    border-radius: 50%; /* Makes it circular */
+    width: 30px; /* Adjust the size as needed */
+    height: 30px;
+    text-align: center;
+    line-height: 20px; /* Vertically centers the text */
+  }
+
+  .custom-popover-container {
+      position: relative;
+      top: 3px; /* Adjust this value if needed */
+      left: 10px; /* Adjust this value if needed */
+  }
