@@ -5,15 +5,18 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <div class="col">
+        <div class="col-10">
+            <!-- 검색 바 -->
+            <div class="col-6 col-md-4" style="margin-left: auto;">
                 <div class="input-group">
                     <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
-                    <button class="btn btn-warning" type="button" onclick="searchGames()">검색</button>
+                    <button class="btn btn-warning text-white" type="button" onclick="searchGames()">검색</button>
                 </div>
             </div>
-            <div>
-            <table class="table table-bordered">
+
+            <div class="col-12">
+            <div class="table-container"> <!-- 테이블을 감싸는 <div> 추가 -->
+                <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th scope="col">No.</th>
@@ -85,21 +88,20 @@
                     </td>
                     <!-- 액션 -->
                     <td>
-                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-outline-secondary btn-sm mx-1">Edit</a>
-                        <span th:unless="${game.paymentsList.isEmpty()}">Edit</span> <!-- 결제내역이 있는 경우 수정 버튼 비활성화 -->
+                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-secondary btn-sm mx-1">수정</a>
+                        <span th:unless="${game.paymentsList.isEmpty()}">수정</span> <!-- 결제내역이 있는 경우 수정 버튼 비활성화 -->
                     </td>
                     <td>
-                        <a th:href="@{/game/delete/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-outline-secondary btn-sm mx-1" onclick="return confirm('삭제하시겠습니까?')">Delete</a>
-                        <span th:unless="${game.paymentsList.isEmpty()}">Delete</span> <!-- 결제내역이 있는 경우 삭제 버튼 비활성화 -->
+                        <a th:href="@{/game/delete/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-secondary btn-sm mx-1" onclick="return confirm('삭제하시겠습니까?">삭제</a>
+                        <span th:unless="${game.paymentsList.isEmpty()}">삭제</span> <!-- 결제내역이 있는 경우 삭제 버튼 비활성화 -->
                     </td>
-                     </td>-->
                 </tr><!-- 1페이지당 출력할 게시물수만큼 반복끝 -->
                 </tbody>
-            </table>
+                </table>
             </div>
             <!-- 게임컨텐츠 등록하기 -->
             <div class="text-end ms-auto">
-                <a th:href="@{/game/addForm}" class="btn btn-outline-warning">작성하기</a>
+                <a th:href="@{/game/addForm}" class="btn btn-warning text-white">작성하기</a>
             </div>
             <!-- Pagination 부분 영역 시작 -->
             <!-- 페이지 네이션 처리 -->
@@ -125,6 +127,7 @@
                     </ul>
                 </nav>
             </div>
+            </div>
         </div>
     </div>
     <script layout:fragment="script">
@@ -144,7 +147,7 @@
     <script>
         function searchGames() {
           var searchText = document.getElementById('searchText').value;
-          window.location.href = '/game/list2?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+          window.location.href = '/game/list?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
         }
     </script>
 </div>

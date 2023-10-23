@@ -2,8 +2,13 @@
 <div layout:fragment="content" class="container my-3">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div th:replace="~{/admin/adminSidebar::sidebar}"></div> <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <h1 class="mt-4">교육자료</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item"><a href="/">운영마당</a></li>
+                <li class="breadcrumb-item active">교육자료 수정</li>
+            </ol>
+            <div style="border: 1px solid black;" class="col-12"> <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <form id="educationadd" class="my-2" th:object="${educationValidation}" th:action="@{|/education/modify/${resourceNo}|}" method="post" enctype="multipart/form-data">
             <div>
                 <!-- 교육자료명 -->
@@ -49,7 +54,7 @@
                 <!-- 자료내용 -->
                 <div class="mb-3 row">
                     <label for="description" class="col-sm-2 col-form-label">패키지내용</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
                         <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요." th:value="${educationValidation.description}"></textarea>
                     </div>
                 </div>
@@ -79,7 +84,7 @@
                 </div>
                 <!-- 수정된 컨텐츠 내용을 전달하기 위한 hidden input -->
                 <div class="mb-3 text-center">
-                    <button type="submit" class="btn btn-primary">수정하기</button>
+                    <button type="submit" class="btn btn-warning text-white">수정하기</button>
                 </div>
             </div>
             </form>

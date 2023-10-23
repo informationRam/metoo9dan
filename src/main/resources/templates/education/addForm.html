@@ -3,13 +3,13 @@
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <h1 class="mt-4">교육자료등록</h1>
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <h1 class="mt-4">교육자료</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item"><a href="index.html">운영마당</a></li>
+                <li class="breadcrumb-item"><a href="/">운영마당</a></li>
                 <li class="breadcrumb-item active">교육자료 등록</li>
             </ol>
-            <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <div style="border: 1px solid black;" class="col-12">
             <form id="educationadd" class="my-2" th:object="${educationVaildation}" th:action="@{/education/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data">
             <div>
                 <!-- 교육자료명 -->
@@ -55,7 +55,7 @@
                 <!-- 자료내용 -->
                 <div class="mb-3 row">
                     <label for="description" class="col-sm-2 col-form-label">패키지내용</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-8">
                         <textarea class="form-control" th:field="*{description}" rows="8" placeholder="내용을 입력해주세요."></textarea>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                 </div>
                 <!-- 교육자료 파일 -->
                 <div class="mb-5 row">
-                    <label for="boardFile" class="col-sm-2 col-form-label">교육자료파일</label>
+                    <label for="boardFile" class="col-sm-2 col-form-label">자료파일</label>
                     <div class="col-sm-5">
                         <input class="form-control" type="file" th:field="*{boardFile}" onchange="displayFileName2(this, 'boardFileName')" required>
                         <div id="boardFileName"></div>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
                 <div class="mb-3 text-center">
-                    <button type="submit" class="btn btn-primary">등록하기</button>
+                    <button type="submit" class="btn btn-warning text-white">등록하기</button>
                 </div>
             </div>
             </form>
