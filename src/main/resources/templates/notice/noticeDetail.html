@@ -47,7 +47,7 @@
                          th:if="${ notice.member!=null and #authentication.getPrincipal().getUsername()==notice.member.memberId }">
                         <a th:href="@{|/notice/modify/${noticeNo}|}" class="btn btn-sm btn-outline-secondary mx-2">수정</a>
                         <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.noticeNo}|}"
-                           class="btn btn-sm btn-outline-secondary"
+                           class="delete btn btn-sm btn-outline-secondary"
                            th:text="삭제">삭제
                         </a>
                     </div>
@@ -173,12 +173,12 @@
                 btnGroup.remove();
 
                 var modifyFormHtml = '<form id="replyModifyForm" method="put">'+
-                                          '<div class="d-flex justify-content-around">'+
-                                            '<textarea rows="2" class="form-control" autofocus="autofocus"></textarea>'+
-                                            '<input type="button" value="댓글 수정" class="btn btn-sm btn-primary" onclick="transferData(' + replyId + ', document.querySelector(\'#replyNo' + replyId + ' textarea\').value, document.querySelector(\'#noticeHeader input\').value);">'+
-                                            '<input type="button" value="수정 취소" class="btn btn-sm btn-secondary" onclick="replyRollback(' + replyId + ', document.querySelector(\'#noticeHeader input\').value);">'+
-                                          '</div>'+
-                                      '</form>';
+                                      '<div class="d-flex justify-content-around">'+
+                                        '<textarea rows="2" class="form-control" autofocus="autofocus"></textarea>'+
+                                        '<input type="button" value="댓글 수정" class="btn btn-sm btn-warning text-white mx-2" onclick="transferData(' + replyId + ', document.querySelector(\'#replyNo' + replyId + ' textarea\').value, document.querySelector(\'#noticeHeader input\').value);">'+
+                                        '<input type="button" value="수정 취소" class="btn btn-sm btn-secondary" onclick="replyRollback(' + replyId + ', document.querySelector(\'#noticeHeader input\').value);">'+
+                                      '</div>'+
+                                    '</form>';
 
                 document.querySelector('#replyNo'+replyId).insertAdjacentHTML('beforeend', modifyFormHtml);
 
