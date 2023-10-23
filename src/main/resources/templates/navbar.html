@@ -1,12 +1,83 @@
-<nav th:fragment="navbarFragment" class="">
-    <div layout:fragment="navbar" class="container-fluid" style="border: 1px solid black;">
-        네비게이션바 영역
-        <a th:href="@{/}"> home </a>
-        <div>
-            <!--    <a th:href="@{#}"> 회원가입</a>-->
-            <a th:href="@{/member/login}" sec:authorize="isAnonymous()"> 로그인&회원가입</a>
-            <a th:href="@{/logout}" sec:authorize="isAuthenticated()"> 로그아웃</a>
+<nav th:fragment="navbarFragment">
+    <div layout:fragment="navbar" class="">
+        <div class="header-area header-sticky">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <nav class="main-nav">
+                            <!-- ***** Logo Start ***** -->
+                            <a th:href="@{/}" class="logo pl-2">
+                                <img src="/image/nadoLogo3.png" width="200px;" class="">
+                            </a>
+                            <!-- ***** Logo End ***** -->
+                            <!-- ***** Menu Start ***** -->
+                            <ul class="nav">
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">이용안내</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/#service}">사이트 소개</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/#meetings}">상품소개</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/#guide}">이용가이드</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/notice/list}">공지사항</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/notice/faq}">자주묻는질문</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/qna/list}">문의사항</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">구독서비스</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/game/alllist}">게임콘텐츠 구매</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/payments/list}">내 게임콘텐츠 조회</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">학습서비스</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/groupJoinList}">학습그룹 가입신청</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/joinConfirm}">학습그룹 가입확인</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/submit}">숙제 제출</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">교육자마당</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/gameList}">학습그룹 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/list}">학습그룹 조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/studygroup/approveList}">학습그룹 가입 승인</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/add}">숙제 생성</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/send}">숙제 전송</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/homework/evaluate}">숙제 평가</a></li>
+                                    </ul>
+                                </li>
+                                <li class="has-sub">
+                                    <a href="javascript:void(0)">운영자마당</a>
+                                    <ul class="sub-menu">
+                                        <li><a class="dropdown-item" th:href="@{/game/addForm}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
+                                        <li>
+                                            <a class="dropdown-item" th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a>
+                                        </li>
+                                        <li><a class="dropdown-item" th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{#}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
+                                    </ul>
+                                </li>
+
+                                <li><a th:href="@{/member/login}" sec:authorize="isAnonymous()" class="active me-sm-2"> login/join</a></li>
+                                <li><a th:href="@{/logout}" sec:authorize="isAuthenticated()" class="active me-sm-2"> logout</a></li>
+                            </ul>
+                            <a class='menu-trigger'>
+                                <span>Menu</span>
+                            </a>
+                            <!-- ***** Menu End ***** -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+</nav>
 </nav>

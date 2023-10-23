@@ -1,0 +1,216 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
+        <div th:replace="~{/notice/utilSidebar::sidebar}"></div><!--운영자가 아니면 보여주는 사이드바 밑에서 공지등록버튼과 상태 드롭다운은 운영자한테만 보여주어야 함-->
+
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h2>공지사항</h2>
+            <!-- 조회 컨트롤러 영역 -->
+            <!--각각의 option value 값에 넘어가는 url을 모두 써줘야함. 변하는 값에 맞게끔.-->
+            <div class="my-5">
+                <form action="/notice/search">
+                    <input type="hidden" id="page" name="page" value="">
+                    <div class="d-flex justify-content-center row">
+                        <label class="col-auto col-form-label" for="listSize">표기:</label>
+                        <div class="col-auto">
+                            <select class="form-select" id="listSize" name="listSize">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+
+                        <!--운영자만. 운영자가 아니면 noti만 볼 수 있게-->
+                        <label class="col-auto col-form-label" for="noticeType" th:if="${memberRole}==ADMIN">구분:</label>
+                        <div class="col-auto">
+                            <select id="noticeType" name="noticeType" class="form-select">
+                                <option value="noti">공지사항</option>
+                                <option value="faq">자주 묻는 질문</option>
+                            </select>
+                        </div>
+
+                        <!--운영자한테만 보여야 함, 운영자가 아니면 post만 볼 수 있게-->
+                        <label class="col-auto col-form-label" for="status" th:if="${memberRole}==ADMIN">상태:</label>
+                        <div class="col-auto">
+                            <select id="status" name="status" class="form-select">
+                                <option value="post">게시</option>
+                                <option value="not_post">예약</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <div class="d-flex justify-content-center">
+                        <div class="input-group" style="width: 45%">
+                            <select id="searchCategory" name="searchCategory" class="form-select">
+                                <option value="noticeTitleAndNoticeContent">제목+내용</option>
+                                <option value="noticeTitle">제목</option>
+                                <option value="noticeContent">내용</option>
+                            </select>
+                            <input class="form-control" type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
+                            <input type="submit" value="검색" class="btn btn-outline-warning">
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div>
+                <a class="form-text" th:text="|총 게시물 ${noticePage.getTotalElements}개 조회되었습니다.|"></a>
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr class="text-center">
+                            <th>No</th>
+                            <th th:if="${memberRole}==ADMIN">상태</th><!--운영관리자한테만-->
+                            <th th:if="${memberRole}==ADMIN">분류</th><!--운영관리자한테만-->
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th th:if="${memberRole}==ADMIN">작성일시</th><!--운영자한테만-->
+                            <th>게시일</th>
+                            <th>조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody class="">
+                        <!--관리자가 로그인한 경우, 모든 항목을 조회할 수 있음. th:if="${memberRole}==ADMIN"-->
+                        <tr th:each="notice, loop:${noticePage}">
+                            <td class="text-center" th:if="${notice.isImp}==true"><svg xmlns="http://www.w3.org/2000/svg" style="fill:#b40e0e" height="1em" viewBox="0 0 512 512"><path d="M480 32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9L381.7 53c-48 48-113.1 75-181 75H192 160 64c-35.3 0-64 28.7-64 64v96c0 35.3 28.7 64 64 64l0 128c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32V352l8.7 0c67.9 0 133 27 181 75l43.6 43.6c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V300.4c18.6-8.8 32-32.5 32-60.4s-13.4-51.6-32-60.4V32zm-64 76.7V240 371.3C357.2 317.8 280.5 288 200.7 288H192V192h8.7c79.8 0 156.5-29.8 215.3-83.3z"/></svg></td>
+                            <td class="text-center" th:if="${notice.isImp}!=true" th:text="${notice.noticeNo}"></td>
+                            <!--<td th:text="${noticePage.getTotalElements - (noticePage.number * noticePage.size) - loop.index}"></td>-->
+                            <td class="text-center" th:if="${memberRole}==ADMIN"> <!--운영관리자한테만-->
+                                <a th:if="${notice.status.equals('post')}" th:text="게시"></a>
+                                <a th:if="${notice.status.equals('not_post')}" th:text="예약"></a>
+                            </td>
+                            <td class="text-center" th:if="${memberRole}==ADMIN">
+                                <a th:if="${notice.noticeType.equals('noti')}" th:text="공지사항"></a>
+                                <a th:if="${notice.noticeType.equals('faq')}" th:text="자주묻는질문"></a>
+                            </td>
+                            <td><a href="/notice/detail/${notice.noticeNo}" th:href="@{|/notice/detail/${notice.noticeNo}|}" th:text="${notice.noticeTitle}"></a>
+                                <svg th:if="${notice.haveAttachFiles}==true" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path d="M21.586 10.461l-10.05 10.075c-1.95 1.949-5.122 1.949-7.071 0s-1.95-5.122 0-7.072l10.628-10.585c1.17-1.17 3.073-1.17 4.243 0 1.169 1.17 1.17 3.072 0 4.242l-8.507 8.464c-.39.39-1.024.39-1.414 0s-.39-1.024 0-1.414l7.093-7.05-1.415-1.414-7.093 7.049c-1.172 1.172-1.171 3.073 0 4.244s3.071 1.171 4.242 0l8.507-8.464c.977-.977 1.464-2.256 1.464-3.536 0-2.769-2.246-4.999-5-4.999-1.28 0-2.559.488-3.536 1.465l-10.627 10.583c-1.366 1.368-2.05 3.159-2.05 4.951 0 3.863 3.13 7 7 7 1.792 0 3.583-.684 4.95-2.05l10.05-10.075-1.414-1.414z"/></svg>
+                                <span class="text-danger small ms-1"
+                                      th:if="${notice.replyCnt>0}"
+                                      th:text="${notice.replyCnt}"></span></td>
+                            <td class="text-center" th:text="${notice.member.memberId}"></td>
+                            <td class="text-center" th:text="${#temporals.format(notice.writeDate, 'yyyy-MM-dd HH:mm')}" th:if="${memberRole}==ADMIN"></td> <!--작성일시 운영자만-->
+                            <td class="text-center" th:text="${#temporals.format(notice.postDate, 'yyyy-MM-dd')}"></td> <!--게시일자-->
+                            <td class="text-center" th:text="${notice.readCnt}"></td>
+                        </tr>
+                        <tr th:if="${noticePage.isEmpty()}">
+                            <td colspan="6" class="text-center form-text">검색 결과가 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-end">
+                <a href="/notice/add" th:href="@{/notice/add}" th:if="${memberRole}==ADMIN" class="btn btn-warning text-white">공지사항 등록</a>
+            </div>
+            <!--페이지네이션 들어가야함-->
+            <nav th:if="${!noticePage.isEmpty()}" class="d-flex justify-content-center">
+                <ul class="pagination">
+                    <!-- 이전 -->
+                    <li class="page-item" th:classappend="${startPage <= 5} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?noticeType=${noticeType}&page=${startPage-2}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Prev</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${startPage-2}|}"><span>Prev</span></a>
+                    </li>
+
+                    <!-- 페이지 번호 ?page=&listSize=10&noticeType=noti&status=post&searchCategory=noticeTitle&keyword=test -->
+                    <li class="page-item" th:each="page : ${#numbers.sequence(startPage-1, endPage-1)}"
+                        th:classappend="${page == noticePage.number} ? 'active'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?noticeType=${noticeType}&page=${page}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"
+                           th:text="${page+1}"></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${page}|}"
+                           th:text="${page+1}"></a>
+                    </li>
+
+                    <!-- 다음  &=${}-->
+                    <li class="page-item" th:classappend="${endPage >= noticePage.totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?noticeType=${noticeType}&page=${endPage}&listSize=${listSize}&status=${status}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${endPage}|}"><span>Next</span></a>
+                    </li>
+                </ul>
+            </nav>
+
+
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+<div layout:fragment="script">
+    <script th:inline="javascript">
+
+        /*댓글등록성공시 메시지 alert*/
+        if([[${msg}]]!=null){
+            alert([[${msg}]]);
+        }
+
+        //셀렉트 박스 값 고정 - listSize
+        document.addEventListener("DOMContentLoaded", function () {
+            var listSize = [[${listSize}]];
+            var selectElement = document.getElementById("listSize");
+
+            // 각 옵션에 대해 반복
+            for (var i = 0; i < selectElement.options.length; i++) {
+                if (selectElement.options[i].value == listSize) {
+                    // 모델에서 가져온 값과 일치하는 경우 selected 속성 추가
+                    selectElement.options[i].selected = true;
+                    break; // 일치하는 옵션을 찾으면 더 이상 반복할 필요가 없으므로 종료
+                }
+            }
+        });
+
+        //셀 박 값 고정 - noticeType
+        document.addEventListener('DOMContentLoaded', function(){
+            var noticeType = [[${noticeType}]];
+            var noticeTypeSE = document.getElementById('noticeType');
+            for(var i = 0; i<noticeTypeSE.length; i++){
+                if(noticeTypeSE.options[i].value == noticeType){
+                noticeTypeSE.options[i].selected = true;
+                break;
+                }
+            }
+        });
+
+        //셀 박 값 고정 - status
+        document.addEventListener('DOMContentLoaded', function(){
+            var status = [[${status}]];
+            var statusSE = document.getElementById('status');
+            for(var i = 0; i<statusSE.length; i++){
+                if(statusSE.options[i].value == status){
+                statusSE.options[i].selected = true;
+                break;
+                }
+            }
+        });
+        //셀 박 값 고정 - searchCategory
+        document.addEventListener('DOMContentLoaded', function(){
+            var searchCategory = [[${searchCategory}]];
+            var searchCategorySE = document.getElementById('searchCategory');
+            for(var i = 0; i<searchCategorySE.length; i++){
+                if(searchCategorySE.options[i].value == searchCategory){
+                searchCategorySE.options[i].selected = true;
+                break;
+                }
+            }
+        });
+
+
+
+
+    </script>
+</div>
+</html>

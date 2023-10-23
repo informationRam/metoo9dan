@@ -1,9 +1,8 @@
 package com.idukbaduk.metoo9dan;
 
-import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
-import com.idukbaduk.metoo9dan.common.entity.GameContentFiles;
-import com.idukbaduk.metoo9dan.common.entity.GameContents;
-import com.idukbaduk.metoo9dan.common.entity.Member;
+import com.idukbaduk.metoo9dan.common.entity.*;
+import com.idukbaduk.metoo9dan.notice.repository.NoticeRepository;
+import com.idukbaduk.metoo9dan.qna.repository.QuestionRepository;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,11 @@ class Metoo9danApplicationTests {
 
 	@Autowired
 	InfoRepository infoRepository;
+	@Autowired
+	NoticeRepository noticeRepository;
+
+	@Autowired
+	QuestionRepository questionRepository;
 
 	@Autowired
 	GameContentsRepository gameContentsRepository;
@@ -51,7 +55,6 @@ class Metoo9danApplicationTests {
 
 		//Assertions.assertEquals(findInfo.getId(), info.getId());
 		//Assertions.assertEquals(findInfo.getText(), info.getText());
-
 	}
 
 	@Test
@@ -149,4 +152,39 @@ class Metoo9danApplicationTests {
 
 		// 이후 검증 로직 추가
 	}
+
+//	@Test
+//	public void insertNotice(){
+//		Member member = new Member();
+//		member.setMemberNo(1);
+//		for(int i=0; i<100; i++){
+//			LocalDateTime now = LocalDateTime.now();
+//			Notice notice = new Notice();
+//			notice.setNoticeType("noti");
+//			notice.setNoticeTitle(i+"번째 test제목");
+//			notice.setNoticeContent(i+"번째 test내용");
+//			notice.setStatus("post");
+//			notice.setIsImp(false);
+//			notice.setWriteDate(now);
+//			notice.setPostDate(now);
+//			notice.setReadCnt(0);
+//			notice.setMember(member);
+//			noticeRepository.save(notice);
+//		}
+//	}
+//	@Test
+//	public void insertQuestion(){
+//		Member member = new Member();
+//		member.setMemberNo(1);
+//		for(int i=0; i<10; i++){
+//			LocalDateTime now = LocalDateTime.now();
+//			QnaQuestions questions = new QnaQuestions();
+//			questions.setQuestionTitle(i+"번째 test제목");
+//			questions.setQuestionContent(i+"번째 test내용");
+//			questions.setIsAnswered("N");
+//			questions.setWriteDate(now);
+//			questions.setMember(member);
+//			questionRepository.save(questions);
+//		}
+//	}
 }
