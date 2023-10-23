@@ -284,7 +284,7 @@ public class HomeworkController {
             @RequestParam(defaultValue = "All") String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "asc") String sort
+            @RequestParam(defaultValue = "desc") String sort
     ) {
         page=page-1;
         Pageable pageable = PageRequest.of(page, size, sort.equals("asc") ? Sort.by("sendDate").ascending() : Sort.by("sendDate").descending());
@@ -303,8 +303,6 @@ public class HomeworkController {
             @RequestParam(defaultValue = "asc") String sort
     ) {
         page-=1;
-        System.out.println(homeworkNo);
-        System.out.println(sendDate);
         // 스트링 형식의 날짜를 LocalDateTime 객체로 변환
         LocalDateTime sd;
         try {

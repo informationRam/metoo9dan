@@ -33,8 +33,8 @@
                                     <div style="width:20%;">
                                         <div class="dropdown">
                                             <select id="sortOrder" class="form-select">
-                                                <option value="asc">오름차순</option>
                                                 <option value="desc">내림차순</option>
+                                                <option value="asc">오름차순</option>
                                             </select>
                                         </div>
                                     </div>
@@ -121,11 +121,10 @@
                     console.log("제목 드롭다운 선택");
                         loadTable(1); // 선택 후 첫 페이지 로드
                     });
-
                     // 정렬 이벤트
                     $("#sortOrder").on('change', function() {
-                    console.log("정렬 드롭다운 선택");
-                        loadTable(1);
+                    var selectedValue = $(this).val();
+                    loadTable(1,selectedValue); // 선택 후 첫 페이지 로드
                     });
 
                     // 페이지네이션 클릭 이벤트
@@ -137,7 +136,7 @@
                 });
 
                 // 상위 테이블 로드
-                function loadTable(page = 1) {
+                function loadTable(page = 1, isDesc = 'desc') {
                     let title = $("#titleDropdown").val();
                     let sortOrder = $("#sortOrder").val();
                     $.ajax({
@@ -164,26 +163,35 @@
                             </tr>`;
                         } else {
                             // 카운트 변수 초기화
-                                let count = 1;
+                            let count;
+                            if (isDesc === 'asc') {
+                                count = (page - 1) * 5 + 1;  // 현재 페이지의 첫 번째 항목 번호
+                            } else {
+                                count = response.totalElements - (page - 1) * 5;  // 현재 페이지의 첫 번째 항목 번호
+                            }
 
-                                // 데이터가 있을 때
-                                response.content.forEach(item => {
-                                    let formattedDueDate = moment(item.dueDate).format('YYYY/MM/DD');
-                                    let formattedSendDate = moment(item.sendDate).format('YYYY/MM/DD HH:mm:ss');
+                            // 데이터가 있을 때
+                            response.content.forEach(item => {
+                                let formattedDueDate = moment(item.dueDate).format('YYYY/MM/DD');
+                                let formattedSendDate = moment(item.sendDate).format('YYYY/MM/DD HH:mm:ss');
 
-                                    tableContent += `
-                                    <tr data-hw-id="${item.homeworkNo}" data-send-date="${item.sendDate}">
-                                        <td>${count}</td> <!-- 카운트 값을 여기에 적용 -->
-                                        <td>${item.homeworkTitle}</td>
-                                        <td>${item.homeworkContentPreview}</td>
-                                        <td>${item.currentLevel}</td>
-                                        <td>${formattedDueDate}</td>
-                                        <td>${formattedSendDate}</td>
-                                    </tr>`;
+                                tableContent += `
+                                <tr data-hw-id="${item.homeworkNo}" data-send-date="${item.sendDate}">
+                                    <td>${count}</td>
+                                    <td>${item.homeworkTitle}</td>
+                                    <td>${item.homeworkContentPreview}</td>
+                                    <td>${item.currentLevel}</td>
+                                    <td>${formattedDueDate}</td>
+                                    <td>${formattedSendDate}</td>
+                                </tr>`;
 
-                                    // 카운트 증가
+                                // 카운트 조정 (오름차순이면 증가, 내림차순이면 감소)
+                                if (isDesc === 'asc') {
                                     count++;
-                                });
+                                } else {
+                                    count--;
+                                }
+                            });
                         }
                             tableContent += '</tbody>';
                             $('#hwSendTable').html(tableContent);
