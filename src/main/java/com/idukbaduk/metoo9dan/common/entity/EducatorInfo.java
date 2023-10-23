@@ -1,5 +1,6 @@
 package com.idukbaduk.metoo9dan.common.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
 
