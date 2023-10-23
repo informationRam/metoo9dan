@@ -129,7 +129,7 @@
     <!--게임콘텐츠 리스트(학습그룹 등록)-->
     <select id="GameContentList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         SELECT distinct p.payment_no, g.game_content_no, g.game_name, g.max_subscribers, p.payment_date,
-               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date
         FROM baduk.game_contents g
         JOIN baduk.payments p ON g.game_content_no = p.game_content_no
         LEFT JOIN (
@@ -143,6 +143,15 @@
         <if test="pageSize != null and offset != null">
         LIMIT #{pageSize} OFFSET #{offset}
         </if>
+    </select>
+
+    <!--payment_no로 그룹 지정 인원 구하기-->
+    <select id="AppointedGroupNum" parameterType="int" resultType="int">
+        <![CDATA[
+        SELECT sum(group_size)
+        FROM baduk.study_groups
+        WHERE payment_no=#{payment_no}
+        ]]>
     </select>
 
     <!--게임콘텐츠명 리스트-->
@@ -169,7 +178,7 @@
     <!--게임콘텐츠 리스트 조회 버튼(학습그룹 등록)-->
     <select id="SelectGameList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         SELECT p.payment_no,g.game_content_no,g.game_name, g.max_subscribers, p.payment_date,
-               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date
         FROM baduk.game_contents g
         JOIN baduk.payments p ON g.game_content_no = p.game_content_no
         LEFT JOIN (
@@ -219,6 +228,7 @@
         WHERE p.member_no = #{member_no}  AND p.status='complete' AND p.payment_no=#{payment_no}
 		]]>
     </select>
+
 
     <!--학습그룹 등록학생수 가져오기(학습그룹 등록 폼)-->
     <select id="approved_num" parameterType="int" resultType="int">

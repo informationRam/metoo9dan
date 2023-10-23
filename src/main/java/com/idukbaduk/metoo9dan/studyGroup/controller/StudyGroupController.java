@@ -56,9 +56,25 @@ public class StudyGroupController {
         int totalCount = studyGroupService.getGameListCnt(member_no); //게임리스트 카운트
         int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
 
+        //게임콘텐츠 리스트
         List<GameContentsListDTO> gameContents = studyGroupService.getGameList(map);
         model.addAttribute("gameContents",gameContents);
         System.out.println("gameContents="+gameContents);
+
+        //그룹 지정된 인원 가져오기
+        for (GameContentsListDTO gameContent : gameContents) {
+            int payment_no = gameContent.getPayment_no();
+            int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+            System.out.println("appointed_group_num="+appointed_group_num);
+            gameContent.setAppointed_group_num(appointed_group_num);
+        }
+
+     /*   for (GameContentsListDTO gameContent : gameContents) {
+            int payment_no = gameContent.getPayment_no();
+            int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+            model.addAttribute("appointed_group_num",appointed_group_num);
+            System.out.println("appointed_group_num"+appointed_group_num);
+        }*/
 
         model.addAttribute("currentPage",currentPage);
         model.addAttribute("totalCount",totalCount);
@@ -92,7 +108,16 @@ public class StudyGroupController {
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
 
+        //게임콘텐츠 리스트
         List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
+
+        //그룹 지정된 인원 가져오기
+        for (GameContentsListDTO gameContent : gameContents) {
+            int payment_no = gameContent.getPayment_no();
+            int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+            System.out.println("appointed_group_num="+appointed_group_num);
+            gameContent.setAppointed_group_num(appointed_group_num);
+        }
 
         map.clear(); // 기존에 추가된 모든 항목을 제거
         map.put("member_no", member_no); // map에 member_no 추가
@@ -126,6 +151,10 @@ public class StudyGroupController {
         GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
         model.addAttribute("gameInfo",gameInfo);
         System.out.println("gameInfo="+gameInfo);
+
+        //그룹 지정된 인원 가져오기
+        int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+        model.addAttribute("appointed_group_num",appointed_group_num);
 
         return "studyGroup/studyGroup_form";
     }
@@ -185,19 +214,25 @@ public class StudyGroupController {
         GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
         model.addAttribute("gameInfo",gameInfo);
 
-        //수정 가능 그룹인원(학습가능인원-(그룹지정된 인원-현재 그룹인원))
-        int calculatedValue = gameInfo.getMax_subscribers() - (gameInfo.getAppointed_group_num() - studyGroupForm.getGroupSize());
-        model.addAttribute("calculatedValue", calculatedValue);
 
         //학습 그룹 정보(등록 학생 수(approved_num) 가져오기)
         List<StudyGroupsListDTO> studyGroup = studyGroupService.getList(member_no);
         model.addAttribute("studyGroup",studyGroup);
         System.out.println("studyGroup="+studyGroup);
 
+        //그룹 지정된 인원 가져오기
+        int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+        model.addAttribute("appointed_group_num",appointed_group_num);
+
+        //수정 가능 그룹인원(학습가능인원-(그룹지정된 인원-현재 그룹인원))
+        int calculatedValue = gameInfo.getMax_subscribers() - (appointed_group_num - studyGroupForm.getGroupSize());
+        model.addAttribute("calculatedValue", calculatedValue);
+
         //학습그룹 등록학생수 가져오기
         int groupNum = studyGroupService.getGroupNum(group_no);
         model.addAttribute("groupNum",groupNum);
         System.out.println("groupNum="+groupNum);
+
 
         return "studyGroup/studyGroup_modifyForm";
     }
@@ -479,7 +514,7 @@ public class StudyGroupController {
             map.put("offset", offset);
 
             List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectGroupJoinList(map);
-            System.out.println("엔트groupJoinList"+groupJoinList);
+            System.out.println("엔드groupJoinList"+groupJoinList);
 
             int totalCount = 1; // 게임리스트 조회 카운트
             int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지

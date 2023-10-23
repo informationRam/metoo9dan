@@ -29,7 +29,7 @@ import java.util.List;
 @Service
 @Transactional  //부모entity에 접근할때 필요함
 public class GameFilesService {
-    private String fileUrl = "/Users/ryuahn/Desktop/baduk/";     //mac 파일 지정 C:/baduk
+    private String fileUrl = "C:/upload/game/";     //mac 파일 지정 C:/baduk
 
     @Autowired
     private final GameContentsFileRepository gameContentsFileRepository;

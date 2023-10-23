@@ -2,7 +2,7 @@
 <div layout:fragment="content" class="container my-3">
     <link rel="stylesheet" href="/css/studyGroup/table.css"/>
     <div class="row">
-        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div th:replace="~{/studyGroup/educatorSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
         <div style="border: 0px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
@@ -35,7 +35,7 @@
                             <span th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></span>
                         </td>
                         <td th:text="${gameInfo.max_subscribers}"></td>
-                        <td th:text="${gameInfo.appointed_group_num}"></td>
+                        <td th:text="${appointed_group_num}"></td>
                         <!--<td th:text="${gameInfo.name}"></td>-->
                     </tr>
                     </tbody>
@@ -52,10 +52,11 @@
                     <label for="group_name" class="form-label">그룹명</label>
                     <input type="text" th:field="*{groupName}" class="form-control"/>
                 </div>
-                <div class="mb-3">
-                    <label for="group_size" class="form-label">그룹 인원</label>
+                <label for="group_size" class="form-label">그룹 인원</label>
+                <div class="form-floating mb-3">
                     <input type="number" th:field="*{groupSize}" class="form-control"
-                           th:min="1" th:max="${gameInfo.max_subscribers - gameInfo.appointed_group_num}"/>
+                           th:min="1" th:max="${gameInfo.max_subscribers - appointed_group_num}"/>
+                    <label for="floatingInput" th:text="${gameInfo.max_subscribers - appointed_group_num} + '명 까지 등록 가능합니다.'"></label>
                 </div>
                 <div class="mb-3">
                     <label for="group_start_date" class="form-label">그룹 시작일</label>
@@ -104,12 +105,12 @@
 
         // 그룹명 검사
         if (groupNameValue.trim() === "") {
-            alert("그룹명을 입력하세요.");
+            alert("그룹 명을 입력하세요.");
             event.preventDefault(); // 폼 제출 방지
         } else {
             // 그룹인원 검사
             if (groupSizeValue.trim() === "" || isNaN(groupSizeValue) || parseInt(groupSizeValue) <= 0) {
-                alert("유효한 그룹인원을 입력하세요.");
+                alert("그룹 인원을 입력하세요.");
                 event.preventDefault(); // 폼 제출 방지
             } else {
                 // 그룹 시작일 검사
