@@ -4,7 +4,7 @@
         /* 검색 결과 메시지에 스타일을 적용합니다 */
         .no-results-message {
             font-style: italic;
-            color: #999; /* 원하는 색상으로 변경하세요 */
+            color: #09aa5c; /* 원하는 색상으로 변경하세요 */
         }
 
     .table-container {
@@ -32,41 +32,45 @@
     <div class="row">
         <div th:replace="~{/admin/adminSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
         <div class="col-10">
-            <div class="mb-3 col-12">
-                <div class="col-md-4 mb-1 ms-5" style="margin-top: 25px !important;">
-                <div class="col-md-2 mb-1">
-                        <label for="difficulty" class="form-label">자료구분</label>
-                        <select id="searchText" class="form-select form-select-sm w-auto" onchange="searchGames()">
-                            <option value="">-- 선택해주세요 --</option>
-                            <option value="tutorial">튜토리얼</option>
-                            <option value="lecture">교육영상</option>
-                        </select>
-                    </div>
 
-                    <div class="col-md-2 mb-1">
-                        <label for="searchGame" class="form-label">게임콘텐츠명</label>
-                        <select id="searchGameContent" class="form-select form-select-sm w-auto" onchange="searchGameContents()">
-                            <option value="">-- 선택해주세요 --</option>
-                            <option th:each="game : ${uniqueGameNames}" th:value="${game.gameContentNo}" th:text="${game.gameName}"></option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4 mb-1" style="margin-top: 25px !important;">
-                        <div class="input-group">
-                            <label for="resourceName" class="form-label"></label>
-                            <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
-                            <button class="btn btn-warning text-white" type="button" onclick="searchresourceName()">검색</button>
+                    <div class="card">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-body">
+                                    <label for="difficulty" class="form-label">자료구분</label>
+                                    <select id="searchText" class="form-select form-select w-300" onchange="searchGames()">
+                                        <option value="">-- 선택해주세요 --</option>
+                                        <option value="tutorial">튜토리얼</option>
+                                        <option value="lecture">교육영상</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card-body">
+                                    <label for="searchGame" class="form-label">게임콘텐츠명</label>
+                                    <select id="searchGameContent" class="form-select form-select w-300" onchange="searchGameContents()">
+                                        <option value="">-- 선택해주세요 --</option>
+                                        <option th:each="game : ${uniqueGameNames}" th:value="${game.gameContentNo}" th:text="${game.gameName}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="card-body mt-4">
+                                    <div class="input-group">
+                                        <label for="resourceName" class="form-label"></label>
+                                        <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
+                                        <button class="btn btn-warning text-white" type="button" onclick="searchresourceName()">검색</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-            </div>
-            <div class="col-12" style="border: 1px solid black;">
+            <div class="col-12">
                 <table class="table">
                 <thead>
                 <tr>
                     <th scope="col" class="text-center">No.</th>
-                    <th scope="col2" class="text-center">교육자료</th>
+                    <th scope="col2" class="text-center" colspan="2">교육자료</th>
                     <th scope="col" class="text-center">구분</th>
                     <th scope="col" class="text-center">유형</th>
                     <th scope="col" class="text-center">서비스</th>
@@ -85,7 +89,7 @@
                         <a th:href="@{|/education/detail/${education.resourceNo}|}" th:text="${education.resourceName}" class="text-decoration-none text-dark"></a>
                             <img th:if="${education != null and education.resourcesFilesList != null and not #lists.isEmpty(education.resourcesFilesList)}"
                                  th:src="@{|/upload/education/${education.resourcesFilesList.thumOriginCopyName}|}"
-                                 alt="교육자료 이미지" class="card-img" style="width: 100%; height: auto; object-fit: cover;">
+                                 alt="교육자료 이미지" class="card-img" style="width: 50%; height: auto; object-fit: cover;">
                     </td>
                     <!-- 자료구분 -->
                     <td class="education resourceCate">
@@ -367,4 +371,4 @@ function confirmCancel(event) {
 
     </script>-->
 </div>
-</html>`
+</html>
