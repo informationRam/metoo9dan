@@ -3,6 +3,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/studyGroup/table.css"/>
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
@@ -13,12 +14,13 @@
             <br/>
             <p><strong>[게임 콘텐츠 정보]</strong></p>
             <div>
-                <table class="table">
-                    <thead class="table-dark">
+                <table>
+                    <thead>
                     <tr>
                         <th>게임콘텐츠명</th>
-                        <th>학습시작일</th>
-                        <th>학습종료일</th>
+                        <!--<th>학습시작일</th>
+                        <th>학습종료일</th>-->
+                        <th>학습 기간</th>
                         <th>학습가능인원</th>
                         <th>그룹지정된 인원</th>
                         <!--<th>교육자명</th>-->
@@ -27,8 +29,13 @@
                     <tbody>
                     <tr th:each="gameInfo, loop : ${gameInfo}">
                         <td th:text="${gameInfo.game_name}"></td>
-                        <td th:text="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"></td>
-                        <td th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></td>
+                        <!--<td th:text="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></td>-->
+                        <td>
+                            <span th:text="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"></span>
+                            ~
+                            <span th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></span>
+                        </td>
                         <td th:text="${gameInfo.max_subscribers}"></td>
                         <td th:text="${gameInfo.appointed_group_num}"></td>
                         <!--<td th:text="${gameInfo.name}"></td>-->
