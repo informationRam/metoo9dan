@@ -111,125 +111,264 @@
 
 <script>
 
-//-------학습그룹 가입신청하기----------
-function initializePage() {
-    // 신청 버튼 클릭 시
-    var buttons = document.querySelectorAll(".viewButton");
+    //-------학습그룹 가입신청하기----------
+    document.addEventListener("DOMContentLoaded", function () {
+        // 신청 버튼 클릭 시
+        var buttons = document.querySelectorAll(".viewButton");
 
-    buttons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            var selectedGroupNo = this.getAttribute("value");
-            console.log('selectedGroupNo',selectedGroupNo);
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var selectedGroupNo = this.getAttribute("value");
+                var selectedGroupTO = parseInt(this.getAttribute("data-group-to"));
 
-            var selectedGroupTO = parseInt(this.getAttribute("data-group-to"));
-            console.log('data-group-to',data-group-to);
+                var ingStudyGroup = [[${ingStudyGroup}]]; // Thymeleaf로 서버에서 값 가져오기
 
-            var ingStudyGroup = [[${ingStudyGroup}]]; // Thymeleaf로 서버에서 값 가져오기
-
-            if (ingStudyGroup === 1) {
-                alert("이미 학습 그룹에 가입되어 있습니다.");
-            } else {
-                    if (selectedGroupTO === 0) {
-                        alert("신청할 수 있는 그룹 T/O가 없습니다.");
-                    } else {
-                        // 선택된 그룹 번호를 사용하여 POST 요청 보내기
-                        fetch("/studygroup/join/" + selectedGroupNo, {
-                            method: "POST",
-                        })
-                            .then(function (response) {
-                                if (response.status === 200) {
-                                    alert("그룹에 가입 신청되었습니다.");
-                                    // 가입이 성공한 경우, 필요한 동작 수행
-                                    location.reload();
-                                } else {
-                                    alert("가입 신청에 실패했습니다. 다시 시도하세요.");
-                                }
+                if (ingStudyGroup === 1) {
+                    alert("이미 학습 그룹에 가입되어 있습니다.");
+                } else {
+                        if (selectedGroupTO === 0) {
+                            alert("신청할 수 있는 그룹 T/O가 없습니다.");
+                        } else {
+                            // 선택된 그룹 번호를 사용하여 POST 요청 보내기
+                            fetch("/studygroup/join/" + selectedGroupNo, {
+                                method: "POST",
                             })
-                            .catch(function (error) {
-                                alert("오류가 발생했습니다. 다시 시도하세요.");
-                            });
-                    }
-            }
+                                .then(function (response) {
+                                    if (response.status === 200) {
+                                        alert("그룹에 가입 신청되었습니다.");
+                                        // 가입이 성공한 경우, 필요한 동작 수행
+                                        location.reload();
+                                    } else {
+                                        alert("가입 신청에 실패했습니다. 다시 시도하세요.");
+                                    }
+                                })
+                                .catch(function (error) {
+                                    alert("오류가 발생했습니다. 다시 시도하세요.");
+                                });
+                        }
+                }
+            });
         });
     });
-}
 
-document.addEventListener("DOMContentLoaded", function () {
-    initializePage();
-});
+    // 페이지네이션 UI 업데이트 함수
+    function updatePaginationUI(currentPage, totalPages) {
+        var paginationContainer = document.getElementById("paginationContainer");
+        var html = '<ul class="pagination">';
 
-
-// 페이지네이션 UI 업데이트 함수
-function updatePaginationUI(currentPage, totalPages) {
-    var paginationContainer = document.getElementById("paginationContainer");
-    var html = '<ul class="pagination">';
-
-    // 이전 버튼 생성
-    html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
-    html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
-    html += '</li>';
-
-    // 페이지 번호 버튼 생성
-    for (var i = 1; i <= totalPages; i++) {
-        html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
-        html += '<a class="page-link" href="#" data-page="' + i + '">' + i + '</a>';
+        // 이전 버튼 생성
+        html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
+        html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
         html += '</li>';
-    }
 
-    // 다음 버튼 생성
-    html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
-    html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
-    html += '</li>';
+        // 페이지 번호 버튼 생성
+        for (var i = 1; i <= totalPages; i++) {
+            html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
+            html += '<a class="page-link" href="#" data-page="' + i + '">' + i + '</a>';
+            html += '</li>';
+        }
 
-    html += '</ul>';
-    paginationContainer.innerHTML = html;
+        // 다음 버튼 생성
+        html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
+        html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
+        html += '</li>';
 
-    // 이전 페이지 버튼 클릭 이벤트 리스너 제거
-    var prevPageButton = document.querySelector('.page-item.disabled .page-link');
-    if (prevPageButton) {
-        prevPageButton.removeEventListener('click', handlePageButtonClick);
-    }
+        html += '</ul>';
+        paginationContainer.innerHTML = html;
 
-    // 다음 페이지 버튼 클릭 이벤트 리스너 제거
-    var nextPageButton = document.querySelector('.page-item.disabled .page-link');
-    if (nextPageButton) {
-        nextPageButton.removeEventListener('click', handlePageButtonClick);
+        // 이전 페이지 버튼 클릭 이벤트 리스너 제거
+        var prevPageButton = document.querySelector('.page-item.disabled .page-link');
+        if (prevPageButton) {
+            prevPageButton.removeEventListener('click', handlePageButtonClick);
+        }
+
+        // 다음 페이지 버튼 클릭 이벤트 리스너 제거
+        var nextPageButton = document.querySelector('.page-item.disabled .page-link');
+        if (nextPageButton) {
+            nextPageButton.removeEventListener('click', handlePageButtonClick);
+        }
+
+        // 페이지 버튼 클릭 이벤트 리스너 추가
+        var pageLinks = document.querySelectorAll('.page-link');
+        pageLinks.forEach(function (link) {
+            link.addEventListener("click", handlePageButtonClick);
+        });
     }
 
     // 페이지 버튼 클릭 이벤트 리스너 추가
-    var pageLinks = document.querySelectorAll('.page-link');
-    pageLinks.forEach(function (link) {
-        link.addEventListener("click", handlePageButtonClick);
-    });
-}
+    function handlePageButtonClick(event) {
+        event.preventDefault();
+        var page = this.getAttribute('data-page');
+        var selectedGroupNo = document.getElementById("selectSudyGroup").value;
+        var selectedMemberNo = document.getElementById("selectEducatorName").value;
 
-// 페이지 버튼 클릭 이벤트 리스너 추가
-function handlePageButtonClick(event) {
-    event.preventDefault();
-    var page = this.getAttribute('data-page');
-    var selectedGroupNo = document.getElementById("selectSudyGroup").value;
-    var selectedMemberNo = document.getElementById("selectEducatorName").value;
+        // callGroupAPI 함수를 이 위치에서 정의
+        function callGroupAPI(endpoint, params) {
+            var url = new URL("/studygroup/" + endpoint, window.location.origin);
+            var searchParams = new URLSearchParams(params);
 
-    // callGroupAPI 함수를 이 위치에서 정의
-    function callGroupAPI(endpoint, params) {
-        var url = new URL("/studygroup/" + endpoint, window.location.origin);
-        var searchParams = new URLSearchParams(params);
+            url.search = searchParams.toString();
 
-        url.search = searchParams.toString();
+            fetch(url, {
+                method: "GET",
+            })
+            .then(function (response) {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    console.error("오류 발생: " + response.statusText);
+                    return [];
+                }
+            })
+            .then(function (data) {
+               // 데이터를 HTML 문자열로 생성하는 함수
+                function generateHTML(data) {
+                    console.log('data',data);
+                    var resultHTML = "";
 
-        fetch(url, {
-            method: "GET",
-        })
-        .then(function (response) {
-            if (response.status === 200) {
-                return response.json();
-            } else {
-                console.error("오류 발생: " + response.statusText);
-                return [];
-            }
-        })
-        .then(function (data) {
-           // 데이터를 HTML 문자열로 생성하는 함수
+                        resultHTML = '<div class="container">';
+                        resultHTML += '<div class="row">';
+
+                        data.groupJoinList.forEach(function (groupJoinList) {
+                            resultHTML += '<div class="col-md-4 my-3">';
+                            resultHTML += '<div class="card" data-bs-toggle="tooltip" data-bs-placement="bottom" title="' + (groupJoinList.group_introduce != null ? '그룹 소개글 : ' + groupJoinList.group_introduce : '') + '">';
+                            resultHTML += '<span class="offer">' + groupJoinList.school_name + '</span>';
+                            resultHTML += '<div class="item-image">';
+                            resultHTML += '<img src="/image/baduk.png" />';
+                            resultHTML += '</div>';
+                            resultHTML += '<div class="item-content">';
+                            resultHTML += '<h3><strong>' + groupJoinList.group_name + ' - ' + groupJoinList.name + '</strong></h3>';
+
+                            var originalStartDate = new Date(groupJoinList.group_start_date);
+                            var formattedStartDate = originalStartDate.getFullYear() + '-'
+                                                    + ('0' + (originalStartDate.getMonth() + 1)).slice(-2)
+                                                    +'-'
+                                                    + ('0' + originalStartDate.getDate()).slice(-2);
+
+                            var originalFinishDate = new Date(groupJoinList.group_finish_date);
+                            var formattedFinishDate = originalFinishDate.getFullYear()
+                                                   +'-'
+                                                   +(originalFinishDate.getMonth() < 9 ? "0": "")+(originalFinishDate.getMonth()+1)
+                                                   +'-'
+                                                   +(originalFinishDate.getDate()<10?"0":"")+originalFinishDate.getDate();
+
+                            resultHTML += '<td>';
+                            resultHTML += '<span>' + formattedStartDate + '</span>';
+                            resultHTML += ' ~ ';
+                            resultHTML += '<span>' + formattedFinishDate+ '</span>';
+                            resultHTML += '</td>'
+
+                            resultHTML += '<div class="item-price">';
+                            resultHTML += '<div style="margin-right: 10px;">';
+                            resultHTML += '<button class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
+                            resultHTML += '</div>';
+                            resultHTML += '<span>그룹 T/O : ' + groupJoinList.group_TO + '명</span>';
+                            resultHTML += '</div>';
+                            resultHTML += '</div>';
+                            resultHTML += '</div>';
+                            resultHTML += '</div>';
+                        });
+
+                        resultHTML += '</div>';
+                        resultHTML += '</div>';
+
+
+                    return resultHTML;
+                }
+
+                // 신청 버튼 클릭 시
+        var buttons = document.querySelectorAll(".viewButton");
+
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var selectedGroupNo = this.getAttribute("value");
+                var selectedGroupTO = parseInt(this.getAttribute("data-group-to"));
+
+                var ingStudyGroup = [[${ingStudyGroup}]]; // Thymeleaf로 서버에서 값 가져오기
+
+                if (ingStudyGroup === 1) {
+                    alert("이미 학습 그룹에 가입되어 있습니다.");
+                } else {
+                        if (selectedGroupTO === 0) {
+                            alert("신청할 수 있는 그룹 T/O가 없습니다.");
+                        } else {
+                            // 선택된 그룹 번호를 사용하여 POST 요청 보내기
+                            fetch("/studygroup/join/" + selectedGroupNo, {
+                                method: "POST",
+                            })
+                                .then(function (response) {
+                                    if (response.status === 200) {
+                                        alert("그룹에 가입 신청되었습니다.");
+                                        // 가입이 성공한 경우, 필요한 동작 수행
+                                        location.reload();
+                                    } else {
+                                        alert("가입 신청에 실패했습니다. 다시 시도하세요.");
+                                    }
+                                })
+                                .catch(function (error) {
+                                    alert("오류가 발생했습니다. 다시 시도하세요.");
+                                });
+                        }
+                }
+            });
+        });
+
+
+                var resultHTML = generateHTML(data);
+                dataContainer.innerHTML = resultHTML;
+
+                // 페이지네이션 UI 업데이트
+                updatePaginationUI(data.currentPage, data.totalPages);
+
+
+            })
+            .catch(function (error) {
+                console.error("오류 발생:", error);
+            });
+        }
+
+        var params = new URLSearchParams();
+        params.append("group_no", selectedGroupNo);
+        params.append("member_no", selectedMemberNo);
+        params.append("page", page);
+        callGroupAPI("groupJoinListEndpoint", params.toString());
+    }
+
+
+    //-------조회하기 버튼----------
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // 페이지 로드 시 한 번 실행
+
+        var searchButton = document.getElementById("searchButton");
+        var dataContainer = document.getElementById("dataContainer");
+
+        searchButton.addEventListener("click", function () {
+            var selectedGroupNo = document.getElementById("selectSudyGroup").value;
+            var selectedMemberNo = document.getElementById("selectEducatorName").value;
+
+
+            // API 호출 함수 정의
+            function callGroupAPI(endpoint, params) {
+                var url = new URL("/studygroup/" + endpoint, window.location.origin);
+                var searchParams = new URLSearchParams(params);
+
+
+                url.search = searchParams.toString();
+
+                fetch(url, {
+                    method: "GET",
+                })
+                .then(function (response) {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        console.error("오류 발생: " + response.statusText);
+                        return [];
+                    }
+                })
+                .then(function (data) {
+            // 데이터를 HTML 문자열로 생성하는 함수
             function generateHTML(data) {
                 console.log('data',data);
                 var resultHTML = "";
@@ -264,11 +403,11 @@ function handlePageButtonClick(event) {
                         resultHTML += '<span>' + formattedStartDate + '</span>';
                         resultHTML += ' ~ ';
                         resultHTML += '<span>' + formattedFinishDate+ '</span>';
-                        resultHTML += '</td>'
+                        resultHTML += '</td>';
 
                         resultHTML += '<div class="item-price">';
                         resultHTML += '<div style="margin-right: 10px;">';
-                        resultHTML += '<button id="viewButton" class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
+                        resultHTML += '<button class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
                         resultHTML += '</div>';
                         resultHTML += '<span>그룹 T/O : ' + groupJoinList.group_TO + '명</span>';
                         resultHTML += '</div>';
@@ -280,50 +419,138 @@ function handlePageButtonClick(event) {
                     resultHTML += '</div>';
                     resultHTML += '</div>';
 
-
                 return resultHTML;
             }
 
 
-            var resultHTML = generateHTML(data);
-            dataContainer.innerHTML = resultHTML;
+            // 신청 버튼 클릭 시
+        var buttons = document.querySelectorAll(".viewButton");
 
-            // 페이지네이션 UI 업데이트
-            updatePaginationUI(data.currentPage, data.totalPages);
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var selectedGroupNo = this.getAttribute("value");
+                var selectedGroupTO = parseInt(this.getAttribute("data-group-to"));
 
+                var ingStudyGroup = [[${ingStudyGroup}]]; // Thymeleaf로 서버에서 값 가져오기
 
-        })
-        .catch(function (error) {
-            console.error("오류 발생:", error);
+                if (ingStudyGroup === 1) {
+                    alert("이미 학습 그룹에 가입되어 있습니다.");
+                } else {
+                        if (selectedGroupTO === 0) {
+                            alert("신청할 수 있는 그룹 T/O가 없습니다.");
+                        } else {
+                            // 선택된 그룹 번호를 사용하여 POST 요청 보내기
+                            fetch("/studygroup/join/" + selectedGroupNo, {
+                                method: "POST",
+                            })
+                                .then(function (response) {
+                                    if (response.status === 200) {
+                                        alert("그룹에 가입 신청되었습니다.");
+                                        // 가입이 성공한 경우, 필요한 동작 수행
+                                        location.reload();
+                                    } else {
+                                        alert("가입 신청에 실패했습니다. 다시 시도하세요.");
+                                    }
+                                })
+                                .catch(function (error) {
+                                    alert("오류가 발생했습니다. 다시 시도하세요.");
+                                });
+                        }
+                }
+            });
         });
-    }
-
-    var params = new URLSearchParams();
-    params.append("group_no", selectedGroupNo);
-    params.append("member_no", selectedMemberNo);
-    params.append("page", page);
-    callGroupAPI("groupJoinListEndpoint", params.toString());
-}
 
 
-//-------조회하기 버튼----------
-document.addEventListener("DOMContentLoaded", function () {
 
-    // 페이지 로드 시 한 번 실행
+            var resultHTML = generateHTML(data);
+                    dataContainer.innerHTML = resultHTML;
 
-    var searchButton = document.getElementById("searchButton");
-    var dataContainer = document.getElementById("dataContainer");
+                    // 페이지네이션 UI 업데이트
+                    updatePaginationUI(data.currentPage, data.totalPages);
 
-    searchButton.addEventListener("click", function () {
+                })
+                .catch(function (error) {
+                    console.error("오류 발생:", error);
+                });
+            }
+
+
+            function createPageButtons(currentPage, totalPages) {
+              var html = '';
+              for (var i = 1; i <= totalPages; i++) {
+                html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
+                html += '<a class="page-link page-button" href="#" data-page="' + i + '">' + i + '</a>';
+                html += '</li>';
+              }
+              return html;
+            }
+
+            function createPaginationUI(currentPage, totalPages) {
+              var html = '<nav><ul class="pagination">';
+              // 이전 버튼 생성
+              html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
+              html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
+              html += '</li>';
+
+              // 페이지 번호 버튼 생성
+              html += createPageButtons(currentPage, totalPages);
+
+              // 다음 버튼 생성
+              html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
+              html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
+              html += '</li>';
+
+              return html;
+            }
+
+
+            if (selectedGroupNo || selectedMemberNo) {
+                // 하나 이상의 값이 선택된 경우 컨트롤러 호출
+                var params = new URLSearchParams();
+                params.append("group_no", selectedGroupNo);
+                params.append("member_no", selectedMemberNo);
+                callGroupAPI("groupJoinListEndpoint", params.toString());
+            }else{
+                // 페이지 리디렉션 수행
+                window.location.href = "http://localhost/studygroup/groupJoinList";
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    // 페이지 버튼 클릭 이벤트 리스너 추가
+    function handlePageButtonClick(event) {
+        event.preventDefault();
+        var page = this.getAttribute('data-page');
         var selectedGroupNo = document.getElementById("selectSudyGroup").value;
         var selectedMemberNo = document.getElementById("selectEducatorName").value;
 
-
-        // API 호출 함수 정의
+        // callGroupAPI 함수를 이 위치에서 정의
         function callGroupAPI(endpoint, params) {
             var url = new URL("/studygroup/" + endpoint, window.location.origin);
             var searchParams = new URLSearchParams(params);
-
 
             url.search = searchParams.toString();
 
@@ -339,165 +566,140 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             })
             .then(function (data) {
-        // 데이터를 HTML 문자열로 생성하는 함수
-        function generateHTML(data) {
-            console.log('data',data);
-            var resultHTML = "";
+                // 데이터를 HTML 문자열로 생성하는 함수
+                function generateHTML(data) {
+                    console.log('data',data);
+                    var resultHTML = "";
 
-                resultHTML = '<div class="container">';
-                resultHTML += '<div class="row">';
+                    if (data && data.groupJoinList && data.groupJoinList.length > 0) {
+                        resultHTML = "<table class='table' id='dataContainer'>";
+                        resultHTML += "<thead class='table-dark'>";
+                        resultHTML += "<tr>";
+                        resultHTML += "<th>선택</th>";
+                        resultHTML += "<th>콘텐츠이미지</th>";
+                        resultHTML += "<th>학습그룹명</th>";
+                        resultHTML += "<th>교육자명</th>";
+                        resultHTML += "<th>그룹 시작일</th>";
+                        resultHTML += "<th>그룹 종료일</th>";
+                        resultHTML += "<th>그룹T/O</th>";
+                        resultHTML += "</tr>";
+                        resultHTML += "</thead>";
+                        resultHTML += "<tbody>";
 
-                data.groupJoinList.forEach(function (groupJoinList) {
-                    resultHTML += '<div class="col-md-4 my-3">';
-                    resultHTML += '<div class="card" data-bs-toggle="tooltip" data-bs-placement="bottom" title="' + (groupJoinList.group_introduce != null ? '그룹 소개글 : ' + groupJoinList.group_introduce : '') + '">';
-                    resultHTML += '<span class="offer">' + groupJoinList.school_name + '</span>';
-                    resultHTML += '<div class="item-image">';
-                    resultHTML += '<img src="/image/baduk.png" />';
-                    resultHTML += '</div>';
-                    resultHTML += '<div class="item-content">';
-                    resultHTML += '<h3><strong>' + groupJoinList.group_name + ' - ' + groupJoinList.name + '</strong></h3>';
+                        data.groupJoinList.forEach(function (groupJoinList) {
+                            resultHTML += "<tr>";
+                            resultHTML += "<td>";
+                            resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' data-group-to='" + groupJoinList.group_TO + "'/>";
+                            resultHTML += "</td>";
+                            resultHTML += "<td>" + groupJoinList.copy_file_name + "</td>";
+                            resultHTML += "<td>" + groupJoinList.group_name + "</td>";
+                            resultHTML += "<td>" + groupJoinList.name + "</td>";
 
-                    var originalStartDate = new Date(groupJoinList.group_start_date);
-                    var formattedStartDate = originalStartDate.getFullYear() + '-'
-                                            + ('0' + (originalStartDate.getMonth() + 1)).slice(-2)
-                                            +'-'
-                                            + ('0' + originalStartDate.getDate()).slice(-2);
+                            var originalStartDate = new Date(groupJoinList.group_start_date);
+                            var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
+                            var originalFinishDate = new Date(groupJoinList.group_finish_date);
+                            var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
 
-                    var originalFinishDate = new Date(groupJoinList.group_finish_date);
-                    var formattedFinishDate = originalFinishDate.getFullYear()
-                                           +'-'
-                                           +(originalFinishDate.getMonth() < 9 ? "0": "")+(originalFinishDate.getMonth()+1)
-                                           +'-'
-                                           +(originalFinishDate.getDate()<10?"0":"")+originalFinishDate.getDate();
+                            resultHTML += "<td>" + formattedStartDate + "</td>";
+                            resultHTML += "<td>" + formattedFinishDate + "</td>";
+                            resultHTML += "<td>" + groupJoinList.group_TO + "</td>";
+                            resultHTML += "</tr>";
+                        });
 
-                    resultHTML += '<td>';
-                    resultHTML += '<span>' + formattedStartDate + '</span>';
-                    resultHTML += ' ~ ';
-                    resultHTML += '<span>' + formattedFinishDate+ '</span>';
-                    resultHTML += '</td>';
+                        resultHTML += "</tbody>";
+                        resultHTML += "</table>";
+                    } else {
+                        resultHTML = "<p>선택한 그룹의 정보가 없습니다.</p>";
+                    }
 
-                    resultHTML += '<div class="item-price">';
-                    resultHTML += '<div style="margin-right: 10px;">';
-                    resultHTML += '<button id="viewButton" class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
-                    resultHTML += '</div>';
-                    resultHTML += '<span>그룹 T/O : ' + groupJoinList.group_TO + '명</span>';
-                    resultHTML += '</div>';
-                    resultHTML += '</div>';
-                    resultHTML += '</div>';
-                    resultHTML += '</div>';
-                });
+                    return resultHTML;
+                }
 
-                resultHTML += '</div>';
-                resultHTML += '</div>';
-
-            return resultHTML;
-        }
-
-
-        var resultHTML = generateHTML(data);
+                var resultHTML = generateHTML(data);
                 dataContainer.innerHTML = resultHTML;
 
                 // 페이지네이션 UI 업데이트
                 updatePaginationUI(data.currentPage, data.totalPages);
 
+                // 데이터 로딩 후에도 체크박스 선택 해제 로직 적용
+                //applyCheckboxLogic();
+                var checkboxes = document.querySelectorAll(".groupCheckbox");
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener("click", function () {
+                        if (this.checked) {
+                            // 다른 체크박스 선택 해제
+                            checkboxes.forEach(function (otherCheckbox) {
+                                if (otherCheckbox !== checkbox) {
+                                    otherCheckbox.checked = false;
+                                }
+                            });
+                        }
+                    });
+                });
             })
             .catch(function (error) {
                 console.error("오류 발생:", error);
             });
         }
 
+        var params = new URLSearchParams();
+        params.append("group_no", selectedGroupNo);
+        params.append("member_no", selectedMemberNo);
+        params.append("page", page);
+        callGroupAPI("groupJoinListEndpoint", params.toString());
+    }
 
-        function createPageButtons(currentPage, totalPages) {
-          var html = '';
-          for (var i = 1; i <= totalPages; i++) {
-            html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
-            html += '<a class="page-link page-button" href="#" data-page="' + i + '">' + i + '</a>';
-            html += '</li>';
-          }
-          return html;
+
+    //-------조회하기 버튼----------
+    document.addEventListener("DOMContentLoaded", function () {
+         // 체크박스 선택 해제 로직을 함수로 분리
+        function applyCheckboxLogic() {
+            var checkboxes = document.querySelectorAll(".groupCheckbox");
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener("click", function () {
+                    if (this.checked) {
+                        // 다른 체크박스 선택 해제
+                        checkboxes.forEach(function (otherCheckbox) {
+                            if (otherCheckbox !== checkbox) {
+                                otherCheckbox.checked = false;
+                            }
+                        });
+                    }
+                });
+            });
         }
 
-        function createPaginationUI(currentPage, totalPages) {
-          var html = '<nav><ul class="pagination">';
-          // 이전 버튼 생성
-          html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
-          html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
-          html += '</li>';
+        // 페이지 로드 시 한 번 실행
+        applyCheckboxLogic();
 
-          // 페이지 번호 버튼 생성
-          html += createPageButtons(currentPage, totalPages);
+        var searchButton = document.getElementById("searchButton");
+        var dataContainer = document.getElementById("dataContainer");
 
-          // 다음 버튼 생성
-          html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
-          html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
-          html += '</li>';
-
-          return html;
-        }
+        searchButton.addEventListener("click", function () {
+            var selectedGroupNo = document.getElementById("selectSudyGroup").value;
+            var selectedMemberNo = document.getElementById("selectEducatorName").value;
 
 
-        if (selectedGroupNo || selectedMemberNo) {
-            // 하나 이상의 값이 선택된 경우 컨트롤러 호출
-            var params = new URLSearchParams();
-            params.append("group_no", selectedGroupNo);
-            params.append("member_no", selectedMemberNo);
-            callGroupAPI("groupJoinListEndpoint", params.toString());
-        }else{
-            // 페이지 리디렉션 수행
-            window.location.href = "http://localhost/studygroup/groupJoinList";
-        }
-    });
-});
+            // API 호출 함수 정의
+            function callGroupAPI(endpoint, params) {
+                var url = new URL("/studygroup/" + endpoint, window.location.origin);
+                var searchParams = new URLSearchParams(params);
 
 
+                url.search = searchParams.toString();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-// 페이지 버튼 클릭 이벤트 리스너 추가
-function handlePageButtonClick(event) {
-    event.preventDefault();
-    var page = this.getAttribute('data-page');
-    var selectedGroupNo = document.getElementById("selectSudyGroup").value;
-    var selectedMemberNo = document.getElementById("selectEducatorName").value;
-
-    // callGroupAPI 함수를 이 위치에서 정의
-    function callGroupAPI(endpoint, params) {
-        var url = new URL("/studygroup/" + endpoint, window.location.origin);
-        var searchParams = new URLSearchParams(params);
-
-        url.search = searchParams.toString();
-
-        fetch(url, {
-            method: "GET",
-        })
-        .then(function (response) {
-            if (response.status === 200) {
-                return response.json();
-            } else {
-                console.error("오류 발생: " + response.statusText);
-                return [];
-            }
-        })
-        .then(function (data) {
+                fetch(url, {
+                    method: "GET",
+                })
+                .then(function (response) {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        console.error("오류 발생: " + response.statusText);
+                        return [];
+                    }
+                })
+                .then(function (data) {
             // 데이터를 HTML 문자열로 생성하는 함수
             function generateHTML(data) {
                 console.log('data',data);
@@ -548,250 +750,10 @@ function handlePageButtonClick(event) {
             }
 
             var resultHTML = generateHTML(data);
-            dataContainer.innerHTML = resultHTML;
-
-            // 페이지네이션 UI 업데이트
-            updatePaginationUI(data.currentPage, data.totalPages);
-
-            // 데이터 로딩 후에도 체크박스 선택 해제 로직 적용
-            //applyCheckboxLogic();
-            var checkboxes = document.querySelectorAll(".groupCheckbox");
-            checkboxes.forEach(function (checkbox) {
-                checkbox.addEventListener("click", function () {
-                    if (this.checked) {
-                        // 다른 체크박스 선택 해제
-                        checkboxes.forEach(function (otherCheckbox) {
-                            if (otherCheckbox !== checkbox) {
-                                otherCheckbox.checked = false;
-                            }
-                        });
-                    }
-                });
-            });
-        })
-        .catch(function (error) {
-            console.error("오류 발생:", error);
-        });
-    }
-
-    var params = new URLSearchParams();
-    params.append("group_no", selectedGroupNo);
-    params.append("member_no", selectedMemberNo);
-    params.append("page", page);
-    callGroupAPI("groupJoinListEndpoint", params.toString());
-}
-
-
-//-------조회하기 버튼----------
-document.addEventListener("DOMContentLoaded", function () {
-     // 체크박스 선택 해제 로직을 함수로 분리
-    function applyCheckboxLogic() {
-        var checkboxes = document.querySelectorAll(".groupCheckbox");
-        checkboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                if (this.checked) {
-                    // 다른 체크박스 선택 해제
-                    checkboxes.forEach(function (otherCheckbox) {
-                        if (otherCheckbox !== checkbox) {
-                            otherCheckbox.checked = false;
-                        }
-                    });
-                }
-            });
-        });
-    }
-
-    // 페이지 로드 시 한 번 실행
-    applyCheckboxLogic();
-
-    var searchButton = document.getElementById("searchButton");
-    var dataContainer = document.getElementById("dataContainer");
-
-    searchButton.addEventListener("click", function () {
-        var selectedGroupNo = document.getElementById("selectSudyGroup").value;
-        var selectedMemberNo = document.getElementById("selectEducatorName").value;
-
-
-        // API 호출 함수 정의
-        function callGroupAPI(endpoint, params) {
-            var url = new URL("/studygroup/" + endpoint, window.location.origin);
-            var searchParams = new URLSearchParams(params);
-
-
-            url.search = searchParams.toString();
-
-            fetch(url, {
-                method: "GET",
-            })
-            .then(function (response) {
-                if (response.status === 200) {
-                    return response.json();
-                } else {
-                    console.error("오류 발생: " + response.statusText);
-                    return [];
-                }
-            })
-            .then(function (data) {
-        // 데이터를 HTML 문자열로 생성하는 함수
-        function generateHTML(data) {
-            console.log('data',data);
-            var resultHTML = "";
-
-            if (data && data.groupJoinList && data.groupJoinList.length > 0) {
-                resultHTML = "<table class='table' id='dataContainer'>";
-                resultHTML += "<thead class='table-dark'>";
-                resultHTML += "<tr>";
-                resultHTML += "<th>선택</th>";
-                resultHTML += "<th>콘텐츠이미지</th>";
-                resultHTML += "<th>학습그룹명</th>";
-                resultHTML += "<th>교육자명</th>";
-                resultHTML += "<th>그룹 시작일</th>";
-                resultHTML += "<th>그룹 종료일</th>";
-                resultHTML += "<th>그룹T/O</th>";
-                resultHTML += "</tr>";
-                resultHTML += "</thead>";
-                resultHTML += "<tbody>";
-
-                data.groupJoinList.forEach(function (groupJoinList) {
-                    resultHTML += "<tr>";
-                    resultHTML += "<td>";
-                    resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' data-group-to='" + groupJoinList.group_TO + "'/>";
-                    resultHTML += "</td>";
-                    resultHTML += "<td>" + groupJoinList.copy_file_name + "</td>";
-                    resultHTML += "<td>" + groupJoinList.group_name + "</td>";
-                    resultHTML += "<td>" + groupJoinList.name + "</td>";
-
-                    var originalStartDate = new Date(groupJoinList.group_start_date);
-                    var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
-                    var originalFinishDate = new Date(groupJoinList.group_finish_date);
-                    var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
-
-                    resultHTML += "<td>" + formattedStartDate + "</td>";
-                    resultHTML += "<td>" + formattedFinishDate + "</td>";
-                    resultHTML += "<td>" + groupJoinList.group_TO + "</td>";
-                    resultHTML += "</tr>";
-                });
-
-                resultHTML += "</tbody>";
-                resultHTML += "</table>";
-            } else {
-                resultHTML = "<p>선택한 그룹의 정보가 없습니다.</p>";
-            }
-
-            return resultHTML;
-        }
-
-        var resultHTML = generateHTML(data);
-                dataContainer.innerHTML = resultHTML;
-
-                // 페이지네이션 UI 업데이트
-                updatePaginationUI(data.currentPage, data.totalPages);
-
-                // 데이터 로딩 후에도 체크박스 선택 해제 로직 적용
-                applyCheckboxLogic();
-            })
-            .catch(function (error) {
-                console.error("오류 발생:", error);
-            });
-        }
-
-
-        function createPageButtons(currentPage, totalPages) {
-          var html = '';
-          for (var i = 1; i <= totalPages; i++) {
-            html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
-            html += '<a class="page-link page-button" href="#" data-page="' + i + '">' + i + '</a>';
-            html += '</li>';
-          }
-          return html;
-        }
-
-        function createPaginationUI(currentPage, totalPages) {
-          var html = '<nav><ul class="pagination">';
-          // 이전 버튼 생성
-          html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
-          html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
-          html += '</li>';
-
-          // 페이지 번호 버튼 생성
-          html += createPageButtons(currentPage, totalPages);
-
-          // 다음 버튼 생성
-          html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
-          html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
-          html += '</li>';
-
-          return html;
-        }
-
-
-        if (selectedGroupNo || selectedMemberNo) {
-            // 하나 이상의 값이 선택된 경우 컨트롤러 호출
-            var params = new URLSearchParams();
-            params.append("group_no", selectedGroupNo);
-            params.append("member_no", selectedMemberNo);
-            callGroupAPI("groupJoinListEndpoint", params.toString());
-        }else{
-            // 페이지 리디렉션 수행
-            window.location.href = "http://localhost/studygroup/groupJoinList";
-        }
-    });
-});
-*/
-
-
-/*
-     //-------조회하기 버튼----------
-    document.addEventListener("DOMContentLoaded", function () {
-         // 체크박스 선택 해제 로직을 함수로 분리
-        function applyCheckboxLogic() {
-            var checkboxes = document.querySelectorAll(".groupCheckbox");
-            checkboxes.forEach(function (checkbox) {
-                checkbox.addEventListener("click", function () {
-                    if (this.checked) {
-                        // 다른 체크박스 선택 해제
-                        checkboxes.forEach(function (otherCheckbox) {
-                            if (otherCheckbox !== checkbox) {
-                                otherCheckbox.checked = false;
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
-        // 페이지 로드 시 한 번 실행
-        applyCheckboxLogic();
-
-        var searchButton = document.getElementById("searchButton");
-        var dataContainer = document.getElementById("dataContainer");
-
-        searchButton.addEventListener("click", function () {
-            var selectedGroupNo = document.getElementById("selectSudyGroup").value;
-            var selectedMemberNo = document.getElementById("selectEducatorName").value;
-
-            // API 호출 함수 정의
-            function callGroupAPI(endpoint, params) {
-                var url = new URL("/studygroup/" + endpoint, window.location.origin);
-                var searchParams = new URLSearchParams(params);
-
-
-                url.search = searchParams.toString();
-
-                fetch(url, {
-                    method: "GET",
-                })
-                .then(function (response) {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        console.error("오류 발생: " + response.statusText);
-                        return [];
-                    }
-                })
-                .then(function (data) {
-                    var resultHTML = generateHTML(data);
                     dataContainer.innerHTML = resultHTML;
+
+                    // 페이지네이션 UI 업데이트
+                    updatePaginationUI(data.currentPage, data.totalPages);
 
                     // 데이터 로딩 후에도 체크박스 선택 해제 로직 적용
                     applyCheckboxLogic();
@@ -801,52 +763,33 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
 
-            // 데이터를 HTML 문자열로 생성하는 함수
-            function generateHTML(data) {
-                var resultHTML = "";
 
-                if (data && data.length > 0) {
-                    resultHTML = "<table class='table' id='dataContainer'>";
-                    resultHTML += "<thead class='table-dark'>";
-                    resultHTML += "<tr>";
-                    resultHTML += "<th>선택</th>";
-                    resultHTML += "<th>콘텐츠이미지</th>";
-                    resultHTML += "<th>학습그룹명</th>";
-                    resultHTML += "<th>교육자명</th>";
-                    resultHTML += "<th>그룹 시작일</th>";
-                    resultHTML += "<th>그룹 종료일</th>";
-                    resultHTML += "<th>그룹T/O</th>";
-                    resultHTML += "</tr>";
-                    resultHTML += "</thead>";
-                    resultHTML += "<tbody>";
+            function createPageButtons(currentPage, totalPages) {
+              var html = '';
+              for (var i = 1; i <= totalPages; i++) {
+                html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">';
+                html += '<a class="page-link page-button" href="#" data-page="' + i + '">' + i + '</a>';
+                html += '</li>';
+              }
+              return html;
+            }
 
-                    data.forEach(function (groupJoinList) {
-                        resultHTML += "<tr>";
-                        resultHTML += "<td>";
-                        resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' data-group-to='" + groupJoinList.group_TO + "'/>";
-                        resultHTML += "</td>";
-                        resultHTML += "<td>" + groupJoinList.copy_file_name + "</td>";
-                        resultHTML += "<td>" + groupJoinList.group_name + "</td>";
-                        resultHTML += "<td>" + groupJoinList.name + "</td>";
+            function createPaginationUI(currentPage, totalPages) {
+              var html = '<nav><ul class="pagination">';
+              // 이전 버튼 생성
+              html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">';
+              html += '<a class="page-link" href="#" data-page="' + (currentPage - 1) + '">이전</a>';
+              html += '</li>';
 
-                        var originalStartDate = new Date(groupJoinList.group_start_date);
-                        var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
-                        var originalFinishDate = new Date(groupJoinList.group_finish_date);
-                        var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
+              // 페이지 번호 버튼 생성
+              html += createPageButtons(currentPage, totalPages);
 
-                        resultHTML += "<td>" + formattedStartDate + "</td>";
-                        resultHTML += "<td>" + formattedFinishDate + "</td>";
-                        resultHTML += "<td>" + groupJoinList.group_TO + "</td>";
-                        resultHTML += "</tr>";
-                    });
+              // 다음 버튼 생성
+              html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">';
+              html += '<a class="page-link" href="#" data-page="' + (currentPage + 1) + '">다음</a>';
+              html += '</li>';
 
-                    resultHTML += "</tbody>";
-                    resultHTML += "</table>";
-                } else {
-                    resultHTML = "<p>선택한 그룹의 정보가 없습니다.</p>";
-                }
-
-                return resultHTML;
+              return html;
             }
 
 
@@ -861,7 +804,131 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.location.href = "http://localhost/studygroup/groupJoinList";
             }
         });
-    });*/
+    });
+    */
+
+
+    /*
+         //-------조회하기 버튼----------
+        document.addEventListener("DOMContentLoaded", function () {
+             // 체크박스 선택 해제 로직을 함수로 분리
+            function applyCheckboxLogic() {
+                var checkboxes = document.querySelectorAll(".groupCheckbox");
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener("click", function () {
+                        if (this.checked) {
+                            // 다른 체크박스 선택 해제
+                            checkboxes.forEach(function (otherCheckbox) {
+                                if (otherCheckbox !== checkbox) {
+                                    otherCheckbox.checked = false;
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+
+            // 페이지 로드 시 한 번 실행
+            applyCheckboxLogic();
+
+            var searchButton = document.getElementById("searchButton");
+            var dataContainer = document.getElementById("dataContainer");
+
+            searchButton.addEventListener("click", function () {
+                var selectedGroupNo = document.getElementById("selectSudyGroup").value;
+                var selectedMemberNo = document.getElementById("selectEducatorName").value;
+
+                // API 호출 함수 정의
+                function callGroupAPI(endpoint, params) {
+                    var url = new URL("/studygroup/" + endpoint, window.location.origin);
+                    var searchParams = new URLSearchParams(params);
+
+
+                    url.search = searchParams.toString();
+
+                    fetch(url, {
+                        method: "GET",
+                    })
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            console.error("오류 발생: " + response.statusText);
+                            return [];
+                        }
+                    })
+                    .then(function (data) {
+                        var resultHTML = generateHTML(data);
+                        dataContainer.innerHTML = resultHTML;
+
+                        // 데이터 로딩 후에도 체크박스 선택 해제 로직 적용
+                        applyCheckboxLogic();
+                    })
+                    .catch(function (error) {
+                        console.error("오류 발생:", error);
+                    });
+                }
+
+                // 데이터를 HTML 문자열로 생성하는 함수
+                function generateHTML(data) {
+                    var resultHTML = "";
+
+                    if (data && data.length > 0) {
+                        resultHTML = "<table class='table' id='dataContainer'>";
+                        resultHTML += "<thead class='table-dark'>";
+                        resultHTML += "<tr>";
+                        resultHTML += "<th>선택</th>";
+                        resultHTML += "<th>콘텐츠이미지</th>";
+                        resultHTML += "<th>학습그룹명</th>";
+                        resultHTML += "<th>교육자명</th>";
+                        resultHTML += "<th>그룹 시작일</th>";
+                        resultHTML += "<th>그룹 종료일</th>";
+                        resultHTML += "<th>그룹T/O</th>";
+                        resultHTML += "</tr>";
+                        resultHTML += "</thead>";
+                        resultHTML += "<tbody>";
+
+                        data.forEach(function (groupJoinList) {
+                            resultHTML += "<tr>";
+                            resultHTML += "<td>";
+                            resultHTML += "<input type='checkbox' class='groupCheckbox' name='selectedGroup' value='" + groupJoinList.group_no + "' data-group-to='" + groupJoinList.group_TO + "'/>";
+                            resultHTML += "</td>";
+                            resultHTML += "<td>" + groupJoinList.copy_file_name + "</td>";
+                            resultHTML += "<td>" + groupJoinList.group_name + "</td>";
+                            resultHTML += "<td>" + groupJoinList.name + "</td>";
+
+                            var originalStartDate = new Date(groupJoinList.group_start_date);
+                            var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
+                            var originalFinishDate = new Date(groupJoinList.group_finish_date);
+                            var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
+
+                            resultHTML += "<td>" + formattedStartDate + "</td>";
+                            resultHTML += "<td>" + formattedFinishDate + "</td>";
+                            resultHTML += "<td>" + groupJoinList.group_TO + "</td>";
+                            resultHTML += "</tr>";
+                        });
+
+                        resultHTML += "</tbody>";
+                        resultHTML += "</table>";
+                    } else {
+                        resultHTML = "<p>선택한 그룹의 정보가 없습니다.</p>";
+                    }
+
+                    return resultHTML;
+                }
+
+
+                if (selectedGroupNo || selectedMemberNo) {
+                    // 하나 이상의 값이 선택된 경우 컨트롤러 호출
+                    var params = new URLSearchParams();
+                    params.append("group_no", selectedGroupNo);
+                    params.append("member_no", selectedMemberNo);
+                    callGroupAPI("groupJoinListEndpoint", params.toString());
+                }else{
+                    // 페이지 리디렉션 수행
+                    window.location.href = "http://localhost/studygroup/groupJoinList";
+                }
+            });
+        });*/
 
 </script>
-
