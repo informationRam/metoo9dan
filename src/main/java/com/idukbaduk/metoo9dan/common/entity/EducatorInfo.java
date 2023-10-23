@@ -3,6 +3,7 @@ package com.idukbaduk.metoo9dan.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 //교육자 정보 테이블 -PRIMARY KEY (member_no)
 @Entity

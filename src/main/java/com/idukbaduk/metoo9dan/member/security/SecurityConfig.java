@@ -68,29 +68,28 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeHttpRequests((authorize) -> authorize
-                //.requestMatchers("/member/**").authenticated() //로그인 인증받은 회원만 접근가능
                 .requestMatchers("/student/**").hasAuthority("STUDENT")
                 .requestMatchers( "/admin/**").hasAuthority("ADMIN")
-                .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
                 .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
                 //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
                 .anyRequest().permitAll()
                 );
-//        http
-//                .sessionManagement()
-//                .sessionFixation()
-//                .migrateSession() // 세션 변조 공격 방지
-//                .invalidSessionUrl("/logout") // 세션 만료 시 리디렉션할 URL
-//                .maximumSessions(1) // 한 사용자당 최대 1개의 세션 허용 (동시 다중 로그인 방지)
-//                .maxSessionsPreventsLogin(false); // 다른 장치에서 로그인하면 이전 세션 만료
+        http
+                .sessionManagement()
+                .sessionFixation()
+                .migrateSession() // 세션 변조 공격 방지
+                .invalidSessionUrl("/logout") // 세션 만료 시 리디렉션할 URL
+                .maximumSessions(1) // 한 사용자당 최대 1개의 세션 허용 (동시 다중 로그인 방지)
+                .maxSessionsPreventsLogin(false); // 다른 장치에서 로그인하면 이전 세션 만료
         http.
              formLogin()
-                  .loginPage("/member/login")               // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
-                  .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지 :/loginSuccess
+                  .loginPage("/member/login")
+                  .failureUrl("/login?error")// 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
                   .permitAll()                              //인증받지 않아도 모두 접근가능:없으면 무한루프생김
                   .failureUrl("/member/login")              // 로그인 실패 후 이동 페이지
                   .usernameParameter("memberId")                   // 아이디 파라미터명 설정
                   .passwordParameter("password")                      // 패스워드 파라미터명 설정
+                 // .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지 :/loginSuccess
                 .successHandler(new AuthenticationSuccessHandler() {    // 로그인 성공 후 핸들러
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

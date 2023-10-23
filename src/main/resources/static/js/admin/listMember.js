@@ -89,7 +89,10 @@
                 });
         }
    // })
-
+//검색없어도 페이지 로드시 페이지네이션 생성
+window.addEventListener('DOMContentLoaded', (event) => {
+    fetchSearchResults();
+});
 
 //검색버튼 이벤트
         document.getElementById('searchBtn').addEventListener('click', function(event){
@@ -120,21 +123,23 @@
         totalElements: 전체 데이터 수
         totalPages: 전체 페이지 수
         number: 현재 페이지 번호 (0부터 시작)*/
-         function fetchSearchResults(pageNumber=1) {
-             let params = getSearchParams();
-             params.page = pageNumber; //받아온 페이지 번호 사용
-             let queryString = new URLSearchParams(params).toString();
-             console.log(params); // 검색조건 확인
+             function fetchSearchResults(pageNumber=1) {
+                 let params = getSearchParams();
+                 params.page = pageNumber; //받아온 페이지 번호 사용
+                 let queryString = new URLSearchParams(params).toString();
+                 console.log(params); // 검색조건 확인
 
-             fetch(`/admin/search?${queryString}`)
-                 .then(response => {
-                     if (!response.ok) {
-                         throw new Error('Network response was not ok');
-                     }
-                     return response.json();
-                 })
-                 .then(data => {
-                     console.log(data); // 여기서 응답 데이터 확인
+                 fetch(`/admin/search?${queryString}`)
+                     .then(response => {
+                         if (!response.ok) {
+                             throw new Error('Network response was not ok');
+                         }
+                         return response.json();
+                     })
+                     .then(data => {
+                         console.log(data); // 여기서 응답 데이터 확인
+                          // 총 검색 결과 수를 업데이트
+                                     document.getElementById('resultCount').textContent = data.totalElements;
                     if (data.content.length === 0) {
                         // 검색 결과가 없는 경우 메시지를 표시
                         displayNoResultsMessage();
@@ -181,17 +186,22 @@
             //테이블 변수 선언
              let table = document.getElementById('memberList');
              let tbody = table.querySelector('tbody');
-             // TODO: 테이블의 기존 데이터 삭제
+
+//             let checkbox = document.createElement('input');
+//             checkbox.type = 'checkbox';
+//             checkbox.className = 'memberCheckbox';
+//             checkbox.checked = false;
+             // 테이블의 기존 데이터 삭제
               while (tbody.firstChild) {
                      tbody.removeChild(tbody.firstChild);
               }
-                 // TODO: 테이블에 각 회원 정보를 추가하는 로직
+                 // 테이블에 각 회원 정보를 추가
                  let index = 1; //넘버링 시작 번호
 
                  members.forEach(member => {
-                   let row = tbody.insertRow(-1); // -1은 마지막 행에 추가
+                         let row = tbody.insertRow(-1); // -1은 마지막 행에 추가
                          let cell1 = row.insertCell(0);
-                         cell1.innerHTML = `<input type="checkbox" class="memberCheckbox" id="${member.memberNo}" checked="false">`;
+                         cell1.innerHTML = `<input type="checkbox" class="memberCheckbox" id="${member.memberNo}">`;
                          let cell2 = row.insertCell(1);
                          cell2.textContent = index++; // 넘버링 출력
                          let cell3 = row.insertCell(2);
@@ -206,6 +216,13 @@
                          cell7.textContent = member.email;
                          let cell8 = row.insertCell(7);
                          cell8.textContent = member.membershipStatus;
+                             if (member.membershipStatus === "무료회원") {
+                                 cell8.innerHTML = '<span class="badge rounded-pill bg-success">무료</span>';
+                             } else if (member.membershipStatus === "유료회원") {
+                                 cell8.innerHTML = '<span class="badge rounded-pill bg-warning text-dark">유료</span>';
+                             } else {
+                                 cell8.textContent = member.membershipStatus;  // 다른 상태값이 있을 경우를 위해 그냥 텍스트로 출력
+                             }
                          let cell9 = row.insertCell(8);
                          cell9.textContent = formatJoinDate(member.joinDate); // 날짜 형식 변환 함수 사용
                  });
@@ -292,3 +309,18 @@
                 nextLi.appendChild(nextButton);
                 paginationContainer.appendChild(nextLi);
         }
+
+
+
+//        //페이지 변경시 검색결과 갱신
+//        function changePage(pageNumber) {
+//            let params = getSearchParams();
+//            params.page = pageNumber;
+//            let queryString = new URLSearchParams(params).toString();
+//
+//            fetch(`/search?${queryString}`)
+//            .then(response => response.json())
+//            .then(data => {
+//                displayResults(data.members);
+//            });
+//
