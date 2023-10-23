@@ -106,6 +106,13 @@ public class MemberServiceImpl implements MemberService {
 
         member.setJoinDate(LocalDateTime.now()); // 현재 날짜 및 시간을 설정
         member.setMembershipStatus("무료회원");
+        // 값이 설정되지 않았으면 기본값으로 설정
+        if (member.getEmailConsent() == null) {
+            member.setEmailConsent(Boolean.FALSE);
+        }
+        if (member.getSmsConsent() == null) {
+            member.setSmsConsent(Boolean.FALSE);
+        }
         memberRepository.save(member);
         // EducatorInfo 엔터티 저장
         educatorInfo.setMember(member); // 교육자 정보의 memberNo를 설정
@@ -119,6 +126,13 @@ public class MemberServiceImpl implements MemberService {
 
         member.setJoinDate(LocalDateTime.now()); // 현재 날짜 및 시간을 설정
         member.setMembershipStatus("무료회원");
+        // 값이 설정되지 않았으면 기본값으로 설정
+        if (member.getEmailConsent() == null) {
+            member.setEmailConsent(Boolean.FALSE);
+        }
+        if (member.getSmsConsent() == null) {
+            member.setSmsConsent(Boolean.FALSE);
+        }
 
         // Member 엔터티 저장
         memberRepository.save(member);

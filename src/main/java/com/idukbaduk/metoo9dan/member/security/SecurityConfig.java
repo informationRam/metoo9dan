@@ -84,7 +84,7 @@ public class SecurityConfig {
         http.
              formLogin()
                   .loginPage("/member/login")               // 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
-                  .defaultSuccessUrl("/loginSuccess")                   // 로그인 성공 후 이동 페이지 :/loginSuccess
+                  .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지 :/loginSuccess
                   .permitAll()                              //인증받지 않아도 모두 접근가능:없으면 무한루프생김
                   .failureUrl("/member/login")              // 로그인 실패 후 이동 페이지
                   .usernameParameter("memberId")                   // 아이디 파라미터명 설정
