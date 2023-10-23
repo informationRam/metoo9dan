@@ -2,6 +2,7 @@ package com.idukbaduk.metoo9dan;
 
 import com.idukbaduk.metoo9dan.common.entity.EducatorInfo;
 import com.idukbaduk.metoo9dan.common.entity.Member;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ public class MemberService {
     private EducatorinfoRepository educatorinfoRepository;
 
     @Transactional
+    @Test
     public void registerEducator(Member member, EducatorInfo educatorInfo) {
         // Member 엔터티 저장
         memberRepository.save(member);

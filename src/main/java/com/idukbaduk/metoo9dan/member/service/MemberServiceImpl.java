@@ -118,7 +118,7 @@ public class MemberServiceImpl implements MemberService {
         educatorInfo.setMember(member); // 교육자 정보의 memberNo를 설정
         educatorInfoRepository.save(educatorInfo); // Educator Info 엔티티를 저장
     }
-    
+
     //회원가입 처리 : roled이 그 외
     @Override
     @Transactional
@@ -228,8 +228,18 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
-    
-    
+
+
+    //회원 '유료회원으로'업데이트 처리
+    @Transactional
+    public void userUpdate(Member member) {
+
+        member.setMembershipStatus("유료회원");
+        memberRepository.save(member);
+    }
+
+
+
 }
 
 

@@ -1,0 +1,4 @@
+ .table-wrapper {
+        max-height: 300px; /* 원하는 높이로 조절하세요. */
+        overflow: auto;
+    }

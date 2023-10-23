@@ -1,14 +1,19 @@
 package com.idukbaduk.metoo9dan.common.entity;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 //교육자료테이블 - PRIMARY KEY (resource_no)
 @Entity
 @Data
 @Table(name="educational_resources")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userCode")
 public class EducationalResources {
 
     @Id
@@ -25,11 +30,10 @@ public class EducationalResources {
     @Column(name="file_type")
     private String fileType;        //varchar(50) NOT NULL    COMMENT '자료 유형',
 
-    @Column(name="file_url")
-    private String fileUrl;         //text  NOT NULL    COMMENT '자료url',
+    private String status;         //text  NOT NULL    COMMENT '파일상태',
 
     @Column(name="service_type")
-    private String serviceType;     //enum('paid', 'free')    NOT NULL    COMMENT '서비스 구분',
+    private String serviceType;     // NOT NULL    COMMENT '서비스 구분',
 
     @Column
     private String description;      //text NOT NULL    COMMENT '자료내용',
@@ -38,6 +42,37 @@ public class EducationalResources {
     private LocalDateTime creationDate;    //datetime  NOT NULL    COMMENT '등록일',
 
     @ManyToOne(fetch = FetchType.LAZY) // 게임콘텐츠-다대일 관계
-    @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no", insertable = false, updatable = false) // 외래 키 설정
+    @JoinColumn(name = "game_content_no", referencedColumnName = "game_content_no") // 외래 키 설정
     private GameContents gameContents;
+
+    @OneToOne(mappedBy = "educationalResources", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private ResourcesFiles resourcesFilesList;
+
+    //재귀 방지 gameContents를 출력하지 않도록 함.
+    @Override
+    public String toString() {
+        return "EducationalResources{" +
+                "resourceNo=" + resourceNo +
+                ", resourceName='" + resourceName + '\'' +
+                ", resourceCate='" + resourceCate + '\'' +
+                ", fileType='" + fileType + '\'' +
+                ", status='" + status + '\'' +
+                ", serviceType='" + serviceType + '\'' +
+                ", description='" + description + '\'' +
+                ", creationDate=" + creationDate +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resourceNo);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        EducationalResources other = (EducationalResources) obj;
+        return Objects.equals(resourceNo, other.resourceNo);
+    }
 }
