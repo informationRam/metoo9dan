@@ -214,10 +214,6 @@ public class PaymentsService {
 
 
 
-
-
-
-
    /* //결제 내용 저장하기 (DB)
     public void kakaosave(KakaoApproveResponse kakaoApprove){
 *//*

@@ -229,10 +229,17 @@ public class GameController {
         //게임컨텐츠값으로 선택된 EducationalResources정보를 가져온다.
         List<EducationalResources> selectEducation = educationService.getEducation_togameno(gameContents.getGameContentNo());
 
+        List<Integer> resourcesNo = new ArrayList<>();
+        for(EducationalResources educationalResources1 : selectEducation){
+            resourcesNo.add(educationalResources1.getResourceNo());
+        }
+
         session.setAttribute("educationalResources", educationalResources);
         model.addAttribute("allEducation", allEducation);
         model.addAttribute("gameValidation", gameValidation);
         model.addAttribute("selectEducation", selectEducation);
+        model.addAttribute("resourcesNo", resourcesNo);
+
 
         return "game/modify";
     }
@@ -250,12 +257,18 @@ public class GameController {
         if (gameContents != null) {
             // Perform game content modification here
 
+
+
+
             // 3. Process Additional Educational Resources
             if (selectedValues != null && !selectedValues.isEmpty()) {
                 String[] selectedResourceNos = selectedValues.split(",");
                 for (String resourceNoStr : selectedResourceNos) {
                     int resourceNo = Integer.parseInt(resourceNoStr);
+                    System.out.println("resourceNo" + resourceNo);
                     EducationalResources education = educationService.getEducation(resourceNo);
+
+
                     if (education != null) {
                         if (education.getGameContents() == null) {
                             educationService.pgInsert(education, gameContents);

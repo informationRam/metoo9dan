@@ -1,51 +1,81 @@
-`<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <style>
+        /* 검색 결과 메시지에 스타일을 적용합니다 */
+        .no-results-message {
+            font-style: italic;
+            color: #999; /* 원하는 색상으로 변경하세요 */
+        }
+
+    .table-container {
+        max-height: 400px; /* 테이블의 최대 높이를 지정하세요 */
+        overflow-y: auto; /* 세로 스크롤바를 추가합니다 */
+    }
+
+    .table {
+        width: 100%; /* 테이블의 가로 길이를 100%로 설정 */
+    }
+         .table img {
+        max-width: 100%;
+        height: auto;
+    }
+         /* 각 열(Column)의 너비 조절 *
+    .col2 { width: 30%; } /* 열 2의 너비를 30%로 조절 */
+
+    /* 원하는 스타일 추가 (예: 텍스트 가운데 정렬) */
+    .table th, .table td {
+        text-align: center;
+    }
+    </style>
+
+
     <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/admin/adminSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div class="col-10">
+            <div class="mb-3 col-12">
+                <div class="col-md-4 mb-1 ms-5" style="margin-top: 25px !important;">
+                <div class="col-md-2 mb-1">
+                        <label for="difficulty" class="form-label">자료구분</label>
+                        <select id="searchText" class="form-select form-select-sm w-auto" onchange="searchGames()">
+                            <option value="">-- 선택해주세요 --</option>
+                            <option value="tutorial">튜토리얼</option>
+                            <option value="lecture">교육영상</option>
+                        </select>
+                    </div>
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+                    <div class="col-md-2 mb-1">
+                        <label for="searchGame" class="form-label">게임콘텐츠명</label>
+                        <select id="searchGameContent" class="form-select form-select-sm w-auto" onchange="searchGameContents()">
+                            <option value="">-- 선택해주세요 --</option>
+                            <option th:each="game : ${uniqueGameNames}" th:value="${game.gameContentNo}" th:text="${game.gameName}"></option>
+                        </select>
+                    </div>
 
-            <div class="mb-3 col-12 col-md-9">
-            <div class="row">
-                <div class="mb-3 col-12 col-md-3">
-                    <label for="difficulty" class="form-label">자료구분</label>
-                    <select id="searchText" class="form-select form-select-sm w-auto" onchange="searchGames()">
-                        <option value="">-- 선택해주세요 --</option>
-                        <option value="tutorial">튜토리얼</option>
-                        <option value="lecture">교육영상</option>
-                    </select>
-                </div>
-
-                <div class="mb-3 col-12 col-md-3">
-                    <label for="searchGame" class="form-label">게임콘텐츠명</label>
-                    <select id="searchGameContent" class="form-select form-select-sm w-auto" onchange="searchGameContents()">
-                        <option value="">-- 선택해주세요 --</option>
-                        <option th:each="game : ${uniqueGameNames}" th:value="${game.gameContentNo}" th:text="${game.gameName}"></option>
-                    </select>
-                </div>
-
-                <div class="mb-3 col-12 col-md-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
-                        <button class="btn btn-primary" type="button" onclick="searchresourceName()">검색</button>
+                    <div class="col-md-4 mb-1" style="margin-top: 25px !important;">
+                        <div class="input-group">
+                            <label for="resourceName" class="form-label"></label>
+                            <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
+                            <button class="btn btn-warning text-white" type="button" onclick="searchresourceName()">검색</button>
+                        </div>
                     </div>
                 </div>
+
             </div>
-            </div>
-            <table class="table table-bordered">
+            <div class="col-12" style="border: 1px solid black;">
+                <table class="table">
                 <thead>
                 <tr>
                     <th scope="col" class="text-center">No.</th>
-                    <th scope="col" class="text-center">교육자료</th>
-                    <th scope="col" class="text-center">자료구분</th>
-                    <th scope="col" class="text-center">자료유형</th>
-                    <th scope="col" class="text-center">서비스구분</th>
+                    <th scope="col2" class="text-center">교육자료</th>
+                    <th scope="col" class="text-center">구분</th>
+                    <th scope="col" class="text-center">유형</th>
+                    <th scope="col" class="text-center">서비스</th>
+                    <th scope="col" class="text-center">첨부파일</th>
                     <th scope="col" class="text-center">패키지상태</th>
-                    <th scope="col" class="text-center" colspan="2">등록일</th>
+                    <th scope="col" class="text-center" colspan="3">등록일</th>
                 </tr>
                 </thead>
-                <tbody class="table-light">
+                <tbody class="table-light text-center">
                 <tr th:each="education, loop : ${educationPage}">
                     <!-- 페이지 번호 -->
                     <td class="education no"
@@ -53,11 +83,9 @@
                     <!-- 교육자료 제목 -->
                     <td class="education title w-25">
                         <a th:href="@{|/education/detail/${education.resourceNo}|}" th:text="${education.resourceName}" class="text-decoration-none text-dark"></a>
-                        <div class="col-md-4" style="height: 100px; width: 150px; overflow: hidden;">
                             <img th:if="${education != null and education.resourcesFilesList != null and not #lists.isEmpty(education.resourcesFilesList)}"
                                  th:src="@{|/upload/education/${education.resourcesFilesList.thumOriginCopyName}|}"
                                  alt="교육자료 이미지" class="card-img" style="width: 100%; height: auto; object-fit: cover;">
-                        </div>
                     </td>
                     <!-- 자료구분 -->
                     <td class="education resourceCate">
@@ -82,6 +110,12 @@
                             <span th:case=="short">무료</span>
                         </span>
                     </td>
+                    <!-- 파일 -->
+                    <td class="education serviceType">
+                        <div th:if="${education.resourcesFilesList != null}">
+                            <a th:href="@{|/education/downloadFile/${education.resourcesFilesList.fileNo}|}" th:text="${education.resourcesFilesList.originFileName}"></a>
+                        </div>
+                    </td>
                     <!-- 패키지유형 -->
                     <td class="education-gameContents"
                         th:text="${education.gameContents != null ? education.gameContents.gameName : ''}"
@@ -91,23 +125,22 @@
                     <td class="education date">
                         <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
                     </td>
-                     <!-- 액션 -->
-                    <!-- Modify your Thymeleaf template to conditionally render the delete button -->
-
                     <!-- 취소 버튼, 수정 버튼 추가 -->
                     <td class="education-actions" th:if="${education.gameContents == null}">
                         <!-- 수정 버튼 -->
-                        <a th:href="@{|/education/modify/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1" id="modifyButton">수정</a>
+                        <a th:href="@{|/education/modify/${education.resourceNo}|}" class="btn btn-outline-secondary btn-sm mx-1" id="modifyButton">수정</a>
                         <!-- 취소 버튼 -->
-                        <a th:href="@{|/education/delete/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1" id="cancelButton" onclick="confirmCancel(event)">삭제</a>
-
+                        <a th:href="@{|/education/delete/${education.resourceNo}|}" class="btn btn-outline-secondary btn-sm mx-1" id="cancelButton" onclick="confirmCancel(event)">삭제</a>
                     </td>
+                    <tr th:if="${educationPage.isEmpty()}">
+                        <td colspan="7" class="text-center">검색 결과가 없습니다.</td>
+                    </tr>
                 </tbody>
             </table>
             <!--  등록하기 -->
           <!--  <div sec:authorize="hasRole('ROLE_ADMIN')" class="text-end ms-auto">-->
             <div class="my-3 text-center"> <!-- Center the button -->
-                <a th:href="@{/education/addForm}" class="btn btn-outline-danger">작성하기</a>
+                <a th:href="@{/education/addForm}" class="btn btn-warning text-white">작성하기</a>
             </div>
             <!-- 페이지 네이션 처리 -->
             <div id="pagination" class="mt-4">
@@ -132,7 +165,7 @@
                     </ul>
                 </nav>
             </div>
-
+            </div>
         </div>
         </div>
 

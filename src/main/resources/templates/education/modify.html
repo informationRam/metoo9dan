@@ -67,7 +67,7 @@
                     </div>
                     <div id="thumFileName" th:if="${educationValidation.saveThumFile.thumOriginFileName != null}">
                         <a th:href="@{|/education/thumdownloadFile/${educationValidation.saveThumFile.fileNo}|}" th:text="${educationValidation.saveThumFile.thumOriginFileName}" />
-                        <button class="btn btn-sm btn-danger" th:attr="data-thumFileNo=1" onclick="deleteThumFile(event, 1); return false;">Delete</button>
+                        <button class="btn btn-outline-secondary" th:attr="data-thumFileNo=1" onclick="deleteThumFile(event, 1); return false;">Delete</button>
                     </div>
                 </div>
 
@@ -79,7 +79,7 @@
                     </div>
                     <div th:if="${educationValidation.saveboardFile.originFileName != null}">
                         <a th:href="@{|/education/downloadFile/${educationValidation.saveboardFile.fileNo}|}" th:text="${educationValidation.saveboardFile.originFileName}" />
-                        <button class="btn btn-sm btn-danger" th:attr="data-fileNo=2" onclick="deleteFile(event, 2); return false;">Delete</button>
+                        <button class="btn btn-outline-secondary" th:attr="data-fileNo=2" onclick="deleteFile(event, 2); return false;">Delete</button>
                     </div>
                 </div>
                 <!-- 수정된 컨텐츠 내용을 전달하기 위한 hidden input -->

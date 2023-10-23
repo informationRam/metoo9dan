@@ -56,7 +56,8 @@ public interface PaymentsRepository extends JpaRepository<Payments, Integer> {
             "WHERE p.paymentDate BETWEEN :startDate AND :endDate " +
             "GROUP BY p.paymentDate")
     List<Object[]> getDailyPaymentsWithSummary(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
-    
+
+
     //MemNo있는지 찾기 : 유무료 회원 구분 YJ 추가
     boolean existsByMemberMemberNo(Integer memberNo);
 
