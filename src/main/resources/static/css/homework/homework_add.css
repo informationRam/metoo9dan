@@ -1,0 +1,443 @@
+/* 모달 관련 스타일 */
+#hw-homeworkDetailModal,
+#hw-editModal,
+#hw-backdrop {
+    display: none;
+}
+
+#hw-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 5;
+}
+/* 페이지네이션 번호를 수평으로 정렬*/
+#pageNumbers {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+/* nado-card 스타일 */
+.nado-card {
+    margin: 50px auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9); /* 90% 불투명도의 흰색 배경 */
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nado-card-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ffc107; /* 노란색을 기반으로 한 밑줄 */
+}
+
+.nado-card-header h2 {
+    margin: 0;
+    padding: 10px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.nado-card-body {
+    padding: 20px;
+}
+
+/* 폼 요소 스타일링 */
+.nado-form-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+    font-weight: bold;
+}
+
+.nado-form-control {
+    background-color: rgba(255, 255, 255, 0.9); /* 90% 불투명도의 흰색 배경 */
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s; /* 부드러운 전환 효과 */
+}
+
+.nado-form-control:focus {
+    border-color: #ffc107; /* 노란색 기반의 포커스 색상 */
+    outline: none;
+}
+
+.text-danger {
+    font-size: 14px;
+    color: #d9534f;
+    margin-bottom: 10px;
+}
+
+/* 버튼 스타일 */
+/* 크고 둥근 버튼 스타일 */
+.btn-nado-primary {
+    padding: 15px 60px;       /* 패딩을 조금 더 크게 설정 */
+    background-color: #ffc107;
+    border: none;
+    border-radius: 35px;     /* 둥근 모양을 만들기 위해 값을 크게 조정 */
+    color: #333;
+    font-size: 18px;         /* 글자 크기 조절 */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-block;   /* 인라인 블록으로 설정하여 가운데 정렬이 가능하도록 함 */
+}
+
+.btn-nado-primary:hover {
+    background-color: #ffa000;
+}
+
+/* Disabled 상태 스타일 */
+.nado-edit-btn[disabled], .nado-delete-btn[disabled] {
+    background-color: #dcdcdc; /* 연한 회색 */
+    cursor: not-allowed;
+    color: #aaa; /* 어두운 회색 */
+}
+
+.nado-center- {
+    display: flex;             /* Flexbox 사용 */
+    justify-content: center;  /* 가로축에서 중앙 정렬 */
+    align-items: center;      /* 세로축에서 중앙 정렬 */
+    height: 100%;             /* 부모의 높이에 따라 정렬하기 위해서는 높이를 설정해야 합니다. 필요에 따라 조절하세요. */
+}
+
+/* 검색창 스타일 */
+.nado-search {
+    width: 300px; /* 검색창의 길이를 너무 길지 않게 설정 */
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 25px; /* 귀여운 둥근 모양 */
+    font-size: 16px;
+    transition: all 0.3s; /* 부드러운 전환 효과 */
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-position: 10px center; /* 아이콘의 위치 설정 */
+    padding-left: 40px; /* 텍스트가 아이콘과 겹치지 않도록 왼쪽 패딩 추가 */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 귀여운 그림자 효과 */
+    placeholder-color: #aaa; /* 플레이스홀더 색상 */
+    vertical-align: -0.25em;
+}
+
+.nado-search:focus {
+    border-color: #ffc107; /* 노란색 기반의 포커스 색상 */
+    outline: none;
+    box-shadow: 0px 0px 15px rgba(255, 192, 7, 0.4); /* 포커스 시 더 큰 그림자 효과 */
+}
+
+/* 검색 라벨 스타일 */
+.nado-search-label {
+    display: inline-block; /* 아이콘과 검색바가 나란히 위치하도록 변경 */
+    margin-left: 10px;   /* 검색바와의 간격 설정 */
+    color: #ffc107;       /* 노란색 설정 */
+    font-size: 34px;      /* 아이콘 크기 조정 */
+    vertical-align: middle; /* 아이콘과 검색바의 중앙 정렬 */
+}
+
+/* 검색바와 아이콘의 상위 div 스타일 */
+.nado-search-right {
+    text-align: right;
+}
+
+
+/* ----------------------------------------------------------------------------------- */
+.no-data-found {
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    color: #a5a5a5;
+    padding: 20px 0;
+    background-color: #f7f7f7; /* 연한 회색 배경 */
+    border-bottom: 1px solid #ddd; /* 아래쪽 테두리를 더 진하게 */
+}
+
+.nado-card-container {
+    border-radius: 10px;
+    overflow: hidden;  /* 테두리 내부로 내용이 넘치지 않게 처리 */
+    padding: auto;  /* 테이블과 컨테이너와의 간격 */
+}
+
+/* 테이블 컨테이너 */
+.nado-table-container {
+    border: 2px solid #ffc107;  /* 노란색 테두리 */
+    border-radius: 10px;
+    overflow: hidden;  /* 테두리 내부로 내용이 넘치지 않게 처리 */
+    padding: 10px;  /* 테이블과 컨테이너와의 간격 */
+}
+
+/* 테이블 스타일 */
+.nano-table {
+    width: 100%;  /* 전체 너비 사용 */
+    border-collapse: separate;  /* border-radius를 적용하기 위해 변경 */
+    border-spacing: 0;  /* 경계 간격 제거 */
+    border-radius: 10px;  /* 모서리 둥글게 */
+    overflow: hidden;  /* 둥근 모서리 내부로 내용이 넘치지 않게 처리 */
+}
+
+
+.nano-table, .nano-table th, .nano-table td {
+    border: 1px solid #ddd;  /* 테이블 경계 및 셀 경계 스타일 */
+    text-align: left;
+}
+
+.nano-table-hover tbody tr:hover {
+    background-color: #fff9e5;  /* 노란색 테마의 호버 색상 */
+    cursor: pointer;
+}
+
+/* 헤더 스타일 */
+.nano-thead th {
+    background-color: #ffc107;  /* 노란색 배경 */
+    color: #333;  /* 검은색 글씨 */
+    padding: 10px 15px;  /* 패딩 설정 */
+    cursor: pointer;  /* 클릭 가능성을 나타내기 위한 스타일 */
+}
+
+.nano-thead th:hover {
+    background-color: #ffa000;  /* 노란색 테마의 호버 색상 (더 진한 노란색) */
+    cursor: pointer;
+}
+
+/* 본문 스타일 */
+.nado-tbody td {
+    padding: 10px 15px;  /* 패딩 설정 */
+    color: #333;  /* 검은색 글씨 */
+}
+
+/* 데이터가 없을 때의 메시지 */
+.nado-none {
+    text-align: center;  /* 텍스트 가운데 정렬 */
+    color: #888;  /* 회색 글씨 */
+    padding: 20px 0;  /* 위아래 패딩 */
+}
+
+/*------------------------------------------------------------------------------------*/
+
+.pagination {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+.pagination .page-item {
+    margin: 0 2px;
+}
+
+.pagination .page-link {
+    border: none;
+    color: #333;
+    border-radius: 5px;
+    padding: 8px 12px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-item.active .page-link,
+.pagination .page-link:hover {
+    background-color: #ffc107;
+    color: #333;
+    border-color: #ffc107;
+}
+
+.pagination .page-item.disabled .page-link {
+    pointer-events: none;
+    cursor: default;
+    background-color: #f2f2e6;
+    color: #999;
+}
+
+.groupMessage {
+    padding: 20px;
+    background-color: transparent; /* 배경을 투명하게 변경 */
+    font-size: 18px; /* 글자 크기 증가 */
+    font-weight: bold; /* 글자를 굵게 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    color: #495057; /* 부트스트랩의 dark text color */
+    margin-top: 20px; /* 위쪽 여백 */
+    border: none; /* 테두리 제거 */
+}
+
+.groupMessage img {
+    width: 15%; /* 이미지 넓이 설정 */
+    display: block; /* 이미지를 block 요소로 설정하여 중앙 정렬하기 쉽게 함 */
+    margin: 10px auto; /* 위 아래 10px의 여백을 주고 좌우는 자동으로 설정하여 중앙 정렬 */
+    filter: invert(60%) hue-rotate(90deg) saturate(2); /* 연한 녹색으로 변경 */
+}
+
+/* 기본 스타일 설정 */
+.naod-modal {
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    z-index: 10;
+}
+
+.naod-modal-header {
+    background-color: #ffebcd; /* 노랑색의 연한 버전 */
+    padding: 10px 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.naod-modal-title {
+    font-weight: bold;
+    color: #ffab00; /* 노랑색 */
+}
+
+.naod-modal-body {
+    padding: 20px;
+}
+
+.row {
+    margin-bottom: 15px;
+}
+
+.naod-title {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.naod-content {
+    margin-left: 10px;
+    color: #555;
+}
+
+.modal-footer {
+    padding: 10px 20px;
+    background-color: #ffebcd;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.nado-edit-btn, .nado-delete-btn {
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    margin: 10px;
+}
+
+.nado-edit-btn {
+    background-color: #ffab00;
+    color: #fff;
+}
+
+.nado-delete-btn {
+    background-color: #ff6b6b; /* 붉은색 */
+    color: #fff;
+}
+
+/* 부트스트랩 아이콘 스타일
+.naod-title::before {
+    content: "\f05a";
+    font-family: "Bootstrap Icons";
+    margin-right: 8px;
+    color: #ffab00;
+}
+ */
+
+/* 기본 스타일링 (input, select, number에 공통적으로 적용될 스타일) */
+.nodo-edit-input, .nado-edit-select, .nado-edit-number {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    border: 1px solid #ffebcd;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #555;
+    box-sizing: border-box;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+
+    /* 포커스 스타일 */
+    &:focus {
+        border: 1px solid #ffa000;
+        box-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+        outline: none;
+    }
+}
+
+/* select의 화살표 스타일링 */
+.nado-edit-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="#555" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5H7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 30px;
+}
+
+/* number 입력 타입 스타일링 */
+.nado-edit-number::-webkit-inner-spin-button,
+.nado-edit-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.nado-edit-number {
+    -moz-appearance: textfield;
+}
+
+.yellow-divider {
+    height: 1px;
+    background-color: #ffab00;
+    margin: 20px 10px;
+}
+
+#cannotDelete {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;  /* 글자 크기를 조절하실 수 있습니다 */
+    color: #a5a5a5;  /* 회색 계열로 색상을 지정했습니다. 원하는 색상으로 조절하실 수 있습니다 */
+    margin-top: 5px;  /* disabled된 버튼 아래에 적당한 여백을 제공합니다 */
+    text-align: center;  /* 중앙 정렬 */
+}
+
+.nado-center-contain {
+    display: flex;           /* flexbox를 활성화 */
+    justify-content: center; /* 수평으로 가운데 정렬 */
+    align-items: center;     /* 수직으로 가운데 정렬 */
+    height: 100%;            /* 컨테이너의 높이. 필요에 따라 조정하실 수 있습니다. */
+}
+
+
+.upperSection {
+    background-color: #ffdd57;
+    background-image: linear-gradient(to bottom, #ffee77, #ffdd66);
+    position: relative;
+    padding-bottom: 20px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin: 10px 10px 10px 10px; /* 마진 추가 */
+    border-radius: 25px; /* 둥근 모서리 추가 */
+}
+
+.curveEffect {
+    width: 220px;
+    height: 55px; /* 높이를 조금 늘림 */
+    position: absolute;
+    bottom: -20px; /* 위치를 약간 아래로 조정 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffdd66; /* 원래의 배경색으로 복원 */
+    border-radius: 50%; /* 원의 형태로 조절 */
+    z-index: 1;
+    color: fff;
+}
