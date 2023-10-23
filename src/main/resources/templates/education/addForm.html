@@ -4,7 +4,13 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <form id="educationadd" class="my-2" th:object="${educationVaildation}" th:action="@{/education/add}" method="post" enctype="multipart/form-data">
+            <h1 class="mt-4">교육자료등록</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item"><a href="index.html">운영마당</a></li>
+                <li class="breadcrumb-item active">교육자료 등록</li>
+            </ol>
+            <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <form id="educationadd" class="my-2" th:object="${educationVaildation}" th:action="@{/education/add}" method="post" style="margin-left: 30px" enctype="multipart/form-data">
             <div>
                 <!-- 교육자료명 -->
                 <div class="mb-3 row">

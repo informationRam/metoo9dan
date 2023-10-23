@@ -11,20 +11,12 @@
     <div class="row">
         <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
         <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-            <div style="width: 500px !important;">
-                <!-- 일단위 그래프 -->
-                <canvas id="dailySalesChart" width="300" height="150"></canvas>
-            </div>
-            <div style="width: 500px !important;">
-                <!-- 월단위 그래프 -->
-                <canvas id="monthlySalesChart" width="300" height="150"></canvas>
-            </div>
 
-
+            <canvas id="monthlySalesChart" width="400" height="200"></canvas>
             <div class="container">
                 <h1>매출 조회</h1>
-                <form method="get" action="/payments/showPayments" class="mb-3" id="graphForm">
-                <div class="row">
+               <!-- <form method="get" action="/payments/showPayments" class="mb-3">-->
+                    <div class="row">
                         <div class="col-md-3"></div> <!-- 왼쪽 여백 -->
                         <div class="col-md-2">
                             <input type="text" id="startDate" name="startDate" class="form-control datepicker" />
@@ -37,19 +29,19 @@
                         </div>
                         <div class="col-md-2">
                             <div class="form-check form-check-inline">
-                                <input type="radio" name="view" value="daily" id="daily" class="form-check-input" checked />
+                                <input type="radio" name="view" value="daily" id="daily" class="form-check-input" th:checked="${view == 'daily'}" />
                                 <label for="daily" class="form-check-label">일단위</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input type="radio" name="view" value="month" id="month" class="form-check-input" />
+                                <input type="radio" name="view" value="month" id="month" class="form-check-input" th:checked="${view == 'month'}" />
                                 <label for="month" class="form-check-label">월단위</label>
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary" id="nado-sel">조회</button>
+                            <button type="submit" class="btn btn-warning" id="nado-sel">조회</button>
                         </div>
                     </div>
-                </form>
+              <!--  </form>-->
                 <div class="col-md-7">
                     <strong>
                         <p>매출 합계 : <span th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA') + ' 원,        건수 : ' + totalTransactionCount + ' 개'}"></span></p>
@@ -104,116 +96,95 @@
                 </div>
         </div>
     </div>
-    <script>// "조회" 버튼을 클릭할 때
-// "조회" 버튼을 클릭할 때
-$("#nado-sel").click(function(e) {
-    e.preventDefault(); // 폼의 기본 동작 방지
-    var startDate = $("#startDate").val();
-    var endDate = $("#endDate").val();
-    var view = $('input[name="view"]:checked').val();
 
-    // 선택한 startDate와 endDate 값을 서버로 전송
-    $.ajax({
-        url: "/payments/showPayments",
-        method: "GET",
-        data: {
-            startDate: startDate,
-            endDate: endDate,
-            view: view
-        },
-        success: function(data) {
-            // 그래프 업데이트 함수 호출
-            fetchGraphData(data.view);
-        },
-        error: function(error) {
-            console.error("데이터 가져오기 실패: " + error);
-        }
-    });
-});
+    <script>
+        $(document).ready(function() {
+      // Initial data load when the page loads
+      fetchGraphData();
 
-$(document).ready(function() {
-    // 초기 페이지 로드 시 "일별" 데이터로 그래프 생성
-    fetchGraphData('daily');
+      // Radio button change event
+      $('input[name="view"]').change(function() {
+          if ($(this).is(':checked')) {
+              // Only fetch data when the radio button is checked
+              fetchGraphData();
+          }
+      });
+            // 월별 또는 일별 데이터 가져오는 함수
+     function fetchGraphData() {
+        var view = $('input[name="view"]:checked').val();
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
 
-    // 그래프 데이터 가져오기 및 업데이트하는 함수
-    function fetchGraphData(view) {
         $.ajax({
             url: "/paymentsChart/showPayments",
             method: "GET",
-            data: { view: view },
+            data: {
+                view: view,
+                startDate: startDate,
+                endDate: endDate
+            },
             success: function(data) {
                 console.log('data', data);
 
-                // 받아온 데이터
-                var graphData = data.data;
+                 // 받아온 데이터
+                 var data = data.data;
 
-                // 날짜를 레이블로 사용
-                var labels = graphData.labels;
+                 // 날짜를 레이블로 사용
+                 var labels = Object.keys(data);
 
-                // 매출 데이터
-                var salesData = graphData.salesData;
+                 // 매출 데이터
+                 var salesData = labels.map(function(date) {
+                     return data[date];
+                 });
 
-                // 이전 차트 객체 파괴
-                if (view === 'month' && window.monthlyChart) {
-                    window.monthlyChart.destroy();
-                } else if (view === 'daily' && window.dailyChart) {
-                    window.dailyChart.destroy();
-                }
+                 // 이전 차트 객체 파괴
+                 if (window.myChart) {
+                     window.myChart.destroy();
+                 }
 
-                // 캔버스 요소 초기화
-                var canvasId = (view === 'month') ? "monthlySalesChart" : "dailySalesChart";
-                var canvas = document.getElementById(canvasId);
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                 // 캔버스 요소 초기화
+                 var canvas = document.getElementById("monthlySalesChart");
+                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
-                // 서버에서 받아온 데이터를 그래프 데이터로 설정
-                var chartData = {
-                    labels: data.labels,
-                    datasets: [
-                        {
-                            label: "매출금액",
-                            data: data.salesData,
-                            backgroundColor: "rgba(75, 192, 192, 0.2)",
-                            borderColor: "rgba(75, 192, 192, 1)",
-                            borderWidth: 1
-                        }
-                    ]
-                };
+                 // 서버에서 받아온 데이터를 그래프 데이터로 설정
+                 var chartData = {
+                     labels: data.labels,
+                     datasets: [
+                         {
+                             label: "매출금액",
+                             data: data.salesData,
+                             backgroundColor: "rgba(75, 192, 192, 0.2)",
+                             borderColor: "rgba(75, 192, 192, 1)",
+                             borderWidth: 1
+                         }
+                     ]
+                 };
 
-                // 새로운 차트 객체 생성 및 업데이트
-                var ctx = canvas.getContext("2d");
-                if (view === 'month') {
-                    window.monthlyChart = new Chart(ctx, {
-                        type: "bar",
-                        data: chartData,
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
-                } else if (view === 'daily') {
-                    window.dailyChart = new Chart(ctx, {
-                        type: "bar",
-                        data: chartData,
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
-                }
-            },
-            error: function(error) {
-                console.error("데이터 가져오기 실패: " + error);
-            }
-        });
-    }
-});
+                 // 새로운 차트 객체 생성 및 업데이트
+                 var ctx = canvas.getContext("2d");
+                 window.myChart = new Chart(ctx, {
+                     type: "bar",
+                     data: chartData,
+                     options: {
+                         scales: {
+                             y: {
+                                 beginAtZero: true
+                             }
+                         }
+                     }
+                 });
+             },
+             error: function(error) {
+                 console.error("데이터 가져오기 실패: " + error);
+             }
+         });
+     }
 
+     function submitForm() {
+            // 폼을 서버로 제출
+            $('form').submit();
+        }
+    });
     </script>
   <!--  <script>
         $(document).ready(function() {

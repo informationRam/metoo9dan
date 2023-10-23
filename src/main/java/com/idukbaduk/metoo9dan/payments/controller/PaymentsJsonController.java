@@ -35,6 +35,7 @@ public class PaymentsJsonController {
         LocalDateTime endDateTime = null;
         int totalTransactionCount = 0;
         int totalAmount = 0;
+        System.out.println("---2.view?" + view);
 
         if (!startDate.isEmpty() && !endDate.isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -53,37 +54,32 @@ public class PaymentsJsonController {
         Page<Object[]> paymentsPage;
         Map<String, Object> dataMap;
 
-
         if ("month".equals(view)) {
             paymentsPage = paymentsService.getMonthlyTotalAmounts(startDateTime, endDateTime, page);
-            // 월별 데이터를 반환
-            responseData.put("data", getMonthlyData(startDateTime, endDateTime));
+            dataMap = getMonthlyData(startDateTime, endDateTime, page, paymentsPage.getSize()); // Pass the page and pageSize
         } else if ("daily".equals(view)) {
             paymentsPage = paymentsService.getDailyPayments(startDateTime, endDateTime, page);
-            // 일별 데이터를 반환
-            responseData.put("data", getDailyData(startDateTime, endDateTime));
+            dataMap = getDailyData(startDateTime, endDateTime, page, paymentsPage.getSize()); // Pass the page and pageSize
         } else {
             paymentsPage = paymentsService.getDailyPayments(startDateTime, endDateTime, page);
-            // 일별 데이터를 반환 (기본값)
-            responseData.put("data", getDailyData(startDateTime, endDateTime));
+            dataMap = getDailyData(startDateTime, endDateTime, page, paymentsPage.getSize()); // Pass the page and pageSize
         }
 
         int currentPage = paymentsPage.getPageable().getPageNumber();
         int totalPages = paymentsPage.getTotalPages();
-        int pageRange = 5; // 한 번에 보여줄 페이지 범위
+        int pageRange = 5;
 
         int startPage = Math.max(0, currentPage - pageRange / 2);
         int endPage = startPage + pageRange - 1;
         if (endPage >= totalPages) {
             endPage = totalPages - 1;
             startPage = Math.max(0, endPage - pageRange + 1);
-
         }
-        // 페이지 번호에 1을 더해줍니다.
+
         startPage += 1;
         endPage += 1;
 
-        // 페이지 정보도 추가
+        responseData.put("data", dataMap); // Use the dataMap from your getMonthlyData or getDailyData
         responseData.put("currentPage", currentPage);
         responseData.put("totalPages", totalPages);
         responseData.put("startPage", startPage);
@@ -91,9 +87,9 @@ public class PaymentsJsonController {
 
         return responseData;
     }
+/*
 
-
-    public Map<String, Object> getMonthlyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public Map<String, Object> getMonthlyData(LocalDateTime startDateTime, LocalDateTime endDateTime,int page) {
         List<Object[]> monthlySummaries = paymentsService.getMonthlySummaries(startDateTime, endDateTime);
 
         Map<String, Object> dataMap = new HashMap<>();
@@ -113,7 +109,48 @@ public class PaymentsJsonController {
         return dataMap;
     }
 
-    public Map<String, Object> getDailyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+*/
+
+    public Map<String, Object> getMonthlyData(LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int pageSize) {
+        // Fetch monthly data for the specified page
+        List<Object[]> monthlySummaries = paymentsService.getMonthlySummaries(startDateTime, endDateTime, page, pageSize);
+
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("labels", new ArrayList<String>());
+        dataMap.put("salesData", new ArrayList<Integer>());
+
+        // Populate dataMap with labels and salesData from monthlySummaries
+        for (Object[] summary : monthlySummaries) {
+            Integer formattedDate = (Integer) summary[0];
+            Integer salesAmount = ((Double) summary[2]).intValue();
+
+            ((List<Integer>) dataMap.get("labels")).add(formattedDate);
+            ((List<Integer>) dataMap.get("salesData")).add(salesAmount);
+        }
+
+        return dataMap;
+    }
+    public Map<String, Object> getDailyData(LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int pageSize) {
+        // Fetch daily data for the specified page
+        List<Object[]> dailySummaries = paymentsService.getFormattedDailySummaries(startDateTime, endDateTime, page, pageSize);
+
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("labels", new ArrayList<String>());
+        dataMap.put("salesData", new ArrayList<Integer>());
+
+        // Populate dataMap with labels and salesData from dailySummaries
+        for (Object[] summary : dailySummaries) {
+            String formattedDate = (String) summary[0];
+            Integer salesAmount = ((Double) summary[2]).intValue();
+
+            ((List<String>) dataMap.get("labels")).add(formattedDate);
+            ((List<Integer>) dataMap.get("salesData")).add(salesAmount);
+        }
+
+        return dataMap;
+    }
+
+ /*   public Map<String, Object> getDailyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Object[]> dailySummaries = paymentsService.getFormattedDailySummaries(startDateTime, endDateTime);
 
         Map<String, Object> dataMap = new HashMap<>();
@@ -130,6 +167,6 @@ public class PaymentsJsonController {
 
         return dataMap;
     }
-
+*/
 
 }

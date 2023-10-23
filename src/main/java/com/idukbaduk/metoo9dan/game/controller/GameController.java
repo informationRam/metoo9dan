@@ -46,6 +46,7 @@ public class GameController {
 
     //게임컨텐츠 등록 폼 (교육자료 함께 저장시 교육자료가 update 및 생성된다.)
     @GetMapping("/addForm")
+   /* @PreAuthorize("hasAuthority('ADMID')")*/
     public String gameAddForm(GameValidation gameValidation, Model model, HttpSession session) {
 
         List<EducationalResources> educationalResources = new ArrayList<>();
@@ -156,6 +157,7 @@ public class GameController {
 
     //게임콘텐츠 목록조회
     @GetMapping("/list")
+   /* @PreAuthorize("hasAuthority('ADMID')")*/
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
 
         // 게임컨텐츠 목록 조회
@@ -210,6 +212,7 @@ public class GameController {
 
     //게임콘텐츠 수정폼
     @GetMapping("/modify/{gameContentNo}")
+   /* @PreAuthorize("hasAuthority('ADMID')")*/
     public String gameModify(@PathVariable Integer gameContentNo, Model model,HttpSession session) {
         GameContents gameContents = gameService.getGameContents(gameContentNo);
         GameValidation gameValidation = gameService.getContentValidation(gameContents);    // Validation사용

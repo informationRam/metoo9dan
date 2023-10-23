@@ -9,9 +9,10 @@
             <div class="col">
                 <div class="input-group">
                     <input type="text" class="form-control form-control-sm" id="searchText" placeholder="제목을 검색해주세요" th:value="${searchText}">
-                    <button class="btn btn-primary" type="button" onclick="searchGames()">검색</button>
+                    <button class="btn btn-warning" type="button" onclick="searchGames()">검색</button>
                 </div>
             </div>
+            <div>
             <table class="table table-bordered">
                 <thead>
                 <tr>
@@ -21,10 +22,11 @@
                     <th scope="col">학습난이도</th>
                     <th scope="col">구독기간</th>
                     <th scope="col">구독가능인원</th>
+                    <th scope="col">교육자료</th>
                     <th scope="col">정가</th>
                     <th scope="col">할인율</th>
                     <th scope="col">판매가</th>
-                    <th scope="col" colspan="2">등록일</th>
+                    <th scope="col" colspan="3">등록일</th>
                 </tr>
                 </thead>
                 <tbody class="table-light">
@@ -37,7 +39,6 @@
                         <img th:if="${game.gameContentFilesList != null and not #lists.isEmpty(game.gameContentFilesList)}"
                              th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" alt="" width="100" height="100">
                     </td>
-
                     <!-- 게임 제목 -->
                     <td class="game title">
                         <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a>
@@ -58,6 +59,14 @@
                     <td class="game maxSubscribers"
                         th:text="|${game.maxSubscribers} 명|">
                     </td>
+                    <!-- 교육자료 -->
+                    <td class="game educationalResources">
+                        <ul>
+                            <li th:each="educationResource : ${game.educationalResourcesList}">
+                                <a th:href="@{|/education/details/${educationResource.resourceNo}|}" th:text="${educationResource.resourceName}"></a>
+                            </li>
+                        </ul>
+                    </td>
                     <!-- 정가 -->
                     <td class="game originalPrice">
                         <span th:text="${game.originalPrice <= 999 ? #numbers.formatInteger(game.originalPrice.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(game.originalPrice.intValue(), 3, 'COMMA') + '원'}"></span>
@@ -75,30 +84,22 @@
                         <span th:text="${#temporals.format(game.creationDate,'yyyy-MM-dd HH:mm')}">
                     </td>
                     <!-- 액션 -->
-                    <!-- 액션 -->
                     <td>
-                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-outline-secondary btn-sm mx-1">Edit</a>
                         <span th:unless="${game.paymentsList.isEmpty()}">Edit</span> <!-- 결제내역이 있는 경우 수정 버튼 비활성화 -->
                     </td>
                     <td>
-                        <a th:href="@{/game/delete/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-danger btn-sm mx-1" onclick="return confirm('삭제하시겠습니까?')">Delete</a>
+                        <a th:href="@{/game/delete/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-outline-secondary btn-sm mx-1" onclick="return confirm('삭제하시겠습니까?')">Delete</a>
                         <span th:unless="${game.paymentsList.isEmpty()}">Delete</span> <!-- 결제내역이 있는 경우 삭제 버튼 비활성화 -->
                     </td>
-
-
-                    <!-- <td class="game actions">
-                         <a th:href="@{|/game/modify/${game.gameContentNo}|}" class="btn btn-primary btn-sm mx-1">수정</a>
-                         <a href="javascript:void(0);" th:data-uri="@{|/game/delete/${game.gameContentNo}|}"
-                            class="delete btn btn-sm btn-outline-secondary"
-                            sec:authorize="isAuthenticated()"
-                            th:text="삭제"></a>
                      </td>-->
                 </tr><!-- 1페이지당 출력할 게시물수만큼 반복끝 -->
                 </tbody>
             </table>
+            </div>
             <!-- 게임컨텐츠 등록하기 -->
-            <div sec:authorize="hasRole('ROLE_ADMIN')" class="text-end ms-auto">
-                <a th:href="@{/game/addForm}" class="btn btn-outline-danger">작성하기</a>
+            <div class="text-end ms-auto">
+                <a th:href="@{/game/addForm}" class="btn btn-outline-warning">작성하기</a>
             </div>
             <!-- Pagination 부분 영역 시작 -->
             <!-- 페이지 네이션 처리 -->
@@ -121,7 +122,6 @@
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
-
                     </ul>
                 </nav>
             </div>

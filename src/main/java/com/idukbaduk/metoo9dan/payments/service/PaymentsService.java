@@ -136,7 +136,7 @@ public class PaymentsService {
 
 
     // 일별 그래프에 사용
-    public List<Object[]> getFormattedDailySummaries(LocalDateTime startDate, LocalDateTime endDate) {
+ /*   public List<Object[]> getFormattedDailySummaries(LocalDateTime startDate, LocalDateTime endDate) {
         List<Object[]> dailySummaries = paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate);
 
         // 날짜 형식을 변경하고 저장할 새로운 리스트 생성
@@ -156,7 +156,41 @@ public class PaymentsService {
 
         return formattedSummaries;
 
+    }*/
+
+
+    public List<Object[]> getFormattedDailySummaries(LocalDateTime startDate, LocalDateTime endDate, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Object[]> dailyPaymentsPage = paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate, pageable);
+
+        List<Object[]> dailySummaries = dailyPaymentsPage.getContent();
+
+        List<Object[]> formattedSummaries = new ArrayList<>();
+        for (Object[] summary : dailySummaries) {
+            Payments payment = (Payments) summary[0];
+            LocalDateTime paymentDate = payment.getPaymentDate();
+
+            // Format the date
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String formattedDate = paymentDate.format(formatter);
+
+            // Update the summary array and add it to the formatted summaries list
+            summary[0] = formattedDate;
+            formattedSummaries.add(summary);
+        }
+
+        return formattedSummaries;
     }
+
+
+    public List<Object[]> getMonthlySummaries(LocalDateTime startDate, LocalDateTime endDate, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Object[]> monthlyPaymentsPage = paymentsRepository.getMonthlyTotalAmounts(startDate, endDate, pageable);
+
+        return monthlyPaymentsPage.getContent();
+    }
+
+
 
     // 월 별 그래프에 사용
 // 월별 매출조회 합계
