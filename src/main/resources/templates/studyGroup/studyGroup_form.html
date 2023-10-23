@@ -53,7 +53,7 @@
                     <input type="text" th:field="*{groupName}" class="form-control"/>
                 </div>
                 <div class="mb-3">
-                    <label for="group_size" class="form-label">그룹인원</label>
+                    <label for="group_size" class="form-label">그룹 인원</label>
                     <input type="number" th:field="*{groupSize}" class="form-control"
                            th:min="1" th:max="${gameInfo.max_subscribers - gameInfo.appointed_group_num}"/>
                 </div>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="group_introduce" class="form-label">그룹 소개글</label>
-                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요."/>
+                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요.(30자 이내)" maxlength="30"/>
                 </div>
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
                     <input type="hidden" id="payment_no" name="paymentNo" class="form-control" th:value="${payment_no}"/>
@@ -88,24 +88,56 @@
 </html>
 
 <script>
-    // 그룹 시작일과 종료일 필드를 가져오기
-    var groupStartDateInput = document.getElementById("groupStartDate");
-    var groupFinishDateInput = document.getElementById("groupFinishDate");
+    var groupNameInput = document.querySelector("input[name=groupName]");
+   var groupSizeInput = document.querySelector("input[name=groupSize]");
+   // 그룹 시작일과 종료일 필드를 가져오기
+   var groupStartDateInput = document.getElementById("groupStartDate");
+   var groupFinishDateInput = document.getElementById("groupFinishDate");
 
-    // 폼 제출 시 이벤트 핸들러 추가
-    document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
-        // 그룹 시작일과 종료일 값을 가져오기
-        var groupStartDateValue = groupStartDateInput.value;
-        var groupFinishDateValue = groupFinishDateInput.value;
+   // 폼 제출 시 이벤트 핸들러 추가
+   document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
+       // 그룹명, 그룹인원, 그룹 시작일, 그룹 종료일 값을 가져오기
+       var groupNameValue = groupNameInput.value;
+       var groupSizeValue = groupSizeInput.value;
+       var groupStartDateValue = groupStartDateInput.value;
+       var groupFinishDateValue = groupFinishDateInput.value;
 
-        // Date 객체로 변환
-        var startDate = new Date(groupStartDateValue);
-        var finishDate = new Date(groupFinishDateValue);
-
-        // 그룹 시작일이 그룹 종료일보다 크다면 유효성 검사 실패
-        if (startDate > finishDate) {
-            alert("그룹 종료일은 그룹 시작일보다 같거나 뒤에 있어야 합니다.");
+        // 그룹명 검사
+        if (groupNameValue.trim() === "") {
+            alert("그룹명을 입력하세요.");
             event.preventDefault(); // 폼 제출 방지
+        } else {
+            // 그룹인원 검사
+            if (groupSizeValue.trim() === "" || isNaN(groupSizeValue) || parseInt(groupSizeValue) <= 0) {
+                alert("유효한 그룹인원을 입력하세요.");
+                event.preventDefault(); // 폼 제출 방지
+            } else {
+                // 그룹 시작일 검사
+                if (groupStartDateValue.trim() === "") {
+                    alert("그룹 시작일을 입력하세요.");
+                    event.preventDefault(); // 폼 제출 방지
+                } else {
+                    // 그룹 종료일 검사
+                    if (groupFinishDateValue.trim() === "") {
+                        alert("그룹 종료일을 입력하세요.");
+                        event.preventDefault(); // 폼 제출 방지
+                    } else {
+                        // 그룹 시작일과 종료일 값을 가져오기
+                        var startDate = new Date(groupStartDateValue);
+                        var finishDate = new Date(groupFinishDateValue);
+
+                        // 그룹 시작일이 그룹 종료일보다 크다면 유효성 검사 실패
+                        if (startDate > finishDate) {
+                            alert("그룹 종료일은 그룹 시작일보다 같거나 뒤에 있어야 합니다.");
+                            event.preventDefault(); // 폼 제출 방지
+                        }
+                        else {
+                            // 등록이 완료되었음을 알리는 alert 메시지 표시
+                            alert("학습 그룹 등록이 완료되었습니다.");
+                        }
+                    }
+                }
+            }
         }
     });
 </script>

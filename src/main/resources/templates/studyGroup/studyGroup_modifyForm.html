@@ -56,7 +56,7 @@
                     <label for="group_name" class="form-label">그룹명</label>
                     <input type="text" th:field="*{groupName}" class="form-control"/>
                 </div>
-                <label for="group_size" class="form-label">그룹인원</label>
+                <label for="group_size" class="form-label">그룹 인원</label>
                 <div class="form-floating mb-3">
                     <input type="number" class="form-control" id="floatingInput" th:readonly="${groupNum >= 1}" th:field="*{groupSize}"
                            th:min="1" th:max="${calculatedValue}" />
@@ -76,7 +76,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="group_introduce" class="form-label">그룹 소개글</label>
-                    <textarea type="text" th:readonly="${groupNum >= 1}" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요."/>
+                    <textarea type="text" th:readonly="${groupNum >= 1}" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요.(30자 이내)" maxlength="30"/>
                 </div>
                     <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
                     <input type="hidden" th:value="${member_no}" class="form-control"/>
@@ -85,7 +85,6 @@
                     <input type="button" value="취소하기" class="btn btn-outline-secondary" onclick="window.location.href='http://localhost/studygroup/list'"/>
                 </div>
             </form>
-            </div>
             <script th:inline="javascript">
                 var groupNo = /*[[${group_no}]]*/ null; // 컨트롤러에서 전달받은 group_no 값을 JavaScript 변수에 할당
                 var paymentNo = /*[[${payment_no}]]*/ null; // 컨트롤러에서 전달받은 payment_no 값을 JavaScript 변수에 할당
@@ -93,7 +92,7 @@
         </div>
     </div>
 </div>
-
+</div>
 </html>
 
 <script>
@@ -106,7 +105,7 @@ if (${groupNum} >= 1) {
 }
 });
 */
-
+/*
 // 그룹 시작일과 종료일 필드를 가져오기
 var groupStartDateInput = document.getElementById("groupStartDate");
 var groupFinishDateInput = document.getElementById("groupFinishDate");
@@ -154,6 +153,74 @@ document.getElementById("studyGroupForm").addEventListener("submit", function (e
           alert("오류가 발생했습니다. 다시 시도하세요.");
        });
 });
+*/
+var groupStartDateInput = document.getElementById("groupStartDate");
+    var groupFinishDateInput = document.getElementById("groupFinishDate");
 
+    document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // 폼의 기본 동작 방지
 
+        var groupNameInput = document.querySelector("input[name=groupName]");
+        var groupSizeInput = document.querySelector("input[name=groupSize]");
+        var groupStartDateValue = groupStartDateInput.value;
+        var groupFinishDateValue = groupFinishDateInput.value;
+
+        var errors = []; // 에러 메시지를 저장할 배열
+
+        // 그룹명 검사
+        if (groupNameInput.value.trim() === "") {
+            errors.push("그룹명을 입력하세요.");
+        } else {
+            // 그룹인원 검사
+            if (groupSizeInput.value.trim() === "" || isNaN(groupSizeInput.value) || parseInt(groupSizeInput.value) <= 0) {
+                errors.push("유효한 그룹인원을 입력하세요.");
+            } else {
+                // 그룹 시작일 검사
+                if (groupStartDateValue.trim() === "") {
+                    errors.push("그룹 시작일을 입력하세요.");
+                } else {
+                    // 그룹 종료일 검사
+                    if (groupFinishDateValue.trim() === "") {
+                        errors.push("그룹 종료일을 입력하세요.");
+                    } else {
+                        // 그룹 시작일과 종료일 값을 가져오기
+                        var startDate = new Date(groupStartDateValue);
+                        var finishDate = new Date(groupFinishDateValue);
+
+                        if (startDate > finishDate) {
+                            errors.push("그룹 종료일은 그룹 시작일보다 같거나 뒤에 있어야 합니다.");
+                        }
+                    }
+                }
+            }
+        }
+
+        if (errors.length > 0) {
+            // 에러 메시지를 합친 후 표시
+            alert(errors.join("\n"));
+            return; // 함수 실행 중단
+        }
+
+        var formData = new FormData(this);
+
+        formData.append("groupNo", groupNo);
+        formData.append("paymentNo", paymentNo);
+
+        fetch("/studygroup/modify/" + groupNo + "/" + paymentNo, {
+            method: "POST",
+            body: formData,
+        })
+        .then(function (response) {
+            if (response.status === 200) {
+                alert("수정이 완료되었습니다.");
+                window.location.href = "/studygroup/list";
+            } else {
+                window.location.href = "/studygroup/modify/" + groupNo + "/" + paymentNo;
+                alert("수정에 실패했습니다. 다시 시도하세요.");
+            }
+        })
+        .catch(function (error) {
+            alert("오류가 발생했습니다. 다시 시도하세요.");
+        });
+    });
 </script>

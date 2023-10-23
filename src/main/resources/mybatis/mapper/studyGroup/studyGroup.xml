@@ -24,6 +24,7 @@
             baduk.game_contents g ON s.game_content_no=g.game_content_no
         WHERE
             s.member_no=#{member_no}
+        ORDER by s.group_no desc
 		]]>
     </select>
 
@@ -48,6 +49,7 @@
         baduk.game_contents g ON s.game_content_no=g.game_content_no
         WHERE
         s.member_no=#{member_no}
+        ORDER by s.group_no desc
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
         </if>

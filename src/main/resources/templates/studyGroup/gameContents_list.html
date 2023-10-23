@@ -95,7 +95,7 @@
                     return; // 첫 번째 선택된 체크박스만 처리
                 }
             });
-            if (selectedPaymentNo !== null && selectedPaymentNo !== null) {
+            //if (selectedPaymentNo !== null && selectedPaymentNo !== null) {
                  var selectedCheckbox = document.querySelector('input[name="selectedGame"]:checked');
                     if (selectedCheckbox) {
                     var selectedGameRow = selectedCheckbox.closest("tr");
@@ -112,9 +112,9 @@
                 } else {
                 alert("게임콘텐츠를 선택해주세요.");
                 }
-            } else {
-                alert("게임콘텐츠를 선택해주세요.");
-            }
+            //} else {
+            //    alert("게임콘텐츠를 선택해주세요.");
+            //}
         });
 
         // 체크박스 클릭 시 다른 체크박스의 선택을 해제
