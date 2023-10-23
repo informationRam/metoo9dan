@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 
 import javax.management.relation.Role;
@@ -64,4 +65,10 @@ public class Member {
     @Column(name="birth")
     private Date birth;             //date NOT NULL "생일"
 
+    @Column(name = "membership_status")
+    private String membershipStatus = "무료회원"; // varchar(5) NOT NULL "회원의 결제 여부 (유료회원, 무료회원)"
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private EducatorInfo educatorInfo;
 }
