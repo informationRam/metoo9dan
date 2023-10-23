@@ -432,7 +432,7 @@
                           if (isSubmitted) {
                               // 제출 내용으로 수정 폼 채우기
                               document.querySelector(".edit-form textarea[name='homeworkContent']").value = data.content;
-                              document.querySelector(".edit-form textarea[name='additionalQuestion']").value = data.additionalQuestion;
+                              document.querySelector(".edit-form textarea[name='additionalQuestions']").value = data.additionalQuestions;
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = data.homeworkSubmitNo;
                               $("#deleteBtn").data('submit-id', data.homeworkSubmitNo);
                               $("#firstBottom").hide();
@@ -446,7 +446,7 @@
                               // 제출 폼 초기화 및 표시
                               $("#firstBottom").hide();
                               document.querySelector(".submit-form textarea[name='homeworkContent']").value = '';
-                              document.querySelector(".submit-form textarea[name='additionalQuestion']").value = '';
+                              document.querySelector(".submit-form textarea[name='additionalQuestions']").value = '';
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = '';
                               document.querySelector(".edit-form").style.display = 'none';
                             $(".submit-form").addClass('animate__animated animate__zoomIn').show();

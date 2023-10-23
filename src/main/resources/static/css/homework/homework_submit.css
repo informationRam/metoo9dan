@@ -402,6 +402,7 @@ transform: scale(1.1);
     border-radius: 50%; /* 원의 형태로 조절 */
     z-index: 1;
     color: fff;
+    margin-bottom: 20px;
 }
 
 .nado-card {
