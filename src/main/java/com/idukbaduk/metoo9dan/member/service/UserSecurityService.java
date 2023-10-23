@@ -18,7 +18,7 @@ import java.util.Optional;
 //시큐리티 로그인 처리 서비스: 인증 Authentiation 프로세스 구현
 
 @RequiredArgsConstructor
-@Service("userDetailsService")
+@Service
 public class UserSecurityService implements UserDetailsService {
 
     private final MemberRepository memberRepository;

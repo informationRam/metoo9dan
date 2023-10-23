@@ -16,24 +16,24 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
-    public String sendSimpleMessage(String mailAddress) {
-        System.out.println("sendSimpleMessage진입");
-        SimpleMailMessage message = new SimpleMailMessage();
-        MailDTO mailDto = new MailDTO();
-        String str = getTempPassword();
-
-        mailDto.setTo("ttangppy@gmail.com");
-        mailDto.setTitle("[나도9단] 임시비밀번호 메일 발송 안내");
-        mailDto.setContent("임시비밀번호 안내 [" + str + "] 로그인 > 마이페이지 > 내 정보수정을 통해 패스워드를 변경해주세요");
-        mailDto.setAddress(mailAddress);
-
-        message.setFrom(mailDto.getTo());
-        message.setTo(mailDto.getAddress());
-        message.setSubject(mailDto.getTitle());
-        message.setText(mailDto.getContent());
-        emailSender.send(message);
-        return str;
-    }
+//    public String sendSimpleMessage(String mailAddress) {
+//        System.out.println("sendSimpleMessage진입");
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        MailDTO mailDto = new MailDTO();
+//        String str = getTempPassword();
+//
+//        mailDto.setTo("ttangppy@gmail.com");
+//        mailDto.setTitle("[나도9단] 임시비밀번호 메일 발송 안내");
+//        mailDto.setContent("임시비밀번호 안내 [" + str + "] 로그인 > 마이페이지 > 내 정보수정을 통해 패스워드를 변경해주세요");
+//        mailDto.setAddress(mailAddress);
+//
+//        message.setFrom(mailDto.getTo());
+//        message.setTo(mailDto.getAddress());
+//        message.setSubject(mailDto.getTitle());
+//        message.setText(mailDto.getContent());
+//        emailSender.send(message);
+//        return str;
+//    }
 
     // 임시 패스워드
     public String getTempPassword() {

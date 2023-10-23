@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EducatorinfoRepository extends JpaRepository<EducatorInfo, Integer> {
 
+    EducatorInfo findByMemberMemberNo(Integer memberNo);
 }
