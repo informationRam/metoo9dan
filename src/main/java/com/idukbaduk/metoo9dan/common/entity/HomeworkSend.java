@@ -17,7 +17,7 @@ public class HomeworkSend {
     private Integer sendNo;        //int  NOT NULL    AUTO_INCREMENT COMMENT '전송번호',
 
     @Column(name="current_level")
-    private String currentLevel;  //varchar(50) NOT NULL    COMMENT '현재 레벨',
+    private Integer currentLevel;  //varchar(50) NOT NULL    COMMENT '현재 레벨',
 
     @Column(name="send_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime sendDate; //datetime       NOT NULL    COMMENT '전송일',
@@ -30,4 +30,6 @@ public class HomeworkSend {
     @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정
     private Member member;
 
+    @Column(name="is_submit")
+    private String isSubmit;
 }
