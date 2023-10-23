@@ -44,9 +44,10 @@
 
             <br/>
             <p><strong>[그룹 상세 정보]</strong></p>
-            <p>교육자명 :  <strong><span th:text="${gameInfo.name}"></span></strong></p>
+            <div th:each="gameInfo, loop : ${gameInfo}">
+            <p>교육자명 :  <strong><span  th:text="${gameInfo.name}"></span></strong></p>
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
-                <div th:replace="~{form_errors::formErrorsFragment}"></div>
+                <div th:replace="~{studyGroup/form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
                     <label for="group_name" class="form-label">그룹명</label>
                     <input type="text" th:field="*{groupName}" class="form-control"/>
@@ -79,6 +80,7 @@
                     <input type="submit" value="학습 그룹 등록 하기" class="btn btn-warning text-white"/>
                 </div>
             </form>
+            </div>
 
         </div>
     </div>

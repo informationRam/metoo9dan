@@ -45,12 +45,13 @@
             </div>
             <br/>
             <p><strong>[그룹 상세 정보]</strong></p>
+            <div th:each="gameInfo, loop : ${gameInfo}">
             <p>교육자명 :  <strong><span th:text="${gameInfo.name}"></span></strong></p>
             <div th:if="${groupNum >= 1}" class="text-danger">
                 <strong>그룹에 가입된 학생이 있을 경우 그룹명만 수정 가능합니다.</strong>
             </div>
             <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
-                <div th:replace="~{form_errors::formErrorsFragment}"></div>
+                <div th:replace="~{studyGroup/form_errors::formErrorsFragment}"></div>
                 <div class="mb-3">
                     <label for="group_name" class="form-label">그룹명</label>
                     <input type="text" th:field="*{groupName}" class="form-control"/>
@@ -84,6 +85,7 @@
                     <input type="button" value="취소하기" class="btn btn-outline-secondary" onclick="window.location.href='http://localhost/studygroup/list'"/>
                 </div>
             </form>
+            </div>
             <script th:inline="javascript">
                 var groupNo = /*[[${group_no}]]*/ null; // 컨트롤러에서 전달받은 group_no 값을 JavaScript 변수에 할당
                 var paymentNo = /*[[${payment_no}]]*/ null; // 컨트롤러에서 전달받은 payment_no 값을 JavaScript 변수에 할당
