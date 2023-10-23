@@ -2,12 +2,16 @@ package com.idukbaduk.metoo9dan.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 // 숙제제출 테이블 - PRIMARY KEY (homework_submit_no)
 @Entity
 @Data
+@Getter
+@Setter
 @Table(name="homework_submit")
 public class HomeworkSubmit {
 
@@ -17,7 +21,7 @@ public class HomeworkSubmit {
     private Integer homeworkSubmitNo;    //int  NOT NULL    AUTO_INCREMENT COMMENT '숙제 제출 번호',
 
     @Column
-    private String progress;              //varchar(50) NOT NULL    COMMENT '진도',
+    private Integer progress;              //varchar(50) NOT NULL    COMMENT '진도',
 
     @Column(name="homework_content")
     private String homeworkContent;      //text NOT NULL    COMMENT '숙제 내용',
@@ -39,4 +43,8 @@ public class HomeworkSubmit {
     @JoinColumn(name = "member_no", referencedColumnName = "member_no") // 외래 키 설정
     private Member member;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId //@MapsId 는 @id로 지정한 컬럼에 @OneToOne 이나 @ManyToOne 관계를 매핑시키는 역할
+    @JoinColumn(name = "send_no", referencedColumnName = "send_no") // 외래 키 설정
+    private HomeworkSend homeworkSend;
 }
