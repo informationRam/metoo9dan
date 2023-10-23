@@ -101,6 +101,8 @@
                         <div class="nado-center-contain">
                         <div id="eval-pagination" class="pagination"></div>
                         </div>
+                        <br/>
+                        <br/>
                         <div class="nado-center-contain">
                         <button type="submit" class="btn-nado-primary">평가 저장</button>
                         </div>
@@ -148,12 +150,12 @@
                         },
                         success: function(response) {
                             // 결과 테이블 갱신
-                            let tableContent = '<thead class="nano-thead"><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody class="nado-tbody">';
+                            let tableContent = '<thead class="nano-thead"><tr><th>No</th><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody class="nado-tbody">';
                             if (response.content.length === 0) {
                             // 데이터가 없을 때
                             tableContent += `
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <div id="noHomework" class="groupMessage mb-3 text-center">
                                         <img src="/css/homework/noHwIcon.png" alt="No data Icon" class="mb-2">
                                         <div>전송한 숙제가 없습니다</div>
@@ -161,20 +163,27 @@
                                 </td>
                             </tr>`;
                         } else {
-                            // 데이터가 있을 때
-                            response.content.forEach(item => {
-                            let formattedDueDate = moment(item.dueDate).format('YYYY/MM/DD');
-                            let formattedSendDate = moment(item.sendDate).format('YYYY/MM/DD HH:mm:ss');
+                            // 카운트 변수 초기화
+                                let count = 1;
 
-                                tableContent += `
-                                <tr data-hw-id="${item.homeworkNo}" data-send-date="${item.sendDate}">
-                                    <td>${item.homeworkTitle}</td>
-                                    <td>${item.homeworkContentPreview}</td>
-                                    <td>${item.currentLevel}</td>
-                                    <td>${formattedDueDate}</td>
-                                    <td>${formattedSendDate}</td>
-                                </tr>`;
-                            });
+                                // 데이터가 있을 때
+                                response.content.forEach(item => {
+                                    let formattedDueDate = moment(item.dueDate).format('YYYY/MM/DD');
+                                    let formattedSendDate = moment(item.sendDate).format('YYYY/MM/DD HH:mm:ss');
+
+                                    tableContent += `
+                                    <tr data-hw-id="${item.homeworkNo}" data-send-date="${item.sendDate}">
+                                        <td>${count}</td> <!-- 카운트 값을 여기에 적용 -->
+                                        <td>${item.homeworkTitle}</td>
+                                        <td>${item.homeworkContentPreview}</td>
+                                        <td>${item.currentLevel}</td>
+                                        <td>${formattedDueDate}</td>
+                                        <td>${formattedSendDate}</td>
+                                    </tr>`;
+
+                                    // 카운트 증가
+                                    count++;
+                                });
                         }
                             tableContent += '</tbody>';
                             $('#hwSendTable').html(tableContent);
@@ -238,7 +247,7 @@
                                         labels: ['제출', '미제출'],
                                         datasets: [{
                                             data: [submitPercent, 100 - submitPercent],
-                                            backgroundColor: ['#4CAF50', '#FFC107'],
+                                            backgroundColor: ['#4CAF50', '#BDBDBD'],
                                         }]
                                     },
                                     options: {
@@ -266,7 +275,7 @@
                                             labels: ['우수', '보통', '미흡', '평가X'],
                                             datasets: [{
                                                 data: evalPer,  // 이미 백분율로 변환된 데이터 사용
-                                                backgroundColor: ['#4CAF50', '#8BC34A', '#FFC107', '#FF5722'],
+                                                backgroundColor: ['#4CAF50', '#8BC34A', '#FFC107', '#BDBDBD'],
                                             }]
                                         },
                                         options: {

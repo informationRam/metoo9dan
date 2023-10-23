@@ -17,7 +17,7 @@
             </div>
 
             <div class="row justify-content-center">
-                <div class="upperSection">
+                <div class="upperSection px-3">
                     <div class="nado-card">
                         <div class="nado-card-header">
                             <h2>숙제 제출</h2>
@@ -469,6 +469,7 @@
                         $(".edit-form").one('animationend', function() {
                             $('.edit-form').hide().removeClass('animate__animated animate__zoomOut');
                         });
+                        $("#firstBottom").show();
                    });
 
                    $('.submitIndex').click(function() {
@@ -477,6 +478,7 @@
                         $(".submit-form").one('animationend', function() {
                             $('.submit-form').hide().removeClass('animate__animated animate__zoomOut');
                         });
+                        $("#firstBottom").show();
                     });
                 });
 
