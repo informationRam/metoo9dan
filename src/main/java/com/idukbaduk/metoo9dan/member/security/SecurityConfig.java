@@ -14,12 +14,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
@@ -89,13 +91,13 @@ public class SecurityConfig {
                   .failureUrl("/member/login")              // 로그인 실패 후 이동 페이지
                   .usernameParameter("memberId")                   // 아이디 파라미터명 설정
                   .passwordParameter("password")                      // 패스워드 파라미터명 설정
-//                .successHandler(new AuthenticationSuccessHandler() {    // 로그인 성공 후 핸들러
-//                    @Override
-//                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-//                        System.out.println("authentication" + authentication.getName());  //인증성공한 사용자 이름 출력
-//                        response.sendRedirect("/");     //성공 후 root 페이지로 이동
-//                    }
-//                })
+                .successHandler(new AuthenticationSuccessHandler() {    // 로그인 성공 후 핸들러
+                    @Override
+                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                        System.out.println("authentication" + authentication.getName());  //인증성공한 사용자 이름 출력
+                        response.sendRedirect("/");     //성공 후 root 페이지로 이동
+                    }
+                })
                 .failureHandler(new AuthenticationFailureHandler() {
                     @Override
                     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
