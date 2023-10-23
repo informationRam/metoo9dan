@@ -1,0 +1,337 @@
+`<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/admin/adminSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+
+            <div class="mb-3 col-12 col-md-9">
+            <div class="row">
+                <div class="mb-3 col-12 col-md-3">
+                    <label for="difficulty" class="form-label">자료구분</label>
+                    <select id="searchText" class="form-select form-select-sm w-auto" onchange="searchGames()">
+                        <option value="">-- 선택해주세요 --</option>
+                        <option value="tutorial">튜토리얼</option>
+                        <option value="lecture">교육영상</option>
+                    </select>
+                </div>
+
+                <div class="mb-3 col-12 col-md-3">
+                    <label for="searchGame" class="form-label">게임콘텐츠명</label>
+                    <select id="searchGameContent" class="form-select form-select-sm w-auto" onchange="searchGameContents()">
+                        <option value="">-- 선택해주세요 --</option>
+                        <option th:each="game : ${uniqueGameNames}" th:value="${game.gameContentNo}" th:text="${game.gameName}"></option>
+                    </select>
+                </div>
+
+                <div class="mb-3 col-12 col-md-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control form-control-sm" id="resourceName" placeholder="제목을 검색해주세요" th:value="${resourceName}">
+                        <button class="btn btn-primary" type="button" onclick="searchresourceName()">검색</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col" class="text-center">No.</th>
+                    <th scope="col" class="text-center">교육자료</th>
+                    <th scope="col" class="text-center">자료구분</th>
+                    <th scope="col" class="text-center">자료유형</th>
+                    <th scope="col" class="text-center">서비스구분</th>
+                    <th scope="col" class="text-center">패키지상태</th>
+                    <th scope="col" class="text-center" colspan="2">등록일</th>
+                </tr>
+                </thead>
+                <tbody class="table-light">
+                <tr th:each="education, loop : ${educationPage}">
+                    <!-- 페이지 번호 -->
+                    <td class="education no"
+                        th:text="${educationPage.getTotalElements() - (educationPage.getNumber() * educationPage.getSize()) - loop.index}"></td>
+                    <!-- 교육자료 제목 -->
+                    <td class="education title w-25">
+                        <a th:href="@{|/education/detail/${education.resourceNo}|}" th:text="${education.resourceName}" class="text-decoration-none text-dark"></a>
+                        <div class="col-md-4" style="height: 100px; width: 150px; overflow: hidden;">
+                            <img th:if="${education != null and education.resourcesFilesList != null and not #lists.isEmpty(education.resourcesFilesList)}"
+                                 th:src="@{|/upload/education/${education.resourcesFilesList.thumOriginCopyName}|}"
+                                 alt="교육자료 이미지" class="card-img" style="width: 100%; height: auto; object-fit: cover;">
+                        </div>
+                    </td>
+                    <!-- 자료구분 -->
+                    <td class="education resourceCate">
+                        <span th:switch="${education.resourceCate}">
+                            <span th:case="tutorial">튜토리얼</span>
+                            <span th:case="lecture">교육영상</span>
+                        </span>
+                    </td>
+                    <!-- 자료유형 -->
+                    <td class="education fileType">
+                       <span th:switch="${education.fileType}">
+                            <span th:case="'image'">이미지</span>
+                            <span th:case="'video'">동영상</span>
+                            <span th:case="'image/video'">이미지/동영상</span>
+                            <span th:case="'ect'">기타</span>
+                        </span>
+                    </td>
+                    <!-- 서비스구분 -->
+                    <td class="education serviceType">
+                         <span th:switch="${education.serviceType}">
+                            <span th:case="full">유료</span>
+                            <span th:case=="short">무료</span>
+                        </span>
+                    </td>
+                    <!-- 패키지유형 -->
+                    <td class="education-gameContents"
+                        th:text="${education.gameContents != null ? education.gameContents.gameName : ''}"
+                        data-game-contents="${education.gameContents != null ? education.gameContents.gameName : ''}">
+                    </td>
+                    <!-- 등록일 (수정하면 날짜 변경) -->
+                    <td class="education date">
+                        <span th:text="${#temporals.format(education.creationDate,'yyyy-MM-dd HH:mm')}"></span>
+                    </td>
+                     <!-- 액션 -->
+                    <!-- Modify your Thymeleaf template to conditionally render the delete button -->
+
+                    <!-- 취소 버튼, 수정 버튼 추가 -->
+                    <td class="education-actions" th:if="${education.gameContents == null}">
+                        <!-- 수정 버튼 -->
+                        <a th:href="@{|/education/modify/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1" id="modifyButton">수정</a>
+                        <!-- 취소 버튼 -->
+                        <a th:href="@{|/education/delete/${education.resourceNo}|}" class="btn btn-primary btn-sm mx-1" id="cancelButton" onclick="confirmCancel(event)">삭제</a>
+
+                    </td>
+                </tbody>
+            </table>
+            <!--  등록하기 -->
+          <!--  <div sec:authorize="hasRole('ROLE_ADMIN')" class="text-end ms-auto">-->
+            <div class="my-3 text-center"> <!-- Center the button -->
+                <a th:href="@{/education/addForm}" class="btn btn-outline-danger">작성하기</a>
+            </div>
+            <!-- 페이지 네이션 처리 -->
+            <div id="pagination" class="mt-4">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous Page Link -->
+                        <li class="page-item" th:classappend="${educationPage.first} ? 'disabled'">
+                            <a class="page-link" href="#" th:href="@{/education/list(page=${educationPage.number - 1}, searchText=${searchText}, searchGame=${searchGame}, resourceName=${resourceName})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <!-- Page Number Links -->
+                        <li class="page-item" th:classappend="${page == educationPage.number + 1} ? 'active'" th:each="page : ${#numbers.sequence(startPage, endPage)}">
+                            <a class="page-link" href="#" th:href="@{/education/list(page=${page - 1}, searchText=${searchText}, searchGame=${searchGame}, resourceName=${resourceName})}" th:text="${page}"></a>
+                        </li>
+                        <!-- Next Page Link -->
+                        <li class="page-item" th:classappend="${educationPage.last} ? 'disabled'">
+                            <a class="page-link" href="#" th:href="@{/education/list(page=${educationPage.number + 1}, searchText=${searchText}, searchGame=${searchGame}, resourceName=${resourceName})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
+        </div>
+
+<script>
+function confirmCancel(event) {
+
+    if (confirm("삭제하시겠습니까?")) {
+        // 확인을 클릭하면 URL로 이동
+        window.location.href = event.target.getAttribute('href');
+    } else {
+
+        event.preventDefault();
+    }
+}
+
+    // 페이지네이션처리
+
+    // 페이지 로드 시 URL 쿼리 파라미터에서 검색 조건을 읽어와서 필드에 설정
+    document.addEventListener("DOMContentLoaded", function() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        const searchText = urlParams.get("searchText") || "";
+        const searchGame = urlParams.get("searchGame") || "";
+        const resourceName = urlParams.get("resourceName") || "";
+
+        // 검색 텍스트 필드 설정
+        const searchTextDropdown = document.getElementById('searchText');
+        searchTextDropdown.value = searchText;
+
+        // 게임 선택 필드 설정
+        const searchGameDropdown = document.getElementById('searchGameContent');
+        searchGameDropdown.value = searchGame;
+
+        // 자료 이름 입력 필드 설정
+        document.getElementById('resourceName').value = resourceName;
+    });
+
+    // 검색 버튼 클릭 시 URL 업데이트
+    function searchResources() {
+        const searchText = document.getElementById('searchText').value || "";
+        const searchGame = document.getElementById('searchGameContent').value || "";
+        const resourceName = document.getElementById('resourceName').value || "";
+
+        const queryString = `/education/list?page=0&searchText=${searchText}&searchGame=${searchGame}&resourceName=${resourceName}`;
+        window.location.href = queryString;
+    }
+
+    // 자료구분 필드 변경 시 페이지네이션 처리
+    function searchGames() {
+        searchResources();
+    }
+
+    // 게임콘텐츠명 필드 변경 시 페이지네이션 처리
+    function searchGameContents() {
+        searchResources();
+    }
+</script>
+
+
+
+
+  <!--  </script>
+
+
+
+
+
+
+
+
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const queryString = window.location.search;
+                        const urlParams = new URLSearchParams(queryString);
+
+                        const searchText = urlParams.get("searchText") || "";
+                        const searchGame = urlParams.get("searchGame") || "";
+                        const resourceName = urlParams.get("resourceName") || "";
+
+                        // Set the selected values in the dropdowns
+                        const searchTextDropdown = document.getElementById('searchText');
+                        const searchGameDropdown = document.getElementById('searchGameContent');
+                        searchTextDropdown.value = searchText;
+                        searchGameDropdown.value = searchGame;
+
+                        // Set the value in the input field
+                        document.getElementById('resourceName').value = resourceName;
+                    });
+
+                    function searchGames() {
+                        var searchText = document.getElementById('searchText').value || "";
+                        var gameName = document.getElementById('searchGameContent').value || "";
+                        var resourceName = document.getElementById('resourceName').value || "";
+
+                        console.log('searchText', searchText);
+                        console.log('gameName', gameName);
+                        console.log('resourceName', resourceName);
+
+                        // Include the existing query parameters in the URL
+                        window.location.href = '/education/list?page=0&searchText=' + searchText + '&searchGame=' + gameName + '&resourceName=' + resourceName;
+                        console.log('window.location.href', window.location.href);
+                    }
+        </script>
+        <script>
+            function searchGames() {
+            var searchText = document.getElementById('searchText').value || "";
+            var gameName = document.getElementById('searchGameContent').value || "";
+            var resourceName = document.getElementById('resourceName').value || "";
+
+            console.log('searchText', searchText);
+            console.log('gameName', gameName);
+            console.log('resourceName', resourceName);
+
+            // Include the existing query parameters in the URL
+            window.location.href = '/education/list?page=0&searchText=' + searchText + '&searchGame=' + gameName + '&resourceName=' + resourceName;
+            console.log('window.location.href', window.location.href);
+        }
+
+        </script>
+
+        <script>
+            function searchresourceName() {
+              var searchText = document.getElementById('searchText').value;
+              var gameName = document.getElementById('searchGameContent').value;
+              var resourceName = document.getElementById('resourceName').value; // Get the value of the title search input
+
+                        console.log('searchText',searchText)
+                 console.log('gameName',gameName)
+                console.log('resourceName',resourceName)
+          window.location.href = '/education/list?page=0&searchText=' + searchText + '&searchGame=' + gameName + '&resourceName=' + resourceName;
+               console.log('window.location.href',window.location.href)
+      }
+
+        </script>
+
+    <script>
+
+      document.addEventListener("DOMContentLoaded", function() {
+          const queryString = window.location.search;
+          const urlParams = new URLSearchParams(queryString);
+
+          const searchText = urlParams.get("searchText") || "";
+          const searchGame = urlParams.get("searchGame") || "";
+          const resourceName = urlParams.get("resourceName") || "";
+
+          // Set the selected values in the dropdowns
+          const searchTextDropdown = document.getElementById('searchText');
+          const searchGameDropdown = document.getElementById('searchGameContent');
+          searchTextDropdown.value = searchText;
+          searchGameDropdown.value = searchGame;
+
+          // Set the value in the input field
+          document.getElementById('resourceName').value = resourceName;
+      });
+
+      function searchGames() {
+          var searchText = document.getElementById('searchText').value || "";
+          var gameName = document.getElementById('searchGameContent').value || "";
+          var resourceName = document.getElementById('resourceName').value || "";
+
+          console.log('searchText', searchText);
+          console.log('gameName', gameName);
+          console.log('resourceName', resourceName);
+
+          // Include the existing query parameters in the URL
+          window.location.href = '/education/list?page=0&searchText=' + searchText + '&searchGame=' + gameName + '&resourceName=' + resourceName;
+          console.log('window.location.href', window.location.href);
+      }
+    </script>
+    <script>
+        function searchGames() {
+        var searchText = document.getElementById('searchText').value || "";
+        var gameName = document.getElementById('searchGameContent').value || "";
+        var resourceName = document.getElementById('resourceName').value || "";
+
+        console.log('searchText', searchText);
+        console.log('gameName', gameName);
+        console.log('resourceName', resourceName);
+
+        // Include the existing query parameters in the URL
+        window.location.href = '/education/list?page=0&searchText=' + searchText + '&searchGame=' + gameName + '&resourceName=' + resourceName;
+        console.log('window.location.href', window.location.href);
+    }
+
+    </script>
+
+    <script>
+        function searchresourceName() {
+          var searchText = document.getElementById('searchText').value;
+          var gameName = document.getElementById('searchGameContent').value;
+          var resourceName = document.getElementById('resourceName').value; // Get the value of the title search input
+
+                    console.log('searchText',searchText)
+             console.log('gameName',gameName)
+            console.log('resourceName',resourceName)
+      window.location.href = '/education/list?page=0&searchText=' + searchText + '&searchGame=' + gameName + '&resourceName=' + resourceName;
+           console.log('window.location.href',window.location.href)
+  }
+
+    </script>-->
+</div>
+</html>`
