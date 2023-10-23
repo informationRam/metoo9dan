@@ -14,53 +14,64 @@
                     <div id="questionHeader"> <!--글상세 헤더정보-->
                         <div>
                             <span th:if="${question.isAnswered}==false" class="badge rounded-pill text-bg-secondary">답변대기</span>
-                            <span th:unless="${question.isAnswered}==false" class="badge rounded-pill text-bg-primary">답변완료</span>
-                            <h4 th:text="${question.questionTitle}" style="display: inline;">제목</h4>
+                            <span th:unless="${question.isAnswered}==false" class="badge rounded-pill bg-warning">답변완료</span>
+                            <h4 th:text="${question.questionTitle}" style="display: inline;">제목</h4><hr/>
                         </div>
-                        <a th:text="|작성자: ${question.member.memberId}|">작성자</a>
-                        <a th:text="|작성일: ${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}">작성일</a>
+                        <div class="d-flex justify-content-between form-text">
+                            <a th:text="|작성자: ${question.member.memberId}|">작성자</a>
+                            <a th:text="|작성일: ${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}">작성일</a>
+                        </div>
                         <input type="hidden" th:value="${question.questionNo}">
                     </div>
-                    <div id="attachFiles" th:each="file : ${filesList}"><!--첨부파일 있으면 여기에 추가-->
+                    <div class="d-flex justify-content-end form-text" id="attachFiles" th:each="file : ${filesList}"><!--첨부파일 있으면 여기에 추가-->
                         <label th:for="|id${file.originFileName}|">
-                            <svg th:if="${file}!=null" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M21.586 10.461l-10.05 10.075c-1.95 1.949-5.122 1.949-7.071 0s-1.95-5.122 0-7.072l10.628-10.585c1.17-1.17 3.073-1.17 4.243 0 1.169 1.17 1.17 3.072 0 4.242l-8.507 8.464c-.39.39-1.024.39-1.414 0s-.39-1.024 0-1.414l7.093-7.05-1.415-1.414-7.093 7.049c-1.172 1.172-1.171 3.073 0 4.244s3.071 1.171 4.242 0l8.507-8.464c.977-.977 1.464-2.256 1.464-3.536 0-2.769-2.246-4.999-5-4.999-1.28 0-2.559.488-3.536 1.465l-10.627 10.583c-1.366 1.368-2.05 3.159-2.05 4.951 0 3.863 3.13 7 7 7 1.792 0 3.583-.684 4.95-2.05l10.05-10.075-1.414-1.414z"/></svg>
+                            <svg class="form-text mx-1" th:if="${file}!=null" xmlns="http://www.w3.org/2000/svg" width="1em" viewBox="0 0 24 24"><path d="M21.586 10.461l-10.05 10.075c-1.95 1.949-5.122 1.949-7.071 0s-1.95-5.122 0-7.072l10.628-10.585c1.17-1.17 3.073-1.17 4.243 0 1.169 1.17 1.17 3.072 0 4.242l-8.507 8.464c-.39.39-1.024.39-1.414 0s-.39-1.024 0-1.414l7.093-7.05-1.415-1.414-7.093 7.049c-1.172 1.172-1.171 3.073 0 4.244s3.071 1.171 4.242 0l8.507-8.464c.977-.977 1.464-2.256 1.464-3.536 0-2.769-2.246-4.999-5-4.999-1.28 0-2.559.488-3.536 1.465l-10.627 10.583c-1.366 1.368-2.05 3.159-2.05 4.951 0 3.863 3.13 7 7 7 1.792 0 3.583-.684 4.95-2.05l10.05-10.075-1.414-1.414z"/></svg>
                             <a th:if="${file}!=null"
                                th:href="@{|/qna/download?fileName=${file.fileUrl}/${file.copyFileName}_${file.originFileName}|}" th:id="|id${file.originFileName}|">
                                 <span th:text="${file.originFileName}"></span>
                             </a>
                         </label>
                     </div>
-                    <div th:text="${question.questionContent}" style="white-space: pre;">내용</div>
+                    <div th:text="${question.questionContent}" style="white-space: pre;" class="p-2">내용</div>
                     <!--작성자만 수정삭제 버튼 보임-->
-                    <div th:if="${question.member!=null and #authentication.getPrincipal().getUsername()==question.member.memberId}"
+                    <div class="d-flex justify-content-end"
+                         th:if="${question.member!=null and #authentication.getPrincipal().getUsername()==question.member.memberId}"
                          sec:authorize="isAuthenticated()">
-                        <a th:href="@{|/qna/questionModify/${questionNo}|}" class="btn btn-secondary">수정</a>
+                        <a th:href="@{|/qna/questionModify/${questionNo}|}"  class="btn btn-sm btn-outline-secondary mx-2">수정</a>
                         <a href="javascript:void(0);" th:data-uri="@{|/qna/delete/${question.questionNo}|}"
-                           class="delete btn btn-outline-danger"
-                           th:text="삭제">
+                           class="delete btn btn-sm btn-outline-secondary"
+                           th:text="삭제">삭제
                         </a>
                     </div>
                 </div>
                 <hr/>
+
                 <!--답변작성영역 관리자만-->
-                <form id="answerForm" th:object="${answerForm}" th:if="${memberRole}==ADMIN"
-                      th:action="@{|/answer/add/${question.questionNo}|}" method="post">
-<!--                    <div th:replace="~{form_errors::formErrorsFragment}"></div>-->
-                    <div class="">
-                        <input type="text" th:field="*{title}" placeholder="답변 제목을 입력하세요" class="form-control">
-                        <textarea th:field="*{content}" rows="4" class="form-control" placeholder="답변 내용을 입력하세요"></textarea>
-                        <input type="submit" value="답변 등록" class="btn btn-primary">
-                    </div>
-                </form>
-<!--            답변 내역 출력 영역-->
-                <div class="card" th:if="${answer}!= null" th:each="answer : ${question.qnaAnswers}">
-                    <h5 class="card-header" th:text="${answer.answerTitle}"></h5>
+                <div class="card" th:if="${memberRole}==ADMIN">
+                    <form class="p-2" id="answerForm" th:object="${answerForm}"
+                          th:action="@{|/answer/add/${question.questionNo}|}" method="post">
+                        <!--                    <div th:replace="~{form_errors::formErrorsFragment}"></div>-->
+                        <input type="text" th:field="*{title}" placeholder="답변 제목을 입력하세요" class="form-control mb-2">
+                        <textarea th:field="*{content}" rows="4" class="form-control mb-2" placeholder="답변 내용을 입력하세요"></textarea>
+                        <div class="d-flex justify-content-end">
+                            <input type="button" onclick="saveForm()" value="답변 등록" class="btn btn-warning text-white"></input>
+                        </div>
+                    </form>
+                </div>
+                <!-- 답변 내역 출력 영역-->
+                <div th:if="${question.qnaAnswers==null and memberRole != 'ADMIN'}" class="form-text text-center">
+                    아직 답변이 등록되지 않았습니다. 빠르게 답변드릴 수 있도록 하겠습니다.
+                </div>
+                <div class="card mt-4" th:if="${answer}!= null" th:each="answer : ${question.qnaAnswers}">
+                    <h5 class="card-header" th:text="${answer.answerTitle}">답변제목</h5>
                     <div class="card-body">
-                        <a class="badge rounded-pill text-bg-primary" th:text="${answer.member.memberId}"></a>
-                        <a class="card-subtitle text-body-secondary" th:text="|답변일시: ${#temporals.format(answer.writeDate, 'yyyy-MM-dd HH:mm')}|"></a>
-                        <p class="card-text" th:text="${answer.answerContent}" style="white-space: pre;"></p>
-                        <div>
-                            <a th:href="@{|/answer/delete/${answer.answerNo}|}" class="btn btn-sm btn-danger">답변 삭제</a>
+                        <div class="d-flex justify-content-between">
+                            <span class="badge text-bg-warning text-white" th:text="${answer.member.memberId}">작성자아이디</span>
+                            <span class="badge text-bg-light"  th:text="${#temporals.format(answer.writeDate, 'yyyy-MM-dd HH:mm')}">yyyy-mm-dd hh:mm</span>
+                        </div>
+                        <p class="card-text p-2" th:text="${answer.answerContent}" style="white-space: pre;">답변 내용</p>
+                        <div th:if="${memberRole}==ADMIN" class="d-flex justify-content-end">
+                            <a th:href="@{|/answer/delete/${answer.answerNo}|}" class="btn btn-sm btn-outline-secondary">삭제</a>
                         </div>
                     </div>
                 </div>
@@ -88,6 +99,28 @@
                 };
             });
         });
+
+        //답변 제출
+        function saveForm(){
+            if(checkForm()){
+                document.getElementById('answerForm').submit();
+            }
+        }
+
+        //답변 유효성 검사
+        function checkForm(){
+            var title = document.getElementById('title').value;
+            var content = document.getElementById('content').value;
+            if(title.trim() === ''){
+                alert('답변 제목을 입력하세요');
+                return false;
+            }
+            if(content.trim() === ''){
+                alert('답변 내용을 입력하세요');
+                return false;
+            }
+            return true;
+        }
     </script>
 </div>
 </html>

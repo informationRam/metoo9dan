@@ -25,40 +25,70 @@
             <h2>공지사항 게시글 등록</h2>
             <form id="noticeForm" th:object="${noticeForm}" th:action="@{|/notice/add|}" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:field="*{postDate}">
-                <label for="noticeType">공지구분</label>
-                <div class="d-flex">
-                    <select th:field="*{noticeType}" class="form-control" style="width:200px;">
-                        <option value="">분류를 선택하세요</option>
-                        <option value="noti">공지사항</option>
-                        <option value="faq">자주묻는질문</option>
-                    </select>
-                    <input type="checkbox" th:field="*{isImp}" class="form-check-input mt-2">
-                    <label for="isImp1" class="form-label p-2"><div>중요글로 상단 노출</div></label>
+                <div class="mb-3 mt-3 row">
+                    <div class="col-sm-2 col-form-label">게시여부 <svg xmlns="http://www.w3.org/2000/svg" height="0.4em" viewBox="0 0 512 512" style="fill:#d41633;"><path d="M208 32c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V172.9l122-70.4c15.3-8.8 34.9-3.6 43.7 11.7l16 27.7c8.8 15.3 3.6 34.9-11.7 43.7L352 256l122 70.4c15.3 8.8 20.5 28.4 11.7 43.7l-16 27.7c-8.8 15.3-28.4 20.6-43.7 11.7L304 339.1V480c0 17.7-14.3 32-32 32H240c-17.7 0-32-14.3-32-32V339.1L86 409.6c-15.3 8.8-34.9 3.6-43.7-11.7l-16-27.7c-8.8-15.3-3.6-34.9 11.7-43.7L160 256 38 185.6c-15.3-8.8-20.5-28.4-11.7-43.7l16-27.7C51.1 98.8 70.7 93.6 86 102.4l122 70.4V32z"/></svg></div>
+                    <div class="col-sm-2">
+                        <input type="radio" value="IMMEDIATE" th:field="*{status}" onclick="disableDateInput()" class="form-check-input" style="margin: 12.3px 0 0 0;">
+                        <label for="status1" class="form-label p-2">즉시 게시</label>
+                    </div>
+                    <div class="col-sm-2">
+                        <input type="radio" value="SCHEDULED" th:field="*{status}" onclick="enableDateInput()" class="form-check-input" style="margin: 12.3px 0 0 0;">
+                        <label for="status2" class="form-label p-2">예약글</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" id="selectDate" name="selectDate" class="form-control mt-1">
+                    </div>
                 </div>
-                <label for="title">제목</label>
-                <input type="text" th:field="*{title}" placeholder="제목을 입력하세요" class="form-control">
-                <div>게시여부</div>
-                <div class="d-flex">
-                    <input type="radio" value="IMMEDIATE" th:field="*{status}" onclick="disableDateInput()" class="form-check-input mt-2">
-                    <label for="status1" class="form-label p-2">등록 즉시 게시</label>
 
-                    <input type="radio" value="SCHEDULED" th:field="*{status}" onclick="enableDateInput()" class="form-check-input mt-2">
-                    <label for="status2" class="form-label p-2">게시 일자</label>
-                    <input type="date" id="selectDate" name="selectDate" class="form-control" style="width:200px;">
+                <div class="mb-3 row">
+                    <label for="noticeType" class="col-sm-2 col-form-label">공지구분 <svg xmlns="http://www.w3.org/2000/svg" height="0.4em" viewBox="0 0 512 512" style="fill:#d41633;"><path d="M208 32c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V172.9l122-70.4c15.3-8.8 34.9-3.6 43.7 11.7l16 27.7c8.8 15.3 3.6 34.9-11.7 43.7L352 256l122 70.4c15.3 8.8 20.5 28.4 11.7 43.7l-16 27.7c-8.8 15.3-28.4 20.6-43.7 11.7L304 339.1V480c0 17.7-14.3 32-32 32H240c-17.7 0-32-14.3-32-32V339.1L86 409.6c-15.3 8.8-34.9 3.6-43.7-11.7l-16-27.7c-8.8-15.3-3.6-34.9 11.7-43.7L160 256 38 185.6c-15.3-8.8-20.5-28.4-11.7-43.7l16-27.7C51.1 98.8 70.7 93.6 86 102.4l122 70.4V32z"/></svg></label>
+                    <div class="col-sm-10">
+                        <select th:field="*{noticeType}" class="form-control"> <!--style="width:200px;"-->
+                            <option value="">분류를 선택하세요</option>
+                            <option value="noti">공지사항</option>
+                            <option value="faq">자주묻는질문</option>
+                        </select>
+                        <div id="isImpCheckBox">
+                            <div class="d-flex justify-content-end">
+                                <input type="checkbox" th:field="*{isImp}" class="form-check-input" style="margin: 12.3px 0 0 0;">
+                                <label for="isImp1" class="form-label p-2"><div>중요글로 상단 노출</div></label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <label for="content" class="col-form-label">내용</label>
-                <textarea th:field="*{content}" rows="6" placeholder="내용을 입력하세요" class="form-control p-2"></textarea>
 
-                첨부파일 (파일 1개당 최대 첨부용량: 30MB / 이미지 파일만 업로드 가능)
-                <div id="fileInfo" style="border: 1px solid black;">
-                    <p>현재 첨부된 파일 정보</p>
+                <div class="mb-3 row">
+                    <label for="title" class="col-sm-2 col-form-label">제목 <svg xmlns="http://www.w3.org/2000/svg" height="0.4em" viewBox="0 0 512 512" style="fill:#d41633;"><path d="M208 32c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V172.9l122-70.4c15.3-8.8 34.9-3.6 43.7 11.7l16 27.7c8.8 15.3 3.6 34.9-11.7 43.7L352 256l122 70.4c15.3 8.8 20.5 28.4 11.7 43.7l-16 27.7c-8.8 15.3-28.4 20.6-43.7 11.7L304 339.1V480c0 17.7-14.3 32-32 32H240c-17.7 0-32-14.3-32-32V339.1L86 409.6c-15.3 8.8-34.9 3.6-43.7-11.7l-16-27.7c-8.8-15.3-3.6-34.9 11.7-43.7L160 256 38 185.6c-15.3-8.8-20.5-28.4-11.7-43.7l16-27.7C51.1 98.8 70.7 93.6 86 102.4l122 70.4V32z"/></svg></label>
+                    <div class="col-sm-10">
+                        <input type="text" th:field="*{title}" placeholder="제목을 입력하세요" class="form-control">
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="drop-area" class="form-label">파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.
-                        <input class="form-control" type="file" id="drop-area" name="uploadFiles" accept="image/*" multiple>
+
+                <div class="mb-3 row">
+                    <label for="content" class="col-sm-2 col-form-label">내용 <svg xmlns="http://www.w3.org/2000/svg" height="0.4em" viewBox="0 0 512 512" style="fill:#d41633;"><path d="M208 32c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V172.9l122-70.4c15.3-8.8 34.9-3.6 43.7 11.7l16 27.7c8.8 15.3 3.6 34.9-11.7 43.7L352 256l122 70.4c15.3 8.8 20.5 28.4 11.7 43.7l-16 27.7c-8.8 15.3-28.4 20.6-43.7 11.7L304 339.1V480c0 17.7-14.3 32-32 32H240c-17.7 0-32-14.3-32-32V339.1L86 409.6c-15.3 8.8-34.9 3.6-43.7-11.7l-16-27.7c-8.8-15.3-3.6-34.9 11.7-43.7L160 256 38 185.6c-15.3-8.8-20.5-28.4-11.7-43.7l16-27.7C51.1 98.8 70.7 93.6 86 102.4l122 70.4V32z"/></svg></label>
+                    <div class="col-sm-10">
+                        <textarea th:field="*{content}" rows="6" placeholder="내용을 입력하세요" class="form-control p-2"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-text row" id="fileInfoWrap"><!--style="border: 1px solid black;"-->
+                    <p class="col-sm-2 col-form-label">(선택)<br/>첨부된 파일 정보</p>
+                    <div class="col-sm-10" id="fileInfo"></div>
+                </div>
+
+                <div class="mb-3 row" id="fileUploadWrap">
+                    <label for="fileUpload" >
+                        <div id="drop-area" class="form-text">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 384 512"><path d="M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z"/></svg>
+                            파일을 여기에 끌어다 놓거나 클릭하여 선택하세요.
+                            <input class="" style="display:none;" type="file" id="fileUpload" name="uploadFiles" accept="image/*" multiple>
+                        </div>
                     </label>
+                    <div class="d-flex justify-content-end form-text">(파일 1개당 최대 첨부용량: 30MB / 이미지 파일만 업로드 가능)</div>
                 </div>
-                <input type="button" onclick="saveForm()" value="게시글 저장" class="btn btn-primary">
+                <div class="d-flex justify-content-end">
+                    <input type="button" onclick="saveForm()" value="게시글 저장" class="btn btn-warning text-white">
+                </div>
             </form>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
@@ -69,6 +99,37 @@
     if([[${msg}]]!=null){
         alert([[${msg}]]);
     }
+
+    //자주묻는질문을 선택하면, 중요글 영역이 없어지게끔.
+    //다시 공지사항을 선택하면, 중요글 영역이 나타나야함.
+    document.addEventListener("DOMContentLoaded", function () {
+        var noticeTypeSelect = document.getElementById('noticeType');
+        var isImpCheckBoxDiv = document.getElementById('isImpCheckBox');
+        var fileUploadWrapDiv = document.getElementById('fileUploadWrap');
+        var fileInfoWrapDiv = document.getElementById('fileInfoWrap');
+
+        // Initial check on page load
+        toggleDivVisibility();
+
+        // Add event listener to the select element
+        noticeTypeSelect.addEventListener('change', function () {
+            toggleDivVisibility();
+        });
+
+        // Function to toggle the visibility of the div based on the selected value
+        function toggleDivVisibility() {
+            if (noticeTypeSelect.value === 'noti') {
+                isImpCheckBoxDiv.style.display = 'block';
+                fileUploadWrapDiv.style.display = 'block';
+                fileInfoWrapDiv.style.display = 'block';
+            } else {
+                isImpCheckBoxDiv.style.display = 'none';
+                fileUploadWrapDiv.style.display = 'none';
+                fileInfoWrapDiv.style.display = 'none';
+            }
+        }
+    });
+
 
    document.getElementById('drop-area').addEventListener('change', handleDrop);
 
@@ -92,16 +153,15 @@
            var fileSize = f.size / 1024 / 1024;
            fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
            tag += "<div class='d-flex justify-content-between'>"+
-                   "<span>"+fileName+"</span>" +
-                   "<span style='float:right;'>"+fileSize+" MB</span>" +
-                   "</div>";
+                  "<span>"+fileName+"</span>"+
+                  "<span style='float:right;'>"+fileSize+"MB</span>"+
+                  "</div>";
 
            document.getElementById('fileInfo').insertAdjacentHTML('beforeend', tag);
        }
-
    }
 
-    // fileInfo 목록의 자식 Element를 제거하는 함수입니다
+    // fileInfo 목록의 자식 Element를 제거하는 함수
     function removeAllChildNods(el) {
        while (el.hasChildNodes()) {
            el.removeChild (el.lastChild);

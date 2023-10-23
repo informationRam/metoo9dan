@@ -1,14 +1,17 @@
 package com.idukbaduk.metoo9dan.notice.repository;
 
 import com.idukbaduk.metoo9dan.common.entity.Notice;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 //Notice Repository Interface
@@ -57,4 +60,9 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
             "AND n.status = :status " +
             "AND n.noticeContent LIKE %:keyword%")
     Page<Notice> findByContentForAdmin(@Param("type") String type, @Param("status") String status, @Param("keyword") String keyword, Pageable pageable);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Notice n SET n.status = 'post' WHERE n.postDate = :postDate")
+    void updateStatusForPostDateEqual(LocalDateTime postDate);
 }
