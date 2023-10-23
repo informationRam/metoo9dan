@@ -92,7 +92,7 @@
 
 /*-------------------------------------------------------------------------------*/
 canvas{
-z-index:10;
+z-index:999;
 pointer-events: none;
 position: fixed;
 top: 0;
@@ -105,6 +105,16 @@ transform: scale(1.1);
                 .not-submitted {
                     background-color: #ffeeba;
                 }
+
+.bs-modal-title {
+    font-size: 24px;       /* 글자 크기 조정 */
+    font-weight: bold;     /* 글자 굵기 설정 */
+    color: #333;           /* 글자 색상 설정 */
+    padding: 15px 0;       /* 상하 패딩으로 여백 추가 */
+    border-bottom: 2px solid #6bc957;  /* 아래쪽 테두리를 연두색으로 변경 */
+    margin-bottom: 20px;  /* 제목 아래로 여백 추가 */
+}
+
 /*책관련*/
         .book {
           position: relative;
@@ -119,26 +129,26 @@ transform: scale(1.1);
             width: calc(100% - 20px);
             height: calc(100% - 20px);
             background-color: #32a852;
-            z-index: -1;
+            z-index: 1;
             border-radius: 20px;
             top: 10px;
             left: 10px;
-            background: linear-gradient(to right, #32a852 0%, #75c282 50%, #32a852 100%);
+            background: linear-gradient(to right, #6bc957 0%, #9cdd8f 50%, #6bc957 100%);
         }
         .index {
                 position: absolute;
                 background: #ffcc00;
                 width: 80px;
-                height: 38px;
                 top: 10%;
                 left: -30px;
                 writing-mode: vertical-rl;
-                text-align: center;
-                font-size: 16px;
-                padding: 15px;
+                text-align: left;
+                font-size: 20px;
+                padding: 15px 30px 15px 15px;
                 border-radius: 15px;
                 box-shadow: 0px 4px 2px -2px gray;
                 transition: all 0.3s;
+                z-index: 2;
             }
             .index:hover {
                 transform: scale(1.1);
@@ -158,92 +168,36 @@ transform: scale(1.1);
             .left.page1 {
                 left: 3.5%;
                 top: 6.5%;
-                z-index: 1;
+                z-index: 3;
             }
             .left.page2 {
                 left: 4.5%;
                 top: 5.5%;
-                z-index: 2;
+                z-index: 4;
             }
             .left.page3 {
             background-color: #f9f9f9;
                 left: 5.5%;
                 top: 4.5%;
-                z-index: 3;
+                z-index: 5;
             }
 
             .right.page1 {
                 right: 3.5%;
                 top: 6.5%;
-                z-index: 1;
+                z-index: 3;
             }
             .right.page2 {
                 right: 4.5%;
                 top: 5.5%;
-                z-index: 2;
+                z-index: 4;
             }
             .right.page3 {
             background-color: #f9f9f9;
                 right: 5.5%;
                 top: 4.5%;
-                z-index: 3;
+                z-index: 5;
             }
-
-.bs-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    z-index: 1000;
-}
-
-.bs-modal-dialog {
-    position: relative;
-    margin: 15vh auto;
-    max-width: 500px;
-}
-
-.bs-modal-content {
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 0.3rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
-}
-
-.bs-modal-header,
-.bs-modal-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-}
-
-.bs-modal-title {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.bs-modal-body {
-    padding: 1rem;
-}
-
-.btn-close {
-    padding: 0.5rem 1rem;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-close:hover {
-    background-color: #0056b3;
-}
-
 
 .filtered-out {
     display: none;
@@ -387,7 +341,7 @@ transform: scale(1.1);
     padding-bottom: 20px;
     padding-right: 15px;
     padding-left: 15px;
-    margin: 10px 10px 10px 10px; /* 마진 추가 */
+    margin: 10px 10px 60px 10px; /* 마진 추가 */
     border-radius: 25px; /* 둥근 모서리 추가 */
 }
 
@@ -427,4 +381,31 @@ transform: scale(1.1);
 
 .nado-card-body {
     padding: 20px;
+}
+
+/* 모달 관련 스타일 */
+
+#hw-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 998;
+    display: none;
+}
+
+.naod-modal {
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    z-index: 1000;
+    display: none;
 }

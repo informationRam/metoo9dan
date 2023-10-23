@@ -223,22 +223,16 @@
             </div>
 
 
-            <div id="successModal" class="bs-modal">
-                <div class="bs-modal-dialog">
-                    <div class="bs-modal-content">
-                        <div class="bs-modal-header">
-                            <h5 class="bs-modal-title">제출 성공!</h5>
-                        </div>
-                        <div class="bs-modal-body">
-                            <p>~숙제 완료~ 나도 9단이 될 수 있다!</p>
-                        </div>
-                        <div class="bs-modal-footer">
-                            <button id="modalCloseBtn" class="btn-close"></button>
-                        </div>
-                    </div>
+            <div id="successModal" class="naod-modal">
+                <div class="bs-modal-header">
+                    <h5 class="bs-modal-title">제출 성공!</h5>
                 </div>
+                    <div class="groupMessage mb-3 text-center">
+                        <img src="/css/homework/searchNoneIcon.png" alt="Group Icon" class="mb-2">
+                        <div>나도 구단이 될 수 있다!!</div>
+                    </div>
             </div>
-
+            <div id="hw-backdrop"></div>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
             <script src="https://tistory4.daumcdn.net/tistory/3134841/skin/images/confetti_v2.js"></script>
             <script layout:fragment="script">
@@ -433,7 +427,7 @@
                           if (isSubmitted) {
                               // 제출 내용으로 수정 폼 채우기
                               document.querySelector(".edit-form textarea[name='homeworkContent']").value = data.content;
-                              document.querySelector(".edit-form textarea[name='additionalQuestions']").value = data.additionalQuestions;
+                              document.querySelector(".edit-form textarea[name='additionalQuestions']").value = data.additionalQuestion;
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = data.homeworkSubmitNo;
                               $("#deleteBtn").data('submit-id', data.homeworkSubmitNo);
                               $("#firstBottom").hide();
@@ -465,7 +459,7 @@
               }
 
               $(document).ready(function() {
-                    $("#modalCloseBtn").click(function() {
+                    $("#hw-backdrop").click(function() {
                         location.reload(); // 페이지 리로드
                     });
 
@@ -498,7 +492,7 @@
                       type: "POST",
                       data: $(this).serialize(),
                       success: function(response) {
-                          $("#successModal").show(); // 모달 보이기
+                          $("#successModal,#hw-backdrop").show(); // 모달 보이기
                           reAction(); // 꽃가루 효과
                       },
                       error: function(xhr) {
@@ -525,7 +519,7 @@
                       data: $(this).serialize(),
                       success: function(response) {
                           reAction(); // 꽃가루 효과
-                          $("#successModal").show(); // 모달 보이기
+                          $("#successModal,#hw-backdrop").show(); // 모달 보이기
                       },
                       error: function(xhr) {
                           let errors = xhr.responseJSON;
