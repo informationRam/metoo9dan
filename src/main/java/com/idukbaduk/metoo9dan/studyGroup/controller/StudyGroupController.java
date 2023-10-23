@@ -332,7 +332,7 @@ public class StudyGroupController {
 
     //학습 그룹 가입 승인(교육자)
     //학습 그룹 가입 신청 리스트 가져오기
-    @PreAuthorize("hasAuthority('EDUCATOR')")
+    //@PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/approveList")
     public String approveList(Model model, @RequestParam Map<String, Integer> map,Principal principal){
         //Principal

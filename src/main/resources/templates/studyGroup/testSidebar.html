@@ -1,11 +1,14 @@
 <!--이 파일 내용을 복사하여 templates/본인기능폴더 하위에 추가하여 본인 구현 페이지에 맞게 사이드바 내용을 작업해주세요-->
 <div th:fragment="sidebar" style="border: 0px solid black;" class="col-2"> <!--class에서 col-2은 빼면 안됨-->
-    교육자 마당 test 사이드 바
+    교육자 마당
     <ul>
-        <li><a href="#" th:href="@{/studygroup/list}">학습 그룹 리스트[교육자]</a></li>
+        <br/>
+        <li><a href="#" th:href="@{/studygroup/list}">학습 그룹 조회</a></li>
         <p/>
-        <li><a href="#" th:href="@{/studygroup/gameList}">학습 그룹 등록[교육자]<br>(게임 리스트)</a></li>
+        <br/>
+        <li><a href="#" th:href="@{/studygroup/gameList}">학습 그룹 등록</a></li>
         <p/>
-        <li><a href="#" th:href="@{/studygroup/approveList}">학습 그룹 신청 리스트[교육자]</a></li>
+        <br/>
+        <li><a href="#" th:href="@{/studygroup/approveList}">학습 그룹 승인하기</a></li>
     </ul>
 </div>

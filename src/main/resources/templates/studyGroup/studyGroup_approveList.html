@@ -1,6 +1,14 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/studyGroup/table.css"/>
+    <style>
+        /* 표의 값들을 가운데 정렬하는 CSS 스타일 */
+        .a td,
+        .a th {
+            text-align: center;
+        }
+    </style>
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
@@ -44,8 +52,8 @@
                 <!--<form th:object="${approvalForm}" method="post" action="/studygroup/updateApprove" id="approvalForm">-->
                 <form id="approvalForm">
                     <div id="selectGroupResult">
-                        <table class="table" id="table2">
-                            <thead class="table-dark">
+                        <table class="a" id="table2">
+                            <thead>
                             <tr>
                                 <th>NO</th>
                                 <th>학습 그룹명</th>
@@ -215,8 +223,8 @@ function handleSearchClick() {
                     // 표시할 데이터를 가져와서 HTML에 적용(그룹 인원 정보)
                     var resultHTML = "";
                     if (responseData.approveList && responseData.approveList.length > 0) {
-                        resultHTML = "<table class='table' id='table2'>";
-                        resultHTML += "<thead class='table-dark'>";
+                        resultHTML = "<table class='a' id='table2'>";
+                        resultHTML += "<thead>";
                         resultHTML += "<tr>";
                         resultHTML += "<th>NO</th>";
                         resultHTML += "<th>학습 그룹명</th>";

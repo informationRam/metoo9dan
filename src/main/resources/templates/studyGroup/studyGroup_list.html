@@ -1,5 +1,6 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/studyGroup/table.css"/>
     <div class="row">
         <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
@@ -22,9 +23,10 @@
                     <button id="modifyButton" class="btn btn-outline-secondary" style="margin-left: auto; margin-right: 10px;">변경하기</button>
                     <button id="deleteButton" class="btn btn-outline-secondary" style="margin-right: 10px;">삭제하기</button>
                 </div>
+                <br/>
                 <p/>
-                <table class="table" id="selectGroupResult">
-                    <thead class="table-dark">
+                <table id="selectGroupResult">
+                    <thead>
                     <tr>
                         <th>선택</th>
                         <th>학습그룹명</th>
@@ -56,9 +58,11 @@
                     </tr>
                     </tbody>
                 </table>
+                <br/>
                 <div style="display: flex; justify-content: right; align-items: center;">
                     <button id="viewButton" class="btn btn-warning text-white">학습 그룹 상세 조회 하기</button>
                 </div>
+                <br/>
                 <!--페이지네이션-->
                 <div id="paginationContainer" style="display: flex; justify-content: center; align-items: center;">
                     <nav th:if="${totalCount} > 0">
@@ -121,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-
 });
 
 
@@ -263,8 +266,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         // 표시할 데이터를 가져와서 HTML에 적용
                           var resultHTML = "";
                           if (responseData && responseData.length > 0) {
-                                resultHTML = "<table class='table' id='selectGroupResult'>";
-                                resultHTML += "<thead class='table-dark'>";
+                                resultHTML = "<table id='selectGroupResult'>";
+                                resultHTML += "<thead>";
                                 resultHTML += "<tr>";
                                 resultHTML += "<th>선택</th>";
                                 resultHTML += "<th>학습그룹명</th>";
