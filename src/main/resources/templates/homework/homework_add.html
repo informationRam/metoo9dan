@@ -63,9 +63,9 @@
                                     </div>
                                 </form>
                             </div>
-                        <div class="curveEffect text-center mt-4">
-                            <i class="bi bi-chevron-double-down center-icon fs-3"></i>
-                        </div>
+                            <div class="curveEffect text-center mt-4">
+                                <i class="bi bi-chevron-double-down center-icon fs-3"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -104,8 +104,6 @@
                         <td th:text="${hw.sent ? (hw.dueDate > #dates.createNow() ? '제출 진행 중' : '제출 기한 만료') : '전송 기록 없음'}"></td>
                     </tr>
                     <!-- 목록이 없을 때의 메시지 -->
-                    <!-- 목록이 없을 때의 메시지 -->
-                    <!-- 목록이 없을 때의 메시지 -->
                     <tr th:if="${homeworkList == null or homeworkList.size() == 0}">
                         <td colspan="7">
                             <div id="noHomework" class="groupMessage mb-3 text-center">
@@ -121,8 +119,6 @@
                         <div>검색 결과가 없습니다</div>
                     </div>
                 </div>
-
-
 
                 <!-- 페이징 -->
                 <div id="hw-pagination" class="d-flex justify-content-center mt-3">

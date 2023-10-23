@@ -10,69 +10,92 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
 
-        <div style="border: 1px solid black;" class="col-10">
+        <div style="border: 1px solid black;" class="col-10 px-3">
             <div style="display:none;">
                 <button id="startButton"></button>
                 <button id="stopButton"></button>
             </div>
-            <table>
-                <tr>
-                    <td id="submitHomeworkBtn"> 숙제 제출하기</td>
-                    <td id="viewSubmittedHomeworkBtn"> 지난 숙제 보기</td>
-                </tr>
-            </table>
-            <div class="container mt-4">
-                <!-- 숙제 목록 -->
-                <div class="mt-3 mr-3 mb-3 nado-search-center">
-                    <input type="text" id="homeworkSearchInput" onkeyup="homeworkSearchTable()" class="nado-search" placeholder="검색어를 입력하세요..">
-                    <label for="homeworkSearchInput" class="nado-search-label">
-                        <i class="bi bi-search text-warning"></i> <!-- 부트스트랩 돋보기 아이콘을 추가합니다 -->
-                    </label>
-                </div>
 
-                <div class="nado-table-container">
-                <table class="nado-table nado-table-hover" id="homeworkTable">
-                    <thead class="nado-thead-light">
-                    <tr>
-                        <th>No</th>
-                        <th>숙제 제목</th>
-                        <th>게임 컨텐츠명</th>
-                        <th>진도</th>
-                        <th>제출 기한</th>
-                        <th>제출</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="hs,start : ${homeworkSend}"
-                        th:data-send-no="${hs.sendNo}"
-                        th:class="${hs.isSubmit != 'N' ? 'nado-table-success' : 'nado-table-warning'}"
-                        ondblclick="loadForm(this)">
-                        <td th:text="${homeworkSend.size() - start.count + 1}"></td>
-                        <td th:text="${hs.homeworks.homeworkTitle}"></td>
-                        <td th:text="${hs.homeworks.gameTitle}"></td>
-                        <td th:text="${hs.homeworks.progress}"></td>
-                        <td th:text="${hs.homeworks.dueDate}"></td>
-                        <td th:text="${hs.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-                </div>
-                <!-- 페이지네이션 부분 -->
-                <div id="hw-homeworkPagination" class="d-flex justify-content-center mt-3">
-                    <ul class="pagination">
-                        <li class="page-item" id="homeworkPrevBtn">
-                            <a class="page-link" href="#">이전</a>
-                        </li>
-                        <li class="page-item" id="homeworkPageNumbers">
-                            <!-- 페이지네이션 번호가 여기에 추가될 것입니다 -->
-                        </li>
-                        <li class="page-item" id="homeworkNextBtn">
-                            <a class="page-link" href="#">다음</a>
-                        </li>
-                    </ul>
+            <div class="row justify-content-center">
+                <div class="upperSection">
+                    <div class="nado-card">
+                        <div class="nado-card-header">
+                            <h2>숙제 생성</h2>
+                        </div>
+                        <div class="nado-card-body">
+                            <!-- 숙제 목록 -->
+                            <div class="mt-3 mr-3 mb-3 nado-search-center">
+                                <input type="text" id="homeworkSearchInput" onkeyup="homeworkSearchTable()" class="nado-search" placeholder="검색어를 입력하세요..">
+                                <label for="homeworkSearchInput" class="nado-search-label">
+                                    <i class="bi bi-search text-warning"></i> <!-- 부트스트랩 돋보기 아이콘을 추가합니다 -->
+                                </label>
+                            </div>
+
+                            <div class="nado-table-container">
+                            <table class="nado-table nado-table-hover" id="homeworkTable">
+                                <thead class="nado-thead-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>숙제 제목</th>
+                                    <th>게임 컨텐츠명</th>
+                                    <th>진도</th>
+                                    <th>제출 기한</th>
+                                    <th>제출</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="hs,start : ${homeworkSend}"
+                                    th:data-send-no="${hs.sendNo}"
+                                    th:class="${hs.isSubmit != 'N' ? 'nado-table-success' : 'nado-table-warning'}"
+                                    ondblclick="loadForm(this)">
+                                    <td th:text="${homeworkSend.size() - start.count + 1}"></td>
+                                    <td th:text="${hs.homeworks.homeworkTitle}"></td>
+                                    <td th:text="${hs.homeworks.gameTitle}"></td>
+                                    <td th:text="${hs.homeworks.progress}"></td>
+                                    <td th:text="${hs.homeworks.dueDate}"></td>
+                                    <td th:text="${hs.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
+                                </tr>
+                                <tr th:if="${homeworkSend == null or homeworkSend.size() == 0}">
+                                    <td colspan="6">
+                                        <div id="noHomework" class="groupMessage mb-3 text-center">
+                                            <img src="/css/homework/noHwStudent.png" alt="No data Icon" class="mb-2">
+                                            <div>제출해야 할 숙제가 없습니다</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                                <div id="noResult" class="groupMessage mb-3 text-center" style="display:none;">
+                                    <img src="/css/homework/searchNoneIcon.png" alt="Group Icon" class="mb-2">
+                                    <div>검색 결과가 없습니다</div>
+                                </div>
+                            </div>
+                            <!-- 페이지네이션 부분 -->
+                            <div id="hw-homeworkPagination" class="d-flex justify-content-center mt-3">
+                                <ul class="pagination">
+                                    <li class="page-item" id="homeworkPrevBtn">
+                                        <a class="page-link" href="#">이전</a>
+                                    </li>
+                                    <li class="page-item" id="homeworkPageNumbers">
+                                        <!-- 페이지네이션 번호가 여기에 추가될 것입니다 -->
+                                    </li>
+                                    <li class="page-item" id="homeworkNextBtn">
+                                        <a class="page-link" href="#">다음</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="curveEffect text-center mt-4">
+                        <i class="bi bi-chevron-double-down center-icon fs-3"></i>
+                    </div>
                 </div>
             </div>
 
+            <div id="firstBottom" class="groupMessage mb-3 text-center">
+                <img src="/css/homework/evalIcon.png" alt="Group Icon" class="mb-2">
+                <div>전송 내역을 더블 클릭해서 제출된 숙제를 조회하세요</div>
+            </div>
 
             <div class="submit-form" style="display:none;">
                 <form id="addForm" th:action="@{/homework/submit/add}" th:object="${hwSubmitForm}" method="post">
@@ -276,11 +299,13 @@
                     if (foundCount == 0) {
                         $("#homeworkTable").hide();
                         $("#homeworkPagination").hide();
-                        $("#homeworkTable").after('<p id="noSearchResult">검색 결과가 없습니다</p>');
+                        $("#noResult").css("display", "block"); // 디스플레이를 블럭으로
                     } else {
                         $("#homeworkTable").show();
                         $("#homeworkPagination").show();
+                        $("#noResult").css("display", "none"); // 디스플레이를 넌으로
                     }
+
 
                     homeworkUpdatePagination();
                 }
