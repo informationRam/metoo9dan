@@ -19,8 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -172,5 +174,9 @@ public class NoticeService {
         noticeRepository.save(notice);
     }
 
+    public void updateStatusForPostDateEqualToday(){
+        LocalDateTime today = LocalDateTime.now();
+        noticeRepository.updateStatusForPostDateEqual(today);
+    }
 
 }
