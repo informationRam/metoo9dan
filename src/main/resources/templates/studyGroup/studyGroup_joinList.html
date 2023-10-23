@@ -112,14 +112,17 @@
 <script>
 
 //-------학습그룹 가입신청하기----------
-document.addEventListener("DOMContentLoaded", function () {
+function initializePage() {
     // 신청 버튼 클릭 시
     var buttons = document.querySelectorAll(".viewButton");
 
     buttons.forEach(function (button) {
         button.addEventListener("click", function () {
             var selectedGroupNo = this.getAttribute("value");
+            console.log('selectedGroupNo',selectedGroupNo);
+
             var selectedGroupTO = parseInt(this.getAttribute("data-group-to"));
+            console.log('data-group-to',data-group-to);
 
             var ingStudyGroup = [[${ingStudyGroup}]]; // Thymeleaf로 서버에서 값 가져오기
 
@@ -149,7 +152,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    initializePage();
 });
+
 
 // 페이지네이션 UI 업데이트 함수
 function updatePaginationUI(currentPage, totalPages) {
@@ -260,7 +268,7 @@ function handlePageButtonClick(event) {
 
                         resultHTML += '<div class="item-price">';
                         resultHTML += '<div style="margin-right: 10px;">';
-                        resultHTML += '<button class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
+                        resultHTML += '<button id="viewButton" class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
                         resultHTML += '</div>';
                         resultHTML += '<span>그룹 T/O : ' + groupJoinList.group_TO + '명</span>';
                         resultHTML += '</div>';
@@ -370,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     resultHTML += '<div class="item-price">';
                     resultHTML += '<div style="margin-right: 10px;">';
-                    resultHTML += '<button class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
+                    resultHTML += '<button id="viewButton" class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
                     resultHTML += '</div>';
                     resultHTML += '<span>그룹 T/O : ' + groupJoinList.group_TO + '명</span>';
                     resultHTML += '</div>';
