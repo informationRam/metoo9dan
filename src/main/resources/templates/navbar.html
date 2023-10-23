@@ -52,14 +52,16 @@
                                 <li class="has-sub">
                                     <a href="javascript:void(0)">운영자마당</a>
                                     <ul class="sub-menu">
-                                        <li><a class="dropdown-item" th:href="@{/game/addForm}">게임콘텐츠 등록</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/game/list}">게임콘텐츠 조회</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/education/addForm}">교육자료 등록</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/education/list}">교육자료 조회</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/notice/list}">공지 및 FAQ 등록</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/qna/list}">QnA 답변 등록</a></li>
-                                        <li><a class="dropdown-item" href="#">매출조회</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/admin/listMember}">회원관리</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/game/addForm}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
+                                        <li>
+                                            <a class="dropdown-item" th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a>
+                                        </li>
+                                        <li><a class="dropdown-item" th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{#}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
                                     </ul>
                                 </li>
 

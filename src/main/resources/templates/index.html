@@ -67,14 +67,16 @@
                                 <li class="has-sub">
                                     <a href="javascript:void(0)">운영자마당</a>
                                     <ul class="sub-menu">
-                                        <li><a class="dropdown-item" th:href="@{/game/addForm}">게임콘텐츠 등록</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/game/list}">게임콘텐츠 조회</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/education/addForm}">교육자료 등록</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/education/list}">교육자료 조회</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/notice/list}">공지 및 FAQ 등록</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/qna/list}">QnA 답변 등록</a></li>
-                                        <li><a class="dropdown-item" href="#">매출조회</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/admin/listMember}">회원관리</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/game/addForm}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
+                                        <li>
+                                            <a class="dropdown-item" th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a>
+                                        </li>
+                                        <li><a class="dropdown-item" th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
+                                        <li><a class="dropdown-item" th:href="@{#}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+                                        <li><a class="dropdown-item" th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
                                     </ul>
                                 </li>
 
@@ -281,43 +283,22 @@
                 <div class="col-lg-12">
                     <h2>'나도9단' 이렇게 이용하세요!</h2>
                 </div>
-                <div class="col-lg-4"> <!--왼-->
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>교육자</h5>
-                        </div>
-                        <div class="card">구독상품 검색</div>
-                        <div class="card">구독상품 결제/취소</div>
-                        <div class="row">
-                            <div class="col-lg-6">유료콘텐츠 시청</div>
-                            <div class="col-lg-6">학습그룹 등록</div>
-                        </div>
-                    </div>
+                <div class="p-2">
+                    <img src="/image/userGuide.png">
                 </div>
-                <div class="col-lg-4 align-self-center"> <!--중-->
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>학습자</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4"> <!--오-->
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>일반인</h5>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div class="form-text text-white p-5">
+                [유료콘텐츠 결제 관련 안내] <br/>
+                상품 구매 후 학습그룹을 생성하지 않았거나 학습자료를 열람하지 않은 경우에 한하여 7일 이내 환불요청이 가능합니다. <br/>
+                구매 후 7일이 지났거나, 7일이 지나지 않았어도 학습그룹을 생성한 적이 있으면 환불이 불가하오니 이 점 양지해주시기 바랍니다.<br/>
+                구독 서비스를 통해 이용하시는 유료콘텐츠와 학습자료는 무단 전제 배포를 금합니다.
             </div>
         </div>
 
-        <div class="form-text p-5">
-            [유료콘텐츠 결제 관련 안내] <br/>
-            상품 구매 후 학습그룹을 생성하지 않았거나 학습자료를 열람하지 않은 경우에 한하여 7일 이내 환불요청이 가능합니다. <br/>
-            구매 후 7일이 지났거나, 7일이 지나지 않았어도 학습그룹을 생성한 적이 있으면 환불이 불가하오니 이 점 양지해주시기 바랍니다.<br/>
-            구독 서비스를 통해 이용하시는 유료콘텐츠와 학습자료는 무단 전제 배포를 금합니다.
-        </div>
     </section>
+
+    <!-- footer -->
+    <footer th:replace="~{footer::footerFragment}"></footer>
 
 
     <script src="/assets/js/isotope.min.js"></script>
