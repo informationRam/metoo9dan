@@ -20,7 +20,7 @@
                 <div class="upperSection">
                     <div class="nado-card">
                         <div class="nado-card-header">
-                            <h2>숙제 생성</h2>
+                            <h2>숙제 제출</h2>
                         </div>
                         <div class="nado-card-body">
                             <!-- 숙제 목록 -->
@@ -92,12 +92,12 @@
                 </div>
             </div>
 
-            <div id="firstBottom" class="groupMessage mb-3 text-center">
-                <img src="/css/homework/evalIcon.png" alt="Group Icon" class="mb-2">
-                <div>전송 내역을 더블 클릭해서 제출된 숙제를 조회하세요</div>
+            <div id="firstBottom" class="groupMessage mb-3 mt-4 text-center">
+                <img src="/css/homework/submitIcon.png" alt="Group Icon" class="mb-2">
+                <div>숙제를 더블클릭해서 제출하세요!</div>
             </div>
 
-            <div class="submit-form" style="display:none;">
+            <div class="submit-form mt-4" style="display:none;">
                 <form id="addForm" th:action="@{/homework/submit/add}" th:object="${hwSubmitForm}" method="post">
                     <div class="book">
                         <div class="cover"></div>
@@ -435,6 +435,7 @@
                               document.querySelector(".edit-form textarea[name='additionalQuestion']").value = data.additionalQuestion;
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = data.homeworkSubmitNo;
                               $("#deleteBtn").data('submit-id', data.homeworkSubmitNo);
+                              $("#firstBottom").hide();
                               document.querySelector(".submit-form").style.display = 'none';
                             $(".edit-form").addClass('animate__animated animate__zoomIn').show();
                             // 애니메이션 효과 종료 후 클래스 제거
@@ -443,6 +444,7 @@
                             });
                           } else {
                               // 제출 폼 초기화 및 표시
+                              $("#firstBottom").hide();
                               document.querySelector(".submit-form textarea[name='homeworkContent']").value = '';
                               document.querySelector(".submit-form textarea[name='additionalQuestion']").value = '';
                               document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = '';
