@@ -1,3 +1,6 @@
+/*회원가입 css*/
+
+  /*체크박스 사이즈 지정 */
    .form-check-input {
                 width: 1rem;
                 height: 1rem;
@@ -146,3 +149,17 @@
                 padding-right: 15px;
                 padding-left: 15px;
             }
+          /* 본인인증 방법 선택 버튼을 가로로 나란히 정렬 */
+          .auth-selector {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+          }
+
+          /* 본인인증 방법 선택 버튼 사이의 간격 설정 */
+          .auth-selector button {
+            margin: 0 10px; /* 좌우 여백을 조절하여 간격 설정 */
+          }
+          .text-danger {
+              color: red;
+          }

@@ -50,6 +50,17 @@ public class NoticeController {
     private final NoticeFilesService filesService;
     private final MemberServiceImpl memberServiceImpl;
 
+    //개인정보처리방침
+    @GetMapping("/privacyPolicy")
+    public String privacyPolicy(){
+        return "privacyPolicy";
+    }
+    //이용약관
+    @GetMapping("/usersAgreement")
+    public String usersAgreement(){
+        return "userAgreement";
+    }
+
     // 공지사항 등록 메뉴를 누르면 공지사항 목록을 보여줌
     // 페이지네이션 추가
     @GetMapping("/list")
@@ -125,8 +136,8 @@ public class NoticeController {
         logger.info("startPage: "+startPage);
 
 
-        model.addAttribute("noticeType", noticeType);
-        model.addAttribute("status", status);
+        model.addAttribute("noticeType", noticeType); //고정 완료
+        model.addAttribute("status", status); //고정 완료
         model.addAttribute("listSize", listSize); //고정 완료
         model.addAttribute("searchCategory", searchCategory);
         model.addAttribute("keyword", keyword); //고정 완료

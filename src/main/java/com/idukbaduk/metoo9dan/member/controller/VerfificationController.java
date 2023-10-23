@@ -1,17 +1,17 @@
 package com.idukbaduk.metoo9dan.member.controller;
 
+import com.idukbaduk.metoo9dan.member.service.MailService;
 import com.idukbaduk.metoo9dan.member.service.SmsService;
 import com.idukbaduk.metoo9dan.member.dto.SmsResponseDTO;
 import com.idukbaduk.metoo9dan.member.dto.VerificationRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequestMapping("/api")
@@ -19,12 +19,45 @@ import java.util.Map;
 @RestController
 public class VerfificationController {
 
+    private final MailService mailService;
     private final SmsService smsService;
     //secureRandom으로 보안성 강화 인증번호 생성
     private final SecureRandom secureRandom = new SecureRandom();
-    private final String numericCharacters = "0123456789";
+    String numericCharacters = "0123456789";
 
-    // 인증번호 발송
+    //이메일 발송
+    @PostMapping("/sendEmailVerification")
+    public ResponseEntity<?> sendVerificationCode(@RequestBody Map<String, String> request) {
+        System.out.println("이메일발송 컨트롤러");
+        String email = request.get("valiEmail");
+        System.out.println("email:"+email);
+        if (mailService.sendEmailCode(email)) {
+            return ResponseEntity.ok().body("{\"success\": true}");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"success\": false}");
+        }
+    }
+
+    @PostMapping("/verifyEmailCode")
+    @ResponseBody
+    public ResponseEntity<?> verifyEmailCode(@RequestBody Map<String, String> request) {
+        String email = request.get("valiEmail");  // 변경: 클라이언트에서 "valiEmail"로 보낸 값을 검색합니다.
+        String inputCode = request.get("emailCode");
+        System.out.println("사용자입력코드:"+inputCode);
+        System.out.println("본인인증이메일:"+email);
+        if (mailService.verifyEmailCode(email, inputCode)) {
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "인증번호를 다시 확인하세요");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);  // ResponseEntity:java객체 json 변환 및 400 상태 코드 반환
+        }
+    }
+
+
+    // 휴대폰 인증번호 발송
     @PostMapping("/sendSMS-code")
     public ResponseEntity<Map<String, Object>> sendVerificationCode(@RequestBody VerificationRequest request, HttpSession session) {
         try {
@@ -57,7 +90,6 @@ public class VerfificationController {
                 return ResponseEntity.ok(Map.of("success", false, "message", "인증 코드 발송에 실패했습니다."));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.ok(Map.of("success", false, "message", "인증 코드 발송에 실패했습니다."));
         }
     }
@@ -71,13 +103,13 @@ public class VerfificationController {
 
             if (savedVerificationCode != null && savedVerificationCode.equals(request.getVerificationCode())) {
                 // 인증에 성공한 경우
+                session.removeAttribute(savedVerificationCode); //성공하면 삭제
                 return ResponseEntity.ok(Map.of("success", true, "message", "본인 인증이 완료되었습니다.", "userName", memName, "userPhone", to));
             } else {
                 // 인증에 실패한 경우
                 return ResponseEntity.ok(Map.of("success", false, "message", "인증에 실패했습니다."));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.ok(Map.of("success", false, "message", "인증에 실패했습니다."));
         }
     }
@@ -91,6 +123,7 @@ public class VerfificationController {
         }
         return sb.toString();
     }
+
 
 
 }
