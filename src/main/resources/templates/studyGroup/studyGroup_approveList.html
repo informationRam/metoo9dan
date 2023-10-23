@@ -8,7 +8,8 @@
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <br/>
             <p/>
-            <h2>학습 그룹 승인하기</h2>
+            <h1>학습 그룹 승인하기</h1>
+            <h5>학습 그룹을 선택해서 학습 그룹 승인 신청을 하세요.</h5>
             <p/>
             <br/>
             <div>
@@ -17,7 +18,7 @@
                     <select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
                         <option th:each="groupNameList : ${groupNameList}" th:value="${groupNameList.group_no}" th:text="${groupNameList.group_name}"></option>
                     </select>
-                    <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
+                    <button id="searchButton" class="btn btn-outline-secondary" style="margin-right: 30px;">조회하기</button>
                 </div>
                 <br/>
                 <div id="selectGroupGameResult">
@@ -72,7 +73,7 @@
                         </table>
                     </div>
                     <div style="display: flex; justify-content: right; align-items: center;">
-                        <button class="btn btn-outline-primary" id="viewButton" type="submit">승인 하기</button>
+                        <button class="btn btn-outline-secondary" id="viewButton" type="submit">승인 하기</button>
                     </div>
                 </form>
             </div>

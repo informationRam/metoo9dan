@@ -493,7 +493,7 @@ public class StudyGroupController {
             return response;
         } else if (group_no != null) {
             //페이지네이션
-            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int pageSize = 6; // 페이지당 보여줄 아이템 개수
             int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
             map.put("pageSize", pageSize);
             map.put("offset", offset);
@@ -516,7 +516,7 @@ public class StudyGroupController {
             return response;
         } else if (member_no != null) {
             //페이지네이션
-            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int pageSize = 6; // 페이지당 보여줄 아이템 개수
             int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
             map.put("pageSize", pageSize);
             map.put("offset", offset);

@@ -25,7 +25,7 @@
                         <option value="">전체</option>
                         <option th:each="educatorName : ${educatorName}" th:value="${educatorName.member_no}" th:text="${educatorName.name + ' (' + educatorName.school_name + ')'}"></option>
                     </select>
-                    <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
+                    <button id="searchButton" class="btn btn-warning" style="margin-right: 30px;">조회하기</button>
                 </div>
                 <p/>
 
@@ -47,7 +47,7 @@
                                     </td>
                                     <div class="item-price">
                                         <div style="margin-right: 10px;">
-                                            <button id="viewButton" class="btn btn-warning viewButton" th:value="${groupJoinList.group_no}" th:data-group-to="${groupJoinList.group_TO}">신청하기</button>
+                                            <button id="viewButton" class="btn btn-warning viewButton text-white" th:value="${groupJoinList.group_no}" th:data-group-to="${groupJoinList.group_TO}">신청하기</button>
                                         </div>
                                         <span th:text="${'그룹 T/O : ' + groupJoinList.group_TO + '명'}"></span>
                                     </div>
@@ -232,24 +232,38 @@ function handlePageButtonClick(event) {
 
                     data.groupJoinList.forEach(function (groupJoinList) {
                         resultHTML += '<div class="col-md-4 my-3">';
-                        resultHTML += '<div class="card" data-bs-toggle="tooltip" data-bs-placement="bottom" th:title="' + (groupJoinList.group_introduce != null ? '그룹 소개글 : ' + groupJoinList.group_introduce : '') + '">';
-                        resultHTML += '<span class="offer" th:text="' + groupJoinList.school_name + '">소속</span>';
+                        resultHTML += '<div class="card" data-bs-toggle="tooltip" data-bs-placement="bottom" title="' + (groupJoinList.group_introduce != null ? '그룹 소개글 : ' + groupJoinList.group_introduce : '') + '">';
+                        resultHTML += '<span class="offer">' + groupJoinList.school_name + '</span>';
                         resultHTML += '<div class="item-image">';
-                        resultHTML += '<img th:src="@{/image/baduk.png}" />';
+                        resultHTML += '<img src="/image/baduk.png" />';
                         resultHTML += '</div>';
                         resultHTML += '<div class="item-content">';
-                        resultHTML += '<h3><strong th:text="' + groupJoinList.group_name + ' - ' + groupJoinList.name + '"></strong></h3>';
+                        resultHTML += '<h3><strong>' + groupJoinList.group_name + ' - ' + groupJoinList.name + '</strong></h3>';
 
                         var originalStartDate = new Date(groupJoinList.group_start_date);
-                        var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
+                        var formattedStartDate = originalStartDate.getFullYear() + '-'
+                                                + ('0' + (originalStartDate.getMonth() + 1)).slice(-2)
+                                                +'-'
+                                                + ('0' + originalStartDate.getDate()).slice(-2);
+
                         var originalFinishDate = new Date(groupJoinList.group_finish_date);
-                        var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
+                        var formattedFinishDate = originalFinishDate.getFullYear()
+                                               +'-'
+                                               +(originalFinishDate.getMonth() < 9 ? "0": "")+(originalFinishDate.getMonth()+1)
+                                               +'-'
+                                               +(originalFinishDate.getDate()<10?"0":"")+originalFinishDate.getDate();
+
+                        resultHTML += '<td>';
+                        resultHTML += '<span>' + formattedStartDate + '</span>';
+                        resultHTML += ' ~ ';
+                        resultHTML += '<span>' + formattedFinishDate+ '</span>';
+                        resultHTML += '</td>'
 
                         resultHTML += '<div class="item-price">';
                         resultHTML += '<div style="margin-right: 10px;">';
-                        resultHTML += '<button class="btn btn-warning viewButton" th:value="' + groupJoinList.group_no + '" th:data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
+                        resultHTML += '<button class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
                         resultHTML += '</div>';
-                        resultHTML += '<span th:text="' + '\'그룹 T/O : \' + ' + groupJoinList.group_TO + ' + \'명\'"></span>';
+                        resultHTML += '<span>그룹 T/O : ' + groupJoinList.group_TO + '명</span>';
                         resultHTML += '</div>';
                         resultHTML += '</div>';
                         resultHTML += '</div>';
@@ -328,24 +342,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 data.groupJoinList.forEach(function (groupJoinList) {
                     resultHTML += '<div class="col-md-4 my-3">';
-                    resultHTML += '<div class="card" data-bs-toggle="tooltip" data-bs-placement="bottom" th:title="' + (groupJoinList.group_introduce != null ? '그룹 소개글 : ' + groupJoinList.group_introduce : '') + '">';
-                    resultHTML += '<span class="offer" th:text="' + groupJoinList.school_name + '">소속</span>';
+                    resultHTML += '<div class="card" data-bs-toggle="tooltip" data-bs-placement="bottom" title="' + (groupJoinList.group_introduce != null ? '그룹 소개글 : ' + groupJoinList.group_introduce : '') + '">';
+                    resultHTML += '<span class="offer">' + groupJoinList.school_name + '</span>';
                     resultHTML += '<div class="item-image">';
-                    resultHTML += '<img th:src="@{/image/baduk.png}" />';
+                    resultHTML += '<img src="/image/baduk.png" />';
                     resultHTML += '</div>';
                     resultHTML += '<div class="item-content">';
-                    resultHTML += '<h3><strong th:text="' + groupJoinList.group_name + ' - ' + groupJoinList.name + '"></strong></h3>';
+                    resultHTML += '<h3><strong>' + groupJoinList.group_name + ' - ' + groupJoinList.name + '</strong></h3>';
 
                     var originalStartDate = new Date(groupJoinList.group_start_date);
-                    var formattedStartDate = originalStartDate.getFullYear() + '-' + ('0' + (originalStartDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalStartDate.getDate()).slice(-2);
+                    var formattedStartDate = originalStartDate.getFullYear() + '-'
+                                            + ('0' + (originalStartDate.getMonth() + 1)).slice(-2)
+                                            +'-'
+                                            + ('0' + originalStartDate.getDate()).slice(-2);
+
                     var originalFinishDate = new Date(groupJoinList.group_finish_date);
-                    var formattedFinishDate = originalFinishDate.getFullYear() + '-' + ('0' + (originalFinishDate.getMonth() + 1)).slice(-2) + '-' + ('0' + originalFinishDate.getDate()).slice(-2);
+                    var formattedFinishDate = originalFinishDate.getFullYear()
+                                           +'-'
+                                           +(originalFinishDate.getMonth() < 9 ? "0": "")+(originalFinishDate.getMonth()+1)
+                                           +'-'
+                                           +(originalFinishDate.getDate()<10?"0":"")+originalFinishDate.getDate();
+
+                    resultHTML += '<td>';
+                    resultHTML += '<span>' + formattedStartDate + '</span>';
+                    resultHTML += ' ~ ';
+                    resultHTML += '<span>' + formattedFinishDate+ '</span>';
+                    resultHTML += '</td>';
 
                     resultHTML += '<div class="item-price">';
                     resultHTML += '<div style="margin-right: 10px;">';
-                    resultHTML += '<button class="btn btn-warning viewButton" th:value="' + groupJoinList.group_no + '" th:data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
+                    resultHTML += '<button class="btn btn-warning viewButton text-white" value="' + groupJoinList.group_no + '" data-group-to="' + groupJoinList.group_TO + '">신청하기</button>';
                     resultHTML += '</div>';
-                    resultHTML += '<span th:text="' + '\'그룹 T/O : \' + ' + groupJoinList.group_TO + ' + \'명\'"></span>';
+                    resultHTML += '<span>그룹 T/O : ' + groupJoinList.group_TO + '명</span>';
                     resultHTML += '</div>';
                     resultHTML += '</div>';
                     resultHTML += '</div>';
