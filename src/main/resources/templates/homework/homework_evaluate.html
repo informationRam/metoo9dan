@@ -98,7 +98,9 @@
                     <!-- 전송 내역 -->
                     <form id="evaluationForm" action="/homework/evaluate/submit-evaluation" method="post">
                         <div id="evaluationCard"></div>
+                        <div class="nado-center-contain">
                         <div id="eval-pagination" class="pagination"></div>
+                        </div>
                         <div class="nado-center-contain">
                         <button type="submit" class="btn-nado-primary">평가 저장</button>
                         </div>
@@ -209,15 +211,16 @@
 
                 // -----------------------------------------------------------------------------------
                 $(document).ready(function() {
+                  var homeworkNo;
+                  var sendDate;
                     var submitChartInstance = null;
                     var evalChartInstance = null;
                     var currentSubPage = 1;
                     // 더블 클릭 이벤트 핸들러
                     $("#hwSendTable").on("dblclick", "tr", function() {
-                    console.log($(this).data('hw-id'), $(this).data('send-date'));
                         // 숙제 번호와 sendDate를 가져온다 ->복합키로 검색 예정
-                        var homeworkNo = $(this).data('hw-id');
-                        var sendDate = $(this).data('send-date');
+                        homeworkNo = $(this).data('hw-id');
+                        sendDate = $(this).data('send-date');
 
                         //대시보드
                         // 제출률 API 호출
@@ -290,12 +293,6 @@
                             $(document).on('click', '#eval-pagination .pagination-link', function(e) {
                             e.preventDefault();
                             var selectedPage = $(this).data('page');
-                            currentSubPage = $(this).data('page');
-
-                            // 현재 선택된 row의 숙제 번호와 sendDate 가져
-                            var selectedRow = $("#hwSendTable tr.selected");
-                            var homeworkNo = selectedRow.data('hw-id');
-                            var sendDate = selectedRow.data('send-date');
 
                             // 해당 페이지의 카드와 페이지네이션 정보 불러옴
                             loadCardsAndPagination(homeworkNo, sendDate, selectedPage);
