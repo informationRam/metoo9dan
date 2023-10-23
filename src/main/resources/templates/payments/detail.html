@@ -1,42 +1,83 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
     <link rel="stylesheet" href="/css/game/list.css" />
-    <style>
-    </style>
     <div class="row">
         <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
-        <div class="col-md-10">
-            <h2>정보보기</h2>
-            <div class="row">
-                <div class="col-md-5">
-                    <h5 class="card-title" th:text="${gameContents.gameName}"></h5>
-                    <img th:src="@{|/upload/game/${gameContents.gameContentFilesList[0].copyFileName}|}" class="img-fluid" alt="Game Image" style="max-width: 500px; height: auto;">
-                </div>
-                <div class="col-md-7">
-                    <div class="card">
-                        <div class="card-body">
-                            <p class="card-text" th:text="${gameContents.difficulty}"></p>
-                            <p class="card-text" th:text="${gameContents.subscriptionDuration}"></p>
-                            <p class="card-text" th:text="${gameContents.maxSubscribers}"></p>
-                            <p class="card-text" th:text="${gameContents.salePrice}"></p>
-                            <p class="card-text" th:text="${gameContents.packageDetails}"></p>
-                            <p class="card-text" th:text="${gameContents.contentType}"></p>
+            <div class="col-md-10">
+                <div class="card rounded">
+                    <div class="card-body">
+
+                <h2>상세내역</h2>
+                <div class="card mt-3">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <div class="card-body">
+                            <h5 class="card-title" th:text="${gameContents.gameName}"></h5>
+                                <img th:src="@{|/upload/game/${gameContents.gameContentFilesList[0].copyFileName}|}" class="text-center" alt="Game Image" style="max-width: 300px; height: auto;">
+                            </div>
+                        </div>
+                        <!-- 오른쪽 컬럼 - 다른 내용 -->
+                        <div class="col-md-2">
+                                <div class="card-body mt-5">
+                                    <h5 th:switch="${gameContents.difficulty}">
+                                        <span th:case="'beginner'" class="badge bg-success">초급</span>
+                                        <span th:case="'intermediate'" class="badge bg-warning text-dark">중급</span>
+                                        <span th:case="'advanced'" class="badge bg-danger">고급</span>
+                                    </h5>
+                                    <h5 th:text="${'난이도 : '+ gameContents.subscriptionDuration + '명'}"></h5>
+                                    <h5 th:text="${'구독기간 : '+ gameContents.maxSubscribers + '일'}"></h5>
+                                    <h5 th:text="${#numbers.formatInteger(gameContents.salePrice, 0, 'COMMA')} + '원'"></h5>
+                                </div>
+                        </div>
+                        <div class="col-md-3 mt-6">
+                            <div class="card-body">
+                                <h6 th:text="${gameContents.packageDetails}"></h6>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-10">
-            <ul>
-                <li th:each="education : ${selectEducation}">
-                    <p>자료명: [[${education.resourceName}]]</p>
-                    <p>자료 구분: [[${education.resourceCate}]]</p>
-                    <div th:if="${education.resourcesFilesList != null}">
-                        <a th:href="@{|/education/downloadFile/${education.resourcesFilesList.fileNo}|}">다운로드</a>
+                </div><!-- 게임자료 -->
+                                <div class="col-md-12 h-3 mt-3">
+                                    <div class="">
+                                    <h5>교육자료육정보</h5>
+                                    <div class="card col-10" th:each="education : ${selectEducation}">
+                                        <div class="card-header" th:text="${education.resourceName}"></div>
+                                        <div class="row g-0">
+                                            <!-- 왼쪽 컬럼 - 카드 내용 -->
+                                            <div class="col-md-2 ">
+                                                <div class="card-body">
+                                                    <img th:if="${education != null and education.resourcesFilesList != null and not #lists.isEmpty(education.resourcesFilesList)}"
+                                                            th:src="@{|/upload/education/${education.resourcesFilesList.thumOriginCopyName}|}" style="max-width: 100px; height: auto;">
+                                                </div>
+                                            </div>
+                                            <!-- 오른쪽 컬럼 - 다른 내용 -->
+                                            <div class="col-md-6">
+                                                <div class="card-body">
+                                                    <h6 th:text="${education.resourceCate}"></h6>
+                                                    <p th:text="${education.description}"></p>
+                                                    <div th:if="${education.resourcesFilesList != null}">
+                                                        <div class="dropdown">
+                                                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                다운로드 파일
+                                                            </a>
+                                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                                <li>
+                                                                    <a class="dropdown-item" th:href="@{|/education/downloadFile/${education.resourcesFilesList.fileNo}|}">
+                                                                        다운로드
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </li>
-            </ul>
-        </div>
-    </div>
+
     </div>
 </div>
 </html>

@@ -6,7 +6,7 @@
   <div class="row">
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
     <div th:replace="~{/admin/adminSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-    <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+    <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
       <div class="container">
         <div class="row">
           <div class="col-lg-12">
@@ -49,9 +49,9 @@
                                             <span th:case="'advanced'" class="badge bg-danger">고급</span>
                                           </span>
                                         </p>
-                                        <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration}"></span></p>
-                                        <p class="card-text"><strong>구독가능인원:</strong> <span th:text="${game.maxSubscribers}"></span></p>
-                                        <p class="card-text"><strong>포함된 교육자료:</strong>
+                                      <p class="card-text"><strong>구독기간:</strong> <span th:text="${game.subscriptionDuration} + '일'"></span></p>
+                                      <p class="card-text"><strong>구독가능인원:</strong> <span th:text="${game.maxSubscribers} + '명'"></span></p>
+                                      <p class="card-text"><strong>포함된 교육자료:</strong>
                                         <span th:if="${#lists.size(game.educationalResourcesList) > 0}">
                                             <span th:each="resource, iterStat : ${game.educationalResourcesList}">
                                                 <span th:text="${resource.resourceName}"></span>
@@ -61,7 +61,6 @@
                                         <span th:unless="${#lists.size(game.educationalResourcesList) > 0}">없음</span>
                                       </p>
                                       <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
-                                        <p class="card-text">
                                         <span th:text="${#strings.length(game.packageDetails) > 50 ? #strings.substring(game.packageDetails, 0, 50) + '...' : game.packageDetails}"
                                                 data-toggle="popover" data-content="${game.packageDetails}"
                                                 data-placement="top"

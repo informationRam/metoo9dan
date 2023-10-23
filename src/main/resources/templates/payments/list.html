@@ -19,7 +19,7 @@
                                 <div class="row g-0">
                                     <div class="col-md-3">
                                         <span th:text="${payment.status == 'complete' ? '성공' : payment.status}"></span>
-                                            <img th:src="@{|/upload/game/${payment.gameContents.gameContentFilesList[0].copyFileName}|}" class="img-fluid" alt="Game Image" style="max-width: 100%; height: auto;">
+                                        <img th:src="@{|/upload/game/${payment.gameContents.gameContentFilesList[0].copyFileName}|}" class="img-fluid" alt="Game Image" style="max-width: 100%; height: auto;">
                                     </div>
                                     <div class="col-md-6">
                                         <div class="card-body">

@@ -424,7 +424,7 @@ public class GameController {
 
     //게임컨텐츠 구매 할때 목록조회 (페이지네이션)
     @GetMapping("/alllist")
-    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
+    //@PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText,@RequestParam(required = false, defaultValue = "") List<Integer> gameContentNo) {
 
         // 게임컨텐츠 목록 조회
