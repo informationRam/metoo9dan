@@ -47,7 +47,7 @@
                                 <!-- 페이지네이션 -->
 
                                 <div id="hw-pagination" class="d-flex justify-content-center mt-3">
-                                    <ul id="pagination" class="pagination">
+                                    <ul class="pagination">
                                     </ul>
                                 </div>
 
@@ -98,7 +98,7 @@
                     <!-- 전송 내역 -->
                     <form id="evaluationForm" action="/homework/evaluate/submit-evaluation" method="post">
                         <div id="evaluationCard"></div>
-                        <div id="eval-pagination"></div>
+                        <div id="eval-pagination" class="pagination"></div>
                         <div class="nado-center-contain">
                         <button type="submit" class="btn-nado-primary">평가 저장</button>
                         </div>
@@ -177,35 +177,41 @@
                             tableContent += '</tbody>';
                             $('#hwSendTable').html(tableContent);
 
-
                             // 페이지네이션 갱신
-                            let paginationContent = '';
+                            let paginationContent = `<ul class="pagination">`;
                             let endPage = Math.ceil(page / 5.0) * 5;
                             let startPage = endPage - 4;
 
-                            if (startPage > 1) {
-                                paginationContent += `<li class="page-item"><a href="#" class="pagination-link" data-page="${startPage - 1}">이전</a></li>`;
+                            if (page > 1) {
+                                paginationContent += `<li class="pagination page-item"><a href="#" class="pagination pagination-link" data-page="${page-1}">이전</a></li>`;
+                            } else{
+                                paginationContent += `<li class="pagination page-item disabled"><a href="#" class="pagination pagination-link" aria-disabled="true">이전</a></li>`;
                             }
 
                             for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
-                                paginationContent += `<li class="page-item"><a href="#" class="pagination-link" data-page="${i}">${i}</a></li>`;
+                                if (i == page) {
+                                    paginationContent += `<li class="pagination page-item active"><a href="#" class="pagination pagination-link" data-page="${i}">${i}</a></li>`;
+                                } else {
+                                    paginationContent += `<li class="pagination page-item"><a href="#" class="pagination pagination-link" data-page="${i}">${i}</a></li>`;
+                                }
                             }
 
-                            if (endPage < response.totalPages) {
-                                paginationContent += `<li class="page-item"><a href="#" class="pagination-link" data-page="${endPage + 1}">다음</a></li>`;
+                            if (page < response.totalPages) {
+                                paginationContent += `<li class="pagination page-item"><a href="#" class="pagination pagination-link" data-page="${page+1}">다음</a></li>`;
+                            } else {
+                                paginationContent += `<li class="pagination page-item disabled"><a href="#" class="pagination pagination-link" aria-disabled="true">다음</a></li>`;
                             }
-
-                            $('#pagination').html(paginationContent);
+                            paginationContent += `</ul>`;
+                            $('#hw-pagination').html(paginationContent);
                         }
                     });
                 }
 
                 // -----------------------------------------------------------------------------------
-                let currentPageSub = 1;    // 하위 테이블의 현재 페이지
-
                 $(document).ready(function() {
                     var submitChartInstance = null;
                     var evalChartInstance = null;
+                    var currentSubPage = 1;
                     // 더블 클릭 이벤트 핸들러
                     $("#hwSendTable").on("dblclick", "tr", function() {
                     console.log($(this).data('hw-id'), $(this).data('send-date'));
@@ -274,16 +280,42 @@
                             });
 
                         //카드 내역
-                        $.ajax({
-                            url: '/homework/evaluate/submit-list',
-                            type: 'GET',
-                            data: {
-                                homeworkNo: homeworkNo,
-                                sendDate: sendDate,
-                                page: currentPageSub  // 여기를 수정했습니다.
-                            },
-                            success: function(response) {
-                            console.log(response.content);
+                        console.log("초기 카드함수 로드 전 설정된 현재페이지"+currentSubPage)
+                        loadCardsAndPagination(homeworkNo, sendDate, currentSubPage);
+
+                                $('#noResult').hide();
+                                $('#lowerSection').fadeIn();
+                        });
+
+                            $(document).on('click', '#eval-pagination .pagination-link', function(e) {
+                            e.preventDefault();
+                            var selectedPage = $(this).data('page');
+                            currentSubPage = $(this).data('page');
+
+                            // 현재 선택된 row의 숙제 번호와 sendDate 가져
+                            var selectedRow = $("#hwSendTable tr.selected");
+                            var homeworkNo = selectedRow.data('hw-id');
+                            var sendDate = selectedRow.data('send-date');
+
+                            // 해당 페이지의 카드와 페이지네이션 정보 불러옴
+                            loadCardsAndPagination(homeworkNo, sendDate, selectedPage);
+                        });
+                    });
+
+                    // 카드와 페이지네이션을 로드하는 함수
+                        function loadCardsAndPagination(homeworkNo, sendDate, currentPageSub) {
+                            // 카드 내역 로드
+                            $.ajax({
+                                url: '/homework/evaluate/submit-list',
+                                type: 'GET',
+                                data: {
+                                    homeworkNo: homeworkNo,
+                                    sendDate: sendDate,
+                                    page: currentPageSub
+                                },
+                                success: function(response) {
+                                    console.log(response.content);
+
                                 // 결과 카드 갱신
                                 let tableContent = '';
                                     response.content.forEach(item => {
@@ -307,7 +339,7 @@
                                           <i class="fa fa-calendar"></i> <label>제출기한</label><span>${formattedDueDate}</span>
                                       </div>
                                       <div class="item-row">
-                                        <i class="fa fa-star"></i> <label>진도</label><span>${item.currentLevel}</span>
+                                        <i class="fa fa-star"></i> <label>진도</label><span>${item.currentLevel}레벨</span>
                                     </div>
                                       <div class="item-row">
                                           <i class="fa fa-paper-plane"></i> <label>전송일</label><span>${formattedSendDate}</span>
@@ -396,34 +428,36 @@
                                     });
                                 $('#evaluationCard').html(tableContent);
 
-                                // 페이지네이션 갱신
-                                let paginationContent = '';
-                                let endPage = Math.ceil((response.number + 1) / 5.0) * 5; // '+1'은 현재 페이지 번호가 0부터 시작하기 때문입니다.
-                                let startPage = endPage - 4;
+                                    // 페이지네이션 갱신 (구현 필요)
+                                   let paginationContent = `<ul class="pagination">`;
+                                    let endPage = Math.ceil(currentPageSub / 5.0) * 5;
+                                    let startPage = endPage - 4;
 
-                                if (startPage > 1) {
-                                    paginationContent += `<a href="#" class="pagination-link-sub" data-page="${startPage - 1}">이전</a>`;
-                                }
-
-                                for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
-                                    if (i === response.number + 1) {
-                                        paginationContent += `<span class="current-page">${i}</span>`; // 현재 페이지를 강조합니다.
+                                    if (currentPageSub > 1) {
+                                        paginationContent += `<li class="pagination page-item"><a href="#" class="pagination pagination-link" data-page="${currentPageSub-1}">이전</a></li>`;
                                     } else {
-                                        paginationContent += `<a href="#" class="pagination-link-sub" data-page="${i}">${i}</a>`;
+                                        paginationContent += `<li class="pagination page-item disabled"><a href="#" class="pagination pagination-link" aria-disabled="true">이전</a></li>`;
                                     }
-                                }
 
-                                if (endPage < response.totalPages) {
-                                    paginationContent += `<a href="#" class="pagination-link-sub" data-page="${endPage + 1}">다음</a>`;
-                                }
+                                    for (let i = startPage; i <= endPage && i <= response.totalPages; i++) {
+                                        if (i == currentPageSub) {
+                                            paginationContent += `<li class="pagination page-item active"><a href="#" class="pagination pagination-link" data-page="${i}">${i}</a></li>`;
+                                        } else {
+                                            paginationContent += `<li class="pagination page-item"><a href="#" class="pagination pagination-link" data-page="${i}">${i}</a></li>`;
+                                        }
+                                    }
 
-                                $('#eval-pagination').html(paginationContent);
-                            }
-                        });
-                                $('#noResult').hide();
-                                $('#lowerSection').fadeIn();
-                        });
-                    });
+                                    if (currentPageSub < response.totalPages) {
+                                        paginationContent += `<li class="pagination page-item"><a href="#" class="pagination pagination-link" data-page="${currentPageSub+1}">다음</a></li>`;
+                                    } else {
+                                        paginationContent += `<li class="pagination page-item disabled"><a href="#" class="pagination pagination-link" aria-disabled="true">다음</a></li>`;
+                                    }
+                                    paginationContent += `</ul>`;
+
+                                    $('#eval-pagination').html(paginationContent);
+                                }
+                            });
+                        }
 
                   function handleCancelClick(buttonElement) {
                         const sendNo = buttonElement.getAttribute("data-sendno");

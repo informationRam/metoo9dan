@@ -241,30 +241,34 @@
     list-style-type: none;
 }
 
-.pagination .page-item {
+.page-item {
     margin: 0 2px;
+    list-style-type: none;
 }
 
-.pagination .page-link {
+.pagination-link {
     border: none;
     color: #333;
     border-radius: 5px;
-    padding: 8px 12px;
+    padding: 8px 8px;
     transition: background-color 0.3s, color 0.3s;
+    list-style-type: none;
 }
 
-.pagination .page-item.active .page-link,
-.pagination .page-link:hover {
+.page-item.active .pagination-link,
+.pagination-link:hover {
     background-color: #ffc107;
     color: #333;
     border-color: #ffc107;
+    list-style-type: none;
 }
 
-.pagination .page-item.disabled .page-link {
+.page-item.disabled{
     pointer-events: none;
     cursor: default;
     background-color: #f2f2e6;
     color: #999;
+    list-style-type: none;
 }
 
 .nado-table-container {
@@ -305,4 +309,11 @@
     width: 15%; /* 이미지 넓이를 50%로 설정 */
     display: block; /* 이미지를 block 요소로 설정하여 중앙 정렬하기 쉽게 함 */
     margin: 10px auto; /* 위 아래 10px의 여백을 주고 좌우는 자동으로 설정하여 중앙 정렬 */
+}
+
+.nado-center-contain {
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center;     /* Vertically center */
+    height: 100%;            /* You might need to adjust this based on your layout requirements */
 }
