@@ -69,7 +69,7 @@ public class StudyGroupController {
             gameContent.setAppointed_group_num(appointed_group_num);
         }
 
-     /*   for (GameContentsListDTO gameContent : gameContents) {
+     /*  for (GameContentsListDTO gameContent : gameContents) {
             int payment_no = gameContent.getPayment_no();
             int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
             model.addAttribute("appointed_group_num",appointed_group_num);
