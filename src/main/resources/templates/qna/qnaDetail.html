@@ -6,7 +6,7 @@
         <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
         <div th:replace="~{/notice/utilSidebar::sidebar}"></div>
 
-        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div class="col-10 mt-5"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h2>문의사항</h2>
             <div class="py-2">
@@ -71,7 +71,7 @@
                         </div>
                         <p class="card-text p-2" th:text="${answer.answerContent}" style="white-space: pre;">답변 내용</p>
                         <div th:if="${memberRole}==ADMIN" class="d-flex justify-content-end">
-                            <a th:href="@{|/answer/delete/${answer.answerNo}|}" class="btn btn-sm btn-outline-secondary">삭제</a>
+                            <a th:href="@{|/answer/delete/${answer.answerNo}|}" class="delete btn btn-sm btn-outline-secondary">삭제</a>
                         </div>
                     </div>
                 </div>
