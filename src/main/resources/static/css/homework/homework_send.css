@@ -27,20 +27,6 @@
     display: none;
 }
 
-#hw-homeworkDetailModal
- {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    width: 400px;
-    border-radius: 8px;
-    z-index: 10;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-}
-
 #hw-backdrop {
     position: fixed;
     top: 0;
@@ -192,6 +178,7 @@
     transform: translate(-50%, -50%);
     width: 500px;
     z-index: 10;
+    padding: 0px;
 }
 
 .naod-modal-header {
@@ -209,7 +196,20 @@
 .naod-modal-body {
     padding: 20px;
 }
+.row {
+    margin-bottom: 15px;
+}
 
+.naod-title {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.naod-content {
+    margin-left: 10px;
+    color: #555;
+}
 .modal-footer {
     padding: 10px 20px;
     background-color: #ffebcd;
