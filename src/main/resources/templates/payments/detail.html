@@ -2,8 +2,17 @@
 <div layout:fragment="content" class="container my-3">
     <link rel="stylesheet" href="/css/game/list.css" />
     <div class="row">
-        <div th:replace="~{/admin/adminSidebar::sidebar}"></div>
-            <div class="col-md-10">
+        <!--<div th:replace="~{/admin/adminSidebar::sidebar}"></div>-->
+        <div class="col-2" >
+            <ul>
+                <li class="mt-5"><h4>구독서비스</h4></li>
+                <hr>
+                <li class="mb-3 p-2"><a th:href="@{/payments/alllist}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 구매</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+            </ul>
+        </div>
+
+        <div class="col-md-10">
                 <div class="card rounded">
                     <div class="card-body">
 
