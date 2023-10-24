@@ -207,6 +207,7 @@ public class EducationService {
         if (ori_resourcesfiles != null) {
             ResourcesFiles copyResourcesFiles = new ResourcesFiles(); // DB에 이미지 제목 복사처리
             copyResourcesFiles.setOriginFileName(ori_resourcesfiles.getOriginFileName());
+            copyResourcesFiles.setFileUrl(ori_resourcesfiles.getFileUrl());
             copyResourcesFiles.setCopyFileName(ori_resourcesfiles.getCopyFileName());
             copyResourcesFiles.setThumOriginFileName(ori_education.getOrigin_file_name());
             copyResourcesFiles.setThumOriginCopyName(ori_resourcesfiles.getThumOriginCopyName());

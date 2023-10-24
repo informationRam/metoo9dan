@@ -2,8 +2,10 @@ package com.idukbaduk.metoo9dan.payments.controller;
 
 import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.education.service.EducationService;
+import com.idukbaduk.metoo9dan.education.service.ResourcesFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
+import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoApproveResponse;
@@ -50,11 +52,13 @@ public class PaymentsController {
     private final PaymentsService paymentsService;
     private final MemberService memberService;
     private final MemberServiceImpl memberServicesimpl;
+    private final ResourcesFilesService resourcesFilesService;
+
 
     // 결제하기 폼
     //@RequestMapping(value = "/paymentsform", method = {RequestMethod.GET, RequestMethod.POST})
     @PostMapping("/paymentsform")
-    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
+    //@PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
     public String paymentsform(@RequestParam(name = "gameContentNos") String gameContentNos, Model model, HttpSession session,Principal principal) {
 
         Member user = memberService.getUser(principal.getName());
@@ -133,7 +137,7 @@ public class PaymentsController {
 
     //구매 목록조회
     @GetMapping("/list")
-    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
+    //@PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
     public String paymentsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, Payments payments,Principal principal) {
 
         Member member = memberService.getUser(principal.getName());
@@ -181,26 +185,30 @@ public class PaymentsController {
     }
 
     //상세조회
-    @GetMapping("/detail/{paymentNo}")
-    public String paymentDetail(@PathVariable Integer paymentNo,Model model, @RequestParam(value = "page", defaultValue = "0") int page, Payments payments,Principal principal) {
+    @GetMapping("/detail/{gameContentNo}")
+    public String paymentDetail(@PathVariable Integer gameContentNo,Model model, Payments payments,Principal principal) {
 
-       /* Member member = memberService.getUser(principal.getName());
+            GameContents gameContents = gameService.getGameContents(gameContentNo);
 
-        Payments payment = paymentsService.getPayment(paymentNo);
-      *//*  GameContents gameContents = payment.getGameContents();
-        List<EducationalResources> educationTogameno = gameContents.getEducationalResourcesList();*//*
+            List<EducationalResources> educationTogameno = educationService.getEducation_togameno(gameContentNo);
+        // 교육자료에 대한 파일 정보를 가져와서 모델에 추가
+            for (EducationalResources education : educationTogameno) {
+                ResourcesFiles resourcesFilesList = resourcesFilesService.getFile(education.getResourceNo());
+                education.setResourcesFilesList(resourcesFilesList);
+            }
 
-            GameContents gameContentsForPayment = paymentsService.getGameContentsForPayment(payment);
+            //게임컨텐츠값으로 선택된 EducationalResources정보를 가져온다.
+            List<EducationalResources> selectEducation = educationService.getEducation_togameno(gameContents.getGameContentNo());
 
-            // Fetch and add associated EducationalResources
-            List<EducationalResources> educationalResources = educationService.getEducationalResourcesForGameContents(gameContentsForPayment);
-            gameContentsForPayment.setEducationalResourcesList(educationalResources);
+            List<Integer> resourcesNo = new ArrayList<>();
+            for(EducationalResources educationalResources1 : selectEducation){
+                resourcesNo.add(educationalResources1.getResourceNo());
+            }
 
+            model.addAttribute("resourcesNo", resourcesNo);
+            model.addAttribute("selectEducation", selectEducation);
+            model.addAttribute("gameContents", gameContents);
 
-        model.addAttribute("payment", payment);
-        model.addAttribute("gameContents", gameContentsForPayment);
-        model.addAttribute("education", educationalResources);
-*/
         return "payments/detail";
     }
 
