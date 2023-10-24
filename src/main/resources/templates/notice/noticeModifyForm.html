@@ -20,7 +20,7 @@
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div th:replace="~{/notice/manageSidebar::sidebar}" ></div>
 
-        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div class="col-10 mt-5"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h2>공지사항 게시글 수정</h2>
             <form id="noticeForm" th:object="${noticeForm}" th:action="@{|/notice/modify/${notice.noticeNo}|}" method="post" enctype="multipart/form-data" class="mt-3">
