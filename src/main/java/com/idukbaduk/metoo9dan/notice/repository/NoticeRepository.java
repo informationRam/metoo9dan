@@ -64,5 +64,5 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     @Transactional
     @Modifying
     @Query("UPDATE Notice n SET n.status = 'post' WHERE n.postDate = :postDate")
-    void updateStatusForPostDateEqual(LocalDateTime postDate);
+    void updateStatusForPostDateEqual(@Param("postDate") LocalDateTime postDate);
 }

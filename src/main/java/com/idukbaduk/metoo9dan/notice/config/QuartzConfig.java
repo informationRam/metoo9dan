@@ -20,7 +20,7 @@ public class QuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(job)
                 .withIdentity("myTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 43 12 * * ?")) // Example cron expression
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")) // Example cron expression
                 .build();
     }
 }
