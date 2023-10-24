@@ -1,0 +1,574 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/homework/homework_submit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <div class="row">
+        <canvas id="canvas"></canvas>
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/homework/studentBar::sidebar}" ></div>
+
+        <div class="col-10 px-3">
+            <div style="display:none;">
+                <button id="startButton"></button>
+                <button id="stopButton"></button>
+            </div>
+
+            <div class="row justify-content-center mt-5">
+                <div class="upperSection px-3">
+                    <div class="nado-card">
+                        <div class="nado-card-header">
+                            <h2>숙제 제출</h2>
+                        </div>
+                        <div class="nado-card-body">
+                            <!-- 숙제 목록 -->
+                            <div class="mt-3 mr-3 mb-3 nado-search-center">
+                                <input type="text" id="homeworkSearchInput" onkeyup="homeworkSearchTable()" class="nado-search" placeholder="검색어를 입력하세요..">
+                                <label for="homeworkSearchInput" class="nado-search-label">
+                                    <i class="bi bi-search text-warning"></i> <!-- 부트스트랩 돋보기 아이콘을 추가합니다 -->
+                                </label>
+                            </div>
+
+                            <div class="nado-table-container">
+                            <table class="nado-table nado-table-hover" id="homeworkTable">
+                                <thead class="nado-thead-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>숙제 제목</th>
+                                    <th>게임 컨텐츠명</th>
+                                    <th>진도</th>
+                                    <th>제출 기한</th>
+                                    <th>제출</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="hs,start : ${homeworkSend}"
+                                    th:data-send-no="${hs.sendNo}"
+                                    th:class="${hs.isSubmit != 'N' ? 'nado-table-success' : 'nado-table-warning'}"
+                                    ondblclick="loadForm(this)">
+                                    <td th:text="${homeworkSend.size() - start.count + 1}"></td>
+                                    <td th:text="${hs.homeworks.homeworkTitle}"></td>
+                                    <td th:text="${hs.homeworks.gameTitle}"></td>
+                                    <td th:text="${hs.homeworks.progress}"></td>
+                                    <td th:text="${hs.homeworks.dueDate}"></td>
+                                    <td th:text="${hs.isSubmit != 'N' ? '제출 완료' : '제출 전'}"></td>
+                                </tr>
+                                <tr th:if="${homeworkSend == null or homeworkSend.size() == 0}">
+                                    <td colspan="6">
+                                        <div id="noHomework" class="groupMessage mb-3 text-center">
+                                            <img src="/css/homework/noHwStudent.png" alt="No data Icon" class="mb-2">
+                                            <div>제출해야 할 숙제가 없습니다</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                                <div id="noResult" class="groupMessage mb-3 text-center" style="display:none;">
+                                    <img src="/css/homework/searchNoneIcon.png" alt="Group Icon" class="mb-2">
+                                    <div>검색 결과가 없습니다</div>
+                                </div>
+                            </div>
+                            <!-- 페이지네이션 부분 -->
+                            <div id="hw-homeworkPagination" class="d-flex justify-content-center mt-3">
+                                <ul class="pagination">
+                                    <li class="page-item" id="homeworkPrevBtn">
+                                        <a class="page-link" href="#">이전</a>
+                                    </li>
+                                    <li class="page-item" id="homeworkPageNumbers">
+                                        <!-- 페이지네이션 번호가 여기에 추가될 것입니다 -->
+                                    </li>
+                                    <li class="page-item" id="homeworkNextBtn">
+                                        <a class="page-link" href="#">다음</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="curveEffect text-center mt-4">
+                        <i class="bi bi-chevron-double-down center-icon fs-3"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="firstBottom" class="groupMessage mb-3 mt-4 text-center">
+                <img src="/css/homework/submitIcon.png" alt="Group Icon" class="mb-2">
+                <div>숙제를 더블클릭해서 제출하세요!</div>
+            </div>
+
+            <div class="submit-form mt-4" style="display:none;">
+                <form id="addForm" th:action="@{/homework/submit/add}" th:object="${hwSubmitForm}" method="post">
+                    
+                    <div class="book">
+                        <div class="cover"></div>
+                        <div class="index submitIndex"><i class="bi bi-x close-icon" style="cursor: pointer;"></i></div>
+                        <div class="page left page1"></div>
+                        <div class="page left page2"></div>
+                        <div class="page left page3">
+                            <div class="homework-details">
+                                <div class="detail-item">
+                                    <label>숙제 제목:</label>
+                                    <span class="homework-title"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>게임 컨텐츠명:</label>
+                                    <span class="game-title"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>진도:</label>
+                                    <span class="my-progress"></span> 레벨
+                                </div>
+                                <div class="detail-item">
+                                    <label>숙제 내용:</label>
+                                    <div class="content-box">
+                                    <span class="homework-content"></span>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>교육자:</label>
+                                    <span class="member-name"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>제출 기한:</label>
+                                    <span class="due-date"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page right page1"></div>
+                        <div class="page right page2"></div>
+                        <div class="page right page3">
+                            <div class="homework-submission">
+                                <div class="detail-item">
+                                    <label>진도:</label>
+                                    <span class="currentLevel"></span> 레벨
+                                </div>
+                                <input type="hidden" name="homeworkNo"/>
+                                <input type="hidden" name="sendNo"/>
+                                <div class="text-area-container">
+                                    <textarea name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                                    <span id="homeworkContentError" class="error-message"></span>
+                                </div>
+                                <div class="text-area-container">
+                                    <textarea name="additionalQuestions" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                                </div>
+                                <div class="submit-button-container">
+                                    <button type="submit" class="btn btn-warning text-white mx-2">제출</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="edit-form" style="display:none;">
+                <div class="book">
+                    <div class="cover"></div>
+                    <div class="index editIndex"><i class="bi bi-x close-icon" style="cursor: pointer;"></i></div>
+                    <div class="page left page1"></div>
+                    <div class="page left page2"></div>
+                    <div class="page left page3">
+                        <div class="homework-details">
+                            <div class="detail-item">
+                                <label>숙제 제목:</label>
+                                <span class="homework-title"></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>게임컨텐츠명:</label>
+                                <span class="game-title"></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>진도:</label>
+                                <span class="my-progress"></span> 레벨
+                            </div>
+                            <div class="detail-item">
+                                <label>교육자:</label>
+                                <span class="member-name"></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>숙제 내용:</label>
+                                <div class="content-box">
+                                    <span class="homework-content"></span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <label>제출 기한:</label>
+                                <span class="due-date"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page right page1"></div>
+                    <div class="page right page2"></div>
+                    <div class="page right page3">
+                        <form id="editForm" th:action="@{/homework/submit/edit}" th:object="${hwSubmitForm}" method="post">
+                            <div class="homework-submission">
+                                <div class="detail-item">
+                                    <label>진도:</label>
+                                    <span class="currentLevel"></span> 레벨
+                                </div>
+                                <input type="hidden" name="homeworkNo" />
+                                <input type="hidden" name="homeworkSubmitNo" />
+                                <input type="hidden" name="sendNo" />
+                                <div class="text-area-container">
+                                    <label for="homeworkContent">숙제 내용:</label>
+                                    <textarea id="homeworkContent" name="homeworkContent" placeholder="숙제 내용을 입력하세요."></textarea>
+                                    <span id="homeworkEditContentError" class="error-message"></span>
+                                </div>
+                                <div class="text-area-container">
+                                    <label for="additionalQuestions">추가 질의 사항:</label>
+                                    <textarea id="additionalQuestions" name="additionalQuestions" placeholder="추가 질의 사항을 입력하세요."></textarea>
+                                </div>
+                                <div class="submit-button-container">
+                                    <button type="submit" class="btn btn-warning text-white mx-2">수정</button>
+                                    <button type="button" id="deleteBtn" class="btn btn-outline-secondary mx-2">삭제</button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="successModal" class="naod-modal celebration-modal">
+                <div class="bs-modal-header">
+                    <h5 class="bs-modal-title">🎉 제출 성공! 🎉</h5>
+                </div>
+                <div class="groupMessage mb-3 text-center">
+                    <img src="/css/homework/goodanIcon.png" alt="Group Icon" class="celebration-icon mb-2">
+                    <div class="celebration-text">나도 구단이 될 수 있다!!</div>
+                </div>
+            </div>
+
+            <div id="hw-backdrop"></div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+            <script src="https://tistory4.daumcdn.net/tistory/3134841/skin/images/confetti_v2.js"></script>
+            <script layout:fragment="script">
+                function reAction(){
+                console.log('폭죽 불붙음');
+                 $("#startButton").trigger("click");
+
+                 setTimeout(function(){
+                 $("#stopButton").trigger("click");
+                 }, 5000);
+                }
+
+                let homeworkCurrentPage = 1;
+                const homeworkRowsPerPage = 5;
+
+                function homeworkGetTotalRowCount() {
+                    return $("#homeworkTable tbody tr:not(.filtered-out)").length;
+                }
+
+                function homeworkGetVisibleRowCount() {
+                    return $("#homeworkTable tbody tr:visible").length;
+                }
+
+                function homeworkUpdatePagination() {
+                    let totalRows = homeworkGetTotalRowCount();
+                    homeworkCurrentPage = 1;
+                    homeworkUpdateTableDisplay();
+                }
+
+                function homeworkSearchTable() {
+                    let input, filter, table, tr, td, i, j, found;
+                    input = document.getElementById("homeworkSearchInput");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementById("homeworkTable");
+                    tr = table.getElementsByTagName("tr");
+                    let foundCount = 0;
+
+                    $("#noSearchResult").remove();
+
+                    for (i = 1; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td");
+                        found = false;
+                        for (j = 0; j < td.length; j++) {
+                            if (td[j]) {
+                                if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found) {
+                            $(tr[i]).removeClass("filtered-out");
+                            foundCount++;
+                        } else {
+                            $(tr[i]).addClass("filtered-out");
+                        }
+                    }
+
+                    if (foundCount == 0) {
+                        $("#homeworkTable").hide();
+                        $("#homeworkPagination").hide();
+                        $("#noResult").css("display", "block"); // 디스플레이를 블럭으로
+                    } else {
+                        $("#homeworkTable").show();
+                        $("#homeworkPagination").show();
+                        $("#noResult").css("display", "none"); // 디스플레이를 넌으로
+                    }
+
+
+                    homeworkUpdatePagination();
+                }
+
+                function homeworkRenderPagination() {
+                    let totalRows = homeworkGetTotalRowCount();
+                    let totalPages = Math.ceil(totalRows / homeworkRowsPerPage);
+
+                    let startPage = homeworkCurrentPage - 2;
+                    let endPage = homeworkCurrentPage + 2;
+
+                    if (startPage < 1) {
+                        endPage -= (startPage - 1);
+                        startPage = 1;
+                    }
+                    if (endPage > totalPages) {
+                        startPage -= (endPage - totalPages);
+                        endPage = totalPages;
+                    }
+                    startPage = Math.max(1, startPage);
+
+                    let paginationHtml = '';
+                    for (let i = startPage; i <= endPage; i++) {
+
+
+                     paginationHtml += `<li class="page-item ${i === homeworkCurrentPage ? 'active' : ''}"><a class="page-link hw-page-number" data-page="${i}" href="#">${i}</a></li>`;
+                    }
+
+                    $("#homeworkPageNumbers").html(paginationHtml);
+                    $("#homeworkPrevBtn").prop('disabled', homeworkCurrentPage === 1);
+                    $("#homeworkNextBtn").prop('disabled', homeworkCurrentPage === totalPages);
+                }
+
+                function homeworkUpdateTableDisplay() {
+                    let startRow = (homeworkCurrentPage - 1) * homeworkRowsPerPage;
+                    let endRow = startRow + homeworkRowsPerPage - 1;
+
+                    $("#homeworkTable tbody tr").each(function(index, row) {
+                        if (index === 0) {
+                            $(row).show();
+                        } else if ($(row).hasClass("filtered-out")) {
+                            $(row).hide();
+                        } else if (index > startRow && index <= endRow) {
+                            $(row).show();
+                        } else {
+                            $(row).hide();
+                        }
+                    });
+
+                    homeworkRenderPagination();
+                }
+
+                function homeworkPrevPage() {
+                    if(homeworkCurrentPage > 1) {
+                        homeworkCurrentPage--;
+                        homeworkUpdateTableDisplay();
+                    }
+                }
+
+                function homeworkNextPage() {
+                    let totalPages = Math.ceil(homeworkGetTotalRowCount() / homeworkRowsPerPage);
+                    if(homeworkCurrentPage < totalPages) {
+                        homeworkCurrentPage++;
+                        homeworkUpdateTableDisplay();
+                    }
+                }
+
+                $(document).ready(function() {
+                    homeworkUpdateTableDisplay();
+
+                    $("#homeworkPageNumbers").on("click", ".hw-page-number", function() {
+                        homeworkCurrentPage = $(this).data('page');
+                        homeworkUpdateTableDisplay();
+                    });
+
+                    $("#homeworkPrevBtn").click(function() {
+                        if (homeworkCurrentPage > 1) {
+                            homeworkCurrentPage--;
+                            homeworkUpdateTableDisplay();
+                        }
+                    });
+
+                    $("#homeworkNextBtn").click(function() {
+                        let totalRows = homeworkGetTotalRowCount();
+                        if (homeworkCurrentPage < Math.ceil(totalRows / homeworkRowsPerPage)) {
+                            homeworkCurrentPage++;
+                            homeworkUpdateTableDisplay();
+                        }
+                    });
+
+                    homeworkUpdateTableDisplay();
+                });
+
+                function formatDate(inputDate) {
+                    const parts = inputDate.split("T")[0].split("-");
+                    return parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일";
+                }
+              function loadForm(element) {
+                  let hwSendNo = element.getAttribute("data-send-no");
+                  let isSubmitted = element.classList.contains("nado-table-success");
+
+                  fetch(`/homework/submit/detail/${hwSendNo}`)
+                      .then(response => response.json())
+                      .then(data => {
+                          // 숙제 내용 채우기
+                          document.querySelector(".edit-form input[name='homeworkNo']").value = data.homeworkNo;
+                          document.querySelector(".edit-form input[name='sendNo']").value = data.sendNo;
+                          document.querySelector(".submit-form input[name='homeworkNo']").value = data.homeworkNo;
+                          document.querySelector(".submit-form input[name='sendNo']").value = data.sendNo;
+
+                          document.querySelector(".submit-form span.homework-title").textContent = data.homeworkTitle;
+                          document.querySelector(".submit-form span.homework-content").innerHTML = data.homeworkContent.replace(/\n/g, '<br>');
+                          document.querySelector(".submit-form span.member-name").textContent = data.memberName;
+                          document.querySelector(".submit-form span.game-title").textContent = data.gameTitle;
+                          document.querySelector(".submit-form span.my-progress").textContent = data.progress;
+                          document.querySelector(".submit-form span.due-date").textContent = formatDate(data.dueDate);
+                          document.querySelector(".edit-form span.homework-title").textContent = data.homeworkTitle;
+                          document.querySelector(".edit-form span.homework-content").innerHTML = data.homeworkContent.replace(/\n/g, '<br>');
+                          document.querySelector(".edit-form span.member-name").textContent = data.memberName;
+                          document.querySelector(".edit-form span.game-title").textContent = data.gameTitle;
+                          document.querySelector(".edit-form span.my-progress").textContent = data.progress;
+                          document.querySelector(".edit-form span.due-date").textContent = formatDate(data.dueDate);
+
+                          document.querySelector(".edit-form span.currentLevel").textContent = data.progress;
+                          document.querySelector(".submit-form span.currentLevel").textContent = data.progress;
+
+                          if (isSubmitted) {
+                              // 제출 내용으로 수정 폼 채우기
+                              document.querySelector(".edit-form textarea[name='homeworkContent']").value = data.content;
+                              document.querySelector(".edit-form textarea[name='additionalQuestions']").value = data.additionalQuestion;
+                              document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = data.homeworkSubmitNo;
+                              $("#deleteBtn").data('submit-id', data.homeworkSubmitNo);
+                              $("#firstBottom").hide();
+                              document.querySelector(".submit-form").style.display = 'none';
+                            $(".edit-form").addClass('animate__animated animate__zoomIn').show();
+                            // 애니메이션 효과 종료 후 클래스 제거
+                            $(".edit-form").one('animationend', () => {
+                                $(".edit-form").removeClass('animate__animated animate__zoomIn');
+                            });
+                          } else {
+                              // 제출 폼 초기화 및 표시
+                              $("#firstBottom").hide();
+                              document.querySelector(".submit-form textarea[name='homeworkContent']").value = '';
+                              document.querySelector(".submit-form textarea[name='additionalQuestions']").value = '';
+                              document.querySelector(".edit-form input[name='homeworkSubmitNo']").value = '';
+                              document.querySelector(".edit-form").style.display = 'none';
+                            $(".submit-form").addClass('animate__animated animate__zoomIn').show();
+                            // 애니메이션 효과 종료 후 클래스 제거
+                            $(".submit-form").one('animationend', () => {
+                                $(".submit-form").removeClass('animate__animated animate__zoomIn');
+                            });
+                          }
+                      })
+                      .catch(error => {
+                          console.error("There was a problem with the fetch operation:", error.message);
+                      });
+
+
+              }
+
+              $(document).ready(function() {
+                    $("#hw-backdrop").click(function() {
+                        location.reload(); // 페이지 리로드
+                    });
+
+                   $('.editIndex').click(function() {
+                        $('.edit-form').addClass('animate__animated animate__zoomOut');
+
+                        $(".edit-form").one('animationend', function() {
+                            $('.edit-form').hide().removeClass('animate__animated animate__zoomOut');
+                            $("#firstBottom").show();
+                        });
+                   });
+
+                   $('.submitIndex').click(function() {
+                        $('.submit-form').addClass('animate__animated animate__zoomOut');
+
+                        $(".submit-form").one('animationend', function() {
+                            $('.submit-form').hide().removeClass('animate__animated animate__zoomOut');
+                            $("#firstBottom").show();
+                        });
+                    });
+                });
+
+
+              // addForm 제출
+              $("#addForm").submit(function(e) {
+                  e.preventDefault();
+
+                  $(".error-message").text("");  // 초기화
+
+                  $.ajax({
+                      url: $(this).attr("action"),
+                      type: "POST",
+                      data: $(this).serialize(),
+                      success: function(response) {
+                          $("#successModal,#hw-backdrop").show(); // 모달 보이기
+                          reAction(); // 꽃가루 효과
+                      },
+                      error: function(xhr) {
+                          let errors = xhr.responseJSON;
+
+                          // 에러 메시지 출력
+                          if (errors.homeworkContent) {
+                              $("#homeworkContentError").text(errors.homeworkContent);
+                          }
+                      }
+                  });
+              });
+
+              // editForm 제출
+              $("#editForm").submit(function(e) {
+                  e.preventDefault();
+
+                  $(".error-message").text("");  // 초기화
+                  reAction();
+
+                  $.ajax({
+                      url: $(this).attr("action"),
+                      type: "POST",
+                      data: $(this).serialize(),
+                      success: function(response) {
+                          reAction(); // 꽃가루 효과
+                          $("#successModal,#hw-backdrop").show(); // 모달 보이기
+                      },
+                      error: function(xhr) {
+                          let errors = xhr.responseJSON;
+
+                          // 에러 메시지 출력
+                          if (errors.homeworkContent) {
+                              $("#homeworkEditContentError").text(errors.homeworkContent);
+                          }
+                      }
+                  });
+              });
+
+                //삭제 버튼 클릭
+                $("#deleteBtn").click(function(){
+                    let submitId = $(this).data('submit-id');
+
+                  if(submitId && confirm("제출한 내용을 삭제하시겠습니까?")) {
+                    $.ajax({
+                        url: `/homework/submit/delete/${submitId}`,
+                        type: 'DELETE',
+                        success: function(response) {
+                            alert("숙제가 삭제되었습니다")
+                            location.reload();
+                            },
+                        error: function(xhr, status, error) {
+                            alert('삭제 실패: ' + xhr.responseText);
+                            }
+                        });
+                    } else {
+                        alert('숙제 제출 ID가 없습니다. 다시 시도해주세요.');
+                    }
+                });
+            </script>
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+
+
+</html>

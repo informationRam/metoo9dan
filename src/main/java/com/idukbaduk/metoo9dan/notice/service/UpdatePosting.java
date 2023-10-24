@@ -1,6 +1,5 @@
 package com.idukbaduk.metoo9dan.notice.service;
 
-import com.idukbaduk.metoo9dan.notice.controller.NoticeController;
 import lombok.RequiredArgsConstructor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

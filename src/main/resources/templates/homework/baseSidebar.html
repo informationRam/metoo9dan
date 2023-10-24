@@ -1,0 +1,11 @@
+<!--이 파일 내용을 복사하여 templates/본인기능폴더 하위에 추가하여 본인 구현 페이지에 맞게 사이드바 내용을 작업해주세요-->
+<div th:fragment="sidebar" class="col-2"> <!--class에서 col-2은 빼면 안됨-->
+    사이드바
+    <ul>
+        <li><a href="/homework/add" th:href="@{/homework/add}">숙제 생성</a></li>
+        <li><a href="/homework/send" th:href="@{/homework/send}">숙제 전송</a></li>
+        <li><a href="/homework/evaluate" th:href="@{/homework/evaluate}">숙제 평가</a></li>
+        <li><a href="/homework/submit" th:href="@{/homework/submit}">숙제 제출</a></li>
+        <li><a href="/homework/submit/past" th:href="@{/homework/submit/past}">숙제 제출</a></li>
+    </ul>
+</div>

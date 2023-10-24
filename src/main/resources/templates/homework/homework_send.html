@@ -1,0 +1,502 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/homework/homework_send.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/homework/educatorBar::sidebar}" ></div>
+
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <form action="/homework/send" method="post" class="mt-5">
+                <div class="px-3">
+                <div class="upperSection">
+                    <div class="nado-card">
+                        <div class="">
+                            <div class="nado-card-header">
+                            <h2>숙제 전송</h2>
+                            </div>
+                            <div class="nado-card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <label for="homeworkDropdown" class="form-label me-3">숙제명:</label>
+                                <select id="homeworkDropdown" onchange="filterHomeworks()" class="form-select" style="width:20%;">
+                                    <option value="All" selected="selected">All</option>
+                                    <option th:each="title : ${distinctHomeworkTitles}" th:value="${title}" th:text="${title}"></option>
+                                </select>
+                            </div>
+
+                            <div class="table-responsive">
+                                    <table class="nano-table nano-table-hover" id="homeworkTable">
+                                        <thead class="nano-thead">
+                                        <tr>
+                                            <th></th>
+                                            <th>숙제명</th>
+                                            <th>숙제 내용</th>
+                                            <th>게임 컨텐츠명</th>
+                                            <th>진도</th>
+                                            <th>제출 기한</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="nado-tbody" id="homeworkTableBody">
+                                        <tr th:each="hw,start : ${homeworks}" th:data-hw-id="${hw.homeworkNo}">
+                                            <td><input type="checkbox" th:value="${hw.homeworkNo}" th:data-title="${hw.homeworkTitle}" /></td>
+                                            <td th:text="${hw.homeworkTitle}"></td>
+                                            <td th:text="${hw.homeworkContentPreview}"></td>
+                                            <td th:text="${hw.gameTitle}"></td>
+                                            <td th:text="${hw.progress} + '레벨'"></td>
+                                            <td th:text="${#dates.format(hw.dueDate, 'yyyy/MM/dd')}"></td>
+                                        </tr>
+                                        <!-- 목록이 없을 때의 메시지 -->
+                                        <tr th:if="${homeworks == null or homeworks.size() == 0}">
+                                            <td colspan="6">
+                                                <div id="noHomework" class="groupMessage mb-3 text-center">
+                                                    <img src="/css/homework/noHwIcon.png" alt="No data Icon" class="mb-2">
+                                                    <div>숙제 목록이 없습니다</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                            <div id="paginationContainer" class="d-flex justify-content-center mt-5">
+                                <!-- 페이지네이션 버튼들이 여기 들어갑니다. -->
+                            </div>
+                            </div>
+                            <div class="curveEffect text-center mt-4">
+                                <i class="bi bi-chevron-double-down center-icon fs-3 text-muted"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lowerSection bg-light p-4 rounded">
+                    <!-- Group Students -->
+                    <h3 class="mb-3">학습 그룹</h3>
+
+
+                    <div class="d-flex align-items-left mb-3" style="gap: 10px;">
+                        <div class="dropdown" style="width:20%;"> <!-- 드롭다운의 길이를 조절하기 위해 flex 값을 조정 -->
+                            <select id="StudyGroupDropdown" onchange="fetchStudentsByGroup()" class="form-select">
+                                <option value="none" selected="selected"> --그룹을 선택하세요-- </option>
+                                <option th:each="sg : ${studyGroups}" th:value="${sg.groupNo}" th:text="${sg.groupName}"></option>
+                            </select>
+                        </div>
+                        <!-- 버튼 -->
+                        <button id="selectAllButton" type="button" class="btn btn btn-outline-warning" onclick="toggleAllCheckboxes()">전체 선택/해제</button>
+                    </div>
+
+
+                        <!-- Notification messages -->
+                    <div th:if="${successMessage != null}" class="alert alert-success mb-3 alert-dismissible fade show" role="alert">
+                        <strong>숙제가 성공적으로 전송되었습니다</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <div th:if="${skippedEntries != null and not #lists.isEmpty(skippedEntries)}" class="alert alert-warning mt-2 alert-dismissible fade show" role="alert">
+                        <strong>주의!</strong> 전송 내역이 존재하는 경우에는 중복 전송되지 않았습니다.
+                        <ul>
+                            <!-- Each skipped combination -->
+                            <li th:each="entry : ${skippedEntries}" th:text="${entry}"></li>
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <div id="groupMessage" class="groupMessage mb-3 text-center">
+                        <img src="/css/homework/groupIcon.png" alt="Group Icon" class="mb-2">
+                        <div id="groupMessageText"></div>
+                    </div>
+
+                    <!-- Responsive table -->
+                    <div class="table-responsive">
+                        <div class="nado-table-container" style="display:none;" id="tableContainer">
+                            <table class="nano-table nano-table-hover">
+                                <thead class="nano-thead">
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Tel</th>
+                                    <th>Current Level</th>
+                                    <!-- Second student info headers -->
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Tel</th>
+                                    <th>Current Level</th>
+                                </tr>
+                                </thead>
+                                <tbody id="studyGroupMembersBody" class="nado-tbody">
+                                <!-- Rows created by Ajax -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+                    <input type="hidden" id="hiddenSelectedHomeworks" name="selectedHomeworks" value="">
+                    <input type="hidden" id="hiddenSelectedMembers" name="selectedMembers" value="">
+
+                    <!-- Styled button -->
+                    <div class="d-flex justify-content-center mt-2">
+                        <button id="submitButton" type="button" onclick="validateAndSubmitForm()" class="btn-nado-primary" style="display:none;">숙제 전송</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+            <!-- 통합 모달창 -->
+            <div id="hw-homeworkDetailModal" class="naod-modal">
+                <div class="naod-modal-header">
+                <h2 id="modalTitle" class="naod-modal-title"></h2>
+                </div>
+                <div class="naod-modal-body">
+                    <div class="row">
+                        <div class="naod-title">내용</div>
+                        <div class="naod-content"><p id="modalContent"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">게임 콘텐츠명</div>
+                        <div class="naod-content"><p id="modalGameTitle"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">진도</div>
+                        <div class="naod-content"><p id="modalProgress"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">기한</div>
+                        <div class="naod-content"><p id="modalDueDate"></p></div>
+                    </div>
+                    <div class="yellow-divider"></div>
+                    <div class="row">
+                        <div class="naod-title">메모</div>
+                        <div class="naod-content"><p id="modalMemo"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">생성일</div>
+                        <div class="naod-content"><p id="modalCreateDate"></p></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <br/>
+                </div>
+            </div>
+
+            <!-- 통합 모달창 끝 -->
+
+            <div id="hw-backdrop"></div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                let currentPage = 1;
+                const rowsPerPage = 5;
+                const maxPageNumbersToShow = 5;
+                let currentSelectedHomeworkTitle = 'ALL';
+
+                //페이지네이션
+                function paginate() {
+                    const rows = document.querySelectorAll('#homeworkTableBody tr');
+
+                    let filteredRowCount = 0;
+                    for (let i = 0; i < rows.length; i++) {
+                        const titleCell = rows[i].querySelector('td:nth-child(2)');
+                        if (currentSelectedHomeworkTitle === 'All' || titleCell.innerText.trim() === currentSelectedHomeworkTitle.trim()) {
+                            filteredRowCount++;
+                        }
+                    }
+
+                    const totalPages = Math.ceil(filteredRowCount / rowsPerPage);
+
+                    let displayedRowCount = 0;
+
+                    for (let i = 0; i < rows.length; i++) {
+                        const titleCell = rows[i].querySelector('td:nth-child(2)');
+
+                        if (currentSelectedHomeworkTitle === 'All' || titleCell.innerText.trim() === currentSelectedHomeworkTitle.trim()) {
+                            if (displayedRowCount >= (currentPage - 1) * rowsPerPage && displayedRowCount < currentPage * rowsPerPage) {
+                                rows[i].style.display = ''; // 해당 행을 표시합니다.
+                            } else {
+                                rows[i].style.display = 'none'; // 해당 행을 숨깁니다.
+                            }
+                            displayedRowCount++;
+                        } else {
+                            rows[i].style.display = 'none'; // 해당 행을 숨깁니다.
+                        }
+                    }
+
+                    drawPaginationButtons(totalPages);
+                }
+
+                function drawPaginationButtons(totalPages) {
+                    const container = document.getElementById('paginationContainer');
+                    container.innerHTML = ''; // Clear previous buttons
+
+                    // Wrap pagination in a ul with class 'pagination'
+                    const ul = document.createElement('ul');
+                    ul.className = 'pagination';
+
+                    // Previous button
+                    const prevLi = document.createElement('li');
+                    const prevBtn = document.createElement('a');
+                    prevLi.appendChild(prevBtn);
+                    prevBtn.innerText = '이전';
+                    prevBtn.href = '#';
+                    prevBtn.onclick = function(e) {
+                        e.preventDefault();
+                        if (currentPage > 1) {
+                            currentPage--;
+                            paginate();
+                        }
+                    };
+                    // If current page is 1, disable the previous button
+                    if (currentPage === 1) {
+                        prevLi.classList.add('disabled');
+                        prevBtn.tabIndex = -1;
+                        prevBtn.setAttribute('aria-disabled', true);
+                    }
+                    prevLi.className = 'page-item';
+                    prevBtn.className = 'page-link';
+                    ul.appendChild(prevLi);
+
+                    // Page numbers
+                    let startPage = Math.max(1, currentPage - Math.floor(maxPageNumbersToShow / 2));
+                    let endPage = Math.min(totalPages, startPage + maxPageNumbersToShow - 1);
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        const li = document.createElement('li');
+                        const btn = document.createElement('a');
+                        li.appendChild(btn);
+                        btn.innerText = i;
+                        btn.href = '#';
+                        btn.onclick = function(e) {
+                            e.preventDefault();
+                            currentPage = i;
+                            paginate();
+                        };
+                        if (i === currentPage) {
+                            li.classList.add('active');
+                            btn.setAttribute('aria-current', 'page');
+                        }
+                        li.className += ' page-item'; // Here, we append the class to not overwrite the 'active' class if it's set.
+                        btn.className = 'page-link';
+                        ul.appendChild(li);
+                    }
+
+                    // Next button
+                    const nextLi = document.createElement('li');
+                    const nextBtn = document.createElement('a');
+                    nextLi.appendChild(nextBtn);
+                    nextBtn.innerText = '다음';
+                    nextBtn.href = '#';
+                    nextBtn.onclick = function(e) {
+                        e.preventDefault();
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            paginate();
+                        }
+                    };
+                    // If current page is the last page, disable the next button
+                    if (currentPage === totalPages) {
+                        nextLi.classList.add('disabled');
+                        nextBtn.tabIndex = -1;
+                        nextBtn.setAttribute('aria-disabled', true);
+                    }
+                    nextLi.className = 'page-item';
+                    nextBtn.className = 'page-link';
+                    ul.appendChild(nextLi);
+
+                    container.appendChild(ul);
+                }
+
+                window.onload = function() {
+                    fetchStudentsByGroup();
+                    filterHomeworks();
+                };
+
+                function filterHomeworks() {
+                    currentSelectedHomeworkTitle = document.getElementById('homeworkDropdown').value;
+                    const rows = document.querySelectorAll('#homeworkTableBody tr');
+                    const checkboxes = document.querySelectorAll('#homeworkTableBody input[type="checkbox"]');
+
+                    checkboxes.forEach(checkbox => checkbox.checked = false);
+
+                    rows.forEach(row => {
+                        const titleCell = row.querySelector('td:nth-child(2)');
+                        if (currentSelectedHomeworkTitle === 'All' || titleCell.innerText.trim() === currentSelectedHomeworkTitle.trim()) {
+                            row.style.display = '';  // 일치하는 행만 보이도록 설정
+                        } else {
+                            row.style.display = 'none';  // 그 외의 행은 숨깁니다
+                        }
+                    });
+
+                    // 현재 페이지를 1로 재설정
+                    currentPage = 1;
+                    paginate();
+                }
+
+
+
+                function fetchStudentsByGroup() {
+                    const groupId = document.getElementById('StudyGroupDropdown').value;
+                    const tableBody = document.getElementById('studyGroupMembersBody');
+                    const table = tableBody.closest('table');
+                    const messageDiv = document.getElementById('groupMessage');
+                    const messageTextDiv = document.getElementById('groupMessageText');
+                    const tableContainer = document.getElementById('tableContainer');
+                    const submitButton = document.getElementById('submitButton');
+
+                    if (groupId === "none") {
+                        table.style.display = 'none'; // 테이블을 숨깁니다.
+                        messageTextDiv.innerText = "학습 그룹을 선택해서 학생을 조회하세요."; // 메시지 표시
+                        messageDiv.style.display = 'block';
+                    } else {
+                        fetch(`/homework/group-students?studyGroupNo=${groupId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                table.style.display = 'none'; // 테이블을 숨깁니다.
+                                tableContainer.style.display = 'none';
+                                messageTextDiv.innerText = "승인된 학생이 없습니다."; // 메시지 표시
+                                messageDiv.style.display = 'block';
+                                submitButton.style.display = 'none';
+                            } else {
+                                table.style.display = ''; // 테이블을 보여줍니다.
+                                tableContainer.style.display = '';
+                                submitButton.style.display = '';
+                                messageDiv.style.display = 'none';
+                                populateTable(data); // 테이블로 표시
+                            }
+                        });
+                    }
+                }
+
+                function populateTable(data) {
+                    const tableBody = document.getElementById('studyGroupMembersBody');
+                    tableBody.innerHTML = '';
+
+                    for (let i = 0; i < data.length; i += 2) {
+                        const row = document.createElement('tr');
+
+                        // 첫 번째 학생 정보
+                        const checkboxCell1 = document.createElement('td');
+                        const checkbox1 = document.createElement('input');
+                        checkbox1.type = 'checkbox';
+                        checkbox1.value = data[i].memberNo;
+                        checkboxCell1.appendChild(checkbox1);
+                        row.appendChild(checkboxCell1);
+
+                        const nameCell1 = document.createElement('td');
+                        nameCell1.innerText = data[i].name;
+                        row.appendChild(nameCell1);
+
+                        const telCell1 = document.createElement('td');
+                        telCell1.innerText = data[i].tel;
+                        row.appendChild(telCell1);
+
+                        const levelCell1 = document.createElement('td');
+                        levelCell1.innerText = data[i].currentLevel;
+                        row.appendChild(levelCell1);
+
+                        // 이 빈 td를 제거합니다.
+                        // const emptyCell1 = document.createElement('td');
+                        // row.appendChild(emptyCell1);
+
+                        if (i + 1 < data.length) {
+                            // 두 번째 학생 정보
+                            const checkboxCell2 = document.createElement('td');
+                            const checkbox2 = document.createElement('input');
+                            checkbox2.type = 'checkbox';
+                            checkbox2.value = data[i + 1].memberNo;
+                            checkboxCell2.appendChild(checkbox2);
+                            row.appendChild(checkboxCell2);
+
+                            const nameCell2 = document.createElement('td');
+                            nameCell2.innerText = data[i + 1].name;
+                            row.appendChild(nameCell2);
+
+                            const telCell2 = document.createElement('td');
+                            telCell2.innerText = data[i + 1].tel;
+                            row.appendChild(telCell2);
+
+                            const levelCell2 = document.createElement('td');
+                            levelCell2.innerText = data[i + 1].currentLevel;
+                            row.appendChild(levelCell2);
+                        } else {
+                            // 두 번째 학생이 없는 경우 해당 열을 비워두기 위해 빈 칸 추가
+                            for (let j = 0; j < 4; j++) {
+                                const emptyCell = document.createElement('td');
+                                row.appendChild(emptyCell);
+                            }
+                        }
+                        tableBody.appendChild(row);
+                    }
+                }
+
+                function validateAndSubmitForm() {
+                    const submitButton = document.getElementById('submitButton');
+
+                    // 버튼을 비활성화
+                    submitButton.disabled = true;
+
+                    const selectedHomeworks = Array.from(document.querySelectorAll('#homeworkTableBody input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+                    const selectedMembers = Array.from(document.querySelectorAll('#studyGroupMembersBody input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+
+                    if (selectedHomeworks.length > 0 && selectedMembers.length > 0) {
+                        // 선택된 값을 숨겨진 필드에 설정
+                        document.getElementById('hiddenSelectedHomeworks').value = selectedHomeworks.join(',');
+                        document.getElementById('hiddenSelectedMembers').value = selectedMembers.join(',');
+
+                        // 조건이 충족되면 폼 제출
+                        document.querySelector('form').submit();
+                    } else {
+                        // 조건을 충족하지 않으면 경고 메시지 표시 및 버튼 다시 활성화
+                        alert("숙제 중에 하나 이상 선택되어야 하며, 학생 중에도 한명 이상 선택되어야 합니다.");
+                        submitButton.disabled = false;
+                    }
+                }
+                function formatDate(inputDate) {
+                    const parts = inputDate.split("T")[0].split("-");
+                    return parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일";
+                }
+                    $(document).ready(function() {
+                        // 더블 클릭 이벤트 핸들러
+                        $("#homeworkTable tr").dblclick(function() {
+                            // 숙제 정보를 가져올 때 사용할 숙제 ID를 얻습니다.
+                            var homeworkId = $(this).data('hw-id');
+
+                            // API를 호출하여 숙제 상세 정보를 불러옵니다. API 엔드포인트 및 데이터 형식을 맞게 수정해야 합니다.
+                            $.get("/homework/detail/" + homeworkId, function(data) {
+                                // 더블 클릭 시 모달에 데이터 세팅
+                                $("#modalTitle").html(data.homeworkTitle.replace(/\n/g, '<br>'));
+                                $("#modalContent").html(data.homeworkContent.replace(/\n/g, '<br>'));
+                                $("#modalProgress").text(data.progress);
+                                $("#modalGameTitle").text(data.gameTitle);
+                                $("#modalMemo").html(data.homeworkMemo.replace(/\n/g, '<br>'));
+                                $("#modalDueDate").text(formatDate(data.dueDate));
+                                $("#modalCreateDate").text(formatDate(data.creationDate));
+
+                                // 모달 표시
+                                $("#hw-homeworkDetailModal, #hw-backdrop").show();
+                            });
+                        });
+
+                        // 모달 및 오버레이 외의 영역 클릭 시 모달 및 오버레이 숨김
+                        $(document).on("click", function(e) {
+                            if ($(e.target).closest("#hw-homeworkDetailModal").length === 0 &&
+                                $(e.target).closest("#homeworkTable").length === 0) {
+                                $("#hw-homeworkDetailModal, #hw-backdrop").hide();
+                            }
+                        });
+                    });
+
+                function toggleAllCheckboxes() {
+                    const checkboxes = document.querySelectorAll('#studyGroupMembersBody input[type="checkbox"]');
+                    const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = !allChecked;
+                    });
+                }
+
+            </script>
+
+
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+</html>

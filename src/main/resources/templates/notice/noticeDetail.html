@@ -6,7 +6,7 @@
         <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
         <div th:replace="~{/notice/utilSidebar::sidebar}" ></div>
 
-        <div  class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div  class="col-10 mt-5"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
             <h2>공지사항</h2>
             <div class="py-2">
@@ -47,7 +47,7 @@
                          th:if="${ notice.member!=null and #authentication.getPrincipal().getUsername()==notice.member.memberId }">
                         <a th:href="@{|/notice/modify/${noticeNo}|}" class="btn btn-sm btn-outline-secondary mx-2">수정</a>
                         <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.noticeNo}|}"
-                           class="btn btn-sm btn-outline-secondary"
+                           class="delete btn btn-sm btn-outline-secondary"
                            th:text="삭제">삭제
                         </a>
                     </div>
@@ -55,10 +55,10 @@
                 <hr/>
                 <!--댓글 등록 폼-->
                 <form id="replyForm" sec:authorize="isAuthenticated()"  th:object="${noticeReplyForm}" th:action="@{|/reply/add/${notice.noticeNo}|}" method="post" class="mb-3">
-                    <div th:replace="~{form_errors::formErrorsFragment}"></div>
+<!--                    <div th:replace="~{form_errors::formErrorsFragment}"></div>-->
                     <div class="d-flex justify-content-around">
                         <textarea th:field="*{content}" rows="2" class="form-control mx-2"></textarea>
-                        <input type="submit" value="댓글 등록" class="btn btn-warning text-white mx-2">
+                        <input type="button" onclick="submitReply()" value="댓글 등록" class="btn btn-warning text-white mx-2">
                     </div>
                 </form>
                 <!--댓글개수 출력-->
@@ -100,6 +100,24 @@
     if([[${msg}]]!=null){
         alert([[${msg}]]);
     }
+
+    //댓글 전송, 유효성검사후 전송
+    function submitReply(){
+        if(checkForm()){
+            document.getElementById("replyForm").submit(); // 폼 제출
+        }
+    }
+
+    //댓글 폼 유효성검사
+    function checkForm(){
+        var content = document.getElementById("content").value;
+        if (content.trim() === "") {
+           alert("내용을 입력하세요.");
+           return false;
+       }
+       return true;
+    }
+
     var $ = jQuery;
 
     function transferData(replyId, content, noticeNo){
@@ -155,12 +173,12 @@
                 btnGroup.remove();
 
                 var modifyFormHtml = '<form id="replyModifyForm" method="put">'+
-                                          '<div class="d-flex justify-content-around">'+
-                                            '<textarea rows="2" class="form-control" autofocus="autofocus"></textarea>'+
-                                            '<input type="button" value="댓글 수정" class="btn btn-sm btn-primary" onclick="transferData(' + replyId + ', document.querySelector(\'#replyNo' + replyId + ' textarea\').value, document.querySelector(\'#noticeHeader input\').value);">'+
-                                            '<input type="button" value="수정 취소" class="btn btn-sm btn-secondary" onclick="replyRollback(' + replyId + ', document.querySelector(\'#noticeHeader input\').value);">'+
-                                          '</div>'+
-                                      '</form>';
+                                      '<div class="d-flex justify-content-around">'+
+                                        '<textarea rows="2" class="form-control" autofocus="autofocus"></textarea>'+
+                                        '<input type="button" value="댓글 수정" class="btn btn-sm btn-warning text-white mx-2" onclick="transferData(' + replyId + ', document.querySelector(\'#replyNo' + replyId + ' textarea\').value, document.querySelector(\'#noticeHeader input\').value);">'+
+                                        '<input type="button" value="수정 취소" class="btn btn-sm btn-secondary" onclick="replyRollback(' + replyId + ', document.querySelector(\'#noticeHeader input\').value);">'+
+                                      '</div>'+
+                                    '</form>';
 
                 document.querySelector('#replyNo'+replyId).insertAdjacentHTML('beforeend', modifyFormHtml);
 

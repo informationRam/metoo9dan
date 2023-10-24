@@ -3,6 +3,7 @@ package com.idukbaduk.metoo9dan.notice.service;
 import com.idukbaduk.metoo9dan.common.entity.Notice;
 import com.idukbaduk.metoo9dan.common.entity.NoticeFiles;
 import com.idukbaduk.metoo9dan.common.entity.NoticeReply;
+import com.idukbaduk.metoo9dan.notice.controller.NoticeController;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeDTO;
 import com.idukbaduk.metoo9dan.notice.dto.NoticeFileDTO;
 import com.idukbaduk.metoo9dan.notice.exception.DataNotFoundException;
@@ -14,6 +15,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +36,13 @@ import java.util.Optional;
 @Service
 public class NoticeService {
 
+    Logger logger = LoggerFactory.getLogger(NoticeController.class);
+
     private final NoticeRepository noticeRepository;
     private final NoticeReplyRepository replyRepository;
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
     //목록조회 - 관리자용
     public Page<Notice> getAdminList(int pageNo, int listSize) {
@@ -174,9 +183,21 @@ public class NoticeService {
         noticeRepository.save(notice);
     }
 
+    //String을 LDT로 변환
+    public static LocalDateTime parseDateTime(String dateTimeString) {
+        return LocalDateTime.parse(dateTimeString, formatter);
+    }
+
+    //repository의 update메소드를 호출
     public void updateStatusForPostDateEqualToday(){
         LocalDateTime today = LocalDateTime.now();
-        noticeRepository.updateStatusForPostDateEqual(today);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = today.format(formatter);
+        LocalDateTime localDateTime = parseDateTime(formattedDateTime);
+        logger.info("updateStatusForPostDateEqualToday() localDateTime: "+localDateTime);
+
+        noticeRepository.updateStatusForPostDateEqual(localDateTime);
     }
+
 
 }

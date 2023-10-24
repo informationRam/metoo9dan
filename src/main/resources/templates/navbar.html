@@ -56,9 +56,7 @@
                                         <li><a class="dropdown-item" th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
                                         <li><a class="dropdown-item" th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
                                         <li><a class="dropdown-item" th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
-                                        <li>
-                                            <a class="dropdown-item" th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a>
-                                        </li>
+                                        <li><a class="dropdown-item" th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a></li>
                                         <li><a class="dropdown-item" th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
                                         <li><a class="dropdown-item" th:href="@{/payments/showPayments}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
                                         <li><a class="dropdown-item" th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
