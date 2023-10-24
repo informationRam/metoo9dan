@@ -1,6 +1,7 @@
 package com.idukbaduk.metoo9dan.member.security;
 
 
+import com.idukbaduk.metoo9dan.member.security.handler.CustomAuthenticationSuccessHandler;
 import com.idukbaduk.metoo9dan.member.service.UserSecurityService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import java.io.IOException;
 public class SecurityConfig {
 
     private final UserSecurityService userDetailsService;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     //UserSecurityService와 PasswordEncoder가 자동으로 설정
     @Bean
@@ -70,8 +72,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/student/**").hasAuthority("STUDENT")
                 .requestMatchers( "/admin/**").hasAuthority("ADMIN")
-                .requestMatchers( "/edu/**").hasAnyAuthority("EDUCATOR","ADMIN")
-                //  auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
+                .requestMatchers( "/member/login").permitAll()
                 .anyRequest().permitAll()
                 );
         http
@@ -84,41 +85,20 @@ public class SecurityConfig {
         http.
              formLogin()
                   .loginPage("/member/login")
-                  .failureUrl("/login?error")// 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
+                  .failureUrl("/")// 사용자 정의 로그인 페이지 =>인증받지 않아도 접근 가능하게 해야함
                   .permitAll()                              //인증받지 않아도 모두 접근가능:없으면 무한루프생김
-                  .failureUrl("/member/login")              // 로그인 실패 후 이동 페이지
                   .usernameParameter("memberId")                   // 아이디 파라미터명 설정
                   .passwordParameter("password")                      // 패스워드 파라미터명 설정
                  // .defaultSuccessUrl("/")                   // 로그인 성공 후 이동 페이지 :/loginSuccess
-                .successHandler(new AuthenticationSuccessHandler() {    // 로그인 성공 후 핸들러
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        System.out.println("authentication" + authentication.getName());  //인증성공한 사용자 이름 출력
-                        response.sendRedirect("/");     //성공 후 root 페이지로 이동
-                    }
-                })
-                .failureHandler(new AuthenticationFailureHandler() {
-                    @Override
-                    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                        System.out.println("exception" + exception.getMessage());  //인증 실패 메세지 출력(콘솔)
-                        response.sendRedirect("/member/login");  // 로그인 실패 후 이동 페이지
-                    }
-                });
+                .successHandler(customAuthenticationSuccessHandler);
+
 
         http
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/");
 
-//        // RememberMe
-//        .and()
-//                .rememberMe()
-//                .rememberMeParameter("remember")
-//                .tokenValiditySeconds(3600) //1시간
-//                .userDetailsService(userDetailsService); //Autowired
-
-
-        return http.build();
+       return http.build();
 
     }
 
