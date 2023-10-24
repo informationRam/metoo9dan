@@ -8,11 +8,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
+        <div th:replace="~{/homework/educatorBar::sidebar}" ></div>
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <div class="px-3 row">
+            <div class="px-3 row mt-5">
                 <div class="upperSection">
                     <div class="nado-card">
                         <div class="nado-card-header">
@@ -33,8 +33,8 @@
                                     <div style="width:20%;">
                                         <div class="dropdown">
                                             <select id="sortOrder" class="form-select">
-                                                <option value="asc">오름차순</option>
                                                 <option value="desc">내림차순</option>
+                                                <option value="asc">오름차순</option>
                                             </select>
                                         </div>
                                     </div>
@@ -101,6 +101,8 @@
                         <div class="nado-center-contain">
                         <div id="eval-pagination" class="pagination"></div>
                         </div>
+                        <br/>
+                        <br/>
                         <div class="nado-center-contain">
                         <button type="submit" class="btn-nado-primary">평가 저장</button>
                         </div>
@@ -119,11 +121,10 @@
                     console.log("제목 드롭다운 선택");
                         loadTable(1); // 선택 후 첫 페이지 로드
                     });
-
                     // 정렬 이벤트
                     $("#sortOrder").on('change', function() {
-                    console.log("정렬 드롭다운 선택");
-                        loadTable(1);
+                    var selectedValue = $(this).val();
+                    loadTable(1,selectedValue); // 선택 후 첫 페이지 로드
                     });
 
                     // 페이지네이션 클릭 이벤트
@@ -135,7 +136,7 @@
                 });
 
                 // 상위 테이블 로드
-                function loadTable(page = 1) {
+                function loadTable(page = 1, isDesc = 'desc') {
                     let title = $("#titleDropdown").val();
                     let sortOrder = $("#sortOrder").val();
                     $.ajax({
@@ -148,12 +149,12 @@
                         },
                         success: function(response) {
                             // 결과 테이블 갱신
-                            let tableContent = '<thead class="nano-thead"><tr><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody class="nado-tbody">';
+                            let tableContent = '<thead class="nano-thead"><tr><th>No</th><th>제목</th><th>내용</th><th>진도</th><th>제출기한</th><th>전송일자</th></tr></thead><tbody class="nado-tbody">';
                             if (response.content.length === 0) {
                             // 데이터가 없을 때
                             tableContent += `
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <div id="noHomework" class="groupMessage mb-3 text-center">
                                         <img src="/css/homework/noHwIcon.png" alt="No data Icon" class="mb-2">
                                         <div>전송한 숙제가 없습니다</div>
@@ -161,19 +162,35 @@
                                 </td>
                             </tr>`;
                         } else {
+                            // 카운트 변수 초기화
+                            let count;
+                            if (isDesc === 'asc') {
+                                count = (page - 1) * 5 + 1;  // 현재 페이지의 첫 번째 항목 번호
+                            } else {
+                                count = response.totalElements - (page - 1) * 5;  // 현재 페이지의 첫 번째 항목 번호
+                            }
+
                             // 데이터가 있을 때
                             response.content.forEach(item => {
-                            let formattedDueDate = moment(item.dueDate).format('YYYY/MM/DD');
-                            let formattedSendDate = moment(item.sendDate).format('YYYY/MM/DD HH:mm:ss');
+                                let formattedDueDate = moment(item.dueDate).format('YYYY/MM/DD');
+                                let formattedSendDate = moment(item.sendDate).format('YYYY/MM/DD HH:mm:ss');
 
                                 tableContent += `
                                 <tr data-hw-id="${item.homeworkNo}" data-send-date="${item.sendDate}">
+                                    <td>${count}</td>
                                     <td>${item.homeworkTitle}</td>
                                     <td>${item.homeworkContentPreview}</td>
                                     <td>${item.currentLevel}</td>
                                     <td>${formattedDueDate}</td>
                                     <td>${formattedSendDate}</td>
                                 </tr>`;
+
+                                // 카운트 조정 (오름차순이면 증가, 내림차순이면 감소)
+                                if (isDesc === 'asc') {
+                                    count++;
+                                } else {
+                                    count--;
+                                }
                             });
                         }
                             tableContent += '</tbody>';
@@ -238,7 +255,7 @@
                                         labels: ['제출', '미제출'],
                                         datasets: [{
                                             data: [submitPercent, 100 - submitPercent],
-                                            backgroundColor: ['#4CAF50', '#FFC107'],
+                                            backgroundColor: ['#4CAF50', '#BDBDBD'],
                                         }]
                                     },
                                     options: {
@@ -266,7 +283,7 @@
                                             labels: ['우수', '보통', '미흡', '평가X'],
                                             datasets: [{
                                                 data: evalPer,  // 이미 백분율로 변환된 데이터 사용
-                                                backgroundColor: ['#4CAF50', '#8BC34A', '#FFC107', '#FF5722'],
+                                                backgroundColor: ['#4CAF50', '#8BC34A', '#FFC107', '#BDBDBD'],
                                             }]
                                         },
                                         options: {

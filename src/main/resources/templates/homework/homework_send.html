@@ -5,10 +5,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
     <div class="row">
         <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/homework/baseSidebar::sidebar}" ></div>
+        <div th:replace="~{/homework/educatorBar::sidebar}" ></div>
 
-        <div class="col-10" style="border: 1px solid black; padding:0px;"> <!--class에서 col-10은 빼면 안됨-->
-            <form action="/homework/send" method="post">
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <form action="/homework/send" method="post" class="mt-5">
                 <div class="px-3">
                 <div class="upperSection">
                     <div class="nado-card">
@@ -144,15 +144,34 @@
             <!-- 통합 모달창 -->
             <div id="hw-homeworkDetailModal" class="naod-modal">
                 <div class="naod-modal-header">
-                <h2 id="modalTitle"></h2>
+                <h2 id="modalTitle" class="naod-modal-title"></h2>
                 </div>
                 <div class="naod-modal-body">
-                내용<p id="modalContent"></p>
-                게임 컨텐츠<p id="modalGameTitle"></p>
-                진도<p id="modalProgress"></p>
-                메모<p id="modalMemo"></p>
-                기한<p id="modalDueDate"></p>
-                생성일<p id="modalCreateDate"></p>
+                    <div class="row">
+                        <div class="naod-title">내용</div>
+                        <div class="naod-content"><p id="modalContent"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">게임 콘텐츠명</div>
+                        <div class="naod-content"><p id="modalGameTitle"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">진도</div>
+                        <div class="naod-content"><p id="modalProgress"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">기한</div>
+                        <div class="naod-content"><p id="modalDueDate"></p></div>
+                    </div>
+                    <div class="yellow-divider"></div>
+                    <div class="row">
+                        <div class="naod-title">메모</div>
+                        <div class="naod-content"><p id="modalMemo"></p></div>
+                    </div>
+                    <div class="row">
+                        <div class="naod-title">생성일</div>
+                        <div class="naod-content"><p id="modalCreateDate"></p></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <br/>
@@ -430,7 +449,10 @@
                         submitButton.disabled = false;
                     }
                 }
-
+                function formatDate(inputDate) {
+                    const parts = inputDate.split("T")[0].split("-");
+                    return parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일";
+                }
                     $(document).ready(function() {
                         // 더블 클릭 이벤트 핸들러
                         $("#homeworkTable tr").dblclick(function() {
@@ -440,13 +462,13 @@
                             // API를 호출하여 숙제 상세 정보를 불러옵니다. API 엔드포인트 및 데이터 형식을 맞게 수정해야 합니다.
                             $.get("/homework/detail/" + homeworkId, function(data) {
                                 // 더블 클릭 시 모달에 데이터 세팅
-                                $("#modalTitle").html(data.homeworkTitle);
-                                $("#modalContent").html(data.homeworkContent);
+                                $("#modalTitle").html(data.homeworkTitle.replace(/\n/g, '<br>'));
+                                $("#modalContent").html(data.homeworkContent.replace(/\n/g, '<br>'));
                                 $("#modalProgress").text(data.progress);
                                 $("#modalGameTitle").text(data.gameTitle);
-                                $("#modalMemo").html(data.homeworkMemo);
-                                $("#modalDueDate").text(data.dueDate);
-                                $("#modalCreateDate").text(data.creationDate);
+                                $("#modalMemo").html(data.homeworkMemo.replace(/\n/g, '<br>'));
+                                $("#modalDueDate").text(formatDate(data.dueDate));
+                                $("#modalCreateDate").text(formatDate(data.creationDate));
 
                                 // 모달 표시
                                 $("#hw-homeworkDetailModal, #hw-backdrop").show();
