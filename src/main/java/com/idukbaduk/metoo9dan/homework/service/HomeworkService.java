@@ -117,8 +117,6 @@ public class HomeworkService {
     public HomeworkDTO convertToDTO(Homeworks homework) {
         HomeworkDTO dto = new HomeworkDTO(homework);
         List<HomeworkSend> sentHomeworks = homeworkSendRepository.findByHomeworks(homework);
-        System.out.println("숙제 전송 내역"+sentHomeworks);
-        System.out.println("참거짓"+!sentHomeworks.isEmpty());
         dto.setSent(!sentHomeworks.isEmpty());
         System.out.println(dto.isSent());
         return dto;
@@ -383,4 +381,22 @@ public class HomeworkService {
         //return homeworkSendRepository.findByHomeworks_HomeworkNoAndSendDate(homeworkNo,sendDate);
         return homeworkSendRepository.findByHomeworks_GameTitleAndMember_MemberIdAndHomeworks_DueDateBefore(gameTitle, memberId, LocalDateTime.now());
     }
+
+    public List<HomeworkSubmit> findSubmitsByMemberId(String name) {
+        List<HomeworkSubmit> homeworkSubmits =homeworkSubmitRepository.findByMember_MemberId(name);
+        return homeworkSubmits;
+    }
+
+    public List<HwSendSubmitDTO> toSubmitDTOWithSubmits(List<HomeworkSubmit> homeworkSubmitList) {
+        List<HwSendSubmitDTO> submitDTO = new ArrayList<>();
+        for (HomeworkSubmit hs : homeworkSubmitList) {
+            Optional<HomeworkSend> optionalHomeworkSend =homeworkSendRepository.findById(hs.getHomeworkSend().getSendNo());
+            if(optionalHomeworkSend.isPresent()){
+                HwSendSubmitDTO HwSendSubmitDTO =new HwSendSubmitDTO(optionalHomeworkSend.get(),hs);
+                submitDTO.add(HwSendSubmitDTO);
+            }
+        }
+        return submitDTO;
+    }
+
 }
