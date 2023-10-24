@@ -7,6 +7,7 @@ import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.member.dto.EducatorInfoDTO;
 import com.idukbaduk.metoo9dan.member.dto.MemberDTO;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
+import com.idukbaduk.metoo9dan.member.validation.LoginValidation;
 import com.idukbaduk.metoo9dan.member.validation.UserCreateForm;
 import com.idukbaduk.metoo9dan.studyGroup.repository.GroupStudentsRepository;
 import jakarta.validation.Valid;
@@ -65,11 +66,8 @@ public class memberController {
         } else {
             return ResponseEntity.ok("해당 이메일로 가입한 사용자가 없습니다.");
         }
+
     }
-
-
-
-
     //로그인 & 회원가입 폼 화면 보여주기
     @GetMapping("/login")
     public String login(Model model, UserCreateForm userCreateForm) {
