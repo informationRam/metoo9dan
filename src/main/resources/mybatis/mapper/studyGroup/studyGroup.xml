@@ -378,7 +378,7 @@
 
     <!--학습그룹명&그룹명으로 조회(학습 그룹 신청 리스트)-->
     <select id="SelectGroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
                  (SELECT COUNT(member_no)
                      FROM baduk.group_students gs
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
