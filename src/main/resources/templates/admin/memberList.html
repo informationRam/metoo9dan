@@ -1,221 +1,223 @@
 <!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
-<!-- Bootstrap 5 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- 약관내용 스타일 적용 -->
+<div th:replace="~{/notice/manageSidebar::sidebar}"></div>
+    <!-- 약관내용 스타일 적용 -->
 <link rel="stylesheet" type="text/css" th:href="@{/css/member/memberList.css}">
     <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/common/baseSidebar::sidebar}" ></div>
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다!  회원관리게시판 시작-->
             <div class="container mt-5">
-                <h1>회원 관리 게시판</h1>
+                <h1><strong>회원 관리 게시판</strong></h1>
 
                 <div class="container mt-5">
                     <!-- 검색 조건 영역 -->
-                    <div class="search-container p-3 border border-light rounded">
-                        <form id="searchForm" class="row gy-3">
-                            <!-- 1번째 row: 가입일 -->
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label for="startDate" class="form-label">가입일</label>
-                                    <div class="input-group">
-                                        <input type="date" id="startDate" class="form-control">
-                                        <span class="input-group-text">~</span>
-                                        <input type="date" id="endDate" class="form-control">
+
+                        <div class="search-container p-3 border border-light rounded">
+                            <div class="inner-board">
+                                <form id="searchForm" class="row gy-3">
+                                    <!-- 1번째 row: 가입일 -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <label for="startDate" class="form-label"><b>가입일</b></label>
+                                            <div class="input-group">
+                                                <input type="date" id="startDate" class="form-control">
+                                                <span class="input-group-text">~</span>
+                                                <input type="date" id="endDate" class="form-control">
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
 
-                            <!-- 2번째 row: 회원 구분, 회원 자격 -->
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="memberType" class="form-label">회원 구분</label>
-                                    <select id="memberType" class="form-select">
-                                        <option value="">전체</option>
-                                        <option value="EDUCATOR">교육자</option>
-                                        <option value="STUDENT">학습자</option>
-                                        <option value="NORMAL">일반인</option>
-                                        <option value="ADMIN">운영자</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="membershipStatus" class="form-label">회원 자격</label>
-                                    <select id="membershipStatus" class="form-select">
-                                        <option value="">자격 선택</option>
-                                        <option value="유료회원">유료회원</option>
-                                        <option value="무료회원">무료회원</option>
-                                    </select>
-                                </div>
-                            </div>
 
-                            <!-- 3번째 row: 조건검색, 검색어 입력필드 -->
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="searchCriteria" class="form-label">조건검색</label>
-                                    <select id="searchCriteria" class="form-select">
-                                        <option value="">선택</option>
-                                        <option value="id">아이디</option>
-                                        <option value="phone">휴대폰</option>
-                                        <option value="name">이름</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-8">
-                                    <label for="searchKeyword" class="form-label">&nbsp;</label>
-                                    <input type="text" id="searchKeyword" class="form-control">
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <button type="submit" id="searchBtn" class="btn btn-primary">검색</button>
-                                </div>
+                                    <!-- 2번째 row: 회원 구분, 회원 자격 -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="memberType" class="form-label">회원 구분</label>
+                                            <select id="memberType" class="form-select">
+                                                <option value="">전체</option>
+                                                <option value="EDUCATOR">교육자</option>
+                                                <option value="STUDENT">학습자</option>
+                                                <option value="NORMAL">일반인</option>
+                                                <option value="ADMIN">운영자</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="membershipStatus" class="form-label">회원 자격</label>
+                                            <select id="membershipStatus" class="form-select">
+                                                <option value="">자격 선택</option>
+                                                <option value="유료회원">유료회원</option>
+                                                <option value="무료회원">무료회원</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- 3번째 row: 조건검색, 검색어 입력필드 -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label for="searchCriteria" class="form-label">조건검색</label>
+                                            <select id="searchCriteria" class="form-select">
+                                                <option value="">선택</option>
+                                                <option value="id">아이디</option>
+                                                <option value="phone">휴대폰</option>
+                                                <option value="name">이름</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label for="searchKeyword" class="form-label">&nbsp;</label>
+                                            <input type="text" id="searchKeyword" class="form-control">
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <button type="submit" id="searchBtn" class="btn btn-warning text white" style=" box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);">검색</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
 
                     <!-- 검색 결과 메시지 -->
                     <div class="result-message mt-3">
-                        총 <span id="resultCount">N</span>건 조회되었습니다.
+                        총 <span id="resultCount"></span>건 조회되었습니다.
                     </div>
 
-                <!-- 회원 목록 테이블 -->
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover membertable mt-3" id="memberList">
-                        <thead>
-                        <tr>
-                            <th scope="col">
-                                <input type="checkbox" id="selectAllCheckbox" th:checked="${false}">
-                            </th>
-                            <th scope="col">넘버링</th>
-                            <th scope="col">회원구분</th>
-                            <th scope="col">회원이름</th>
-                            <th scope="col">아이디</th>
-                            <th scope="col">연락처</th>
-                            <th scope="col">이메일</th>
-                            <th scope="col">자격</th>
-                            <th scope="col">가입일자</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                      <!--  &lt;!&ndash; Thymeleaf 반복문을 이용하여 회원 목록 데이터 표시 &ndash;&gt;
-                        <tr th:if="${#lists.isEmpty(members)}">
-                            <td colspan="9">검색 결과가 없습니다.</td>
-                        </tr>-->
-                        <tr th:each="member, rowStat : ${members}">
-                            <td>
-                                <input type="checkbox" class="memberCheckbox" th:id="${member.memberNo}" th:checked="${false}">
-                            </td>
-                            <td th:text="${rowStat.index + 1}">1</td>
-                            <td>
+                    <!-- 회원 목록 테이블 -->
+                    <div class="table-responsive">
+                        <table class="table table-hover membertable mt-3" id="memberList">
+                            <thead>
+                            <tr>
+                                <th scope="col">
+                                    <input type="checkbox" id="selectAllCheckbox" th:checked="${false}">
+                                </th>
+                                <th scope="col">No.</th>
+                                <th scope="col">회원구분</th>
+                                <th scope="col">회원이름</th>
+                                <th scope="col">아이디</th>
+                                <th scope="col">연락처</th>
+                                <th scope="col">이메일</th>
+                                <th scope="col">자격</th>
+                                <th scope="col">가입일자</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr th:each="member, rowStat : ${members}">
+                                <td>
+                                    <input type="checkbox" class="memberCheckbox" th:id="${member.memberNo}" th:checked="${false}">
+                                </td>
+                                <td th:text="${rowStat.index + 1}">1</td>
+                                <td>
                                 <span th:switch="${member.role}">
                                     <span th:case="EDUCATOR">교육자</span>
                                     <span th:case="NORMAL">일반</span>
                                     <span th:case="ADMIN">운영자</span>
                                     <span th:case="STUDENT">학생</span>
                                 </span>
-                            </td>
-                            <td th:text="${member.name}">이름</td>
-                            <td th:text="${member.memberId}">아이디</td>
-                            <td th:text="${member.tel}">연락처</td>
-                            <td th:text="${member.email}">이메일</td>
-                            <td th:text="${member.membershipStatus}">자격</td>
-                            <td th:text="${joinDate[rowStat.index]}">가입일</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 회원 상세 정보 모달 -->
-                <div class="modal fade" id="memberDetailsModal" tabindex="-1" role="dialog" aria-labelledby="memberDetailsModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="memberDetailsModalLabel"></h5>
-                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                    <tr>
-                                        <th>이름</th>
-                                        <td id="memberName">이름</td>
-                                        <th>생년월일</th>
-                                        <td>
-                                            <input type="date" class="form-control" id="memberBirth" required/>
-                                            <div id="memberBirthErrorMessage" class="error-message"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>자격</th>
-                                        <td id="membership">무료회원</td>
-                                        <th>구매건수</th>
-                                        <td id="purchaseCount">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>연락처</th>
-                                        <td>
-                                            <input type="tel" class="form-control" id="memberTel" pattern="[0-9]{2,3}[0-9]{3,4}[0-9]{4}" placeholder="하이픈을(-)을 제외한 번호만 입력하세요" required/>
-                                            <div id="memberTelErrorMessage" class="error-message"></div>
-                                        </td>
-                                        <th>이메일</th>
-                                        <td>
-                                            <input type="email" class="form-control" id="memberEmail" required />
-                                            <div id="memberEmailErrorMessage" class="error-message"></div>
-                                        </td>
-                                    </tr>
-                                    <tr id="schoolAndAddressRow">
-                                        <th>소속학원</th>
-                                        <td>
-                                            <input type="text" class="form-control" id="memberSchoolName" required />
-                                        </td>
-                                        <th>주소</th>
-                                        <td>
-                                            <div class="form-group">
-                                                <label for="sidoDropdown">시도</label>
-                                                <select class="form-control" id="sidoDropdown" required >
-                                                    <option value="">시도 선택</option>
-                                                </select>
-                                            </div>
-                                            <div id="sidoDropdownErrorMessage" class="error-message"></div>
-                                            <div class="form-group">
-                                                <label for="sigunguDropdown">시군구</label>
-                                                <select class="form-control" id="sigunguDropdown" required >
-                                                    <option value="">시군구 선택</option>
-                                                </select>
-                                            </div>
-                                            <div id="sigunguDropdownErrorMessage" class="error-message"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>메모:</th>
-                                        <td colspan="3">
-                                            <input type="text" class="form-control" id="memberMemo" />
-                                            <div id="memberMemoErrorMessage" class="error-message"></div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-
-                            <!-- modalbody -->
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                                <button type="button" class="btn btn-primary" id="editButton">수정 저장</button>
-                                <button type="button" class="btn btn-danger" id="deleteButton">회원 삭제</button>
-                            </div>
-                        </div> <!-- modal content -->
+                                </td>
+                                <td th:text="${member.name}">이름</td>
+                                <td th:text="${member.memberId}">아이디</td>
+                                <td th:text="${member.tel}">연락처</td>
+                                <td th:text="${member.email}">이메일</td>
+                                <td>
+                                    <span th:if="${member.membershipStatus == '무료회원'}" class="badge rounded-pill bg-success">무료</span>
+                                    <span th:if="${member.membershipStatus == '유료회원'}" class="badge rounded-pill bg-warning text-dark">유료</span>
+                                    <span th:unless="${member.membershipStatus == '무료회원' or member.membershipStatus == '유료회원'}" th:text="${member.membershipStatus}"></span>
+                                </td>
+                                <td th:text="${joinDate[rowStat.index]}">가입일</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+
+                    <!-- 회원 상세 정보 모달 -->
+                    <div class="modal fade" id="memberDetailsModal" tabindex="-1" role="dialog" aria-labelledby="memberDetailsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="memberDetailsModalLabel"></h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <th>이름</th>
+                                            <td id="memberName">이름</td>
+                                            <th>생년월일</th>
+                                            <td>
+                                                <input type="date" class="form-control" id="memberBirth" required/>
+                                                <div id="memberBirthErrorMessage" class="error-message"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>자격</th>
+                                            <td id="membership">무료회원</td>
+                                            <th>구매건수</th>
+                                            <td id="purchaseCount">0</td>
+                                        </tr>
+                                        <tr>
+                                            <th>연락처</th>
+                                            <td>
+                                                <input type="tel" class="form-control" id="memberTel" pattern="[0-9]{2,3}[0-9]{3,4}[0-9]{4}" placeholder="하이픈을(-)을 제외한 번호만 입력하세요" required/>
+                                                <div id="memberTelErrorMessage" class="error-message"></div>
+                                            </td>
+                                            <th>이메일</th>
+                                            <td>
+                                                <input type="email" class="form-control" id="memberEmail" required />
+                                                <div id="memberEmailErrorMessage" class="error-message"></div>
+                                            </td>
+                                        </tr>
+                                        <tr id="schoolAndAddressRow">
+                                            <th>소속학원</th>
+                                            <td>
+                                                <input type="text" class="form-control" id="memberSchoolName" required />
+                                            </td>
+                                            <th>주소</th>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label for="sidoDropdown">시도</label>
+                                                    <select class="form-control" id="sidoDropdown" required >
+                                                        <option value="">시도 선택</option>
+                                                    </select>
+                                                </div>
+                                                <div id="sidoDropdownErrorMessage" class="error-message"></div>
+                                                <div class="form-group">
+                                                    <label for="sigunguDropdown">시군구</label>
+                                                    <select class="form-control" id="sigunguDropdown" required >
+                                                        <option value="">시군구 선택</option>
+                                                    </select>
+                                                </div>
+                                                <div id="sigunguDropdownErrorMessage" class="error-message"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>메모:</th>
+                                            <td colspan="3">
+                                                <input type="text" class="form-control" id="memberMemo" />
+                                                <div id="memberMemoErrorMessage" class="error-message"></div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
 
 
-                <!-- 삭제 버튼 -->
-                <button type="button" class="btn btn-danger float-right" id="deleteMembersButton">선택 회원 삭제</button>
+                                <!-- modalbody -->
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="deleteButton">회원 삭제</button>
+                                    <button type="button" class="btn btn-warning" id="editButton">수정 저장</button>
+                                </div>
+                            </div> <!-- modal content -->
+                        </div>
+                    </div>
+
+
+                    <!-- 삭제 버튼 -->
+                    <button type="button" class="btn btn-outline-secondary text white btn-d float-right" id="deleteMembersButton">선택 회원 삭제</button>
 
 
                     <!-- 페이지네이션 -->
@@ -239,112 +241,10 @@
             </div><!-- 내부 컨테이너 -->
 
             <!-- Bootstrap 5 JS 및 jQuery -->
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script th:src="@{/js/admin/listMember.js}"></script>
             <script th:src="@{/js/admin/modalValidation.js}"></script>
             <script th:src="@{/js/admin/memberModal.js}"></script>
-            <script>
-                // 페이지가 준비되면
-                document.addEventListener("DOMContentLoaded", function() {
-                    // 페이지네이션 버튼 클릭 이벤트 설정
-                    document.querySelectorAll(".page-btn").forEach(function(btn) {
-                        btn.addEventListener("click", function(e) {
-                            e.preventDefault();
 
-                            // 클릭된 버튼의 페이지 번호 가져오기
-                            const targetPage = e.target.getAttribute("data-page");
-
-                            // 해당 페이지 데이터 불러오기
-                            loadPageData(targetPage);
-                        });
-                    });
-                });
-
-                function loadPageData(page) {
-                    fetch(`/listMember?page=${page}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("네트워크 응답이 올바르지 않습니다.");
-                        }
-                        return response.text();  // HTML로 가정하고 text로 반환
-                    })
-                    .then(data => {
-                        // 회원 목록 부분 업데이트 (ID는 실제 HTML 구조에 따라 수정 필요)
-                        document.querySelector("#memberList").innerHTML = data;
-
-                        // 페이지네이션 업데이트
-                        generatePagination(document.querySelector("#totalPages").value, page);
-                    })
-                    .catch(error => {
-                        console.error("데이터를 불러오는데 실패했습니다:", error);
-                    });
-                }
-
-                function generatePagination(totalPages, currentPage) {
-
-
-                    // 이전 버튼
-                    const prevLi = document.createElement('li');
-                    prevLi.classList.add('page-item');
-                    const prevButton = document.createElement('a');
-                    prevButton.classList.add('page-link');
-                    prevButton.textContent = '이전';
-                    prevButton.addEventListener('click', () => {
-                        if (currentStartPage > 1) {
-                            currentStartPage -= 4;
-                            generatePagination(totalElements);
-                            loadPageData();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
-                        }
-                    });
-                    prevLi.appendChild(prevButton);
-                    paginationContainer.appendChild(prevLi);
-
-                      // 숫자 버튼
-                      for (let i = 0; i < 4; i++) {
-                          //if (currentStartPage + i > totalPage) break;  // 전체 페이지 수를 초과하면 생성 중단
-                           const pageNumber = currentStartPage + i;
-                            if (pageNumber > totalPages) break;  // 전체 페이지 수를 초과하면 생성 중단
-
-                          const pageLi = document.createElement('li');
-                          pageLi.classList.add('page-item');
-                           if (pageNumber === currentPage) {
-                                      pageLi.classList.add('active');  // 현재 페이지를 나타내는 스타일 추가
-                                  }
-                          const pageButton = document.createElement('a');
-                          pageButton.classList.add('page-link');
-                          pageButton.textContent = pageNumber;
-                         // pageButton.textContent = currentStartPage + i;
-                          //숫자 클릭 시 해당 페이지의 데이터 로드
-                          pageButton.addEventListener('click', () => {
-                              loadPageData(pageNumber);  // 선택한 페이지에 해당하는 검색 결과를 가져옴
-                          });
-                          pageLi.appendChild(pageButton);
-                          paginationContainer.appendChild(pageLi);
-                      }
-
-                        // 다음 버튼
-                        const nextLi = document.createElement('li');
-                        nextLi.classList.add('page-item');
-                        const nextButton = document.createElement('a');
-                        nextButton.classList.add('page-link');
-                        nextButton.textContent = '다음';
-                        nextButton.addEventListener('click', () => {
-                            if (currentStartPage + 3 <= totalPage) {
-                                currentStartPage += 4;
-                                generatePagination(totalElements);
-                                loadPageData();  // 페이지네이션을 변경 후 검색 결과를 다시 가져옴
-                            }
-                        });
-                        nextLi.appendChild(nextButton);
-                        paginationContainer.appendChild(nextLi);
-                }
-
-                        }
-
-
-
-
-            </script>
         </div><!--콘텐츠영역끝-->
     </div><!--row-->
 </div><!--container-->

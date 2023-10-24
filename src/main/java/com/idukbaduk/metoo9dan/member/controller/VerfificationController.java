@@ -37,7 +37,7 @@ public class VerfificationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"success\": false}");
         }
     }
-
+    //이메일인증
     @PostMapping("/verifyEmailCode")
     @ResponseBody
     public ResponseEntity<?> verifyEmailCode(@RequestBody Map<String, String> request) {

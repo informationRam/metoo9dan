@@ -163,3 +163,9 @@
           .text-danger {
               color: red;
           }
+          input.form-control {
+              width: 100%;           /* 가로 너비를 최대로 확장 */
+              border-radius: 25px;   /* 모서리 둥글게 설정 (원하는 둥근 정도에 따라 값을 조절하세요) */
+              border: 1px solid #ccc; /* 경계선 스타일 지정 */
+              padding: 10px 15px;   /* 내부 여백을 추가하여 텍스트가 입력 태그의 모서리와 너무 가깝지 않게 설정 */
+          }

@@ -32,9 +32,9 @@ public class EducatorInfoService {
 
         if (educatorInfo != null) {
             // Update the EducatorInfo entity with the new data
-           educatorInfo.setSchoolName(updatedEducatorData.getSchoolName());
-           educatorInfo.setSido(updatedEducatorData.getSido());
-           educatorInfo.setSigungu(updatedEducatorData.getSigungu());
+            educatorInfo.setSchoolName(updatedEducatorData.getSchoolName());
+            educatorInfo.setSido(updatedEducatorData.getSido());
+            educatorInfo.setSigungu(updatedEducatorData.getSigungu());
 
             // Save the updated EducatorInfo entity back to the database
             educatorInfoRepository.save(educatorInfo);

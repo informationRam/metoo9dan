@@ -6,6 +6,8 @@
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
             <!-- Include Bootstrap 5 JavaScript -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
             <div class="row">
                 <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
@@ -185,7 +187,7 @@
                                                         <tr th:each="education : ${allEducation}">
                                                             <!-- 선택하기 -->
                                                             <td class="custom-checkbox-label">
-                                                                <input type="checkbox" class="form-check-input" name="selectedValues" th:value="${education.resourceNo}">
+                                                                <input type="checkbox" class="form-check-input" name="selectedValues"  th:value="${education.resourceNo}">
                                                                 <span class="custom-checkbox-indicator"></span>
                                                                 <!-- 교육자료 제목 -->
                                                             <td class="education title" th:text="${education.resourceName}"></td>
@@ -245,7 +247,23 @@
                     return new bootstrap.Popover(popoverTriggerEl);
                 });
             </script>
+            <script type="text/javascript">
+                // selectedResources 배열은 Thymeleaf 모델로부터 전달됩니다.
+                var resourcesNo = [[${resourcesNo}]]; // 배열 데이터를 가져옵니다.
 
+                console.log('resourcesNo', resourcesNo);
+                console.log('input.selectedValues',selectedValues)
+                // 이전에 선택한 교육자료를 체크
+
+
+              // 이전에 선택한 교육자료를 체크
+                    for (var i = 0; i < resourcesNo.length; i++) {
+                        var selectedResourceNo = resourcesNo[i]; // 변수명을 변경
+                        // 해당 체크박스를 찾아 체크
+                        $("input.form-check-input[name='selectedValues'][value='" + selectedResourceNo + "']").prop("checked", true);
+                    }
+
+            </script>
             <script>
             function addCommas(inputElement) {
                    // 입력된 값을 부동 소수점 숫자로 변환하고 콤마를 추가하여 다시 설정합니다.

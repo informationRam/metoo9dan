@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface HwPaymentRepository extends JpaRepository<Payments, Integer> {
-    @Query("SELECT DISTINCT gc.gameName " +
+    @Query(value = "SELECT DISTINCT gc.gameName " +
             "FROM Payments p " +
             "JOIN p.gameContents gc " +
             "JOIN p.member mb " +

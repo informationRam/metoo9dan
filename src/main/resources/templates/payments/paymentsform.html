@@ -8,10 +8,12 @@
   <div class="row">
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
     <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-      <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+      <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
         <form action="/payments/payments" method="post" id="payment-form">
-          <div class="container my-5">
-            <h1>주문/결제</h1>
+          <div class="container my-1">
+            <div>
+              <h1>주문/결제</h1>
+            </div>
             <table class="table table-responsive">
               <thead>
               <tr class="text-center">
@@ -44,36 +46,36 @@
               </tbody>
             </table>
             <div class="col-lg-5">
-              <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>
-
               <!-- 소수점 제거한 totalSalePrice 출력 -->
               <h3 class="mb-3">총 <span th:text="${#lists.size(gameContentNos)}"></span> 건,
                 총 <span th:text="${#numbers.formatInteger(totalSalePrice, 0, 'COMMA')}"></span>원</h3>
             </div>
+            <div class="col-lg-10 mx-auto">
             <!-- 결제수단 선택 -->
-            <h4>결제수단</h4>
-            <div class="row mt-4" >
-              <div class="col-lg-7" style="border: 1px solid #dee2e6;">
-                <label class="form-label"></label>
-                <div class="form-check">
-                  <input type="radio" name="paymentMethod" id="account" value="account" class="form-check-input" required>
-                  <label for="account" class="form-check-label">계좌이체</label>
-                </div>
-                <div class="form-check">
-                  <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
-                  <label for="deposit" class="form-check-label">무통장</label>
-                </div>
-                <div class="form-check">
-                  <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
-                  <label for="pay" class="form-check-label">카카오페이</label>
+              <h5>결제수단</h5>
+              <div class="row mt-1" >
+                <div class="" style="border: 1px solid #dee2e6;">
+                  <label class="form-label"></label>
+                  <div class="form-check md-3">
+                    <input type="radio" name="paymentMethod" id="account" value="account" class="form-check-input" required>
+                    <label for="account" class="form-check-label">계좌이체</label>
+                  </div>
+                  <div class="form-check md-3" style="border-top: 1px solid #dee2e6;">
+                    <input type="radio" name="paymentMethod" id="deposit" value="deposit" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
+                    <label for="deposit" class="form-check-label">무통장</label>
+                  </div>
+                  <div class="form-check md-3" style="border-top: 1px solid #dee2e6;">
+                    <input type="radio" name="paymentMethod" id="pay" value="pay" class="form-check-input" style="border-top: 1px solid #dee2e6;" required>
+                    <label for="pay" class="form-check-label">카카오페이</label>
+                  </div>
                 </div>
               </div>
             </div>
             <div>
-              <div class="d-flex justify-content-center">
+              <div class="d-grid gap-2 col-6 mx-auto">
                 <input type="hidden" id="item_name" name="item_name" th:value="${gameContents.size() > 0 ? gameContents[0].gameName + (gameContents.size() > 1 ? ' 외 ' + (gameContents.size() - 1) + '건' : '') : ''}"/>
                 <input type="hidden" id="total-amount" name="total_amount" th:value="${totalSalePrice}" />
-                <button type="button" class="btn btn-primary mt-3" id="openModalBtn">결제하기</button>
+                <button type="button" class="btn btn-warning text-white mt-5" id="openModalBtn">결제하기</button>
               </div>
           </div>
             <!-- 반품 규정 안내 -->
@@ -129,7 +131,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary btn-block" data-bs-dismiss="modal">취소</button>
-          <button type="button" class="btn btn-primary btn-block payment-button">결제하기<i class="fa fa-long-arrow-right"></i></button>
+          <button type="button" class="btn btn-warning text-white btn-block payment-button">결제하기<i class="fa fa-long-arrow-right"></i></button>
         </div>
       </div>
     </div>
@@ -165,15 +167,15 @@
                 <label class="form-label">은행</label>
                 <p>우리은행</p>
               </div>
-              <div class="mb-3">
+              <div class="mb-3" style="border-top: 1px solid #dee2e6;">
                 <label class="form-label">계좌</label>
-                <p>1002-149-760000</p>
+                <p>1002-149-576847</p>
               </div>
-              <div class="mb-3">
+              <div class="mb-3" style="border-top: 1px solid #dee2e6;">
                 <label class="form-label">예금주</label>
-                <p>000</p>
+                <p>metoo9dan</p>
               </div>
-              <div class="mb-3">
+              <div class="mb-3" style="border-top: 1px solid #dee2e6;">
                 <label class="form-label">입금기한</label>
                 <p id="depositDeadline"></p>
               </div>
@@ -187,7 +189,7 @@
               - 입금자명은 가입자분 성함으로 입금해주셔야 정상처리 됩니다.</p>
           </div>
           <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">취소</button>
-          <button type="button" class="btn btn-primary w-100 payment-button">확인<i class="fa fa-long-arrow-right"></i></button>
+          <button type="button" class="btn btn-warning text-white w-100 payment-button">확인<i class="fa fa-long-arrow-right"></i></button>
         </div>
       </div>
     </div>
