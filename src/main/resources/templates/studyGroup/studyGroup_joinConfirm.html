@@ -1,13 +1,23 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:div="http://www.w3.org/1999/html">
 <div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/studyGroup/table.css"/>
+    <style>
+        /* 표의 값들을 가운데 정렬하는 CSS 스타일 */
+        .a td,
+        .a th {
+            text-align: center;
+        }
+    </style>
     <div class="row">
-        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div th:replace="~{/studyGroup/studentSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div style="border: 0px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <h3>[학습 그룹 가입 확인]</h3>
-            <table class="table">
-                <thead class="table-dark">
+            <br/>
+            <h2>학습 그룹 가입 확인</h2>
+            <br/>
+            <table class="a">
+                <thead>
                 <tr>
                     <th>선택</th>
                     <th>학습그룹명</th>
@@ -44,18 +54,22 @@
                 </th:block>
                 </tbody>
             </table>
+            <br/>
             <div th:if="${joinConfirm != null}">
                 <div style="display: flex; justify-content: center; align-items: center;">
-                    <input id="cancelButton" type="submit" value="학습 그룹 가입 취소" class="btn btn-outline-primary my-2"/>
+                    <input id="cancelButton" type="submit" value="학습 그룹 가입 취소" class="btn btn-outline-secondary"/>
                 </div>
             </div>
 
-            <p/>
-            <p/>
-            <p/>
-            <h3>[학습 그룹 가입 이력]</h3>
-            <table class="table">
-                <thead class="table-dark">
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <h2>학습 그룹 가입 이력</h2>
+            <br/>
+            <table class="a">
+                <thead>
                 <tr>
                     <th>학습그룹명</th>
                     <th>게임콘텐츠명</th>
@@ -89,20 +103,9 @@
                 </th:block>
                 </tbody>
             </table>
-
-            <style>
-                /* 표의 값들을 가운데 정렬하는 CSS 스타일 */
-                .table td,
-                .table th {
-                    text-align: center;
-                }
-            </style>
-
         </div>
     </div>
 </div>
-
-
 </html>
 <script>
 //---학습그룹 가입 취소----

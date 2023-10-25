@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ public class StudyGroupController {
     private final MemberService memberService;
 
     //학습 그룹 등록(교육자), 게임콘텐츠 리스트 조회
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/gameList")
     public String gamelist(Model model, Principal principal,Map<String, Object> map,
                            @RequestParam(value = "page", defaultValue = "1") int currentPage){
@@ -54,9 +56,25 @@ public class StudyGroupController {
         int totalCount = studyGroupService.getGameListCnt(member_no); //게임리스트 카운트
         int totalPages = (int) Math.ceil((double) totalCount / pageSize); //총 페이지
 
+        //게임콘텐츠 리스트
         List<GameContentsListDTO> gameContents = studyGroupService.getGameList(map);
         model.addAttribute("gameContents",gameContents);
         System.out.println("gameContents="+gameContents);
+
+        //그룹 지정된 인원 가져오기
+        for (GameContentsListDTO gameContent : gameContents) {
+            int payment_no = gameContent.getPayment_no();
+            int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+            System.out.println("appointed_group_num="+appointed_group_num);
+            gameContent.setAppointed_group_num(appointed_group_num);
+        }
+
+     /*  for (GameContentsListDTO gameContent : gameContents) {
+            int payment_no = gameContent.getPayment_no();
+            int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+            model.addAttribute("appointed_group_num",appointed_group_num);
+            System.out.println("appointed_group_num"+appointed_group_num);
+        }*/
 
         model.addAttribute("currentPage",currentPage);
         model.addAttribute("totalCount",totalCount);
@@ -72,6 +90,7 @@ public class StudyGroupController {
 
 
     //게임콘텐츠 조회하기 버튼 엔드포인트
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping(value = "/gameListEndpoint", produces = "application/json")
     @ResponseBody
     public Map<String, Object> gamecontentsList(@RequestParam int game_content_no, @RequestParam Map<String, Integer> map, Principal principal,
@@ -89,7 +108,16 @@ public class StudyGroupController {
         map.put("member_no", member_no); // map에 member_no 추가
         map.put("game_content_no", game_content_no); // map에 selectedGameContentNo 추가
 
+        //게임콘텐츠 리스트
         List<GameContentsListDTO> gameContents = studyGroupService.selectGame(map);
+
+        //그룹 지정된 인원 가져오기
+        for (GameContentsListDTO gameContent : gameContents) {
+            int payment_no = gameContent.getPayment_no();
+            int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+            System.out.println("appointed_group_num="+appointed_group_num);
+            gameContent.setAppointed_group_num(appointed_group_num);
+        }
 
         map.clear(); // 기존에 추가된 모든 항목을 제거
         map.put("member_no", member_no); // map에 member_no 추가
@@ -110,6 +138,7 @@ public class StudyGroupController {
 
     //학습 그룹 등록 상세(교육자)
     //학습 그룹 등록 폼
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/add/{game_content_no}/{payment_no}")
     public String add(Model model,StudyGroupForm studyGroupForm
                       ,@PathVariable("game_content_no") int game_content_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map,Principal principal){
@@ -123,10 +152,15 @@ public class StudyGroupController {
         model.addAttribute("gameInfo",gameInfo);
         System.out.println("gameInfo="+gameInfo);
 
+        //그룹 지정된 인원 가져오기
+        int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+        model.addAttribute("appointed_group_num",appointed_group_num);
+
         return "studyGroup/studyGroup_form";
     }
 
     //학습 그룹 등록 처리
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/add/{game_content_no}/{payment_no}")
     public String studygroupAdd(Model model, @Valid StudyGroupForm studyGroupForm, BindingResult bindingResult,
                                 @PathVariable("game_content_no") int game_content_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map,Principal principal){
@@ -159,6 +193,7 @@ public class StudyGroupController {
 
     //학습 그룹 수정(교육자)
     //학습 그룹 수정 폼
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/modify/{group_no}/{payment_no}")
     public String modify(Model model,StudyGroupForm studyGroupForm,
                          @PathVariable("group_no") int group_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map){
@@ -179,24 +214,31 @@ public class StudyGroupController {
         GameContentsListDTO gameInfo = studyGroupService.getGameInfo(map);
         model.addAttribute("gameInfo",gameInfo);
 
-        //수정 가능 그룹인원(학습가능인원-(그룹지정된 인원-현재 그룹인원))
-        int calculatedValue = gameInfo.getMax_subscribers() - (gameInfo.getAppointed_group_num() - studyGroupForm.getGroupSize());
-        model.addAttribute("calculatedValue", calculatedValue);
 
         //학습 그룹 정보(등록 학생 수(approved_num) 가져오기)
         List<StudyGroupsListDTO> studyGroup = studyGroupService.getList(member_no);
         model.addAttribute("studyGroup",studyGroup);
         System.out.println("studyGroup="+studyGroup);
 
+        //그룹 지정된 인원 가져오기
+        int appointed_group_num = studyGroupService.getAppointedGroupNum(payment_no);
+        model.addAttribute("appointed_group_num",appointed_group_num);
+
+        //수정 가능 그룹인원(학습가능인원-(그룹지정된 인원-현재 그룹인원))
+        int calculatedValue = gameInfo.getMax_subscribers() - (appointed_group_num - studyGroupForm.getGroupSize());
+        model.addAttribute("calculatedValue", calculatedValue);
+
         //학습그룹 등록학생수 가져오기
         int groupNum = studyGroupService.getGroupNum(group_no);
         model.addAttribute("groupNum",groupNum);
         System.out.println("groupNum="+groupNum);
 
-        return "studygroup/studyGroup_modifyForm";
+
+        return "studyGroup/studyGroup_modifyForm";
     }
 
     //학습 그룹 수정 처리
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/modify/{group_no}/{payment_no}")
     public String studygroupModify(Model model,@Valid StudyGroupForm studyGroupForm,BindingResult bindingResult
                                  ,@PathVariable("group_no") int group_no,@PathVariable("payment_no") int payment_no,Map<String, Integer> map,Principal principal){
@@ -228,6 +270,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 삭제(교육자)
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/delete/{group_no}")
     public String delete(@PathVariable("group_no") int group_no){
         StudyGroups studyGroups = studyGroupService.getGruop(group_no);
@@ -237,6 +280,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 목록 조회(교육자)
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping(value = "/list")
     public String studygroupList(Model model,Principal principal,
                                 Map<String, Integer> map,@RequestParam(value = "page", defaultValue = "1") int currentPage){
@@ -272,6 +316,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 목록 조회 버튼 엔드포인트
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping(value = "/listEndpoint", produces = "application/json")
     @ResponseBody
     public List<StudyGroupsListDTO> studygroupList(@RequestParam Map<String, Integer> map,Principal principal) {
@@ -295,6 +340,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 상세 조회(교육자)
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/detail/{group_no}")
     public String groupDetail(Model model, @PathVariable("group_no") int group_no,Principal principal){
         //학습 그룹 멤버 정보
@@ -321,6 +367,7 @@ public class StudyGroupController {
 
     //학습 그룹 가입 승인(교육자)
     //학습 그룹 가입 신청 리스트 가져오기
+    //@PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping("/approveList")
     public String approveList(Model model, @RequestParam Map<String, Integer> map,Principal principal){
         //Principal
@@ -351,6 +398,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 신청 리스트 엔드포인트
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @GetMapping(value = "/approveListEndpoint", produces = "application/json")
     @ResponseBody
     public ResponseEntity<GroupInfoAndApproveList> approveListEndPoint(@RequestParam Map<String, Integer> map,Principal principal) {
@@ -380,6 +428,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 승인 처리(교육자)
+    @PreAuthorize("hasAuthority('EDUCATOR')")
     @PostMapping("/updateApprove")
     public String approve(@RequestBody Map<String, List<Integer>> requestData) {
         List<Integer> selectedMembers = requestData.get("selectedMembers");
@@ -400,6 +449,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트 //이미지 처리 필요!
+    @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/groupJoinList")
     public String joinList(Model model,Principal principal,Map<String, Integer> map,
                            @RequestParam(value = "page", defaultValue = "1") int currentPage){
@@ -416,7 +466,7 @@ public class StudyGroupController {
 
 
         //페이지네이션
-        int pageSize = 5; // 페이지당 보여줄 아이템 개수
+        int pageSize = 6; // 페이지당 보여줄 아이템 개수
         int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
         map.put("pageSize", pageSize);
         map.put("offset", offset);
@@ -427,6 +477,7 @@ public class StudyGroupController {
         model.addAttribute("totalCount",totalCount);
         model.addAttribute("totalPages",totalPages);
 
+        //학습 그룹 리스트
         List<GroupJoinListDTO> groupJoinList = studyGroupService.getGroupJoinList(map);
         model.addAttribute("groupJoinList",groupJoinList);
         System.out.println("groupJoinList="+groupJoinList);
@@ -442,6 +493,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 신청(학생),학습 그룹 리스트 엔드포인트 //이미지 처리 필요!
+    @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping(value = "/groupJoinListEndpoint", produces = "application/json")
     @ResponseBody
     public Map<String, Object> groupJoinListEndpoint(@RequestParam(required = false) Integer group_no, @RequestParam(required = false) Integer member_no
@@ -456,13 +508,13 @@ public class StudyGroupController {
             map.put("member_no", member_no);
 
             //페이지네이션
-            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int pageSize = 6; // 페이지당 보여줄 아이템 개수
             int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
             map.put("pageSize", pageSize);
             map.put("offset", offset);
 
             List<GroupJoinListDTO> groupJoinList = studyGroupService.SelectGroupJoinList(map);
-            System.out.println("엔트groupJoinList"+groupJoinList);
+            System.out.println("엔드groupJoinList"+groupJoinList);
 
             int totalCount = 1; // 게임리스트 조회 카운트
             int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지
@@ -476,7 +528,7 @@ public class StudyGroupController {
             return response;
         } else if (group_no != null) {
             //페이지네이션
-            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int pageSize = 6; // 페이지당 보여줄 아이템 개수
             int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
             map.put("pageSize", pageSize);
             map.put("offset", offset);
@@ -499,7 +551,7 @@ public class StudyGroupController {
             return response;
         } else if (member_no != null) {
             //페이지네이션
-            int pageSize = 5; // 페이지당 보여줄 아이템 개수
+            int pageSize = 6; // 페이지당 보여줄 아이템 개수
             int offset = (currentPage - 1) * pageSize; //페이지 시작 위치
             map.put("pageSize", pageSize);
             map.put("offset", offset);
@@ -529,6 +581,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 신청 처리(학생)
+    @PreAuthorize("hasAuthority('STUDENT')")
     @PostMapping("/join/{group_no}")
     public String join( GroupJoinDTO groupJoinDTO,@PathVariable("group_no") int group_no,Principal principal){
         //Principal
@@ -545,6 +598,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 확인&가입 이력 확인(학생)
+    @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/joinConfirm")
     public String joinConfirm(Model model,Principal principal){
         //Principal
@@ -571,6 +625,7 @@ public class StudyGroupController {
 
 
     //학습 그룹 가입 취소(학생)
+    @PreAuthorize("hasAuthority('STUDENT')")
     @GetMapping("/cancel/{group_students_no}")
     public String cancel(@PathVariable("group_students_no") int group_students_no){
         GroupStudents groupStudents = studyGroupService.getGroupStudents(group_students_no);
@@ -582,7 +637,13 @@ public class StudyGroupController {
     // alert창(사용자에게 메시지를 전달하고, 페이지를 리다이렉트 함)
     private String showMessageAndRedirect(final MessageDto params, Model model) {
         model.addAttribute("params", params);
-        return "studygroup/messageRedirect";
+        return "studyGroup/messageRedirect";
     }
+
+   /* @RequestMapping("/studygroup/error")
+    public String studygroupError(){
+        return "studyGroup/error_forbidden";
+    }*/
+
 
 }

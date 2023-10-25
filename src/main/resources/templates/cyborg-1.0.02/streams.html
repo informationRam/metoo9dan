@@ -5,7 +5,18 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <div class="row">
     <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-    <div th:replace="~{/admin/adminSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+    <!--<div th:replace="~{/admin/adminSidebar::sidebar}"></div>--> <!--테스트 사이드바 경로를 넣어놓음-->
+    <div class="col-2" >
+    <ul>
+      <li class="mt-5"><h4>구독서비스</h4></li>
+      <hr>
+      <li class="mb-3 p-2"><a th:href="@{/payments/alllist}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 구매</a></li>
+      <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+    </ul>
+  </div>
+
+
+
     <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
       <div class="container">
         <div class="row">
@@ -61,10 +72,10 @@
                                         <span th:unless="${#lists.size(game.educationalResourcesList) > 0}">없음</span>
                                       </p>
                                       <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
-                                        <span th:text="${#strings.length(game.packageDetails) > 30 ? #strings.substring(game.packageDetails, 0, 30) + '...' : game.packageDetails}"
-                                                data-toggle="popover" data-content="${game.packageDetails}"
-                                                data-placement="top"
-                                                data-trigger="hover">
+                                      <span th:text="${#strings.length(game.packageDetails) > 30 ? #strings.substring(game.packageDetails, 0, 30) + '...' : game.packageDetails}"
+                                            data-toggle="popover" data-content="${game.packageDetails}"
+                                            data-placement="top"
+                                            data-trigger="hover">
                                         </span>
                                     </div>
                                     <div>
@@ -102,28 +113,28 @@
                               </ul>
                             </nav>
                           </div>
-                        </div>
+                      </div>
                     </div>
-        </div>
-      </div>
-    <div class="navbar navbar-expand-lg navbar-light bg-light fixed-bottom" style="border-radius: 10px; width: 67%; height: 60px; margin-top: 0px; margin-right: 300px !important; margin-bottom: 0px; text-align: center; margin-left: 350px !important;">
-      <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
+                  </div>
+                </div>
+                <div class="navbar navbar-expand-lg navbar-light bg-light fixed-bottom" style="border-radius: 10px; width: 67%; height: 60px; margin-top: 0px; margin-right: 300px !important; margin-bottom: 0px; text-align: center; margin-left: 350px !important;">
+                  <div class="container">
+                    <div class="d-flex justify-content-between align-items-center">
         <span>
             <img src="/image/game/icon-cart.png" style="width: 30px !important;">
             <span style="margin-right: 20px;">총: <span id="totalItems">0</span> 건</span>
             <span style="margin-left: 30px !important;">합계: <span id="totalPrice">원</span></span>
-            <!-- HTML 코드 내에 버튼 추가 -->
+          <!-- HTML 코드 내에 버튼 추가 -->
           </span>
-        </div>
-        <span>
+                    </div>
+                    <span>
           <button type="submit" class="btn btn-outline-warning" id="subscribeButton" onclick="subscribe()">구독하기</button>
         </span>
-        </form>
-      </div>
-    </div>
-  </div>
-  </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -349,45 +360,45 @@ console.log('selectedSalePrices',selectedSalePrices)
     }
   </script>
 
-   <!--  !!----------- 페이지네이션시 값을 다시 불러온다.
+  <!--  !!----------- 페이지네이션시 값을 다시 불러온다.
 
-   window.addEventListener("load", function () {
-        var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
-        var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
-        var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
+  window.addEventListener("load", function () {
+       var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
+       var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
+       var totalPriceElement = document.getElementById("totalPrice"); // 합계를 표시할 요소
 
-        if (selectedGameContentNos) {
-            selectedGameContentNos = JSON.parse(selectedGameContentNos);
+       if (selectedGameContentNos) {
+           selectedGameContentNos = JSON.parse(selectedGameContentNos);
 
-            // 페이지의 선택된 항목 체크하기
-            checkboxes.forEach(function (checkbox) {
-                if (selectedGameContentNos.includes(checkbox.value)) {
-                    checkbox.checked = true;
-                }
-            });
+           // 페이지의 선택된 항목 체크하기
+           checkboxes.forEach(function (checkbox) {
+               if (selectedGameContentNos.includes(checkbox.value)) {
+                   checkbox.checked = true;
+               }
+           });
 
-            // 총 합계를 계산하기 위한 변수를 만들어야 합니다.
-            var total = 0;
+           // 총 합계를 계산하기 위한 변수를 만들어야 합니다.
+           var total = 0;
 
-            checkboxes.forEach(function (checkbox) {
-                if (checkbox.checked) {
-                    var salePrice = parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
-                    total += salePrice;
-                }
-            });
+           checkboxes.forEach(function (checkbox) {
+               if (checkbox.checked) {
+                   var salePrice = parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
+                   total += salePrice;
+               }
+           });
 
-            // 합계를 HTML 요소에 업데이트
-            if (totalPriceElement) {
-                totalPriceElement.innerText = total + " 원";
-            }
-        }
-    });
-  </script>-->
-  <script>
-    function searchGames() {
-      var searchText = document.getElementById('searchText').value;
-      window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
-    }
-  </script>
+           // 합계를 HTML 요소에 업데이트
+           if (totalPriceElement) {
+               totalPriceElement.innerText = total + " 원";
+           }
+       }
+   });
+ </script>-->
+ <script>
+   function searchGames() {
+     var searchText = document.getElementById('searchText').value;
+     window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
+   }
+ </script>
 </div>
 </html>

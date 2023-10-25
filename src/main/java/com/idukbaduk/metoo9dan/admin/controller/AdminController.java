@@ -22,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.idukbaduk.metoo9dan.common.util.DateTimeUtils;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,8 @@ public class AdminController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value="/listMember")
     public String showMemberList(Model model,
-                                 @RequestParam(defaultValue = "0") int page) throws Exception {
+                                 @RequestParam(defaultValue = "0") int page,
+                                 Principal principal) throws Exception {
         Pageable pageable = PageRequest.of(page,15); //한 목록에 15개씩
         Page<Member> memberPage = memberService.findAllMembers(pageable); // 모든 회원의 목록
 
@@ -51,6 +53,16 @@ public class AdminController {
         List<String> formattedJoinDates = memberPage.getContent().stream()
                 .map(member -> DateTimeUtils.formatLocalDateTime(member.getJoinDate(),"yyyy.MM.dd")) //.map스트림요소 변환
                 .collect(Collectors.toList()); //.collect 스트림요소 수집
+        //사이드바 쓰기 위한 memberRole 로직 추가
+        String memberRole = null;
+        if(principal != null){
+            memberRole = memberService.getUser(principal.getName()).getRole();
+        }
+        if(principal == null || !memberRole.equalsIgnoreCase("admin")){
+            model.addAttribute("memberRole", "notAdmin");
+        } else {
+            model.addAttribute("memberRole", memberRole);
+        }
 
         model.addAttribute("members", memberPage.getContent()); //회원정보
         model.addAttribute("joinDate", formattedJoinDates); //형식변환 joinDate

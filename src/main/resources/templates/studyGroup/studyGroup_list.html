@@ -1,33 +1,39 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/studyGroup/table.css"/>
     <div class="row">
-        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div th:replace="~{/studyGroup/educatorSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <h3>[학습 그룹 리스트]</h3>
-            <div>
+            <br/>
+            <p/>
+            <h2>학습 그룹 조회</h2>
+            <span class="form-text">학습 그룹을 선택해서 학습 그룹을 조회하세요.</span>
+            <p/>
+            <br/>
                 <div style="display: flex; align-items: center;">
                     <label for="selectSudyGroup" class="form-label" style="margin-right: 10px;">학습그룹:</label>
                     <select name="selectSudyGroup" id="selectSudyGroup" class="form-select" style="width: 200px; margin-right: 10px;">
                         <option value="">전체</option>
                         <option th:each="groupNameList : ${groupNameList}" th:value="${groupNameList.group_no}" th:text="${groupNameList.group_name}"></option>
                     </select>
-                    <button id="searchButton" class="btn btn-outline-primary" style="margin-right: 30px;">조회하기</button>
-                    <button id="modifyButton" class="btn btn-outline-warning" style="margin-left: auto; margin-right: 10px;">변경하기</button>
-                    <button id="deleteButton" class="btn btn-outline-danger" style="margin-right: 10px;">삭제하기</button>
+                    <button id="searchButton" class="btn btn-warning text-white" style="margin-right: 30px;">조회하기</button>
+                    <button id="modifyButton" class="btn btn-outline-secondary" style="margin-left: auto; margin-right: 10px;">변경하기</button>
+                    <button id="deleteButton" class="btn btn-outline-secondary" style="margin-right: 10px;">삭제하기</button>
                 </div>
+                <br/>
                 <p/>
-                <table class="table" id="selectGroupResult">
-                    <thead class="table-dark">
+                <table id="selectGroupResult">
+                    <thead>
                     <tr>
                         <th>선택</th>
                         <th>학습그룹명</th>
                         <th>게임콘텐츠명</th>
                         <th>그룹T/O</th>
-                        <!--<th>구독기간</th>-->
-                        <th>그룹 시작일</th>
-                        <th>그룹 종료일</th>
+                        <th>학습 구독 기간</th>
+                        <!--<th>그룹 시작일</th>
+                        <th>그룹 종료일</th>-->
                         <th>등록 학생수</th>
                     </tr>
                     </thead>
@@ -40,14 +46,24 @@
                         <td th:text="${studyGroup.group_name}"></td>
                         <td th:text="${studyGroup.game_name}"></td>
                         <td th:text="${studyGroup.group_TO}"></td>
-                        <td th:text="${#dates.format(studyGroup.group_start_date,'yyyy-MM-dd')}"></td>
-                        <td th:text="${#dates.format(studyGroup.group_finish_date,'yyyy-MM-dd')}"></td>
+                        <td>
+                            <span th:text="${#dates.format(studyGroup.group_start_date,'yyyy-MM-dd')}"></span>
+                            ~
+                            <span th:text="${#dates.format(studyGroup.group_finish_date,'yyyy-MM-dd')}"></span>
+                        </td>
+                        <!--<td th:text="${#dates.format(studyGroup.group_start_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(studyGroup.group_finish_date,'yyyy-MM-dd')}"></td>-->
                         <td th:text="${studyGroup.approved_num}"></td>
                     </tr>
                     </tbody>
                 </table>
+                <br/>
+                <div style="display: flex; justify-content: right; align-items: center;">
+                    <button id="viewButton" class="btn btn-warning text-white">학습 그룹 상세 조회 하기</button>
+                </div>
+                <br/>
                 <!--페이지네이션-->
-                <div id="paginationContainer">
+                <div id="paginationContainer" style="display: flex; justify-content: center; align-items: center;">
                     <nav th:if="${totalCount} > 0">
                         <ul class="pagination">
                             <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
@@ -62,15 +78,10 @@
                         </ul>
                     </nav>
                 </div>
-                <div style="display: flex; justify-content: center; align-items: center;">
-                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 상세 조회 하기</button>
-                </div>
-            </div>
-            <p/>
+
         </div>
     </div>
 </div>
-
 </html>
 <script>
 //---학습그룹 상세조회하기----
@@ -111,7 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-
 });
 
 
@@ -253,8 +263,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         // 표시할 데이터를 가져와서 HTML에 적용
                           var resultHTML = "";
                           if (responseData && responseData.length > 0) {
-                                resultHTML = "<table class='table' id='selectGroupResult'>";
-                                resultHTML += "<thead class='table-dark'>";
+                                resultHTML = "<table id='selectGroupResult'>";
+                                resultHTML += "<thead>";
                                 resultHTML += "<tr>";
                                 resultHTML += "<th>선택</th>";
                                 resultHTML += "<th>학습그룹명</th>";

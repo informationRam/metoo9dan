@@ -72,6 +72,11 @@ public class StudyGroupService {
         return studyGroupRepository.getGameList(map);
     }
 
+    //payment_no로 그룹 지정 인원 구하기
+    public int getAppointedGroupNum(int payment_no){
+        return studyGroupRepository.getAppointedGroupNum(payment_no);
+    }
+
     //게임콘텐츠 리스트 cnt
     public int getGameListCnt(int member_no){
         return studyGroupRepository.getGameListCnt(member_no);

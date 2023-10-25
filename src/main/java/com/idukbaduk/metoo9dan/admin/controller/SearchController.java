@@ -23,14 +23,14 @@ public class SearchController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<MemberDTO>> search(
-            @RequestParam String startDate,
-            @RequestParam String endDate,
-            @RequestParam String memberType,
-            @RequestParam String membershipStatus,
-            @RequestParam String searchCriteria,
-            @RequestParam String searchKeyword,
-            @RequestParam int page,
-            @RequestParam int size
+                                    @RequestParam String startDate,
+                                    @RequestParam String endDate,
+                                    @RequestParam String memberType,
+                                    @RequestParam String membershipStatus,
+                                    @RequestParam String searchCriteria,
+                                    @RequestParam String searchKeyword,
+                                    @RequestParam int page,
+                                    @RequestParam int size
     ) {
         Pageable pageable = PageRequest.of(page - 1, size);
         //검색된 회원 정보, 페이지네이션 정보(전체 페이지 수, 현재 페이지 번호, 페이지당 항목 수 등)도 포함
@@ -39,6 +39,3 @@ public class SearchController {
         return ResponseEntity.ok(result); // 200 OK와 함께 검색 결과 반환
     }
 }
-
-
-

@@ -1,23 +1,30 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/studyGroup/table.css"/>
     <div class="row">
-        <div th:replace="~{/studyGroup/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div th:replace="~{/studyGroup/educatorSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
 
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
             <!-- 맡은 기능 구현 하시면 됩니다! -->
-            <h3>[학습 그룹 등록]</h3>
-            <div style="display: flex; align-items: center;">
+            <br/>
+            <p/>
+            <h2>학습 그룹 등록</h2>
+            <a class="form-text">게임 콘텐츠를 선택해서 학습 그룹을 만드세요.</a>
+            <p/>
+            <br/>
+            <div style="display: flex;">
                 <label for="selectGameContent" class="form-label" style="margin-right: 10px;">게임콘텐츠</label>
                 <select name="selectGameContent" id="selectGameContent" class="form-select"  style="width: 200px; margin-right: 10px;">
                     <option value="">전체</option>
                     <option th:each="gameNameList : ${gameNameList}" th:value="${gameNameList.game_content_no}" th:text="${gameNameList.game_name}"></option>
                 </select>
-                <button id="searchButton" class="btn btn-outline-primary">조회하기</button>
+                <button id="searchButton" class="btn btn-warning text-white">조회하기</button>
             </div>
+            <br/>
             <p/>
             <div>
-                <table class="table" id="selectGameResult">
-                    <thead class="table-dark">
+                <table id="selectGameResult">
+                    <thead>
                     <tr>
                         <th>선택</th>
                         <th>게임콘텐츠명</th>
@@ -43,27 +50,28 @@
                     </tr>
                     </tbody>
                 </table>
-                <!--페이지네이션-->
-                <div id="paginationContainer">
-                    <nav th:if="${totalCount} > 0">
-                        <ul class="pagination">
-                            <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
-                                <a class="page-link" th:href="@{/studygroup/gameList(page=${currentPage - 1})}">이전</a>
-                            </li>
-                            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage ? 'active' : ''}">
-                                <a class="page-link" th:href="@{/studygroup/gameList(page=${i})}" th:text="${i}"></a>
-                            </li>
-                            <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
-                                <a class="page-link" th:href="@{/studygroup/gameList(page=${currentPage + 1})}">다음</a>
-                            </li>
-                        </ul>
-                    </nav>
+                <br/>
+                <div style="display: flex; justify-content: right; align-items: center;">
+                    <button id="viewButton" class="btn btn-warning text-white">학습 그룹 상세 입력</button>
                 </div>
-                <div style="display: flex; justify-content: center; align-items: center;">
-                    <button id="viewButton" class="btn btn-outline-primary">학습 그룹 상세 입력</button>
-                </div>
+                    <!--페이지네이션-->
+                    <div id="paginationContainer" style="display: flex; justify-content: center; align-items: center;">
+                        <nav th:if="${totalCount} > 0">
+                            <ul class="pagination">
+                                <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/studygroup/gameList(page=${currentPage - 1})}">이전</a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage ? 'active' : ''}">
+                                    <a class="page-link" th:href="@{/studygroup/gameList(page=${i})}" th:text="${i}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                                    <a class="page-link" th:href="@{/studygroup/gameList(page=${currentPage + 1})}">다음</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
             </div>
-            <p/>
+
         </div>
     </div>
 </div>
@@ -87,7 +95,7 @@
                     return; // 첫 번째 선택된 체크박스만 처리
                 }
             });
-            if (selectedPaymentNo !== null && selectedPaymentNo !== null) {
+            //if (selectedPaymentNo !== null && selectedPaymentNo !== null) {
                  var selectedCheckbox = document.querySelector('input[name="selectedGame"]:checked');
                     if (selectedCheckbox) {
                     var selectedGameRow = selectedCheckbox.closest("tr");
@@ -104,9 +112,9 @@
                 } else {
                 alert("게임콘텐츠를 선택해주세요.");
                 }
-            } else {
-                alert("게임콘텐츠를 선택해주세요.");
-            }
+            //} else {
+            //    alert("게임콘텐츠를 선택해주세요.");
+            //}
         });
 
         // 체크박스 클릭 시 다른 체크박스의 선택을 해제
@@ -300,8 +308,8 @@
          console.log('data2',data);
              var resultHTML = "";
              if (data && data.gameContents.length > 0) {
-               resultHTML += "<table class='table' id='selectGroupResult'>";
-               resultHTML += "<thead class='table-dark'>";
+               resultHTML += "<table id='selectGroupResult'>";
+               resultHTML += "<thead>";
                resultHTML += "<tr>";
                resultHTML += "<th>선택</th>";
                resultHTML += "<th>게임콘텐츠명</th>";

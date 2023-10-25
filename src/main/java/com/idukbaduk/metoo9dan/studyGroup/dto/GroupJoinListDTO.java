@@ -17,5 +17,7 @@ public class GroupJoinListDTO {
     private Date group_start_date; //그룹 시작일(학습구독기간)
     private Date group_finish_date; //그룹 종료일(학습구독기간)
     private int group_TO;//그룹to
+    private String group_introduce; //그룹 소개
+    private String school_name; //소속명
 
 }

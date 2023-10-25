@@ -3,10 +3,18 @@
     <link rel="stylesheet" href="/css/game/list.css" />
 
     <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/payments/paySidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <!--<!—<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>—>-->
+        <!--<div th:replace="~{/payments/paySidebar::sidebar}"></div>--> <!—테스트 사이드바 경로를 넣어놓음—>
 
-        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+        <div class="col-2" >
+            <ul>
+                <li class="mt-5"><h4>구독서비스</h4></li>
+                <hr>
+                <li class="mb-3 p-2"><a th:href="@{/payments/alllist}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 구매</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+            </ul>
+        </div>
+        <div class="col-10"> <!—class에서 col-10은 빼면 안됨—>
 
             <h1>결제 내역</h1>
             <div class="container">
@@ -17,7 +25,8 @@
                                 <div class="row g-0">
                                     <div class="col-md-3 text-center">
                                         <span th:text="${payment.status == 'complete' ? '성공' : payment.status}"></span>
-                                        <img th:src="@{|/upload/game/${payment.gameContents.gameContentFilesList[0].copyFileName}|}" class="img-fluid" alt="Game Image" style="max-width: 100%; height: auto;">
+                                        <img th:src="@{/image/baduk2.JPG}" class="img-fluid" alt="Game Image" style="max-width: 100%; height: auto;"/>
+                                        <!--<img th:src="@{|/upload/game/${payment.gameContents.gameContentFilesList[0].copyFileName}|}" class="img-fluid" alt="Game Image" style="max-width: 100%; height: auto;">-->
                                     </div>
                                     <div class="col-md-9">
                                         <div class="card-body">
@@ -44,18 +53,18 @@
             </div>
         </div>
     </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
-        var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
-          console.log('selectedGameContentNos',selectedGameContentNos)
-          if (selectedGameContentNos) {
-            // 페이지가 완전히 로드되면, 게임 구매할때 사용했던 GameContentNo값의 세션 스토리지를 삭제
-            sessionStorage.removeItem('selectedGameContentNos');
-            sessionStorage.removeItem('selectedSalePrices');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
+            var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
+              console.log('selectedGameContentNos',selectedGameContentNos)
+              if (selectedGameContentNos) {
+                // 페이지가 완전히 로드되면, 게임 구매할때 사용했던 GameContentNo값의 세션 스토리지를 삭제
+                sessionStorage.removeItem('selectedGameContentNos');
+                sessionStorage.removeItem('selectedSalePrices');
 
-          }
-     });
-</script>
-    </div>
+              }
+         });
+    </script>
+</div>
 </html>
