@@ -52,6 +52,15 @@ public class StudyGroupRepository {
         return sqlSession.selectList("StudyGroup.GameContentList",map);
     }
 
+    //payment_no로 그룹 지정 인원 구하기
+  /*  public int getAppointedGroupNum(int payment_no){
+        return sqlSession.selectOne("StudyGroup.AppointedGroupNum",payment_no);
+    }*/
+    public Integer getAppointedGroupNum(int payment_no) {
+        Integer appointedGroupNum = sqlSession.selectOne("StudyGroup.AppointedGroupNum", payment_no);
+        return appointedGroupNum != null ? appointedGroupNum : 0; // 기본값 설정
+    }
+
     //게임콘텐츠 리스트 cnt
     public int getGameListCnt(int member_no){
         return sqlSession.selectOne("StudyGroup.GameContentListCnt",member_no);

@@ -24,6 +24,7 @@
             baduk.game_contents g ON s.game_content_no=g.game_content_no
         WHERE
             s.member_no=#{member_no}
+        ORDER by s.group_no desc
 		]]>
     </select>
 
@@ -48,6 +49,7 @@
         baduk.game_contents g ON s.game_content_no=g.game_content_no
         WHERE
         s.member_no=#{member_no}
+        ORDER by s.group_no desc
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
         </if>
@@ -127,7 +129,7 @@
     <!--게임콘텐츠 리스트(학습그룹 등록)-->
     <select id="GameContentList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         SELECT distinct p.payment_no, g.game_content_no, g.game_name, g.max_subscribers, p.payment_date,
-               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date
         FROM baduk.game_contents g
         JOIN baduk.payments p ON g.game_content_no = p.game_content_no
         LEFT JOIN (
@@ -141,6 +143,15 @@
         <if test="pageSize != null and offset != null">
         LIMIT #{pageSize} OFFSET #{offset}
         </if>
+    </select>
+
+    <!--payment_no로 그룹 지정 인원 구하기-->
+    <select id="AppointedGroupNum" parameterType="int" resultType="int">
+        <![CDATA[
+        SELECT sum(group_size)
+        FROM baduk.study_groups
+        WHERE payment_no=#{payment_no}
+        ]]>
     </select>
 
     <!--게임콘텐츠명 리스트-->
@@ -167,7 +178,7 @@
     <!--게임콘텐츠 리스트 조회 버튼(학습그룹 등록)-->
     <select id="SelectGameList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
         SELECT p.payment_no,g.game_content_no,g.game_name, g.max_subscribers, p.payment_date,
-               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date
         FROM baduk.game_contents g
         JOIN baduk.payments p ON g.game_content_no = p.game_content_no
         LEFT JOIN (
@@ -218,6 +229,7 @@
 		]]>
     </select>
 
+
     <!--학습그룹 등록학생수 가져오기(학습그룹 등록 폼)-->
     <select id="approved_num" parameterType="int" resultType="int">
         <![CDATA[
@@ -231,7 +243,7 @@
 
     <!--학습그룹 가입-학생(학습그룹 전체리스트)-->
     <select id="GroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
                  (SELECT COUNT(member_no)
                      FROM baduk.group_students gs
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
@@ -241,6 +253,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
         </if>
@@ -306,7 +319,7 @@
 
     <!--학습그룹명 조건 조회(학습 그룹 신청 리스트)-->
     <select id="SelectNameList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
             (SELECT COUNT(member_no)
                 FROM baduk.group_students gs
                 WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
@@ -316,6 +329,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
         WHERE s.group_no=#{group_no} AND s.group_finish_date >= CURDATE()
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
@@ -335,7 +349,7 @@
 
     <!--교육자명 조건 조회(학습 그룹 신청 리스트)-->
     <select id="SelectEducatorNameList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
                  (SELECT COUNT(member_no)
                      FROM baduk.group_students gs
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
@@ -345,6 +359,7 @@
         FROM baduk.study_groups s
         JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
         JOIN baduk.members m ON s.member_no=m.member_no
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
         WHERE m.member_no=#{member_no} AND s.group_finish_date >= CURDATE()
         <if test="pageSize != null and offset != null">
             LIMIT #{pageSize} OFFSET #{offset}
@@ -363,7 +378,7 @@
 
     <!--학습그룹명&그룹명으로 조회(학습 그룹 신청 리스트)-->
     <select id="SelectGroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
-        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
                  (SELECT COUNT(member_no)
                      FROM baduk.group_students gs
                      WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
