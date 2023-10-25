@@ -61,7 +61,7 @@
                                         <span th:unless="${#lists.size(game.educationalResourcesList) > 0}">없음</span>
                                       </p>
                                       <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${game.salePrice}"></span></p>
-                                        <span th:text="${#strings.length(game.packageDetails) > 50 ? #strings.substring(game.packageDetails, 0, 50) + '...' : game.packageDetails}"
+                                        <span th:text="${#strings.length(game.packageDetails) > 30 ? #strings.substring(game.packageDetails, 0, 30) + '...' : game.packageDetails}"
                                                 data-toggle="popover" data-content="${game.packageDetails}"
                                                 data-placement="top"
                                                 data-trigger="hover">
@@ -130,53 +130,102 @@
     </div>
   </div>
 <script>
-// 합계와 선택된 게임 콘텐츠를 초기화합니다.
-var total = JSON.parse(sessionStorage.getItem("totalPrice")) || 0; // 이전 페이지의 합계를 로드하거나 0으로 초기화
+  // 체크박스 선택 이벤트 핸들러 함수
+function handleCheckboxChange(checkbox) {
+    // 부모 요소인 카드 (card) 엘리먼트를 찾습니다.
+    var card = checkbox.closest(".card");
 
-checkboxes.forEach(function (checkbox) {
-    checkbox.addEventListener('change', function () {
-        var salePrice = parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
+    // Sale Price를 나타내는 엘리먼트를 찾습니다.
+    var salePriceElement = card.querySelector("#nado-salePrice");
 
-console.log('total0',total)
-        // 체크 박스가 선택된 경우
-        if (checkbox.checked) {
-            var gameContentNo = checkbox.value;
-            total += salePrice;
-            console.log('total1',total)
-             console.log('salePrice1',salePrice)
+    // Sale Price 텍스트를 가져옵니다.
+    var formattedPrice = salePriceElement.textContent;
 
-            // 선택된 게임 콘텐츠 번호와 salePrice를 배열에 추가하고 세션 스토리지에 저장
-            if (!selectedGameContentNos.includes(gameContentNo)) {
-                selectedGameContentNos.push(gameContentNo);
-                selectedSalePrices.push(salePrice);
-                sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
-                sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
-            }
-        } else {
-            var gameContentNo = checkbox.value;
-            total -= salePrice;
+    // 콤마(,)를 제거한 뒤 숫자로 변환
+    var salePrice = parseFloat(formattedPrice.replace(/,/g, ''));
 
-            // 선택 해제된 게임 콘텐츠 번호와 salePrice를 배열에서 제거하고 세션 스토리지를 업데이트
-            selectedGameContentNos = selectedGameContentNos.filter(function (value) {
-                return value !== gameContentNo;
-            });
+    // 여기에 선택된 체크박스에 대한 작업을 수행합니다.
+    // 예를 들어, total 합계를 업데이트하거나 다른 작업을 수행할 수 있습니다.
 
-            var salePriceIndex = selectedGameContentNos.indexOf(gameContentNo);
-            if (salePriceIndex !== -1) {
-                selectedSalePrices.splice(salePriceIndex, 1);
-            }
+    // 선택된 게임 콘텐츠의 Sale Price 값을 사용하여 작업을 수행합니다.
+}
 
-            sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
-            sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
-        }
-
-        // 합계를 HTML 요소에 업데이트
-        if (totalPriceElement) {
-            totalPriceElement.innerText = total + " 원";
-            sessionStorage.setItem("totalPrice", JSON.stringify(total));
-        }
+// 모든 체크박스를 찾아 이벤트 핸들러 함수를 연결
+var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+checkboxes.forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+        handleCheckboxChange(checkbox);
     });
 });
+
+
+  // 반복문을 사용하여 판매가를 콤마로 포맷팅
+  document.querySelectorAll('.card').forEach(function(card) {
+    var salePriceElement = card.querySelector("#nado-salePrice");
+    var salePrice = parseFloat(salePriceElement.textContent);
+
+    // 숫자를 콤마로 포맷팅
+    var formattedSalePrice = formatNumberWithCommas(salePrice);
+
+    // <span> 요소에 콤마가 있는 형식으로 설정
+    salePriceElement.textContent = formattedSalePrice;
+  });
+
+  function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+
+    // 합계와 선택된 게임 콘텐츠를 초기화합니다.
+  var total = JSON.parse(sessionStorage.getItem("totalPrice")) || 0; // 이전 페이지의 합계를 로드하거나 0으로 초기화
+
+  checkboxes.forEach(function (checkbox) {
+      checkbox.addEventListener('change', function () {
+          var salePrice = parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
+
+
+
+
+  console.log('total0',total)
+          // 체크 박스가 선택된 경우
+          if (checkbox.checked) {
+              var gameContentNo = checkbox.value;
+              total += salePrice;
+              console.log('total1',total)
+               console.log('salePrice1',salePrice)
+
+              // 선택된 게임 콘텐츠 번호와 salePrice를 배열에 추가하고 세션 스토리지에 저장
+              if (!selectedGameContentNos.includes(gameContentNo)) {
+                  selectedGameContentNos.push(gameContentNo);
+                  selectedSalePrices.push(salePrice);
+                  sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+                  sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
+              }
+          } else {
+              var gameContentNo = checkbox.value;
+              total -= salePrice;
+
+              // 선택 해제된 게임 콘텐츠 번호와 salePrice를 배열에서 제거하고 세션 스토리지를 업데이트
+              selectedGameContentNos = selectedGameContentNos.filter(function (value) {
+                  return value !== gameContentNo;
+              });
+
+              var salePriceIndex = selectedGameContentNos.indexOf(gameContentNo);
+              if (salePriceIndex !== -1) {
+                  selectedSalePrices.splice(salePriceIndex, 1);
+              }
+
+              sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
+              sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
+          }
+
+          // 합계를 HTML 요소에 업데이트
+          if (totalPriceElement) {
+              totalPriceElement.innerText = total + " 원";
+              sessionStorage.setItem("totalPrice", JSON.stringify(total));
+          }
+      });
+  });
 </script>
 
   <script>
