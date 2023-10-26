@@ -465,7 +465,7 @@ public class GameController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("searchText", searchText);
 
-        return "cyborg-1.0.02/streams";
+        return "game/allList";
     }
 
     @PostMapping("/saveSelectedValues")
@@ -504,18 +504,6 @@ public class GameController {
 
         return ResponseEntity.ok(salePrices);
     }
-
-
-
-
-//게임컨텐츠 구매 할때 목록조회
-    @GetMapping("/testlist")
-    public String test(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
-
-        return "cyborg-1.0.02/streams";
-    }
-
-
 
 
 }//class
