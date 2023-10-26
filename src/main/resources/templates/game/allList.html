@@ -1,0 +1,84 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+  <div class="row">
+    <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+    <div class="col-2" > <!--class에서 col-2은 빼면 안됨-->
+      <!--운영마당용 사이드바-->
+      <ul>
+        <li class="mt-5"><h4>운영자마당</h4></li>
+        <hr>
+        <li class="mb-3 p-2"><a th:href="@{/game/addForm}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 등록</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/payments/showPayments}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
+      </ul>
+    </div>
+    <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+      <form id="nadopayment" class="my-2" th:action="@{|/payments/paymentsform|}" method="post">
+
+        <h1>게임컨텐츠 목록</h1>
+        <div>
+          <table>
+            <thead>
+            <tr>
+              <th>선택</th>
+              <th>게임컨텐츠 번호</th>
+              <th>게임콘텐츠명</th>
+              <!-- 다른 필드에 대한 헤더 추가 -->
+            </tr>
+            </thead>
+            <tbody th:each="gamecon : ${gamePage.content}">
+            <tr>
+              <!-- 선택하기 -->
+              <td class="custom-checkbox-label">
+                <input type="checkbox" class="form-check-input" name="gameContentNo" th:value="${gamecon.gameContentNo}">
+                <span class="custom-checkbox-indicator"></span></td>
+              <td th:text="${gamecon.gameName}"></td>
+              <td th:text="${gamecon.salePrice}"></td>
+              <!-- 다른 필드에 대한 데이터 출력 추가 -->
+              <td>
+                <ul>
+                  <li th:each="file : ${gamecon.gameContentFilesList}">
+                    <!-- 게임컨텐츠의 파일 정보 출력 -->
+                    <span th:text="${file.originFileName}"></span>
+                    <!-- 다른 파일 속성 출력도 가능 -->
+                    <span th:text="${file.copyFileName}"></span>
+                  </li>
+                </ul>
+              </td>
+              <td>
+                <ul>
+                  <li th:each="edu : ${gamecon.educationalResourcesList}">
+                    <!-- 게임컨텐츠의 교육자료 정보 출력 -->
+                    <span th:text="${edu.resourceName}"></span>
+                    <!-- 교육자료에 속하는 파일 정보 출력 -->
+                    <ul th:if="${edu.resourcesFilesList != null and edu.resourcesFilesList.size() > 0}">
+                      <li th:each="file : ${edu.resourcesFilesList}">
+                        <span th:text="${file.originFileName}"></span>
+                      </li>
+                    </ul>
+                    <!-- 교육자료에 속하는 섬네일 정보 출력 -->
+                    <ul th:if="${edu.resourcesFilesList != null and edu.resourcesFilesList.size() > 0}">
+                      <li th:each="file : ${edu.resourcesFilesList}">
+                        <span th:text="${file.thumOriginFileName}"></span>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mb-3 text-center">
+          <button type="submit" class="btn btn-primary">구매하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</html>

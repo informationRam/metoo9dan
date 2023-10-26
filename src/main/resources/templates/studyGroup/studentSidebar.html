@@ -1,0 +1,10 @@
+<!--이 파일 내용을 복사하여 templates/본인기능폴더 하위에 추가하여 본인 구현 페이지에 맞게 사이드바 내용을 작업해주세요-->
+<div th:fragment="sidebar" style="border: 0px solid black;" class="col-2"> <!--class에서 col-2은 빼면 안됨-->
+    <ul>
+        <li class="mt-5"><h4>학습 서비스</h4></li>
+        <hr>
+        <li class="mb-3 p-2"><a th:href="@{/studygroup/groupJoinList}" sec:authorize="hasAuthority('STUDENT')">학습 그룹 가입</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/studygroup/joinConfirm}" sec:authorize="hasAuthority('STUDENT')">학습 그룹 가입 확인</a></li>
+        <li class="mb-3 p-2"><a th:href="@{/homework/submit}" sec:authorize="hasAuthority('STUDENT')">숙제 제출</a></li>
+    </ul>
+</div>

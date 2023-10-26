@@ -1,0 +1,307 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <!-- 차트관련 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <div class="row">
+        <div class="col-2" > <!--class에서 col-2은 빼면 안됨-->
+            <!--운영마당용 사이드바-->
+            <ul>
+                <li class="mt-5"><h4>운영자마당</h4></li>
+                <hr>
+                <li class="mb-3 p-2"><a th:href="@{/game/addForm}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 등록</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/payments/showPayments}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
+            </ul>
+        </div> <!--테스트 사이드바 경로를 넣어놓음-->
+        <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+
+            <canvas id="monthlySalesChart" width="400" height="200"></canvas>
+            <div class="container">
+                <h1>매출 조회</h1>
+               <!-- <form method="get" action="/payments/showPayments" class="mb-3">-->
+                    <div class="row">
+                        <div class="col-md-3"></div> <!-- 왼쪽 여백 -->
+                        <div class="col-md-2">
+                            <input type="text" id="startDate" name="startDate" class="form-control datepicker" />
+                        </div>
+                        <div class="col-md-1 mx-auto">
+                            <div class="text-center">~</div>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" id="endDate" name="endDate" class="form-control datepicker" />
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check form-check-inline">
+                                <input type="radio" name="view" value="daily" id="daily" class="form-check-input" th:checked="${view == 'daily'}" />
+                                <label for="daily" class="form-check-label">일단위</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" name="view" value="month" id="month" class="form-check-input" th:checked="${view == 'month'}" />
+                                <label for="month" class="form-check-label">월단위</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-warning" id="nado-sel">조회</button>
+                        </div>
+                    </div>
+              <!--  </form>-->
+                <div class="col-md-7">
+                    <strong>
+                        <p>매출 합계 : <span th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA') + ' 원,        건수 : ' + totalTransactionCount + ' 개'}"></span></p>
+                    </strong>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>일 / 월</th>
+                        <th>건수</th>
+                        <th>매출금액</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- 월별 조회-->
+                    <tr th:each="data : ${paymentsPage.content}" th:unless="${view} != 'month'">
+                        <td th:text="${data[0]}"></td>
+                        <td th:text="${data[1]}"></td>
+                        <td th:text="${#numbers.formatInteger(data[2], 0, 'COMMA')}"></td>
+                    </tr>
+                    <!-- "daily" 일별 조회 -->
+                    <tr th:each="data : ${paymentsPage.content}" th:unless="${view} != 'daily'">
+                        <td th:text="${#temporals.format(data[0]?.paymentDate,'yyyy-MM-dd')}"></td>
+                        <td th:text="${data[1]}"></td>
+                        <td th:text="${#numbers.formatInteger(data[2], 0, 'COMMA')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+                <!-- 페이지 네이션 처리 -->
+                <div id="pagination">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <!-- 이전 페이지 링크 -->
+                            <li class="page-item" th:classappend="${paymentsPage.pageable.pageNumber == 0} ? 'disabled'">
+                                <a class="page-link" href="#" th:href="@{/payments/showPayments(page=${paymentsPage.pageable.pageNumber - 1}, startDate=${startDate}, endDate=${endDate}, view=${view})}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <!-- 페이지 번호 링크 -->
+                            <li class="page-item" th:classappend="${i - 1 == paymentsPage.pageable.pageNumber} ? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                                <a class="page-link" href="#" th:href="@{/payments/showPayments(page=${i - 1}, startDate=${startDate}, endDate=${endDate}, view=${view})}" th:text="${i}"></a>
+                            </li>
+                            <!-- 다음 페이지 링크 -->
+                            <li class="page-item" th:classappend="${paymentsPage.totalPages == paymentsPage.pageable.pageNumber + 1} ? 'disabled'">
+                                <a class="page-link" href="#" th:href="@{/payments/showPayments(page=${paymentsPage.pageable.pageNumber + 1}, startDate=${startDate}, endDate=${endDate}, view=${view})}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+      // Initial data load when the page loads
+      fetchGraphData();
+
+      // Radio button change event
+      $('input[name="view"]').change(function() {
+          if ($(this).is(':checked')) {
+              // Only fetch data when the radio button is checked
+              fetchGraphData();
+          }
+      });
+            // 월별 또는 일별 데이터 가져오는 함수
+     function fetchGraphData() {
+        var view = $('input[name="view"]:checked').val();
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+
+        $.ajax({
+            url: "/paymentsChart/showPayments",
+            method: "GET",
+            data: {
+                view: view,
+                startDate: startDate,
+                endDate: endDate
+            },
+            success: function(data) {
+                console.log('data', data);
+
+                 // 받아온 데이터
+                 var data = data.data;
+
+                 // 날짜를 레이블로 사용
+                 var labels = Object.keys(data);
+
+                 // 매출 데이터
+                 var salesData = labels.map(function(date) {
+                     return data[date];
+                 });
+
+                 // 이전 차트 객체 파괴
+                 if (window.myChart) {
+                     window.myChart.destroy();
+                 }
+
+                 // 캔버스 요소 초기화
+                 var canvas = document.getElementById("monthlySalesChart");
+                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+                 // 서버에서 받아온 데이터를 그래프 데이터로 설정
+                 var chartData = {
+                     labels: data.labels,
+                     datasets: [
+                         {
+                             label: "매출금액",
+                             data: data.salesData,
+                             backgroundColor: "rgba(75, 192, 192, 0.2)",
+                             borderColor: "rgba(75, 192, 192, 1)",
+                             borderWidth: 1
+                         }
+                     ]
+                 };
+
+                 // 새로운 차트 객체 생성 및 업데이트
+                 var ctx = canvas.getContext("2d");
+                 window.myChart = new Chart(ctx, {
+                     type: "bar",
+                     data: chartData,
+                     options: {
+                         scales: {
+                             y: {
+                                 beginAtZero: true
+                             }
+                         }
+                     }
+                 });
+             },
+             error: function(error) {
+                 console.error("데이터 가져오기 실패: " + error);
+             }
+         });
+     }
+
+     function submitForm() {
+            // 폼을 서버로 제출
+            $('form').submit();
+        }
+    });
+    </script>
+  <!--  <script>
+        $(document).ready(function() {
+     // 초기 그래프 데이터를 서버에서 가져옵니다.
+     fetchGraphData('daily'); // 또는 'monthly'로 변경 가능
+
+     // 월별 또는 일별 데이터 가져오는 함수
+     function fetchGraphData(view) {
+         $.ajax({
+             url: "/paymentsChart/showPayments",
+             method: "GET",
+             data: { view: view },
+             success: function(data) {
+                console.log('data',data)
+                var data = data.data; // 받아온 데이터
+                var labels = Object.keys(data); // 날짜를 레이블로 사용
+                var salesData = labels.map(function(date) {
+                    return data[date];
+                });
+
+                 // 서버에서 받아온 데이터를 그래프 데이터로 설정
+                 var monthlyData = {
+                     labels: data.labels,
+                     datasets: [
+                         {
+                             label: "매출금액",
+                             data: data.salesData,
+                             backgroundColor: "rgba(75, 192, 192, 0.2)",
+                             borderColor: "rgba(75, 192, 192, 1)",
+                             borderWidth: 1
+                         }
+                     ]
+                 };
+
+                // 그래프 생성 및 업데이트
+                var ctx = document.getElementById("monthlySalesChart").getContext("2d");
+                var myChart = new Chart(ctx, {
+                    type: "bar",
+                    data: monthlyData,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+             },
+             error: function(error) {
+                 console.error("데이터 가져오기 실패: " + error);
+             }
+         });
+     }
+ });
+
+    </script>-->
+
+    <script>
+        $(document).ready(function() {
+    // 월별 링크를 클릭할 때 상세 매출 내역을 로드합니다.
+    $(".monthly-link").click(function(event) {
+        event.preventDefault(); // 기본 링크 동작 방지
+
+        var month = $(this).text(); // 클릭한 월의 텍스트를 가져옵니다.
+
+        $.ajax({
+            url: "/payments/showMonthlyDetails", // 상세 매출 내역을 가져올 컨트롤러 경로
+            method: "POST",
+            data: { month: month }, // 선택한 월을 매개변수로 전달
+            success: function(data) {
+                // 상세 매출 내역을 로드한 후 해당 내용을 화면에 표시합니다.
+                $("#monthly-details-container").html(data);
+            },
+            error: function() {
+                alert("상세 매출 내역을 불러오는 중 오류가 발생했습니다.");
+            }
+        });
+    });
+});
+    </script>
+
+
+        <script>
+    // 페이지가 로드될 때 Datepicker 초기화
+    document.addEventListener("DOMContentLoaded", function () {
+        // 시작 날짜 선택 위젯
+        $('#startDate').datepicker({
+            format: 'yyyy-mm-dd',
+            todayBtn: 'linked',
+            clearBtn: true,
+            autoclose: true
+        });
+
+        // 종료 날짜 선택 위젯
+        $('#endDate').datepicker({
+            format: 'yyyy-mm-dd',
+            todayBtn: 'linked',
+            clearBtn: true,
+            autoclose: true
+        });
+    });
+
+    </script>
+
+</div>
+</html>

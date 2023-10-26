@@ -2,13 +2,20 @@ package com.idukbaduk.metoo9dan.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 
 import javax.management.relation.Role;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 // 회원테이블 - PRIMARY KEY (member_no, tel)
 
 @Entity
+@Getter
+@Setter
 @Data
 @Table(name="members")
 public class Member {
@@ -33,7 +40,7 @@ public class Member {
     @Column
     private String password;        //varchar(255)  NOT NULL    COMMENT '비밀번호',
 
-    @Column(name="join_date", columnDefinition = "TIMESTAMP")
+    @Column(name="join_date",  columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     private LocalDateTime joinDate;  //datetime NOT NULL    COMMENT '가입일',
 
     @Column
@@ -42,13 +49,26 @@ public class Member {
     @Column
     private String gender;           //enum('male', 'female')  NOT NULL    COMMENT '성별',
 
-    @Column(name="privacy_consent")
+    @Column(name="privacy_consent",columnDefinition = "TINYINT(1)")
     private Boolean privacyConsent;  //boolean NOT NULL    COMMENT '개인정보동의',
 
-    @Column(name="email_consent")
-    private Boolean emailConsent;    //boolean NOT NULL    COMMENT '이메일수신동의',
+    @Column(name="email_consent",columnDefinition = "TINYINT(1)")
 
-    @Column(name="sms_consent")
-    private Boolean smsConsent;      //boolean NOT NULL    COMMENT 'sms수신동의',
+    private Boolean emailConsent;    //boolean NULL    COMMENT '이메일수신동의',
 
+    @Column(name="sms_consent",columnDefinition = "TINYINT(1)")
+    private Boolean smsConsent;      //boolean NULL    COMMENT 'sms수신동의',
+
+    @Column(name="member_memo")
+    private String memberMemo;      //varchar(300) NULL COMMENT "회원별 메모"
+
+    @Column(name="birth")
+    private Date birth;             //date NOT NULL "생일"
+
+    @Column(name = "membership_status")
+    private String membershipStatus = "무료회원"; // varchar(5) NOT NULL "회원의 결제 여부 (유료회원, 무료회원)"
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private EducatorInfo educatorInfo;
 }

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StudyGroup">
+
+    <!--학습그룹 리스트-->
+    <select id="StudyGroupList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO">
+        <![CDATA[
+        SELECT
+            s.group_no,
+            s.group_name,
+            g.game_name,
+            s.group_start_date,
+            s.group_finish_date,
+            (SELECT COUNT(member_no)
+             FROM baduk.group_students gs
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
+            s.group_size - (SELECT COUNT(member_no)
+                            FROM baduk.group_students gs
+                            WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_TO
+        FROM
+            baduk.study_groups s
+        JOIN
+            baduk.game_contents g ON s.game_content_no=g.game_content_no
+        WHERE
+            s.member_no=#{member_no}
+        ORDER by s.group_no desc
+		]]>
+    </select>
+
+    <!--학습그룹 리스트(페이지네이션)-->
+    <select id="StudyGroupListPage" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO">
+        SELECT
+        s.payment_no,
+        s.group_no,
+        s.group_name,
+        g.game_name,
+        s.group_start_date,
+        s.group_finish_date,
+        (SELECT COUNT(member_no)
+        FROM baduk.group_students gs
+        WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
+        s.group_size - (SELECT COUNT(member_no)
+        FROM baduk.group_students gs
+        WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_TO
+        FROM
+        baduk.study_groups s
+        JOIN
+        baduk.game_contents g ON s.game_content_no=g.game_content_no
+        WHERE
+        s.member_no=#{member_no}
+        ORDER by s.group_no desc
+        <if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!--학습그룹 리스트 Cnt-->
+    <select id="StudyGroupListCnt" parameterType="int"  resultType="int">
+        <![CDATA[
+        SELECT
+           count(s.group_no)
+        FROM
+           baduk.study_groups s
+        JOIN
+           baduk.game_contents g ON s.game_content_no=g.game_content_no
+        WHERE
+           s.member_no=#{member_no}
+        ]]>
+    </select>
+
+    <!--학습그룹 리스트 조회 버튼-->
+    <select id="GroupSelect" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.StudyGroupsListDTO">
+        <![CDATA[
+        SELECT
+            s.payment_no,
+            s.group_no,
+            s.group_name,
+            g.game_name,
+            s.group_start_date,
+            s.group_finish_date,
+            (SELECT COUNT(member_no)
+             FROM baduk.group_students gs
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
+            s.group_size - (SELECT COUNT(member_no)
+                            FROM baduk.group_students gs
+                            WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS group_TO
+        FROM
+            baduk.study_groups s
+        JOIN
+            baduk.game_contents g ON s.game_content_no=g.game_content_no
+        WHERE
+            s.member_no=#{member_no} AND s.group_no=#{group_no}
+		]]>
+    </select>
+
+    <!--학습그룹 등록 학생 리스트-->
+    <select id="GroupMemberList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
+        <![CDATA[
+        SELECT m.name,m.tel,m.email,m.join_date
+        FROM baduk.members m
+        JOIN baduk.group_students gs
+        ON m.member_no=gs.member_no
+        WHERE gs.is_approved='1' AND gs.group_no=#{group_no}
+		]]>
+    </select>
+
+    <!--학습그룹 정보(학습 그룹 리스트 상세)-->
+    <select id="GroupInfo" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupsDetailListDTO">
+        <![CDATA[
+        SELECT
+            s.group_no,
+            s.group_name,
+            g.game_name,
+            s.group_size,
+            (SELECT COUNT(member_no)
+             FROM baduk.group_students gs
+             WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS approved_num,
+            s.group_introduce
+        FROM
+            baduk.study_groups s
+        JOIN
+            baduk.game_contents g ON s.game_content_no=g.game_content_no
+        WHERE
+            s.group_no=#{group_no}
+		]]>
+    </select>
+
+    <!--게임콘텐츠 리스트(학습그룹 등록)-->
+    <select id="GameContentList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
+        SELECT distinct p.payment_no, g.game_content_no, g.game_name, g.max_subscribers, p.payment_date,
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        LEFT JOIN (
+            SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
+            FROM baduk.study_groups
+            WHERE member_no = #{member_no}
+            GROUP BY game_content_no, member_no
+        ) s ON g.game_content_no = s.game_content_no
+        WHERE p.member_no = #{member_no}  AND p.status='complete'
+              AND DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY)>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+        <if test="pageSize != null and offset != null">
+        LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!--payment_no로 그룹 지정 인원 구하기-->
+    <select id="AppointedGroupNum" parameterType="int" resultType="int">
+        <![CDATA[
+        SELECT sum(group_size)
+        FROM baduk.study_groups
+        WHERE payment_no=#{payment_no}
+        ]]>
+    </select>
+
+    <!--게임콘텐츠명 리스트-->
+    <select id="GameNameList" parameterType="int" resultType="hashmap">
+        <![CDATA[
+        SELECT distinct g.game_content_no,g.game_name
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        WHERE p.member_no=#{member_no} AND p.status='complete'
+		]]>
+    </select>
+
+    <!--게임콘텐츠 리스트(학습그룹 등록) cnt-->
+    <select id="GameContentListCnt" parameterType="int"  resultType="int">
+        <![CDATA[
+        SELECT count(g.game_content_no)
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        WHERE p.member_no = #{member_no} AND p.status='complete'
+              AND DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY)>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+        ]]>
+    </select>
+
+    <!--게임콘텐츠 리스트 조회 버튼(학습그룹 등록)-->
+    <select id="SelectGameList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
+        SELECT p.payment_no,g.game_content_no,g.game_name, g.max_subscribers, p.payment_date,
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        LEFT JOIN (
+            SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
+            FROM baduk.study_groups
+            WHERE member_no = #{member_no}
+            GROUP BY game_content_no, member_no
+        ) s ON g.game_content_no = s.game_content_no
+        WHERE p.member_no = #{member_no}  AND p.status='complete' AND g.game_content_no=#{game_content_no}
+            AND DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY)>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+        <if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="SelectGameListCnt" parameterType="map"  resultType="int">
+        <![CDATA[
+        SELECT count(g.game_content_no)
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        LEFT JOIN (
+            SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
+            FROM baduk.study_groups
+            WHERE member_no = #{member_no}
+            GROUP BY game_content_no, member_no
+        ) s ON g.game_content_no = s.game_content_no
+        WHERE p.member_no = #{member_no}  AND p.status='complete' AND g.game_content_no=#{game_content_no}
+            AND DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY)>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+        ]]>
+    </select>
+
+
+    <!--게임콘텐츠 정보 가져오기(학습그룹 등록 폼)-->
+    <select id="GameContentInfo" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GameContentsListDTO">
+        <![CDATA[
+        SELECT distinct g.game_content_no,g.game_name, g.max_subscribers, p.payment_date,
+               DATE_ADD(p.payment_date, INTERVAL g.subscription_duration DAY) AS subscription_end_date, s.appointed_group_num,m.name
+        FROM baduk.game_contents g
+        JOIN baduk.payments p ON g.game_content_no = p.game_content_no
+        LEFT JOIN (
+            SELECT game_content_no, member_no, SUM(group_size) AS appointed_group_num
+            FROM baduk.study_groups
+            WHERE member_no = #{member_no}
+            GROUP BY game_content_no, member_no
+        ) s ON g.game_content_no = s.game_content_no
+        JOIN baduk.members m ON p.member_no=m.member_no
+        WHERE p.member_no = #{member_no}  AND p.status='complete' AND p.payment_no=#{payment_no}
+		]]>
+    </select>
+
+
+    <!--학습그룹 등록학생수 가져오기(학습그룹 등록 폼)-->
+    <select id="approved_num" parameterType="int" resultType="int">
+        <![CDATA[
+        SELECT COUNT(gs.member_no) AS approved_num
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s
+        ON gs.group_no=s.group_no
+        WHERE gs.is_approved = '1' AND gs.group_no=#{group_no}
+		]]>
+    </select>
+
+    <!--학습그룹 가입-학생(학습그룹 전체리스트)-->
+    <select id="GroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
+                 (SELECT COUNT(member_no)
+                     FROM baduk.group_students gs
+                     WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+                    s.group_size - (SELECT COUNT(member_no)
+                                    FROM baduk.group_students gs
+                                    WHERE gs.group_no = s.group_no) AS group_to
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
+        <if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!--학습그룹 가입-학생(학습그룹 전체리스트)) cnt-->
+    <select id="GroupJoinListCnt" resultType="int">
+        <![CDATA[
+        SELECT count(s.group_no)
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no AND s.group_finish_date >= CURDATE()
+        ]]>
+    </select>
+
+    <!--학습그룹 신청 리스트-->
+    <select id="ApproveList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.ApproveListDTO">
+        <![CDATA[
+        SELECT g.group_students_no,s.group_name,m.name,m.tel,g.application_date,g.is_approved,g.approved_date
+        FROM baduk.group_students g
+        JOIN baduk.study_groups s ON s.group_no=g.group_no
+        JOIN baduk.members m ON g.member_no=m.member_no
+        WHERE s.member_no=#{member_no} AND s.group_no=#{group_no}
+		]]>
+    </select>
+
+    <!--학습그룹 승인 처리-->
+    <update id="updateApproval" parameterType="java.util.List">
+        UPDATE group_students
+            SET is_approved = CASE
+            WHEN is_approved = 1 THEN 0
+            WHEN is_approved = 0 THEN 1
+            ELSE is_approved
+            END,
+        approved_date = CASE
+            WHEN is_approved = 1 THEN NOW()
+            WHEN is_approved = 0 THEN null
+            ELSE approved_date
+            END
+        WHERE group_students_no IN
+            <foreach collection="list" item="group_students_no" open="(" separator="," close=")">
+                #{group_students_no}
+            </foreach>
+    </update>
+
+    <!--학습그룹명 리스트-->
+    <select id="GroupNameList" parameterType="int" resultType="hashmap">
+        <![CDATA[
+        SELECT group_no,group_name
+        FROM baduk.study_groups
+        WHERE member_no=#{member_no}
+		]]>
+    </select>
+
+    <!--학습그룹명 리스트(기간지나지 않은)-->
+    <select id="GroupNameAllList" resultType="hashmap">
+        <![CDATA[
+        SELECT group_no,group_name
+        FROM baduk.study_groups
+		WHERE group_finish_date>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+		]]>
+    </select>
+
+    <!--학습그룹명 조건 조회(학습 그룹 신청 리스트)-->
+    <select id="SelectNameList" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
+            (SELECT COUNT(member_no)
+                FROM baduk.group_students gs
+                WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+            s.group_size - (SELECT COUNT(member_no)
+                            FROM baduk.group_students gs
+                            WHERE gs.group_no = s.group_no) AS group_to
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
+        WHERE s.group_no=#{group_no} AND s.group_finish_date >= CURDATE()
+        <if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!--교육자명 리스트(기간지나지 않은)-->
+    <select id="EducatorNameList" resultType="hashmap">
+        <![CDATA[
+        SELECT distinct m.member_no,m.name,e.school_name
+        FROM baduk.members m
+        JOIN baduk.study_groups s ON m.member_no=s.member_no
+        JOIN baduk.educator_info e ON m.member_no=e.member_no
+        WHERE m.role='educator' AND s.group_finish_date>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+		]]>
+    </select>
+
+    <!--교육자명 조건 조회(학습 그룹 신청 리스트)-->
+    <select id="SelectEducatorNameList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
+                 (SELECT COUNT(member_no)
+                     FROM baduk.group_students gs
+                     WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+                    s.group_size - (SELECT COUNT(member_no)
+                                    FROM baduk.group_students gs
+                                    WHERE gs.group_no = s.group_no) AS group_to
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        JOIN baduk.educator_info e ON e.member_no=m.member_no
+        WHERE m.member_no=#{member_no} AND s.group_finish_date >= CURDATE()
+        <if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="SelectEducatorNameListCnt" parameterType="int"  resultType="int">
+        <![CDATA[
+          SELECT count(s.group_no)
+          FROM baduk.study_groups s
+          JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+          JOIN baduk.members m ON s.member_no=m.member_no
+          WHERE m.member_no=#{member_no} AND s.group_finish_date >= CURDATE()
+        ]]>
+    </select>
+
+    <!--학습그룹명&그룹명으로 조회(학습 그룹 신청 리스트)-->
+    <select id="SelectGroupJoinList" parameterType="map" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.GroupJoinListDTO">
+        SELECT s.group_no,g.copy_file_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,s.group_introduce,e.school_name,
+                 (SELECT COUNT(member_no)
+                     FROM baduk.group_students gs
+                     WHERE gs.is_approved = '1' AND gs.group_no = s.group_no) AS aproved_num,
+                    s.group_size - (SELECT COUNT(member_no)
+                                    FROM baduk.group_students gs
+                                    WHERE gs.group_no = s.group_no) AS group_to
+        FROM baduk.study_groups s
+        JOIN baduk.game_content_files g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE s.group_no=#{group_no} AND m.member_no=#{member_no} AND s.group_finish_date >= CURDATE()
+		<if test="pageSize != null and offset != null">
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!--학습 그룹 신청 리스트에서 기본으로 보여질 group_no-->
+    <select id="BasicGroupNo" parameterType="int" resultType="int">
+        SELECT MIN(group_no)
+        FROM study_groups
+        WHERE member_no=#{member_no}
+    </select>
+
+    <!--학습 그룹 가입 확인(학생)-->
+    <select id="JoinConfirm" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.JoinConfirmDTO">
+        SELECT gs.group_students_no,g.game_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,gs.application_date,gs.approved_date,gs.is_approved
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s ON gs.group_no=s.group_no
+        JOIN baduk.game_contents g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE gs.member_no=#{member_no} AND s.group_finish_date>=DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+    </select>
+
+    <!--학습 그룹 이력 확인(학생)-->
+    <select id="JoinRecord" parameterType="int" resultType="com.idukbaduk.metoo9dan.studyGroup.dto.JoinConfirmDTO">
+        SELECT gs.group_students_no,g.game_name,s.group_name,m.name,s.group_start_date,s.group_finish_date,gs.application_date,gs.approved_date,gs.is_approved
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s ON gs.group_no=s.group_no
+        JOIN baduk.game_contents g ON s.game_content_no=g.game_content_no
+        JOIN baduk.members m ON s.member_no=m.member_no
+        WHERE gs.member_no=#{member_no} AND DATE_FORMAT(CURDATE(), '%Y-%m-%d')>s.group_finish_date
+    </select>
+
+    <!--진행 중 학습 그룹 확인-->
+    <select id="IngStudyGroup" parameterType="int" resultType="int">
+        SELECT COUNT(gs.group_students_no) AS ing
+        FROM baduk.group_students gs
+        JOIN baduk.study_groups s ON gs.group_no=s.group_no
+        WHERE s.group_finish_date>DATE_FORMAT(CURDATE(), '%Y-%m-%d') and gs.member_no=#{member_no}
+    </select>
+
+</mapper>

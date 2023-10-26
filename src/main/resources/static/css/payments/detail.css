@@ -1,0 +1,31 @@
+/* styles.css */
+.container-main {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.card-content {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    margin-top: 10px;
+}
+
+.card-content img {
+    max-width: 100px;
+    height: auto;
+}
+
+.card-content h5 {
+    font-size: 18px;
+}
+
+.card-content .badge {
+    font-size: 18px;
+}
+
+.card-content p {
+    font-size: 18px;
+}

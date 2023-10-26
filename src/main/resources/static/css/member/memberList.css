@@ -1,0 +1,45 @@
+/* 회원관리 검색 조건 영역 */
+
+.search-container {
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+    background-color: #8B4513; /* 갈색 배경 */
+    border-radius: 20px;
+    padding: 40px;
+    padding-top: 10px;
+    margin: 50px;
+    align-items: center;
+    justify-content: center; /* 가로 축에서 가운데 정렬 */
+    gap: 10px;
+}
+
+.inner-board {
+    background-color: rgb(112, 173, 71); /* 연두색 배경 */
+    border-radius: 15px; /* 모서리를 둥글게 */
+    width: 100%; /* 부모 컨테이너의 전체 폭 사용 */
+    padding: 20px; /* 안쪽 여백 추가 */
+}
+
+.result-message {
+    margin-bottom: 10px;
+}
+
+#memberList {
+    width: 100%;
+     border-radius: 10px;
+    /* 추가적인 테이블 스타일링 */
+}
+/* 테이블 헤더의 첫번째 칸에 대한 스타일 */
+#memberList thead th:first-child {
+    background-color: #ffdf7e;  /* .btn-warning의 배경색과 유사한 색상 */
+    color: #212529;  /* 글자 색상 */
+    cursor: pointer;  /* 마우스를 올렸을 때 손가락 형태로 변경 */
+}
+
+.pagination {
+    text-align: center;
+    margin-top: 15px;
+}
+.pagination a.active {
+    background-color: #007bff;
+    color: #fff;
+}

@@ -1,0 +1,188 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/member/joinForm.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/member/login.css}">
+
+        <div class="d-flex justify-content-center align-items-center mt-5">
+            <div class="row findAccountForm">
+                    <!-- Pills navs -->
+                    <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="tab-searchId" data-bs-toggle="pill" href="#pills-id" role="tab"
+                               aria-controls="pills-id" aria-selected="true">아이디 찾기</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="tab-searchPwd" data-bs-toggle="pill" href="#pills-pwd" role="tab"
+                               aria-controls="pills-pwd" aria-selected="false">비밀번호 찾기</a>
+                        </li>
+                    </ul>
+                    <!-- Pills navs 끝 -->
+                        <!-- 로고 영역 시작 -->
+                        <div class="d-flex justify-content-center align-items-center my-3">
+                            <img src="/image/nadoLogo2.png" alt="나도9단" class="img-fluid">
+                        </div>
+                        <!-- 로고 영역 끝 -->
+
+                <!-- Pills content -->
+                <div class="tab-content" id="pills-tabContent">
+                    <!-- 아이디 찾기 영역-->
+                    <div class="tab-pane fade show active" id="pills-id" role="tabpanel" aria-labelledby="tab-searchId">
+                        <div class="center-content id=searchIdForm">
+                            <div class="d-flex justify-content-center" >
+                                <form class="row g-3 justify-content-center" id="idSearch" method="post">
+                                    <div class="row g-3">
+                                        <div class="text-center" style="margin-bottom:50x;">
+                                            <h6><strong> 가입시 입력했던 이메일 주소를 입력해주세요.</strong></h6>
+                                        </div>
+                                        <div class="row g-3">
+                                            <!-- 이메일 입력창 && 전송버튼 -->
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <div class="form-floating col-md-8" style="width: 420px;">
+                                                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                                                    <label for="email">Email address</label>
+                                                </div>
+
+                                                <!-- 전송버튼 -->
+                                                <div class="col-auto d-flex justify-content-center mt-2">
+                                                    <button type="button" class="btn btn-warning rounded-pill mb-4" id="idSearchBtn" name="idSearchBtn"
+                                                            data-bs-toggle="modal" data-bs-target="#idSearchModal" style="border-radius: 30px; width: 230px;">아이디찾기
+                                                    </button>
+                                                </div>
+                                                <!-- 로그인 | 회원가입 링크 -->
+                                                <div class="d-flex flex-column align-items-center text-center mt-2">
+                                                    <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인 | 회원가입</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                                    <!-- 모달 HTML -->
+                                    <div class="modal" id="idSearchModal" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">아이디찾기</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <!-- 아이디찾기 결과값 -->
+                                                <div class="modal-body mt-2"><p id="text"></p></div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/member/login}">
+                                                        <button type="button" class="btn btn btn-warning">로그인 이동</button>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> <!-- 모달 끝 -->
+                            </div>
+                    </div>
+        `               <!-- 비밀번호 찾기 영역 : 아이디, 이름, 이메일  > -->
+                    <div class="tab-pane fade" id="pills-pwd" role="tabpanel" aria-labelledby="tab-searchPwd">
+
+                                <!-- 비번찾기 위한 입력창 -->
+                                <div class="center-content" id=" searchPwForm">
+                                    <div class="d-flex justify-content-center">
+                                        <form class="row g-3 justify-content-center" id="pwdSearch" method="post">
+                                            <div class="row g-3">
+                                                    <!-- 설명 -->
+                                                    <div class="text-center" style="margin-bottom:50x;">
+                                                        <p><h4>가입시 입력했던 아이디와 이메일 주소를 입력해주세요.></h4></p>
+                                                    </div>
+                                                    <!-- 아이디-->
+                                                    <div class="form-floating justify-content-center mb-2">
+                                                        <input type="text" class="form-control" id="memberId" name="memberId" placeholder="아이디를 입력하세요">
+                                                        <label for="memberId">ID</label>
+                                                    </div>
+                                                    <!-- 이메일입력창 -->
+                                                    <div class="form-floating ustify-content-center mb-2">
+                                                        <input type="email" class="form-control" id="pwdemail" name="email" placeholder="name@example.com">
+                                                        <label for="email">Email address</label>
+                                                    </div>
+                                                    <!-- 전송버튼 -->
+                                                    <div class="d-flex justify-content-end mb-2">
+                                                        <button type="button" class="btn btn-warning" id="pwdSearchBtn" name="button">비밀번호찾기</button>
+                                                    </div>
+                                                    <!-- 로그인 | 회원가입 링크 -->
+                                                    <div class="justify-content-center text-centerr">
+                                                        <div class="justify-content-center mb-2">
+                                                            <div class="d-flex justify-content-center mb-2">
+                                                                <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인 | 회원가입</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                         </div> <!-- tab pane-->
+            </div> <!-- tabContent -->
+        </div><!--row -->
+    </div> <!-- dflex 찾기 영역 끝 -->
+
+<!-- </div>  col-10-->
+
+    <script layout:fragment="script">
+        document.getElementById('pwdSearchBtn').addEventListener('click', function (event) {
+             event.preventDefault(); // Prevent the default form submission
+             loadText();
+         });
+
+       //모달 아이디찾기
+       document.getElementById("idSearchBtn").addEventListener("click", function () {
+        // 이메일 입력값 가져오기
+        const email = document.getElementById("email").value;
+
+            fetch('/member/idSearch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.text())
+            .then(data => {
+                // 모달에 반환된 데이터 (회원 ID 또는 메시지)를 표시
+                document.getElementById("text").textContent = data;
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+
+
+
+         // Enter 키를 누를 때 폼이 자동으로 제출되도록 합니다.
+         document.getElementById('pwdemail').addEventListener('keydown', function (e) {
+             if (e.key === "Enter") {
+                 e.preventDefault(); // Enter 키의 기본 동작을 막습니다.
+                 loadText(); // loadText 함수를 호출하여 "POST" 요청을 보냅니다.
+             }
+         });
+
+
+
+      function loadText() {
+             var email = document.getElementById('pwdemail').value;
+             var memberId = document.getElementById('memberId').value;
+             var xhr = new XMLHttpRequest();
+             xhr.open('POST', '/member/pwdSearch', true);
+             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+             var params = 'email=' + email + '&memberId=' + memberId;
+             xhr.onload = function () {
+                 if (this.status == 200) {
+                     var responseJson = JSON.parse(this.responseText);
+                     var message = responseJson.message;
+                     if (message === "사용자 정보를 찾을 수 없습니다.") {
+                         alert("사용자 정보를 찾을 수 없습니다.");
+                     }
+                     if (message === "메일을 발송하였습니다.") {
+                         alert("메일을 발송하였습니다.");
+                         window.location.href = '/member/login';
+                     }
+                 }
+             };
+             xhr.send(params);
+         }
+    </script>
+</div>
+</html>

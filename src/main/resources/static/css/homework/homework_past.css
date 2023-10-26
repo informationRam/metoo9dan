@@ -1,0 +1,27 @@
+        body {
+            background-color: #f9f8fd;
+        }
+
+        .card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-title {
+            color: #70AD47;
+        }
+
+        .pagination > .active > .page-link {
+            background-color: #70AD47;
+            border-color: #70AD47;
+        }
+
+        .icon-style {
+            color: #70AD47;
+        }

@@ -1,0 +1,171 @@
+/*회원가입 css*/
+
+  /*체크박스 사이즈 지정 */
+   .form-check-input {
+                width: 1rem;
+                height: 1rem;
+            }
+/*   교육자 정보 구분선*/
+         hr {
+           border: none;  /* {*기존 border 제거*}*/
+           border-top: 1px solid gray;    /*{*분할선 역할해줄 border설정*}*/
+           text-align: center;   /* {*hr태그 내부 텍스트 가운데 정렬*}*/
+           overflow: visible;    /*{*hr태그 벗어난 자식요소 보이게 만들기*}*/
+         }
+         hr:after {
+           content: "소속 교육기관 정보";    /*{*hr 태그 내부에 "Or"가 들어간 가상요소 만들기*}*/
+           position: relative;   /* {*hr 태그를 중심으로 요소 움직이기*}*/
+           top: -15px;    /*{*hr태그 맨위 기준으로 -15px 만큼 움직이기*}*/
+           background-color: white;    /*{*배경색 칠해서, 글자주변에서는 분할선 안보이게 만들기*}*/
+           padding: 0 10px;   /* {*더욱 예쁘게 여분 설정하기*}*/
+         }
+            .details {
+            display: none;
+            margin-left: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            }
+
+             #signUpForm {
+                max-width: 800px;
+                background-color: #ffffff;
+                margin: 40px auto;
+                padding: 40px;
+                box-shadow: 0px 6px 18px rgb(0 0 0 / 9%);
+                border-radius: 12px;
+            }
+            #signUpForm .form-header {
+                gap: 5px;
+                text-align: center;
+                font-size: .9em;
+            }
+            #signUpForm .form-header .stepIndicator {
+                position: relative;
+                flex: 1;
+                padding-bottom: 30px;
+            }
+            #signUpForm .form-header .stepIndicator.active {
+                font-weight: 600;
+            }
+            #signUpForm .form-header .stepIndicator.finish {
+                font-weight: 600;
+                color: #009688;
+            }
+            #signUpForm .form-header .stepIndicator::before {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%);
+                z-index: 9;
+                width: 20px;
+                height: 20px;
+                background-color: #d5efed;
+                border-radius: 50%;
+                border: 3px solid #ecf5f4;
+            }
+            #signUpForm .form-header .stepIndicator.active::before {
+                background-color: #a7ede8;
+                border: 3px solid #d5f9f6;
+            }
+            #signUpForm .form-header .stepIndicator.finish::before {
+                background-color: #009688;
+                border: 3px solid #b7e1dd;
+            }
+            #signUpForm .form-header .stepIndicator::after {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: 8px;
+                width: 100%;
+                height: 3px;
+                background-color: #f3f3f3;
+            }
+            #signUpForm .form-header .stepIndicator.active::after {
+                background-color: #a7ede8;
+            }
+            #signUpForm .form-header .stepIndicator.finish::after {
+                background-color: #009688;
+            }
+            #signUpForm .form-header .stepIndicator:last-child:after {
+                display: none;
+            }
+            #signUpForm input {
+                padding: 10px 15px;
+                width: 100%;
+                font-size: 1em;
+                border: 1px solid #e3e3e3;
+                border-radius: 5px;
+            }
+            #signUpForm input:focus {
+                border: 1px solid #009688;
+                outline: 0;
+            }
+            #signUpForm input.invalid {
+                border: 1px solid #ffaba5;
+            }
+            #signUpForm .step {
+              display: none;
+            }
+            #signUpForm .form-footer{
+                overflow:auto;
+                gap: 20px;
+            }
+            #signUpForm .form-footer button{
+                background-color: #009688;
+                border: 1px solid #009688 !important;
+                color: #ffffff;
+                border: none;
+                padding: 13px 30px;
+                font-size: 1em;
+                cursor: pointer;
+                border-radius: 5px;
+                flex: 1;
+                margin-top: 5px;
+            }
+            #signUpForm .form-footer button:hover {
+              opacity: 0.8;
+            }
+
+            #signUpForm .form-footer #prevBtn {
+                background-color: #fff;
+                color: #009688;
+            }
+
+            /* 시도 및 시군구 선택 및 소속 학원명 입력 영역 정렬 스타일 */
+            #educatorInfo {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            #educatorInfo .col-md-6 {
+                flex: 1;
+                padding-right: 15px;
+                padding-left: 15px;
+            }
+
+            #educatorInfo .col-md-12 {
+                flex: 2;
+                padding-right: 15px;
+                padding-left: 15px;
+            }
+          /* 본인인증 방법 선택 버튼을 가로로 나란히 정렬 */
+          .auth-selector {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+          }
+
+          /* 본인인증 방법 선택 버튼 사이의 간격 설정 */
+          .auth-selector button {
+            margin: 0 10px; /* 좌우 여백을 조절하여 간격 설정 */
+          }
+          .text-danger {
+              color: red;
+          }
+          input.form-control {
+              width: 100%;           /* 가로 너비를 최대로 확장 */
+              border-radius: 25px;   /* 모서리 둥글게 설정 (원하는 둥근 정도에 따라 값을 조절하세요) */
+              border: 1px solid #ccc; /* 경계선 스타일 지정 */
+              padding: 10px 15px;   /* 내부 여백을 추가하여 텍스트가 입력 태그의 모서리와 너무 가깝지 않게 설정 */
+          }

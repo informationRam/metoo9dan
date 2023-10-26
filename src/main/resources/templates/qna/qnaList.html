@@ -1,0 +1,118 @@
+<!--이 파일을 복사하여 templates/본인기능폴더 하위에 추가하여 작업해주세요-->
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <div class="row">
+        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+        <div th:replace="~{/notice/manageSidebar::sidebar}"></div>
+        <div th:replace="~{/notice/utilSidebar::sidebar}"></div>
+
+        <div class="col-10 mt-5"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <h2>문의사항</h2>
+            <div class="mt-3 mb-5">
+                <a class="form-text" th:text="|총 게시물 ${questionPage.getTotalElements}개 조회되었습니다.|"></a>
+                <table class="table table-hover">
+                    <thead class="">
+                        <tr class="text-center">
+                            <th>No</th>
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th>작성일</th>
+                            <th>답변여부</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="question, loop:${questionPage}">
+                            <td class="text-center" th:text="${question.questionNo}"></td>
+                            <td><a th:text="${question.questionTitle}"
+                                   th:href="@{|/qna/detail/${question.questionNo}|}"></a></td>
+                            <td class="text-center" th:text="${question.member.memberId}"></td>
+                            <td class="text-center" th:text="${#temporals.format(question.writeDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td class="text-center">
+                                <span th:if="${question.isAnswered}==false" class="badge rounded-pill text-bg-secondary">답변대기</span>
+                                <span th:unless="${question.isAnswered}==false" class="badge rounded-pill text-bg-warning text-white">답변완료</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${questionPage.isEmpty()}">
+                            <td colspan="5" class="text-center">작성된 문의사항이 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-warning text-white" th:href="@{/qna/questionAdd}">문의사항 작성</a>
+            </div>
+            <!--페이지네이션-->
+            <nav th:if="${!questionPage.isEmpty()}" class="d-flex justify-content-center">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${startPage <= 5} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?page=${startPage-2}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Prev</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${startPage-2}|}"><span>Prev</span></a>
+                    </li>
+                    <li class="page-item" th:each="page : ${#numbers.sequence(startPage-1, endPage-1)}"
+                        th:classappend="${page == questionPage.number} ? 'active'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?page=${page}&searchCategory=${searchCategory}&keyword=${keyword}|}"
+                           th:text="${page+1}"></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${page}|}"
+                           th:text="${page+1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${endPage >= questionPage.totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${keyword}!=null"
+                           th:href="@{|?page=${endPage}&searchCategory=${searchCategory}&keyword=${keyword}|}"><span>Next</span></a>
+                        <a class="page-link"
+                           th:if="${keyword}==null"
+                           th:href="@{|?page=${endPage}|}"><span>Next</span></a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!--문의사항 검색 영역-->
+            <div class="mb-3 mt-3">
+                <form action="/qna/search">
+                    <div class="d-flex justify-content-center">
+                        <div class="input-group" style="width: 45%">
+                        <select id="searchCategory" name="searchCategory" class="col-auto form-select">
+                            <option value="titleAndContent">제목+내용</option>
+                            <option value="title">제목</option>
+                            <option value="content">내용</option>
+                        </select>
+                        <input type="text" id="keyword" name="keyword" th:value="${keyword}" class="col-auto form-control">
+                        <input type="submit" value="검색" class="col-auto btn btn-outline-warning">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div><!--콘텐츠영역끝-->
+    </div><!--row-->
+</div><!--container-->
+<div layout:fragment="script">
+<script th:inline="javascript">
+    if([[${msg}]]!=null){
+        alert([[${msg}]]);
+    }
+
+    //셀 박 값 고정 - searchCategory
+    document.addEventListener('DOMContentLoaded', function(){
+        var searchCategory = [[${searchCategory}]];
+        var searchCategorySE = document.getElementById('searchCategory');
+        for(var i = 0; i<searchCategorySE.length; i++){
+            if(searchCategorySE.options[i].value == searchCategory){
+            searchCategorySE.options[i].selected = true;
+            break;
+            }
+        }
+    });
+</script>
+</div>
+
+</html>

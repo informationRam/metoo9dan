@@ -1,0 +1,144 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<div layout:fragment="content" class="container my-3">
+    <link rel="stylesheet" href="/css/studyGroup/table.css"/>
+    <div class="row">
+        <div th:replace="~{/studyGroup/educatorSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
+
+        <div style="border: 0px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+            <!-- 맡은 기능 구현 하시면 됩니다! -->
+            <br/>
+            <p/>
+            <h1>학습 그룹 등록</h1>
+            <p/>
+            <br/>
+            <div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>게임콘텐츠명</th>
+                        <!--<th>학습시작일</th>
+                        <th>학습종료일</th>-->
+                        <th>학습 기간</th>
+                        <th>학습가능인원</th>
+                        <th>그룹지정된 인원</th>
+                        <!--<th>교육자명</th>-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="gameInfo, loop : ${gameInfo}">
+                        <td th:text="${gameInfo.game_name}"></td>
+                        <!--<td th:text="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></td>-->
+                        <td>
+                            <span th:text="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"></span>
+                            ~
+                            <span th:text="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"></span>
+                        </td>
+                        <td th:text="${gameInfo.max_subscribers}"></td>
+                        <td th:text="${appointed_group_num}"></td>
+                        <!--<td th:text="${gameInfo.name}"></td>-->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <br/>
+            <p><strong>[그룹 상세 정보]</strong></p>
+            <div th:each="gameInfo, loop : ${gameInfo}">
+            <p>교육자명 :  <strong><span  th:text="${gameInfo.name}"></span></strong></p>
+            <form id="studyGroupForm" th:object="${studyGroupForm}" method="post">
+                <div th:replace="~{studyGroup/form_errors::formErrorsFragment}"></div>
+                <div class="mb-3">
+                    <label for="group_name" class="form-label">그룹명</label>
+                    <input type="text" th:field="*{groupName}" class="form-control"/>
+                </div>
+                <label for="group_size" class="form-label">그룹 인원</label>
+                <div class="form-floating mb-3">
+                    <input type="number" th:field="*{groupSize}" class="form-control"
+                           th:min="1" th:max="${gameInfo.max_subscribers - appointed_group_num}"/>
+                    <label for="floatingInput" th:text="${gameInfo.max_subscribers - appointed_group_num} + '명 까지 등록 가능합니다.'"></label>
+                </div>
+                <div class="mb-3">
+                    <label for="group_start_date" class="form-label">그룹 시작일</label>
+                    <input type="date" id="groupStartDate" name="groupStartDate" th:field="*{groupStartDate}" class="form-control"
+                           th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
+                           th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
+                </div>
+                <div class="mb-3">
+                    <label for="group_finish_date" class="form-label">그룹 종료일</label>
+                    <input type="date"  id="groupFinishDate" name="groupFinishDate" th:field="*{groupFinishDate}" class="form-control"
+                           th:min="${#dates.format(gameInfo.payment_date,'yyyy-MM-dd')}"
+                           th:max="${#dates.format(gameInfo.subscription_end_date,'yyyy-MM-dd')}"/>
+                </div>
+                <div class="mb-3">
+                    <label for="group_introduce" class="form-label">그룹 소개글</label>
+                    <textarea type="text" th:field="*{groupIntroduce}" class="form-control" placeholder="그룹 소개글이 필요하면 작성하세요.(30자 이내)" maxlength="30"/>
+                </div>
+                    <input type="hidden" id="game_content_no" name="gameContentNo" class="form-control" th:value="${game_content_no}"/>
+                    <input type="hidden" id="payment_no" name="paymentNo" class="form-control" th:value="${payment_no}"/>
+                    <input type="hidden" th:value="${member_no}" class="form-control"/>
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <input type="submit" value="학습 그룹 등록 하기" class="btn btn-warning text-white"/>
+                </div>
+            </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+</html>
+
+<script>
+    var groupNameInput = document.querySelector("input[name=groupName]");
+   var groupSizeInput = document.querySelector("input[name=groupSize]");
+   // 그룹 시작일과 종료일 필드를 가져오기
+   var groupStartDateInput = document.getElementById("groupStartDate");
+   var groupFinishDateInput = document.getElementById("groupFinishDate");
+
+   // 폼 제출 시 이벤트 핸들러 추가
+   document.getElementById("studyGroupForm").addEventListener("submit", function (event) {
+       // 그룹명, 그룹인원, 그룹 시작일, 그룹 종료일 값을 가져오기
+       var groupNameValue = groupNameInput.value;
+       var groupSizeValue = groupSizeInput.value;
+       var groupStartDateValue = groupStartDateInput.value;
+       var groupFinishDateValue = groupFinishDateInput.value;
+
+        // 그룹명 검사
+        if (groupNameValue.trim() === "") {
+            alert("그룹 명을 입력하세요.");
+            event.preventDefault(); // 폼 제출 방지
+        } else {
+            // 그룹인원 검사
+            if (groupSizeValue.trim() === "" || isNaN(groupSizeValue) || parseInt(groupSizeValue) <= 0) {
+                alert("그룹 인원을 입력하세요.");
+                event.preventDefault(); // 폼 제출 방지
+            } else {
+                // 그룹 시작일 검사
+                if (groupStartDateValue.trim() === "") {
+                    alert("그룹 시작일을 입력하세요.");
+                    event.preventDefault(); // 폼 제출 방지
+                } else {
+                    // 그룹 종료일 검사
+                    if (groupFinishDateValue.trim() === "") {
+                        alert("그룹 종료일을 입력하세요.");
+                        event.preventDefault(); // 폼 제출 방지
+                    } else {
+                        // 그룹 시작일과 종료일 값을 가져오기
+                        var startDate = new Date(groupStartDateValue);
+                        var finishDate = new Date(groupFinishDateValue);
+
+                        // 그룹 시작일이 그룹 종료일보다 크다면 유효성 검사 실패
+                        if (startDate > finishDate) {
+                            alert("그룹 종료일은 그룹 시작일보다 같거나 뒤에 있어야 합니다.");
+                            event.preventDefault(); // 폼 제출 방지
+                        }
+                        else {
+                            // 등록이 완료되었음을 알리는 alert 메시지 표시
+                            alert("학습 그룹 등록이 완료되었습니다.");
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>

@@ -1,0 +1,68 @@
+/*로그인 css*/
+
+/* 로그인창 전체 배경색 추가 */
+.d-flex.justify-content-center.align-items-center.mt-5 {
+    background-color: #f2f2f2; /* 원하시는 배경색으로 변경하세요 */
+    padding: 50px; /* 패딩을 추가하여 내용과 테두리 사이에 간격을 만듭니다 */
+    border-radius: 10px; /* 모서리를 둥글게 */
+    width: auto; /* 너비 설정 */
+    max-width: 900px; /* 원하는 최대 너비로 설정 */
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
+    margin: 0 auto; /* 가로 중앙 정렬 */
+
+}
+
+
+/* 탭의 기본 스타일 */
+.nav-pills .nav-link {
+    background-color: rgba(197,224,180); /* 비활성화된 탭의 배경색 */
+    color: white; /* 글씨색 흰색 */
+    border-radius: px; /* 둥근 모서리 추가 */
+    transition: all 0.3s; /* 부드러운 트랜지션 효과 */
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    margin: 0px 5px; /* 상하 간격 조정 */
+    padding: 10px; /* 가로 패딩을 조금 더 늘립니다 */
+    display: block; /* 한 줄에 하나의 탭 */
+    text-align: center; /* 탭 글자 중앙 정렬 */
+}
+
+/* Adjusting the tab placement */
+.nav-pills {
+    justify-content: center;
+    margin-bottom: 20px;
+}
+/* 활성화된 탭의 스타일 */
+.nav-pills .nav-link.active {
+    background-color: rgb(112, 173, 71); /* 진한 연두색 */
+    color: white; /* 글자색 흰색 */
+}
+
+/* 버튼에 그림자 효과 */
+.btn {
+        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+    max-width: 100%; /* 버튼의 길이를 최대로 */
+   /* width: 100%;*/
+    margin-top: 20px; /* 버튼 상단 간격 추가 */
+   }
+
+#loginbtn, #idSearchBtn {
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  background-color: rgb(112, 173, 71);
+  color: white;
+  transition: border-color 0.3s, background-color 0.3s; /* 변화에 트랜지션 효과 적용 */
+  border: 1px solid rgb(112, 173, 71);/* 기본 테두리 스타일 */
+  padding: 10px 30px; /* 가로 패딩을 조금 더 늘립니다 */
+}
+
+#loginbtn:hover, #loginbtn:active, #idSearchBtn:hove, #idSearchBtn:active {
+  /* 호버 및 클릭 상태일 때 테두리와 배경색 변경 */
+  border-color: darkgreen;
+  background-color: rgb(112, 173, 71);
+}
+input.form-control {
+    width: 100%;           /* 가로 너비를 최대로 확장 */
+    border-radius: 25px;   /* 모서리 둥글게 설정 (원하는 둥근 정도에 따라 값을 조절하세요) */
+    border: 1px solid #ccc; /* 경계선 스타일 지정 */
+    padding: 10px 15px;   /* 내부 여백을 추가하여 텍스트가 입력 태그의 모서리와 너무 가깝지 않게 설정 */
+}

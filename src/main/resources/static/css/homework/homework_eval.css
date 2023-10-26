@@ -1,0 +1,319 @@
+.cute-card,
+.cute-card-submit {
+  padding: 20px;
+  border: 1px solid #ffb300;
+  border-radius: 10px;
+  background-color: #fff; /* 노랑색 톤의 배경색 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.badge-container {
+  display: flex;
+  justify-content: left; /* 뱃지를 가운데 정렬 */
+  gap: 10px; /* 뱃지 사이의 간격 */
+  margin-bottom: 20px; /* 다른 항목들과의 간격 */
+}
+
+.badge {
+  padding: 5px 15px;
+  background-color: #ffb300; /* 배경색 */
+  color: white; /* 글자색 */
+  border-radius: 20px; /* 둥근 모서리 */
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.item-row i {
+  margin-right: 15px;
+  margin-top: 5px;
+  color: #ffb300; /* 노란색 아이콘 */
+}
+
+.cute-hr {
+  border-top: 1px dashed #ffb300; /* 노란색 점선 */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.cute-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.cute-dropdown select.form-select {
+  padding: 10px 30px 10px 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none; /* 이건 브라우저 기본 스타일을 제거하기 위해 사용합니다. */
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.cute-dropdown:hover select.form-select {
+  border-color: #ffb300;
+}
+
+.no-submission-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #fffde7; /* 더 연한 노랑색 배경 */
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+}
+
+.no-submission-message {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.cancel-btn {
+  background-color: #ff8f00; /* 노랑색과 어울리는 주황색 */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+  background-color: #ff6f00; /* 조금 더 진한 주황색 */
+}
+
+.charts-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.chart-container {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+  width: 45%; /* 차트와 내용의 너비 조정 */
+}
+
+.chart-container canvas {
+  max-width: 180px;
+  max-height: 180px;
+}
+
+.chart-detail {
+  margin-left: 20px;
+}
+
+.chart-detail h4 {
+  color: #333;
+  margin: 10px 0;
+}
+
+.chart-detail p {
+  color: #888;
+  font-size: 14px;
+}
+/*추가된 부분*/
+
+.item-row {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 14px;
+}
+
+.item-row label {
+  font-weight: bold;
+  margin-right: 10px;
+  width: 120px; /* 라벨의 너비를 조정합니다. */
+  display: inline-block;
+}
+
+.item-row i {
+  margin-right: 5px;
+}
+
+/* 테이블 스타일 */
+.nano-table {
+    width: 100%;  /* 전체 너비 사용 */
+    border-collapse: separate;  /* border-radius를 적용하기 위해 변경 */
+    border-spacing: 0;  /* 경계 간격 제거 */
+    border-radius: 10px;  /* 모서리 둥글게 */
+    overflow: hidden;  /* 둥근 모서리 내부로 내용이 넘치지 않게 처리 */
+}
+
+
+.nano-table, .nano-table th, .nano-table td {
+    border: 1px solid #ddd;  /* 테이블 경계 및 셀 경계 스타일 */
+    text-align: left;
+}
+
+.nano-table-hover tbody tr:hover {
+    background-color: #fff9e5;  /* 노란색 테마의 호버 색상 */
+    cursor: pointer;
+}
+
+/* 헤더 스타일 */
+.nano-thead th {
+    background-color: #ffc107;  /* 노란색 배경 */
+    color: #333;  /* 검은색 글씨 */
+    padding: 10px 15px;  /* 패딩 설정 */
+    cursor: pointer;  /* 클릭 가능성을 나타내기 위한 스타일 */
+}
+
+/* 본문 스타일 */
+.nado-tbody td {
+    padding: 10px 15px;  /* 패딩 설정 */
+    color: #333;  /* 검은색 글씨 */
+}
+
+/* 데이터가 없을 때의 메시지 */
+.nado-none {
+    text-align: center;  /* 텍스트 가운데 정렬 */
+    color: #888;  /* 회색 글씨 */
+    padding: 20px 0;  /* 위아래 패딩 */
+}
+
+.upperSection {
+    background-color: #ffdd57;
+    background-image: linear-gradient(to bottom, #ffee77, #ffdd66);
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin: 10px 10px 10px 10px; /* 마진 추가 */
+    border-radius: 25px; /* 둥근 모서리 추가 */
+}
+
+.curveEffect {
+    width: 220px;
+    height: 55px; /* 높이를 조금 늘림 */
+    position: absolute;
+    bottom: -20px; /* 위치를 약간 아래로 조정 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffdd66; /* 원래의 배경색으로 복원 */
+    border-radius: 50%; /* 원의 형태로 조절 */
+    z-index: 1;
+    color: fff;
+}
+
+.nado-card {
+    margin: 50px auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9); /* 90% 불투명도의 흰색 배경 */
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nado-card-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ffc107; /* 노란색을 기반으로 한 밑줄 */
+}
+
+.nado-card-header h2 {
+    margin: 0;
+    padding: 10px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.nado-card-body {
+    padding: 20px;
+}
+
+.pagination {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+.page-item {
+    margin: 0 2px;
+    list-style-type: none;
+}
+
+.pagination-link {
+    border: none;
+    color: #333;
+    border-radius: 5px;
+    padding: 8px 8px;
+    transition: background-color 0.3s, color 0.3s;
+    list-style-type: none;
+}
+
+.page-item.active .pagination-link,
+.pagination-link:hover {
+    background-color: #ffc107;
+    color: #333;
+    border-color: #ffc107;
+    list-style-type: none;
+}
+
+.page-item.disabled{
+    pointer-events: none;
+    cursor: default;
+    background-color: #f2f2e6;
+    color: #999;
+    list-style-type: none;
+}
+
+.nado-table-container {
+    border: 2px solid #ffc107;  /* 노란색 테두리 */
+    border-radius: 10px;
+    overflow: hidden;  /* 테두리 내부로 내용이 넘치지 않게 처리 */
+    padding: 10px;  /* 테이블과 컨테이너와의 간격 */
+}
+
+.btn-nado-primary {
+    padding: 15px 60px;       /* 패딩을 조금 더 크게 설정 */
+    background-color: #ffc107;
+    border: none;
+    border-radius: 35px;     /* 둥근 모양을 만들기 위해 값을 크게 조정 */
+    color: #333;
+    font-size: 18px;         /* 글자 크기 조절 */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-block;   /* 인라인 블록으로 설정하여 가운데 정렬이 가능하도록 함 */
+}
+
+.btn-nado-primary:hover {
+    background-color: #ffa000;
+}
+
+.groupMessage {
+    padding: 20px;
+    background-color: transparent; /* 배경을 투명하게 변경 */
+    font-size: 18px; /* 글자 크기 증가 */
+    font-weight: bold; /* 글자를 굵게 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    color: #495057; /* 부트스트랩의 dark text color */
+    margin-top: 20px; /* 위쪽 여백 */
+    border: none; /* 테두리 제거 */
+}
+
+.groupMessage img {
+    width: 15%; /* 이미지 넓이를 50%로 설정 */
+    display: block; /* 이미지를 block 요소로 설정하여 중앙 정렬하기 쉽게 함 */
+    margin: 10px auto; /* 위 아래 10px의 여백을 주고 좌우는 자동으로 설정하여 중앙 정렬 */
+}
+
+.nado-center-contain {
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center;     /* Vertically center */
+    height: 100%;            /* You might need to adjust this based on your layout requirements */
+}

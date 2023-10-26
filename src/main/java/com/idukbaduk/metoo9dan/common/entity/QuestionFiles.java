@@ -20,8 +20,11 @@ public class QuestionFiles {
     private QnaQuestions qnaQuestions; //문의 번호
 
     @Column(name="origin_file_name")
-    private String origin_file_name; //원본파일명
+    private String originFileName; //원본파일명
 
     @Column(name="copy_file_name")
-    private String copy_file_name; //사본파일명
+    private String copyFileName; //사본파일명
+
+    @Column(name="file_url")
+    private String fileUrl; //파일주소
 }
