@@ -154,18 +154,23 @@
 
       // 합계와 선택된 게임 콘텐츠를 초기화합니다.
       var totalPriceString = sessionStorage.getItem("totalPrice") || "0"; // 이전 페이지의 합계를 로드하거나 "0"으로 초기화
-      console.log('totalPriceString11111',totalPriceString)
-      console.log('totalPrice1111',totalPrice)
       var totalPrice = parseFloat(totalPriceString.replace(/,/g, '')); // 콤마를 제거하고 숫자로 변환
 
-      console.log(totalPrice); // 이제 130000이 제대로 출력되어야 합니다.
+      console.log(totalPrice);
 
-
+      //추가필요
+         var totalItemsElement = document.getElementById("totalItems");
 
       // 체크 박스가 선택된 경우
       if (checkbox.checked) {
           var gameContentNo = checkbox.value;
+          totalItemsElement.textContent = selectedGameContentNos.length;
           total += salePrice;
+
+            if (totalItemsElement) {
+              totalItemsElement.textContent = selectedGameContentNos.length;
+           }
+
 
           // 선택된 게임 콘텐츠 번호와 salePrice를 배열에 추가하고 세션 스토리지에 저장
           if (!selectedGameContentNos.includes(gameContentNo)) {
@@ -201,6 +206,11 @@ if (totalPriceElement) {
     sessionStorage.setItem("totalPrice", formatNumberWithCommas(total));
      console.log('totalPrice555',totalPrice)
 }
+
+if (totalItemsElement) {
+    totalItemsElement.textContent = selectedGameContentNos.length;
+}
+
 
   }
 
@@ -357,6 +367,10 @@ console.log('selectedSalePrices',selectedSalePrices)
     //sessionStorage.setItem("totalPrice", JSON.stringify(total));
     sessionStorage.setItem("totalPrice", formatNumberWithCommas(total));
      console.log('totalPrice4444',totalPrice)
+        }
+
+         if (totalItemsElement) {
+            totalItemsElement.textContent = selectedGameContentNos.length;
         }
 
         });
