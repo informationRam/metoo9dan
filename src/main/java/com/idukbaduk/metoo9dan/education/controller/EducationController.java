@@ -82,29 +82,45 @@ public class EducationController {
                                 @RequestParam(required = false, defaultValue = "") Integer searchGame,
                                 @RequestParam(required = false, defaultValue = "") String resourceName) {
 
-        Page<EducationalResources> educationPage;
+        Page<EducationalResources> educationPage = null;
 
         System.out.println("searchText?"+searchText);
         System.out.println("searchGame?"+searchGame);
         System.out.println("resourceName?"+resourceName);
 
+
         if (searchGame == null && searchText.isEmpty() && resourceName.isEmpty()) {
+            System.out.println("여기로?");
+            // 검색어와 조건이 모두 비어있을 때 전체 목록을 가져옴
+            educationPage = this.educationService.getList(page);
+        }
+
+       /* if (searchGame == null && searchText.isEmpty() && resourceName.isEmpty()) {
             // 검색어가 비어있을 때 전체 목록을 가져옴
             searchText= "";
             resourceName="";
             educationPage = this.educationService.getList(page);
         }
+*/
 
+        //검색할 경우
         if (!resourceName.isEmpty() && !resourceName.equals("")){
-            //검색할 경우
-
+            System.out.println("여긴안됌1");
             educationPage = this.educationService.getresourceName(resourceName,page);
-        } else if(!searchText.isEmpty() && searchGame == null){
-            // 검색어가 있는 경우 검색 결과를 가져옴
+        }
+        // 자료구분을 검색, 게임은 검색하지 않을때
+        if(!searchText.isEmpty() && searchGame == null){
+            System.out.println("여긴안됌2");
             educationPage = this.educationService.getresourcecateList(searchText, page);
-        }else if(searchText.isEmpty() && searchGame != null) {
+        }
+        // 자료구분이 없고, 게임명으로 검색할 경우
+        if(searchText.isEmpty() && searchGame != null) {
+            System.out.println("여긴안됌3");
             educationPage = this.educationService.getFilterGame(searchGame, page);
-        } else {
+        }
+        // 둘다 검색할 경우
+        if(!searchText.isEmpty() && searchGame != null) {
+            System.out.println("여긴안됌4");
             educationPage = this.educationService.getFilteredResources(searchGame,searchText,page);
         }
 
@@ -122,6 +138,7 @@ public class EducationController {
         int currentPage = educationPage.getPageable().getPageNumber();
         int totalPages = educationPage.getTotalPages();
         int pageRange = 5; // 한 번에 보여줄 페이지 범위
+        System.out.println("currentPage?"+currentPage);
 
         int startPage = Math.max(0, currentPage - pageRange / 2);
         int endPage = startPage + pageRange - 1;
@@ -134,13 +151,11 @@ public class EducationController {
         startPage += 1;
         endPage += 1;
 
-
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("searchText", searchText);
 
         //3.Model
-        System.out.println("다시 ? pageable?"+educationPage);
         model.addAttribute("uniqueGameNames", uniqueGameNames);
         model.addAttribute("educationPage", educationPage);
         model.addAttribute("educationalResources", educationalResources);
@@ -153,13 +168,8 @@ public class EducationController {
         EducationalResources education = educationService.getEducation(resourceNo);
         EducationValidation educationValidation = educationService.toEducationValidation(education);    // Validation사용
         model.addAttribute("educationValidation", educationValidation);
-        System.out.println("educationValidation?"+educationValidation.getSaveThumFile());
-        System.out.println("educationValidation?"+educationValidation.getSaveboardFile());
         return "education/modify";
-
-
     }
-
 
     //수정처리
     @PostMapping("/modify/{resourceNo}")
@@ -182,7 +192,6 @@ public class EducationController {
             resourcesFilesService.deleteBordFile(file);
         }
 
-
         // 2. 수정된 컨텐츠 내용 처리
             EducationalResources educationalResources = educationService.getEducation(resourceNo);
             if (educationalResources != null) {
@@ -190,10 +199,7 @@ public class EducationController {
 
                 // 업로드된 파일의 확장자 확인
                 MultipartFile fileName = educationValidation.getBoardFile();
-                System.out.println("fileName1?"+fileName);
                 fileName = educationValidation.getThumFile();
-                System.out.println("fileName2?"+fileName);
-
 
                 //파일이 존재하면 처리한다.
                 try {

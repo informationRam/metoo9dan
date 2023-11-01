@@ -311,11 +311,6 @@ public class GameController {
         }
     }
 
-    //  삭제하기
-    @GetMapping("/test")
-    public String test() {
-        return "sb-admin-7.0.4/charts";    //목록으로이동
-    }
 
     // 게임등록 폼에서 교육자료 선택
     @Transactional(readOnly = true)

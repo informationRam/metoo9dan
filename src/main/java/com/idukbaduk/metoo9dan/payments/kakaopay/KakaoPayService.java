@@ -29,28 +29,20 @@ public class KakaoPayService {
 
 
         public KakaoReadyResponse kakaoPayReady(String item_name,String totalAmount) {
-            System.out.println("요기?");
 
             // 카카오페이 요청 양식
             MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
             parameters.add("cid", cid);
-            System.out.println("요기1?" + parameters.get("cid"));
             parameters.add("partner_order_id", "가맹점 주문 번호");
-            System.out.println("요기2?" + parameters.get("partner_order_id"));
             parameters.add("partner_user_id", "가맹점 회원 ID");
-            System.out.println("요기3?" + parameters.get("partner_user_id"));
             parameters.add("item_name", item_name);
-            System.out.println("요기3?" + parameters.get("item_name"));
             parameters.add("quantity", "1" );
             parameters.add("total_amount",totalAmount);
-            System.out.println("요기4?"+ parameters.get("total_amount"));
             parameters.add("vat_amount", "300");
-            System.out.println("요기4?"+ parameters.get("vat_amount"));
             parameters.add("tax_free_amount", "0");
             parameters.add("approval_url", "http://localhost/payments/success"); // 성공 시 redirect url
-            parameters.add("cancel_url", "http://localhost/payments/fail"); // 취소 시 redirect url
-            parameters.add("fail_url", "http://localhost/payments/cancel"); // 실패 시 redirect url
-            System.out.println("요기4?");
+            parameters.add("cancel_url", "http://localhost/payments/cancel"); // 취소 시 redirect url
+            parameters.add("fail_url", "http://localhost/payments/fail"); // 실패 시 redirect url
             // 파라미터, 헤더
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
@@ -61,8 +53,6 @@ public class KakaoPayService {
                     "https://kapi.kakao.com/v1/payment/ready",
                     requestEntity,
                     KakaoReadyResponse.class);
-            System.out.println("requestEntity?:"+requestEntity);
-
             return kakaoReady;
         }
     /**
@@ -90,7 +80,6 @@ public class KakaoPayService {
                 "https://kapi.kakao.com/v1/payment/approve",
                 requestEntity,
                 KakaoApproveResponse.class);
-        System.out.println("requestEntity2? :"+requestEntity);
 
         paymentsService.save(selectedGameContents, member, pay);
         memberService.userUpdate(member);

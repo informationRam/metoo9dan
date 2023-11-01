@@ -114,12 +114,11 @@ public class PaymentsController {
     // 결제하기
     @PostMapping("/payments")
     @Transactional
-    public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session,Principal principal) {
+    public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session,
+                                 Principal principal) {
 
         List<GameContents> selectedGameContents = (List<GameContents>) session.getAttribute("selectedGameContents");
-        System.out.println("selectedGameContents?" + selectedGameContents);
         int totalSalePrice = (int) session.getAttribute("totalSalePrice");
-        System.out.println("totalSalePrice:?" +totalSalePrice);
         Member member = memberService.getUser(principal.getName());
 
         // paymentMethod 변수에 선택한 결제 방법이 무통장이면

@@ -67,11 +67,10 @@
                                         <span th:unless="${#lists.size(game.educationalResourcesList) > 0}">없음</span>
                                       </p>
                                       <p class="card-text"><strong>판매가:</strong> <span id="nado-salePrice" th:text="${#numbers.formatInteger(game.salePrice, 0, 'COMMA')} + '원'"></span></p>
-                                      <span th:text="${#strings.length(game.packageDetails) > 30 ? #strings.substring(game.packageDetails, 0, 30) + '...' : game.packageDetails}"
-                                            data-toggle="popover" data-content="${game.packageDetails}"
-                                            data-placement="top"
-                                            data-trigger="hover">
-                                        </span>
+                                      <span id="packageDetails" data-toggle="popover" data-content="${game.packageDetails}" data-placement="top" data-trigger="hover" data-html="true">
+    <span th:text="${#strings.length(game.packageDetails) > 30 ? #strings.substring(game.packageDetails, 0, 30) + '...' : game.packageDetails}"></span>
+</span>
+
                                     </div>
                                     <div>
                                       <div class="form-check form-check-inline">
@@ -152,13 +151,10 @@
       var salePrice = parseFloat(formattedPrice.replace(/,/g, ''));
       console.log('salePrice1',salePrice)
 
-      // 합계와 선택된 게임 콘텐츠를 초기화합니다.
+      // 합계와 선택된 게임 콘텐츠를 초기화
       var totalPriceString = sessionStorage.getItem("totalPrice") || "0"; // 이전 페이지의 합계를 로드하거나 "0"으로 초기화
       var totalPrice = parseFloat(totalPriceString.replace(/,/g, '')); // 콤마를 제거하고 숫자로 변환
 
-      console.log(totalPrice);
-
-      //추가필요
          var totalItemsElement = document.getElementById("totalItems");
 
       // 체크 박스가 선택된 경우
@@ -170,7 +166,6 @@
             if (totalItemsElement) {
               totalItemsElement.textContent = selectedGameContentNos.length;
            }
-
 
           // 선택된 게임 콘텐츠 번호와 salePrice를 배열에 추가하고 세션 스토리지에 저장
           if (!selectedGameContentNos.includes(gameContentNo)) {
@@ -233,60 +228,6 @@ function formatNumberWithCommas(number) {
   }
 
   </script>
-  <!--<script>
-
-        // 11합계와 선택된 게임 콘텐츠를 초기화합니다.
-      var total = JSON.parse(sessionStorage.getItem("totalPrice")) || 0; // 이전 페이지의 합계를 로드하거나 0으로 초기화
-
-      checkboxes.forEach(function (checkbox) {
-          checkbox.addEventListener('change', function () {
-              var salePrice = parseFloat(checkbox.closest(".card").querySelector("#nado-salePrice").textContent);
-
-
-
-
-      console.log('total0',total)
-              // 체크 박스가 선택된 경우
-              if (checkbox.checked) {
-                  var gameContentNo = checkbox.value;
-                  total += salePrice;
-                  console.log('total1',total)
-                   console.log('salePrice1',salePrice)
-
-                  // 선택된 게임 콘텐츠 번호와 salePrice를 배열에 추가하고 세션 스토리지에 저장
-                  if (!selectedGameContentNos.includes(gameContentNo)) {
-                      selectedGameContentNos.push(gameContentNo);
-                      selectedSalePrices.push(salePrice);
-                      sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
-                      sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
-                  }
-              } else {
-                  var gameContentNo = checkbox.value;
-                  total -= salePrice;
-
-                  // 선택 해제된 게임 콘텐츠 번호와 salePrice를 배열에서 제거하고 세션 스토리지를 업데이트
-                  selectedGameContentNos = selectedGameContentNos.filter(function (value) {
-                      return value !== gameContentNo;
-                  });
-
-                  var salePriceIndex = selectedGameContentNos.indexOf(gameContentNo);
-                  if (salePriceIndex !== -1) {
-                      selectedSalePrices.splice(salePriceIndex, 1);
-                  }
-
-                  sessionStorage.setItem("selectedGameContentNos", JSON.stringify(selectedGameContentNos));
-                  sessionStorage.setItem("selectedSalePrices", JSON.stringify(selectedSalePrices));
-              }
-
-              // 합계를 HTML 요소에 업데이트
-              if (totalPriceElement) {
-                  totalPriceElement.innerText = total + " 원";
-                  sessionStorage.setItem("totalPrice", JSON.stringify(total));
-              }
-          });
-      });
-  </script>
--->
   <script>
     // !!----------- 체크 박스 선택할 때 발생되는 이벤트
     var checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -429,5 +370,21 @@ function restoreSelectedItems() {
       window.location.href = '/game/alllist?page=0&searchText=' + searchText;  // 페이지를 0으로 초기화하고 검색어를 포함
     }
   </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      var element = document.getElementById("packageDetails");
+
+      // Initialize the Bootstrap Tooltip or Popover
+      new bootstrap.Tooltip(element, {
+        placement: "top",
+        trigger: "hover",
+        title: function () {
+          return element.textContent;
+        },
+      });
+    });
+  </script>
+
 </div>
 </html>

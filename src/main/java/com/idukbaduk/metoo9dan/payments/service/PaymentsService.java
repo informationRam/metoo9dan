@@ -41,9 +41,6 @@ public class PaymentsService {
         return paymentsRepository.findByMemberMemberNo(memberNo, pageable);
     }
 
-
-// OrderNumber의 가장 큰 값을 가져온다.
-
     // OrderNumber의 가장 큰 값을 가져온다.
     public int generateOrderNumber() {
         Integer maxOrderNumber = paymentsRepository.findMaxOrderNumber();
