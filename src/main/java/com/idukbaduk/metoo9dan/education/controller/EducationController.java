@@ -84,43 +84,24 @@ public class EducationController {
 
         Page<EducationalResources> educationPage = null;
 
-        System.out.println("searchText?"+searchText);
-        System.out.println("searchGame?"+searchGame);
-        System.out.println("resourceName?"+resourceName);
-
-
         if (searchGame == null && searchText.isEmpty() && resourceName.isEmpty()) {
-            System.out.println("여기로?");
             // 검색어와 조건이 모두 비어있을 때 전체 목록을 가져옴
             educationPage = this.educationService.getList(page);
         }
-
-       /* if (searchGame == null && searchText.isEmpty() && resourceName.isEmpty()) {
-            // 검색어가 비어있을 때 전체 목록을 가져옴
-            searchText= "";
-            resourceName="";
-            educationPage = this.educationService.getList(page);
-        }
-*/
-
         //검색할 경우
         if (!resourceName.isEmpty() && !resourceName.equals("")){
-            System.out.println("여긴안됌1");
             educationPage = this.educationService.getresourceName(resourceName,page);
         }
         // 자료구분을 검색, 게임은 검색하지 않을때
         if(!searchText.isEmpty() && searchGame == null){
-            System.out.println("여긴안됌2");
             educationPage = this.educationService.getresourcecateList(searchText, page);
         }
         // 자료구분이 없고, 게임명으로 검색할 경우
         if(searchText.isEmpty() && searchGame != null) {
-            System.out.println("여긴안됌3");
             educationPage = this.educationService.getFilterGame(searchGame, page);
         }
         // 둘다 검색할 경우
         if(!searchText.isEmpty() && searchGame != null) {
-            System.out.println("여긴안됌4");
             educationPage = this.educationService.getFilteredResources(searchGame,searchText,page);
         }
 
@@ -138,7 +119,6 @@ public class EducationController {
         int currentPage = educationPage.getPageable().getPageNumber();
         int totalPages = educationPage.getTotalPages();
         int pageRange = 5; // 한 번에 보여줄 페이지 범위
-        System.out.println("currentPage?"+currentPage);
 
         int startPage = Math.max(0, currentPage - pageRange / 2);
         int endPage = startPage + pageRange - 1;
@@ -175,9 +155,7 @@ public class EducationController {
     @PostMapping("/modify/{resourceNo}")
     public String modifyResource(@PathVariable Integer resourceNo, @ModelAttribute("educationValidation") EducationValidation educationValidation, @RequestParam MultiValueMap<String, String> params, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
         // 1. 삭제된 파일 처리
-
         List<String> deletedThumFiles = params.get("deletedThumFiles");
-        System.out.println("deletedThumFiles?" + deletedThumFiles);
 
         if (deletedThumFiles != null && !deletedThumFiles.isEmpty() && "1".equals(deletedThumFiles.get(0))) {
             ResourcesFiles file = resourcesFilesService.getFile(resourceNo);
@@ -185,7 +163,6 @@ public class EducationController {
         }
 
         List<String> deletedFiles = params.get("deletedFiles");
-        System.out.println("deletedFiles?" + deletedFiles);
 
         if (deletedFiles != null && !deletedFiles.isEmpty() && "2".equals(deletedFiles.get(0))) {
             ResourcesFiles file = resourcesFilesService.getFile(resourceNo);
@@ -265,25 +242,5 @@ public class EducationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-   /* // 파일 삭제 핸들러
-    @GetMapping("/deleteFile/{fileNo}")
-    public String deleteFile(@PathVariable Integer fileNo) {
-        // 파일을 서버에서 삭제하는 로직을 구현
-        ResourcesFiles resourcesFile = resourcesFilesService.getFileByFileNo(fileNo);
-        if (resourcesFile != null) {
-            // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
-            String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFile.getCopyFileName();
-            File file = new File(filePath);
-            if (file.exists() && file.isFile()) {
-                file.delete(); // 파일을 삭제
-            }
-
-            // 데이터베이스에서 파일 정보를 삭제
-            resourcesFilesService.deleteFile(fileNo);
-        }
-
-        return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
-    }*/
-
+    
 }

@@ -2,7 +2,6 @@ package com.idukbaduk.metoo9dan.payments.kakaopay;
 
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
-import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
 import lombok.RequiredArgsConstructor;
@@ -28,17 +27,17 @@ public class KakaoPayService {
         private final MemberServiceImpl memberService;
 
 
-        public KakaoReadyResponse kakaoPayReady(String item_name,String totalAmount) {
+        public KakaoReadyResponse kakaoPayReady(String item_name, String totalAmount, String memberId) {
 
             // 카카오페이 요청 양식
             MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
             parameters.add("cid", cid);
             parameters.add("partner_order_id", "가맹점 주문 번호");
-            parameters.add("partner_user_id", "가맹점 회원 ID");
+            parameters.add("partner_user_id", memberId); //"가맹점 회원 ID"
             parameters.add("item_name", item_name);
             parameters.add("quantity", "1" );
             parameters.add("total_amount",totalAmount);
-            parameters.add("vat_amount", "300");
+            parameters.add("vat_amount", "100");
             parameters.add("tax_free_amount", "0");
             parameters.add("approval_url", "http://localhost/payments/success"); // 성공 시 redirect url
             parameters.add("cancel_url", "http://localhost/payments/cancel"); // 취소 시 redirect url
@@ -58,16 +57,14 @@ public class KakaoPayService {
     /**
      * 결제 완료 승인
      */
-    public KakaoApproveResponse approveResponse(String pgToken, Member member, List<GameContents> selectedGameContents, String pay) {
+    public KakaoApproveResponse approveResponse(String pgToken, Member member, List<GameContents> selectedGameContents, String pay, String memberId) {
 
-        System.out.println("approveResponse? :"+pgToken);
         // 카카오 요청
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("cid", cid);
         parameters.add("tid", kakaoReady.getTid());
         parameters.add("partner_order_id", "가맹점 주문 번호");
-        System.out.println("partner_order_id? :" + parameters.get("partner_order_id"));
-        parameters.add("partner_user_id", "가맹점 회원 ID");
+        parameters.add("partner_user_id", memberId); //"가맹점 회원 ID"
         parameters.add("pg_token", pgToken);
 
         // 파라미터, 헤더

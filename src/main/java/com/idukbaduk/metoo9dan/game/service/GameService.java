@@ -45,7 +45,6 @@ public class GameService {
 
 @Transactional
 public void saveIndividual(GameValidation gameValidation) {
-        // gameValidation.setContent_type("individual");
     try {
         GameContents gameContents = toGameContents(gameValidation);
         gameContents.setContentType("individual");

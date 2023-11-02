@@ -43,10 +43,10 @@ public class KakaoPayController {
     public KakaoReadyResponse readyToKakaoPay(@RequestParam("item_name") String itemName, @RequestParam("total_amount") int totalAmount
     ,Principal principal) {
 
-        System.out.println("상품명: " + itemName);
-        System.out.println("총 금액: " + totalAmount);
-        String totalAmount2 = String.valueOf(totalAmount);
-        return kakaoPayService.kakaoPayReady(itemName,totalAmount2);
+            Member member = memberService.getUser(principal.getName());
+
+            String totalAmount2 = String.valueOf(totalAmount);
+            return kakaoPayService.kakaoPayReady(itemName,totalAmount2,member.getMemberId());
     }
 
 
