@@ -75,7 +75,7 @@ public class PaymentsJsonController {
         startPage += 1;
         endPage += 1;
 
-        responseData.put("data", dataMap); // Use the dataMap from your getMonthlyData or getDailyData
+        responseData.put("data", dataMap);
         responseData.put("currentPage", currentPage);
         responseData.put("totalPages", totalPages);
         responseData.put("startPage", startPage);

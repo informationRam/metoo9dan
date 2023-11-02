@@ -3,9 +3,6 @@
     <link rel="stylesheet" href="/css/game/list.css" />
 
     <div class="row">
-        <!--<!—<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>—>-->
-        <!--<div th:replace="~{/payments/paySidebar::sidebar}"></div>--> <!—테스트 사이드바 경로를 넣어놓음—>
-
         <div class="col-2" >
             <ul>
                 <li class="mt-5"><h4>구독서비스</h4></li>
@@ -14,8 +11,7 @@
                 <li class="mb-3 p-2"><a th:href="@{/payments/list}">게임콘텐츠 조회</a></li>
             </ul>
         </div>
-        <div class="col-10"> <!—class에서 col-10은 빼면 안됨—>
-
+        <div class="col-10">
             <h1>결제 내역</h1>
             <div class="container">
                 <div class="row">
@@ -42,12 +38,6 @@
                                                 결제일: <span th:text="${#temporals.format(payment.paymentDate,'yyyy-MM-dd')}"></span><br>
                                                 <span th:text="${payment.amount <= 999 ? #numbers.formatInteger(payment.amount.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(payment.amount.intValue(), 3, 'COMMA') + '원'}"></span>
                                             </p>
-                                           <!-- <div class="d-flex justify-content-between">
-                                                <button class="btn btn-warning col-5 mr-2"><a th:href="@{|/payments/detail/${payment.gameContents.gameContentNo}|}" class="text-white">자세히 보기</a></button>
-                                                <button class="btn btn-success col-5" style="background-color: #bae2cf; color: #09aa5c;">
-                                                    <a th:href="@{/studygroup/gameList}" class="text-white">학습 그룹 만들기</a>
-                                                </button>
-                                            </div>-->
                                             <div class="d-flex justify-content-between">
                                                 <a th:href="@{|/payments/detail/${payment.gameContents.gameContentNo}|}">
                                                     <button class="btn btn-warning btn-block mr-2" style="width: 276px !important;">자세히 보기</button>
@@ -56,7 +46,6 @@
                                                     <button class="btn btn-success" style="background-color: #bae2cf; color: #09aa5c; width: 276px !important;">학습 그룹 만들기</button>
                                                 </a>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>

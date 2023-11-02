@@ -35,10 +35,10 @@
                 <tr>
                     <th scope="col">No.</th>
                     <th scope="col">게임이미지</th>
-                    <th scope="col">게임콘텐츠명</th>
+                    <th scope="col">콘텐츠명</th>
                     <th scope="col">난이도</th>
                     <th scope="col">구독기간</th>
-                    <th scope="col">구독가능인원</th>
+                    <th scope="col">가능인원</th>
                     <th scope="col">교육자료</th>
                     <th scope="col">정가</th>
                     <th scope="col">할인율</th>
@@ -58,11 +58,11 @@
                              th:src="@{|/upload/game/${game.gameContentFilesList[0].copyFileName}|}" alt="" width="100" height="100">-->
                     </td>
                     <!-- 게임 제목 -->
-                    <td class="game title">
-                        <a th:href="@{|/game/detail/${game.gameContentNo}|}" th:text="${game.gameName}"></a>
+                    <td class="game title"
+                         th:text="${game.gameName}">
                     </td>
                     <!-- 난이도 -->
-                    <td class="game difficulty">
+                    <td class="game difficulty col-md-1">
                         <span th:switch="${game.difficulty}">
                             <span th:case="'beginner'">초급</span>
                             <span th:case="'intermediate'">중급</span>
@@ -70,18 +70,18 @@
                         </span>
                     </td>
                     <!-- 구독기간 -->
-                    <td class="game subscriptionDuration"
+                    <td class="game subscriptionDuration col-md-1"
                         th:text="${game.subscriptionDuration}">
                     </td>
                     <!-- 구독가능인원 -->
-                    <td class="game maxSubscribers"
+                    <td class="game maxSubscribers col-md-1"
                         th:text="|${game.maxSubscribers} 명|">
                     </td>
                     <!-- 교육자료 -->
                     <td class="game educationalResources">
                         <ul>
-                            <li th:each="educationResource : ${game.educationalResourcesList}">
-                                <a th:href="@{|/education/details/${educationResource.resourceNo}|}" th:text="${educationResource.resourceName}"></a>
+                            <li th:each="educationResource : ${game.educationalResourcesList}"
+                                th:text="${educationResource.resourceName}">
                             </li>
                         </ul>
                     </td>
@@ -103,13 +103,25 @@
                     </td>
                     <!-- 액션 -->
                     <td>
-                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-secondary btn-sm mx-1">수정</a>
-                        <span th:unless="${game.paymentsList.isEmpty()}">수정</span> <!-- 결제내역이 있는 경우 수정 버튼 비활성화 -->
+                        <a th:href="@{/game/modify/{gameContentNo}(gameContentNo=${game.gameContentNo})}"
+                           th:if="${game.paymentsList.isEmpty()}"
+                           class="btn btn-secondary btn-sm mx-1">수정</a>
+                        <a th:unless="${game.paymentsList.isEmpty()}"
+                           href="javascript:void(0);"
+                           class="btn btn-secondary btn-sm mx-1"
+                           onclick="showErrorMessage('수정이')">수정</a>
                     </td>
                     <td>
-                        <a th:href="@{/game/delete/{gameContentNo}(gameContentNo=${game.gameContentNo})}" th:if="${game.paymentsList.isEmpty()}" class="btn btn-secondary btn-sm mx-1" onclick="return confirm('삭제하시겠습니까?">삭제</a>
-                        <span th:unless="${game.paymentsList.isEmpty()}">삭제</span> <!-- 결제내역이 있는 경우 삭제 버튼 비활성화 -->
+                        <a th:href="@{/game/delete/{gameContentNo}(gameContentNo=${game.gameContentNo})}"
+                           th:if="${game.paymentsList.isEmpty()}"
+                           class="btn btn-secondary btn-sm mx-1"
+                           onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+                        <a th:unless="${game.paymentsList.isEmpty()}"
+                           href="javascript:void(0);"
+                           class="btn btn-secondary btn-sm mx-1"
+                           onclick="showErrorMessage('삭제가')">삭제</a>
                     </td>
+
                 </tr><!-- 1페이지당 출력할 게시물수만큼 반복끝 -->
                 </tbody>
                 </table>
@@ -158,6 +170,11 @@
                 };
             });
         });
+
+        //삭제,수정불가시 버튼을 클릭하면
+       function showErrorMessage(action) {
+            alert('구독자가 존재하여 ' + action + ' 불가합니다.');
+        }
     </script>
     <script>
         function searchGames() {
