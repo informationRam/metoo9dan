@@ -1,23 +1,10 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <div layout:fragment="content" class="container my-3">
     <link rel="stylesheet" href="/css/game/addform.css" />
-
-    <!-- Remove this line since it's Popper.js 1.12.9, not needed for Bootstrap 5 -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script> -->
-
-    <!--            &lt;!&ndash; Include Popper.js for Bootstrap 5 &ndash;&gt;-->
-    <!--            <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>-->
-
-    <!--            &lt;!&ndash; Include Bootstrap 5 CSS &ndash;&gt;-->
-    <!--            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
-
-    <!--            &lt;!&ndash; Include Bootstrap 5 JavaScript &ndash;&gt;-->
-    <!--            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>-->
-
-
-    <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
     <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
         <div class="col-2" > <!--class에서 col-2은 빼면 안됨-->
             <!--운영마당용 사이드바-->
             <ul>
@@ -34,7 +21,6 @@
             </ul>
         </div>
         <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-
             <h1 class="mt-4">게임콘텐츠 등록</h1>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item"><a href="index.html">운영마당</a></li>
