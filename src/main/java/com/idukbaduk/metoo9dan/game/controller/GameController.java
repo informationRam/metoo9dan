@@ -230,6 +230,7 @@ public class GameController {
             resourcesNo.add(educationalResources1.getResourceNo());
         }
 
+
         session.setAttribute("educationalResources", educationalResources);
         model.addAttribute("allEducation", allEducation);
         model.addAttribute("gameValidation", gameValidation);

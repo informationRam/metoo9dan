@@ -370,8 +370,6 @@
         xhr.send(params);
         }
 
-
-        // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
         // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
         document.querySelector("select[name='max_subscribers']").addEventListener('change', updateDiscountRate);
         document.querySelector("select[name='subscription_duration']").addEventListener('change', updateDiscountRate);
@@ -485,7 +483,6 @@
          checkbox.addEventListener('change', function () {
              var resourceNo = this.value;
 
-                console.log("resourceNo",resourceNo)
              if (this.checked) {
                  // 체크된 경우 배열에 추가
                  selectedResourceNos.push(resourceNo);
@@ -499,7 +496,9 @@
 
              // 선택한 자료 번호 배열을 문자열로 변환하여 숨겨진 필드에 할당
              var selectedValuesInput = document.getElementById('selectedValues');
+
              selectedValuesInput.value = selectedResourceNos.join(',');
+             console.log("selectedResourceNos2",selectedResourceNos)
          });
      });
 
@@ -509,8 +508,7 @@
     selectedValuesInput.value = '';
 }
 
-
-// 선택한 자료 번호 배열을 서버로 보내는 예시 함수
+// 선택한 자료 번호 배열을 서버로 보냄
    function submitSelected() {
         var selectedValuesInput = document.getElementById('selectedValues');
         var selectedResourceNos = selectedValuesInput.value;
