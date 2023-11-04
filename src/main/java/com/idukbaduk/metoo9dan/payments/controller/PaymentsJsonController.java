@@ -35,16 +35,12 @@ public class PaymentsJsonController {
         LocalDateTime endDateTime = null;
         int totalTransactionCount = 0;
         int totalAmount = 0;
-        System.out.println("---2.view?" + view);
 
         if (!startDate.isEmpty() && !endDate.isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             startDateTime = LocalDate.parse(startDate, formatter).atStartOfDay();
             endDateTime = LocalDate.parse(endDate, formatter).atTime(LocalTime.MAX);
 
-            System.out.println("---2.DateTimeFormatter?" + formatter);
-            System.out.println("---2.startDate?" + startDateTime);
-            System.out.println("---2.endDate?" + endDateTime);
         } else {
             LocalDate now = LocalDate.now();
             startDateTime = now.withDayOfMonth(1).atStartOfDay();
@@ -79,7 +75,7 @@ public class PaymentsJsonController {
         startPage += 1;
         endPage += 1;
 
-        responseData.put("data", dataMap); // Use the dataMap from your getMonthlyData or getDailyData
+        responseData.put("data", dataMap);
         responseData.put("currentPage", currentPage);
         responseData.put("totalPages", totalPages);
         responseData.put("startPage", startPage);
@@ -87,39 +83,14 @@ public class PaymentsJsonController {
 
         return responseData;
     }
-/*
-
-    public Map<String, Object> getMonthlyData(LocalDateTime startDateTime, LocalDateTime endDateTime,int page) {
-        List<Object[]> monthlySummaries = paymentsService.getMonthlySummaries(startDateTime, endDateTime);
-
-        Map<String, Object> dataMap = new HashMap<>();
-        List<String> labels = new ArrayList<>();
-        List<Integer> salesData = new ArrayList<>();
-
-        for (Object[] summary : monthlySummaries) {
-            labels.add(summary[0].toString());
-            System.out.println("summary[0].toString()?"+summary[0].toString());
-
-            salesData.add(((Double) summary[2]).intValue());
-        }
-
-        dataMap.put("labels", labels);
-        dataMap.put("salesData", salesData);
-
-        return dataMap;
-    }
-
-*/
 
     public Map<String, Object> getMonthlyData(LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int pageSize) {
-        // Fetch monthly data for the specified page
         List<Object[]> monthlySummaries = paymentsService.getMonthlySummaries(startDateTime, endDateTime, page, pageSize);
 
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("labels", new ArrayList<String>());
         dataMap.put("salesData", new ArrayList<Integer>());
 
-        // Populate dataMap with labels and salesData from monthlySummaries
         for (Object[] summary : monthlySummaries) {
             Integer formattedDate = (Integer) summary[0];
             Integer salesAmount = ((Double) summary[2]).intValue();
@@ -131,14 +102,13 @@ public class PaymentsJsonController {
         return dataMap;
     }
     public Map<String, Object> getDailyData(LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int pageSize) {
-        // Fetch daily data for the specified page
+
         List<Object[]> dailySummaries = paymentsService.getFormattedDailySummaries(startDateTime, endDateTime, page, pageSize);
 
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("labels", new ArrayList<String>());
         dataMap.put("salesData", new ArrayList<Integer>());
 
-        // Populate dataMap with labels and salesData from dailySummaries
         for (Object[] summary : dailySummaries) {
             String formattedDate = (String) summary[0];
             Integer salesAmount = ((Double) summary[2]).intValue();
@@ -149,24 +119,4 @@ public class PaymentsJsonController {
 
         return dataMap;
     }
-
- /*   public Map<String, Object> getDailyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<Object[]> dailySummaries = paymentsService.getFormattedDailySummaries(startDateTime, endDateTime);
-
-        Map<String, Object> dataMap = new HashMap<>();
-        List<String> labels = new ArrayList<>();
-        List<Integer> salesData = new ArrayList<>();
-
-        for (Object[] summary : dailySummaries) {
-            labels.add((String) summary[0]);
-            salesData.add(((Double) summary[2]).intValue());
-        }
-
-        dataMap.put("labels", labels);
-        dataMap.put("salesData", salesData);
-
-        return dataMap;
-    }
-*/
-
 }

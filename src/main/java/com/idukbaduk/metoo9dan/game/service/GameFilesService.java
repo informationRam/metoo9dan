@@ -29,7 +29,8 @@ import java.util.List;
 @Service
 @Transactional  //부모entity에 접근할때 필요함
 public class GameFilesService {
-    private String fileUrl = "C:/upload/game/";     //mac 파일 지정 C:/baduk
+    /*private String fileUrl = "C:/upload/game/";     //mac 파일 지정 C:/baduk*/
+    private String fileUrl = "/Users/ryuahn/Desktop/baduk/game/";
 
     @Autowired
     private final GameContentsFileRepository gameContentsFileRepository;
@@ -102,8 +103,6 @@ public class GameFilesService {
     //파일 다운로드 하기
     public ResponseEntity<Resource> downloadFile(GameContentFiles gameContentFiles, String cofyfileName) throws IOException {
 
-        System.out.println("gameContentFiles?"+gameContentFiles);
-        System.out.println("cofyfileName?"+cofyfileName);
         if (gameContentFiles != null) {
             String filePath = fileUrl + cofyfileName; // 파일이 저장된 경로
 

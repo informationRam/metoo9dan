@@ -82,29 +82,26 @@ public class EducationController {
                                 @RequestParam(required = false, defaultValue = "") Integer searchGame,
                                 @RequestParam(required = false, defaultValue = "") String resourceName) {
 
-        Page<EducationalResources> educationPage;
-
-        System.out.println("searchText?"+searchText);
-        System.out.println("searchGame?"+searchGame);
-        System.out.println("resourceName?"+resourceName);
+        Page<EducationalResources> educationPage = null;
 
         if (searchGame == null && searchText.isEmpty() && resourceName.isEmpty()) {
-            // 검색어가 비어있을 때 전체 목록을 가져옴
-            searchText= "";
-            resourceName="";
+            // 검색어와 조건이 모두 비어있을 때 전체 목록을 가져옴
             educationPage = this.educationService.getList(page);
         }
-
+        //검색할 경우
         if (!resourceName.isEmpty() && !resourceName.equals("")){
-            //검색할 경우
-
             educationPage = this.educationService.getresourceName(resourceName,page);
-        } else if(!searchText.isEmpty() && searchGame == null){
-            // 검색어가 있는 경우 검색 결과를 가져옴
+        }
+        // 자료구분을 검색, 게임은 검색하지 않을때
+        if(!searchText.isEmpty() && searchGame == null){
             educationPage = this.educationService.getresourcecateList(searchText, page);
-        }else if(searchText.isEmpty() && searchGame != null) {
+        }
+        // 자료구분이 없고, 게임명으로 검색할 경우
+        if(searchText.isEmpty() && searchGame != null) {
             educationPage = this.educationService.getFilterGame(searchGame, page);
-        } else {
+        }
+        // 둘다 검색할 경우
+        if(!searchText.isEmpty() && searchGame != null) {
             educationPage = this.educationService.getFilteredResources(searchGame,searchText,page);
         }
 
@@ -134,13 +131,11 @@ public class EducationController {
         startPage += 1;
         endPage += 1;
 
-
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("searchText", searchText);
 
         //3.Model
-        System.out.println("다시 ? pageable?"+educationPage);
         model.addAttribute("uniqueGameNames", uniqueGameNames);
         model.addAttribute("educationPage", educationPage);
         model.addAttribute("educationalResources", educationalResources);
@@ -153,21 +148,14 @@ public class EducationController {
         EducationalResources education = educationService.getEducation(resourceNo);
         EducationValidation educationValidation = educationService.toEducationValidation(education);    // Validation사용
         model.addAttribute("educationValidation", educationValidation);
-        System.out.println("educationValidation?"+educationValidation.getSaveThumFile());
-        System.out.println("educationValidation?"+educationValidation.getSaveboardFile());
         return "education/modify";
-
-
     }
-
 
     //수정처리
     @PostMapping("/modify/{resourceNo}")
     public String modifyResource(@PathVariable Integer resourceNo, @ModelAttribute("educationValidation") EducationValidation educationValidation, @RequestParam MultiValueMap<String, String> params, @RequestParam(name = "modifiedContent", required = false) String modifiedContent) throws IOException {
         // 1. 삭제된 파일 처리
-
         List<String> deletedThumFiles = params.get("deletedThumFiles");
-        System.out.println("deletedThumFiles?" + deletedThumFiles);
 
         if (deletedThumFiles != null && !deletedThumFiles.isEmpty() && "1".equals(deletedThumFiles.get(0))) {
             ResourcesFiles file = resourcesFilesService.getFile(resourceNo);
@@ -175,13 +163,11 @@ public class EducationController {
         }
 
         List<String> deletedFiles = params.get("deletedFiles");
-        System.out.println("deletedFiles?" + deletedFiles);
 
         if (deletedFiles != null && !deletedFiles.isEmpty() && "2".equals(deletedFiles.get(0))) {
             ResourcesFiles file = resourcesFilesService.getFile(resourceNo);
             resourcesFilesService.deleteBordFile(file);
         }
-
 
         // 2. 수정된 컨텐츠 내용 처리
             EducationalResources educationalResources = educationService.getEducation(resourceNo);
@@ -190,10 +176,7 @@ public class EducationController {
 
                 // 업로드된 파일의 확장자 확인
                 MultipartFile fileName = educationValidation.getBoardFile();
-                System.out.println("fileName1?"+fileName);
                 fileName = educationValidation.getThumFile();
-                System.out.println("fileName2?"+fileName);
-
 
                 //파일이 존재하면 처리한다.
                 try {
@@ -259,25 +242,5 @@ public class EducationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-   /* // 파일 삭제 핸들러
-    @GetMapping("/deleteFile/{fileNo}")
-    public String deleteFile(@PathVariable Integer fileNo) {
-        // 파일을 서버에서 삭제하는 로직을 구현
-        ResourcesFiles resourcesFile = resourcesFilesService.getFileByFileNo(fileNo);
-        if (resourcesFile != null) {
-            // 파일 삭제 로직을 구현 (예: 파일 시스템에서 삭제)
-            String filePath = "/Users/ryuahn/Desktop/baduk/education/" + resourcesFile.getCopyFileName();
-            File file = new File(filePath);
-            if (file.exists() && file.isFile()) {
-                file.delete(); // 파일을 삭제
-            }
-
-            // 데이터베이스에서 파일 정보를 삭제
-            resourcesFilesService.deleteFile(fileNo);
-        }
-
-        return "redirect:/education/addForm"; // 파일 삭제 후 다시 등록 페이지로 리디렉션
-    }*/
-
+    
 }

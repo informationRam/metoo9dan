@@ -7,8 +7,8 @@
             <ul>
                 <li class="mt-5"><h4>구독서비스</h4></li>
                 <hr>
-                <li class="mb-3 p-2"><a th:href="@{/payments/alllist}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 구매</a></li>
-                <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/payments/alllist}">게임콘텐츠 구매</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/payments/list}">게임콘텐츠 조회</a></li>
             </ul>
         </div>
 
@@ -40,14 +40,16 @@
                         </div>
                         <div class="col-md-3 mt-6">
                             <div class="card-body">
-                                <h6 th:text="${gameContents.packageDetails}"></h6>
+                                <h5 class="mt-5">상세내용</h5>
+                                <h6 class="mt-2 d-flex flex-row" style="width: 400px !important;" th:text="${gameContents.packageDetails}"></h6>
                             </div>
                         </div>
+
                     </div>
                 </div><!-- 게임자료 -->
                                 <div class="col-md-12 h-3 mt-3">
                                     <div class="">
-                                    <h5>교육자료육정보</h5>
+                                    <h5>포함된 교육자료</h5>
                                     <div class="card col-10" th:each="education : ${selectEducation}">
                                         <div class="card-header" th:text="${education.resourceName}"></div>
                                         <div class="row g-0">
@@ -61,12 +63,12 @@
                                             <!-- 오른쪽 컬럼 - 다른 내용 -->
                                             <div class="col-md-6">
                                                 <div class="card-body">
-                                                    <h6 th:text="${education.resourceCate}"></h6>
+                                                    <h6 th:text="${education.resourceCate == 'tutorial' ? '튜토리얼' : (education.resourceCate == 'lecture' ? '교육영상' : '')}"></h6>
                                                     <p th:text="${education.description}"></p>
                                                     <div th:if="${education.resourcesFilesList != null}">
                                                         <div class="dropdown">
                                                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                다운로드 파일
+                                                                교육자료 다운로드
                                                             </a>
                                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                                                 <li>

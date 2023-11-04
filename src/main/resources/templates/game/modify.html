@@ -2,17 +2,26 @@
         <div layout:fragment="content" class="container my-3">
             <link rel="stylesheet" href="/css/game/addform.css" />
             <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-            <!-- Include Bootstrap 5 CSS -->
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <!-- Include Bootstrap 5 JavaScript -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-
             <div class="row">
-                <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-                <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-                <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
+                <div class="col-2" > <!--class에서 col-2은 빼면 안됨-->
+                    <!--운영마당용 사이드바-->
+                    <ul>
+                        <li class="mt-5"><h4>운영자마당</h4></li>
+                        <hr>
+                        <li class="mb-3 p-2"><a th:href="@{/game/addForm}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 등록</a></li>
+                        <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                        <li class="mb-3 p-2"><a th:href="@{/education/addForm}" sec:authorize="hasAuthority('ADMIN')">교육자료 등록</a></li>
+                        <li class="mb-3 p-2"><a th:href="@{/education/list}" sec:authorize="hasAuthority('ADMIN')">교육자료 조회</a></li>
+                        <li class="mb-3 p-2"><a th:href="@{/notice/list}" sec:authorize="hasAuthority('ADMIN')">공지 및 FAQ 등록</a></li>
+                        <li class="mb-3 p-2"><a th:href="@{/qna/list}" sec:authorize="hasAuthority('ADMIN')">QnA 답변 등록</a></li>
+                        <li class="mb-3 p-2"><a th:href="@{/payments/showPayments}" sec:authorize="hasAuthority('ADMIN')">매출조회</a></li>
+                        <li class="mb-3 p-2"><a th:href="@{/admin/listMember}" sec:authorize="hasAuthority('ADMIN')">회원관리</a></li>
+                    </ul>
+                </div>
+                <div class="col-10"> <!--class에서 col-10은 빼면 안됨-->
 
                     <h1 class="mt-4">게임콘텐츠 등록</h1>
                     <ol class="breadcrumb mb-4">
@@ -76,7 +85,7 @@
                                 <div class="row mb-3">
                                     <label for="openEducationButton" class="col-sm-3 col-form-label">패키지</label>
                                     <div class="col-sm-6">
-                                        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#educationModal" id="openEducationButton">
+                                        <button class="btn btn-warning text-white" type="button" data-toggle="modal" data-target="#educationModal" id="openEducationButton">
                                             패키지 생성
                                         </button>
                                         <!-- 모달에서 선택한 값을 보여줌 -->
@@ -251,12 +260,7 @@
                 // selectedResources 배열은 Thymeleaf 모델로부터 전달됩니다.
                 var resourcesNo = [[${resourcesNo}]]; // 배열 데이터를 가져옵니다.
 
-                console.log('resourcesNo', resourcesNo);
-                console.log('input.selectedValues',selectedValues)
                 // 이전에 선택한 교육자료를 체크
-
-
-              // 이전에 선택한 교육자료를 체크
                     for (var i = 0; i < resourcesNo.length; i++) {
                         var selectedResourceNo = resourcesNo[i]; // 변수명을 변경
                         // 해당 체크박스를 찾아 체크
@@ -366,8 +370,6 @@
         xhr.send(params);
         }
 
-
-        // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
         // 'max_subscribers'와 'subscription_duration' 값이 변경될 때 할인율 업데이트
         document.querySelector("select[name='max_subscribers']").addEventListener('change', updateDiscountRate);
         document.querySelector("select[name='subscription_duration']").addEventListener('change', updateDiscountRate);
@@ -481,7 +483,6 @@
          checkbox.addEventListener('change', function () {
              var resourceNo = this.value;
 
-                console.log("resourceNo",resourceNo)
              if (this.checked) {
                  // 체크된 경우 배열에 추가
                  selectedResourceNos.push(resourceNo);
@@ -495,7 +496,9 @@
 
              // 선택한 자료 번호 배열을 문자열로 변환하여 숨겨진 필드에 할당
              var selectedValuesInput = document.getElementById('selectedValues');
+
              selectedValuesInput.value = selectedResourceNos.join(',');
+             console.log("selectedResourceNos2",selectedResourceNos)
          });
      });
 
@@ -505,8 +508,7 @@
     selectedValuesInput.value = '';
 }
 
-
-// 선택한 자료 번호 배열을 서버로 보내는 예시 함수
+// 선택한 자료 번호 배열을 서버로 보냄
    function submitSelected() {
         var selectedValuesInput = document.getElementById('selectedValues');
         var selectedResourceNos = selectedValuesInput.value;
