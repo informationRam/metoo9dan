@@ -3,20 +3,16 @@ package com.idukbaduk.metoo9dan.payments.service;
 import com.idukbaduk.metoo9dan.common.entity.GameContents;
 import com.idukbaduk.metoo9dan.common.entity.Member;
 import com.idukbaduk.metoo9dan.common.entity.Payments;
-import com.idukbaduk.metoo9dan.game.reprository.GameRepository;
 import com.idukbaduk.metoo9dan.game.service.GameService;
 import com.idukbaduk.metoo9dan.payments.repository.PaymentsRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -29,10 +25,7 @@ public class PaymentsService {
     private final GameService gameService;
     private EntityManager entityManager;
 
-
-
     // 구매한 게임컨텐츠에 대한 정보를 가져온다.
-
     public Page<Payments> paymentsList(Integer memberNo,int page) {
 
         List<Sort.Order> sorts = new ArrayList<>();
@@ -40,9 +33,6 @@ public class PaymentsService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return paymentsRepository.findByMemberMemberNo(memberNo, pageable);
     }
-
-
-// OrderNumber의 가장 큰 값을 가져온다.
 
     // OrderNumber의 가장 큰 값을 가져온다.
     public int generateOrderNumber() {
@@ -56,7 +46,6 @@ public class PaymentsService {
             return newOrderNumber;
         }
     }
-
 
     //결제하기
     public void save(List<GameContents> selectedGameContents, Member member, String paymentMethod){
@@ -100,8 +89,6 @@ public class PaymentsService {
         return payments;
     }
 
-
-
     // 월 별 데이터 조회 및 페이지네이션 처리
     public Page<Object[]> getMonthlyTotalAmounts(LocalDateTime startDate, LocalDateTime endDate, int page) {
 
@@ -110,7 +97,6 @@ public class PaymentsService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 
         return paymentsRepository.getMonthlyTotalAmounts(startDate, endDate, pageable);
-
     }
 
     // 월 별 조회 후 매출 합계
@@ -134,31 +120,6 @@ public class PaymentsService {
         return paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate);
     }
 
-
-    // 일별 그래프에 사용
- /*   public List<Object[]> getFormattedDailySummaries(LocalDateTime startDate, LocalDateTime endDate) {
-        List<Object[]> dailySummaries = paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate);
-
-        // 날짜 형식을 변경하고 저장할 새로운 리스트 생성
-        List<Object[]> formattedSummaries = new ArrayList<>();
-        for (Object[] summary : dailySummaries) {
-            Payments payment = (Payments) summary[0];
-            LocalDateTime paymentDate = payment.getPaymentDate();
-
-            // 원하는 날짜 형식으로 변환
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            String formattedDate = paymentDate.format(formatter);
-
-            // summary 배열을 업데이트하고 저장
-            summary[0] = formattedDate;
-            formattedSummaries.add(summary);
-        }
-
-        return formattedSummaries;
-
-    }*/
-
-
     public List<Object[]> getFormattedDailySummaries(LocalDateTime startDate, LocalDateTime endDate, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Object[]> dailyPaymentsPage = paymentsRepository.getDailyPaymentsWithSummary(startDate, endDate, pageable);
@@ -170,18 +131,15 @@ public class PaymentsService {
             Payments payment = (Payments) summary[0];
             LocalDateTime paymentDate = payment.getPaymentDate();
 
-            // Format the date
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String formattedDate = paymentDate.format(formatter);
 
-            // Update the summary array and add it to the formatted summaries list
             summary[0] = formattedDate;
             formattedSummaries.add(summary);
         }
 
         return formattedSummaries;
     }
-
 
     public List<Object[]> getMonthlySummaries(LocalDateTime startDate, LocalDateTime endDate, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
@@ -190,15 +148,10 @@ public class PaymentsService {
         return monthlyPaymentsPage.getContent();
     }
 
-
-
-    // 월 별 그래프에 사용
 // 월별 매출조회 합계
     public List<Object[]> getMonthlyTotalAmounts(LocalDateTime startDate, LocalDateTime endDate) {
         return paymentsRepository.getMonthlyTotalAmounts(startDate, endDate);
     }
-
-
 
     // 해당 월 상세 조회
     public Page<Payments> getMonthlyPayments(int month,int page){
@@ -209,27 +162,5 @@ public class PaymentsService {
 
         return paymentsRepository.getMonthlyPayments(month, pageable);
     }
-
-
-
-
-
-   /* //결제 내용 저장하기 (DB)
-    public void kakaosave(KakaoApproveResponse kakaoApprove){
-*//*
-        Payments payments = new Payments();
-        payments.setOrderNumber();
-        payments.setContact();
-        payments.set;
-
-
-        kakaoApprove.set
-*//*
-
-
-        paymentsRepository.save(payments);
-    }
-*/
-
 
 }

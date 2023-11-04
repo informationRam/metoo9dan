@@ -53,17 +53,12 @@ public class EducationService {
         return educationalRepository.findByResourceCate(resourceCate,pageable);
     }
 
-
     //교육자료 제목으로 (교육자료 - 페이징처리)
     public Page<EducationalResources> getresourceName(String resourceName, int page) {
-        System.out.println("resourceName?"+resourceName);
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("creationDate"));     //등록일순
 
-        System.out.println("sorts?"+sorts);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        System.out.println("pageable?"+pageable);
-
 
         return educationalRepository.findByResourceNameContaining(resourceName,pageable);
     }
@@ -111,7 +106,6 @@ public class EducationService {
     // 교육자료명으로 교육자료 찾기
     public List<EducationalResources> search(String searchKeyword) {
         List<EducationalResources> resources = educationalRepository.findByResourceNameContains(searchKeyword);
-        System.out.println("searchKeyword서비스:"+searchKeyword);
         // 값이 있을 경우
         if (!resources.isEmpty()) {
             return resources;
@@ -173,7 +167,6 @@ public class EducationService {
         educationalRepository.delete(education);
 
         ResourcesFiles byEducationalResourcesResourceNo = resourcesFilesReprository.findByEducationalResources_ResourceNo(education.getResourceNo());
-        System.out.println("byEducationalResourcesResourceNo?:" + byEducationalResourcesResourceNo);
 
         if (byEducationalResourcesResourceNo != null && !byEducationalResourcesResourceNo.equals("")) {
                 resourcesFilesService.alldeleteFile(byEducationalResourcesResourceNo); // 삭제 서비스로 전달
@@ -188,7 +181,6 @@ public class EducationService {
 
     // 기존에 게임 콘텐츠를 가지고 있다면 기존내용을 복사해 새로 저장함.
     public void copysave(EducationValidation ori_education, GameContents gameContents) {
-        System.out.println("값이 존재함..!gameContents? : " + gameContents);
         EducationalResources copy_education = new EducationalResources();   //복사할 객체 생성
 
         copy_education.setResourceName(ori_education.getResource_name());

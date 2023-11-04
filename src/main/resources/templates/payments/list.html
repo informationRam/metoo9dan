@@ -3,19 +3,15 @@
     <link rel="stylesheet" href="/css/game/list.css" />
 
     <div class="row">
-        <!--<!—<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>—>-->
-        <!--<div th:replace="~{/payments/paySidebar::sidebar}"></div>--> <!—테스트 사이드바 경로를 넣어놓음—>
-
         <div class="col-2" >
             <ul>
                 <li class="mt-5"><h4>구독서비스</h4></li>
                 <hr>
-                <li class="mb-3 p-2"><a th:href="@{/payments/alllist}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 구매</a></li>
-                <li class="mb-3 p-2"><a th:href="@{/game/list}" sec:authorize="hasAuthority('ADMIN')">게임콘텐츠 조회</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/payments/alllist}">게임콘텐츠 구매</a></li>
+                <li class="mb-3 p-2"><a th:href="@{/payments/list}">게임콘텐츠 조회</a></li>
             </ul>
         </div>
-        <div class="col-10"> <!—class에서 col-10은 빼면 안됨—>
-
+        <div class="col-10">
             <h1>결제 내역</h1>
             <div class="container">
                 <div class="row">
@@ -24,8 +20,9 @@
                             <div class="card rounded-5">
                                 <div class="row g-0">
                                     <div class="col-md-3 text-center">
-                                        <span th:text="${payment.status == 'complete' ? '성공' : payment.status}"></span>
-                                        <img th:src="@{/image/baduk2.JPG}" class="img-fluid" alt="Game Image" style="max-width: 100%; height: auto;"/>
+                                        <span th:text="${payment.status == 'complete' ? '결제성공' : payment.status}"></span>
+                                        <img th:src="@{/image/baduk2.JPG}" class="img-fluid rounded" alt="Game Image" style="max-width: 100%; height: auto; margin-left: 10px !important;"/>
+
                                         <!--<img th:src="@{|/upload/game/${payment.gameContents.gameContentFilesList[0].copyFileName}|}" class="img-fluid" alt="Game Image" style="max-width: 100%; height: auto;">-->
                                     </div>
                                     <div class="col-md-9">
@@ -33,15 +30,21 @@
                                             <h5 class="card-title" th:text="${payment.gameContents.gameName}"></h5>
                                             <p class="card-text">
                                                 주문번호: <span th:text="${payment.orderNumber}"></span><br>
-                                                결제수단: <span th:text="${payment.method}"></span><br>
+                                                결제수단:
+                                                    <span th:if="${payment.method == 'deposit'}">무통장</span>
+                                                    <span th:if="${payment.method == 'account'}">계좌이체</span>
+                                                    <span th:if="${payment.method == 'pay'}">카카오페이</span>
+                                                <br>
                                                 결제일: <span th:text="${#temporals.format(payment.paymentDate,'yyyy-MM-dd')}"></span><br>
                                                 <span th:text="${payment.amount <= 999 ? #numbers.formatInteger(payment.amount.intValue(), 0, 'COMMA') + '원' : #numbers.formatInteger(payment.amount.intValue(), 3, 'COMMA') + '원'}"></span>
                                             </p>
                                             <div class="d-flex justify-content-between">
-                                                <button class="btn btn-warning col-5 mr-2"><a th:href="@{|/payments/detail/${payment.gameContents.gameContentNo}|}" class="text-white">자세히 보기</a></button>
-                                                <button class="btn btn-success col-5" style="background-color: #bae2cf; color: #09aa5c;">
-                                                    <a th:href="@{/studygroup/gameList}" class="text-white">학습 그룹 만들기</a>
-                                                </button>
+                                                <a th:href="@{|/payments/detail/${payment.gameContents.gameContentNo}|}">
+                                                    <button class="btn btn-warning btn-block mr-2" style="width: 276px !important;">자세히 보기</button>
+                                                </a>
+                                            <a th:href="@{/studygroup/gameList}">
+                                                    <button class="btn btn-success" style="background-color: #bae2cf; color: #09aa5c; width: 276px !important;">학습 그룹 만들기</button>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -57,12 +60,13 @@
         document.addEventListener('DOMContentLoaded', function () {
             var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
             var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
+            var selectedSalePrices = sessionStorage.getItem("totalPrice");
               console.log('selectedGameContentNos',selectedGameContentNos)
               if (selectedGameContentNos) {
                 // 페이지가 완전히 로드되면, 게임 구매할때 사용했던 GameContentNo값의 세션 스토리지를 삭제
                 sessionStorage.removeItem('selectedGameContentNos');
                 sessionStorage.removeItem('selectedSalePrices');
-
+                sessionStorage.removeItem('totalPrice');
               }
          });
     </script>

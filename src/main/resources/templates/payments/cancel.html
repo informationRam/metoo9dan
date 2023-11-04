@@ -1,12 +1,39 @@
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <div layout:fragment="content" class="container my-3">
     <div class="row">
-        <!--<div th:replace="~{각페이지에맞는사이드바파일경로::sidebar}"></div>-->
-        <div th:replace="~{/test/testSidebar::sidebar}"></div> <!--테스트 사이드바 경로를 넣어놓음-->
-        <div style="border: 1px solid black;" class="col-10"> <!--class에서 col-10은 빼면 안됨-->
-         결제 취소됐음..ㅠ
-
+        <div class="col-2" >
+                <ul>
+                    <li class="mt-5"><h4>구독서비스</h4></li>
+                    <hr>
+                    <li class="mb-3 p-2"><a th:href="@{/payments/alllist}">게임콘텐츠 구매</a></li>
+                    <li class="mb-3 p-2"><a th:href="@{/payments/list}">게임콘텐츠 조회</a></li>
+                </ul>
+        </div>
+        <div class="col-10">
+            <div class="alert alert-danger mt-5" role="alert">
+                <h4 class="alert-heading">결제 취소</h4>
+                <p>결제가 취소되었습니다. 본인이 시도한게 아니라면, 다시 시도하거나 고객 지원에 문의하세요.</p>
+                <hr>
+                <p class="mb-0">문제가 지속될 경우 관리자에게 문의하세요.</p>
+            </div>
+            <div class="text-center">
+                <a class="btn btn-secondary mt-3" th:href="@{/qna/list}">문의사항 게시판으로 이동</a>
+            </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var selectedGameContentNos = sessionStorage.getItem("selectedGameContentNos");
+            var selectedSalePrices = sessionStorage.getItem("selectedSalePrices");
+            var selectedSalePrices = sessionStorage.getItem("totalPrice");
+              console.log('selectedGameContentNos',selectedGameContentNos)
+              if (selectedGameContentNos) {
+                // 페이지가 완전히 로드되면, 게임 구매할때 사용했던 GameContentNo값의 세션 스토리지를 삭제
+                sessionStorage.removeItem('selectedGameContentNos');
+                sessionStorage.removeItem('selectedSalePrices');
+                sessionStorage.removeItem('totalPrice');
+              }
+         });
+    </script>
 </div>
 </html>

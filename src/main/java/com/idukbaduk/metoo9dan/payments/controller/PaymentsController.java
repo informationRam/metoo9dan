@@ -3,14 +3,11 @@ package com.idukbaduk.metoo9dan.payments.controller;
 import com.idukbaduk.metoo9dan.common.entity.*;
 import com.idukbaduk.metoo9dan.education.service.EducationService;
 import com.idukbaduk.metoo9dan.education.service.ResourcesFilesService;
-import com.idukbaduk.metoo9dan.game.service.GameFilesService;
 import com.idukbaduk.metoo9dan.game.service.GameService;
-import com.idukbaduk.metoo9dan.game.vaildation.GameValidation;
 import com.idukbaduk.metoo9dan.member.service.MemberService;
 import com.idukbaduk.metoo9dan.member.service.MemberServiceImpl;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoApproveResponse;
 import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoPayService;
-import com.idukbaduk.metoo9dan.payments.kakaopay.KakaoReadyResponse;
 import com.idukbaduk.metoo9dan.payments.service.PaymentsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -18,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,14 +53,11 @@ public class PaymentsController {
     // 결제하기 폼
     //@RequestMapping(value = "/paymentsform", method = {RequestMethod.GET, RequestMethod.POST})
     @PostMapping("/paymentsform")
-    //@PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
+    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMIN')")
     public String paymentsform(@RequestParam(name = "gameContentNos") String gameContentNos, Model model, HttpSession session,Principal principal) {
 
         Member user = memberService.getUser(principal.getName());
         session.setAttribute("user",user);
-        System.out.println("user1?"+user);
-
-        System.out.println("1. 넘어온 값: gameContentNos? " + gameContentNos);
 
         try {
             // gameContentNos 값을 JSON 배열로 파싱
@@ -84,17 +76,12 @@ public class PaymentsController {
                 Double salePrice = gameContents.get(i).getSalePrice();
                 total += salePrice;
 
-                // 예: 콘솔에 출력
-                System.out.println("2. int로 변경 gameContentNo: " + gameContentNo);
-                System.out.println("gameContents?:" + gameContents);
-                System.out.println("totalSalePrice?:" + total);
             }
 
             int totalSalePrice = total.intValue();
 
             session.setAttribute("totalSalePrice", totalSalePrice);
             session.setAttribute("selectedGameContents", gameContents);
-
 
             // 리스트 형태로 컨트롤러에서 사용할 수 있음
             model.addAttribute("gameContentNos", gameContentNoList);
@@ -114,12 +101,11 @@ public class PaymentsController {
     // 결제하기
     @PostMapping("/payments")
     @Transactional
-    public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session,Principal principal) {
+    public String processPayment(@RequestParam(value = "paymentMethod") String paymentMethod,HttpSession session,
+                                 Principal principal) {
 
         List<GameContents> selectedGameContents = (List<GameContents>) session.getAttribute("selectedGameContents");
-        System.out.println("selectedGameContents?" + selectedGameContents);
         int totalSalePrice = (int) session.getAttribute("totalSalePrice");
-        System.out.println("totalSalePrice:?" +totalSalePrice);
         Member member = memberService.getUser(principal.getName());
 
         // paymentMethod 변수에 선택한 결제 방법이 무통장이면
@@ -137,7 +123,7 @@ public class PaymentsController {
 
     //구매 목록조회
     @GetMapping("/list")
-    //@PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
+    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMIN')")
     public String paymentsList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, Payments payments,Principal principal) {
 
         Member member = memberService.getUser(principal.getName());
@@ -222,7 +208,7 @@ public class PaymentsController {
 
         Member member = memberService.getUser(principal.getName());
         String pay = "pay";
-        KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken,member,selectedGameContents,pay);
+        KakaoApproveResponse kakaoApprove = kakaoPayService.approveResponse(pgToken,member,selectedGameContents,pay,member.getMemberId());
 
         // 세션을 종료.
         session.removeAttribute("selectedGameContents");
@@ -244,17 +230,12 @@ public class PaymentsController {
         return "payments/fail";
     }
 
-
     // 월별,월별 조회 기능 구현 및 페이지네이션 처리
     @GetMapping("/showPayments")
     public String showMonthlyPayments(@RequestParam(name = "startDate", defaultValue = "") String startDate,
                                       @RequestParam(name = "endDate", defaultValue = "") String endDate,
                                       @RequestParam(name = "view", defaultValue = "daily") String view,
                                       @RequestParam(name = "page", defaultValue = "0") int page, Model model) {
-
-        System.out.println("----------********** view?" + view);
-        System.out.println("----------********** startDate?" + startDate);
-        System.out.println("----------********** endDate?" + endDate);
 
         LocalDateTime startDateTime = null;
         LocalDateTime endDateTime = null;
@@ -266,9 +247,6 @@ public class PaymentsController {
             startDateTime = LocalDate.parse(startDate, formatter).atStartOfDay();
             endDateTime = LocalDate.parse(endDate, formatter).atTime(LocalTime.MAX);
 
-            System.out.println("---2.DateTimeFormatter?" + formatter);
-            System.out.println("---2.startDate?" + startDateTime);
-            System.out.println("---2.endDate?" + endDateTime);
         } else {
             LocalDate now = LocalDate.now();
             startDateTime = now.withDayOfMonth(1).atStartOfDay();
@@ -304,7 +282,6 @@ public class PaymentsController {
         }else {
             paymentsPage = paymentsService.getDailyPayments(startDateTime, endDateTime, page);
 
-
             // 일별 합계를 계산
             List<Object[]> monthlySummaries = paymentsService.getDailySummaries(startDateTime, endDateTime);
             totalTransactionCount = 0;
@@ -333,8 +310,6 @@ public class PaymentsController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
-        System.out.println("totalTransactionCount : "+totalTransactionCount);
-        System.out.println("totalAmount : "+totalAmount);
         //3.Model
             model.addAttribute("paymentsPage", paymentsPage);
             model.addAttribute("startDate", startDate);
@@ -345,62 +320,4 @@ public class PaymentsController {
 
         return "payments/showPayments";
     }
-
-
-
-   /* // 월별 데이터를 반환
-    public Map<String, Object> getMonthlyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<Object[]> monthlySummaries = paymentsService.getMonthlySummaries(startDateTime, endDateTime);
-
-        Map<String, Object> dataMap = new HashMap<>();
-        List<String> labels = new ArrayList<>();
-        List<Integer> salesData = new ArrayList<>();
-
-        for (Object[] summary : monthlySummaries) {
-            labels.add(summary[0].toString());
-            salesData.add(((Double) summary[2]).intValue());
-        }
-
-        dataMap.put("labels", labels);
-        dataMap.put("salesData", salesData);
-
-        return dataMap;
-    }
-
-    // 일별 데이터를 반환
-    public Map<String, Object> getDailyData(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<Object[]> dailySummaries = paymentsService.getDailySummaries(startDateTime, endDateTime);
-
-        Map<String, Object> dataMap = new HashMap<>();
-        List<String> labels = new ArrayList<>();
-        List<Integer> salesData = new ArrayList<>();
-
-        for (Object[] summary : dailySummaries) {
-            labels.add(summary[0].toString());
-            salesData.add(((Double) summary[2]).intValue());
-        }
-
-        dataMap.put("labels", labels);
-        dataMap.put("salesData", salesData);
-
-        return dataMap;
-    }
-
-*/
-
-
-/*
-    // 월 상세 조회
-    @PostMapping("/showMonthlyDetails")
-    public String showMonthlyDetails(@RequestParam(name = "startDate", defaultValue = "") String startDate,
-                                      @RequestParam(name = "endDate", defaultValue = "") String endDate,
-                                      @RequestParam(name = "view", defaultValue = "daily") String view,
-                                      @RequestParam(name = "page", defaultValue = "0") int page, Model model) {
-
-
-
-    }
-
-*/
-
 }

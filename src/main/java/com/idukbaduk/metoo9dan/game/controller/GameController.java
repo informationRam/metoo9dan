@@ -46,7 +46,7 @@ public class GameController {
 
     //게임컨텐츠 등록 폼 (교육자료 함께 저장시 교육자료가 update 및 생성된다.)
     @GetMapping("/addForm")
-   /* @PreAuthorize("hasAuthority('ADMID')")*/
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String gameAddForm(GameValidation gameValidation, Model model, HttpSession session) {
 
         List<EducationalResources> educationalResources = new ArrayList<>();
@@ -71,12 +71,10 @@ public class GameController {
     @PostMapping("/search")
     @ResponseBody
     public List<EducationalResources> getSearchResults(@RequestParam(value = "searchKeyword",required = false) String searchKeyword) {
-            System.out.println("searchKeyword:"+ searchKeyword);
             List<EducationalResources> allEducation;
 
         if(searchKeyword.equals("all")){
             allEducation = educationService.getDistinct();
-            System.out.println("allEducation?:" +allEducation);
             return allEducation;
         }else {
             allEducation = educationService.search(searchKeyword);
@@ -132,8 +130,6 @@ public class GameController {
                     //저장한 gameContentNo(pk)를 가져온다. 가져온 gameContentNo값을 가지고 gameContents를 가져온다.
                     getgameContents = gameService.getGameContents(savedGameValidation.getGame_no());
 
-                    System.out.println("education.getGameContents()? : "+education.getGameContents());
-
                     //선택한 교육자료의 GameContents값이 없으면 update.
                     if (education.getGameContents() == null || education.getGameContents().equals("")) {
                         educationService.pgInsert(education, gameContents);
@@ -157,7 +153,7 @@ public class GameController {
 
     //게임콘텐츠 목록조회
     @GetMapping("/list")
-   /* @PreAuthorize("hasAuthority('ADMID')")*/
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText) {
 
         // 게임컨텐츠 목록 조회
@@ -212,7 +208,7 @@ public class GameController {
 
     //게임콘텐츠 수정폼
     @GetMapping("/modify/{gameContentNo}")
-   /* @PreAuthorize("hasAuthority('ADMID')")*/
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String gameModify(@PathVariable Integer gameContentNo, Model model,HttpSession session) {
         GameContents gameContents = gameService.getGameContents(gameContentNo);
         GameValidation gameValidation = gameService.getContentValidation(gameContents);    // Validation사용
@@ -234,12 +230,12 @@ public class GameController {
             resourcesNo.add(educationalResources1.getResourceNo());
         }
 
+
         session.setAttribute("educationalResources", educationalResources);
         model.addAttribute("allEducation", allEducation);
         model.addAttribute("gameValidation", gameValidation);
         model.addAttribute("selectEducation", selectEducation);
         model.addAttribute("resourcesNo", resourcesNo);
-
 
         return "game/modify";
     }
@@ -255,19 +251,11 @@ public class GameController {
         // 2. Modify Game Contents
         GameContents gameContents = gameService.getGameContents(gameContentNo);
         if (gameContents != null) {
-            // Perform game content modification here
-
-
-
-
-            // 3. Process Additional Educational Resources
             if (selectedValues != null && !selectedValues.isEmpty()) {
                 String[] selectedResourceNos = selectedValues.split(",");
                 for (String resourceNoStr : selectedResourceNos) {
                     int resourceNo = Integer.parseInt(resourceNoStr);
-                    System.out.println("resourceNo" + resourceNo);
                     EducationalResources education = educationService.getEducation(resourceNo);
-
 
                     if (education != null) {
                         if (education.getGameContents() == null) {
@@ -288,16 +276,14 @@ public class GameController {
 
             return "redirect:/game/list";
         }
-        return "redirect:/game/list"; // Handle the case where gameContents is not found
+        return "redirect:/game/list";
     }
-
 
     // 파일 다운로드 요청 처리
     @GetMapping("/downloadFile/{fileNo}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Integer fileNo) {
         // 파일을 서버에서 가져오는 로직을 구현하고 Resource 객체를 생성
         GameContentFiles fileByFileNo = gameFilesService.getFileByFileNo(fileNo);
-        System.out.println("fileNo?"+fileNo);
         try {
             if (fileByFileNo != null) {
                 return gameFilesService.downloadFile(fileByFileNo, fileByFileNo.getCopyFileName());
@@ -309,12 +295,6 @@ public class GameController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    //  삭제하기
-    @GetMapping("/test")
-    public String test() {
-        return "sb-admin-7.0.4/charts";    //목록으로이동
     }
 
     // 게임등록 폼에서 교육자료 선택
@@ -349,17 +329,10 @@ public class GameController {
     // 저장 처리 로직
     @PostMapping("/save")
     public String saveGame(@ModelAttribute("gameValidation") @Valid GameValidation gameValidation, BindingResult bindingResult, HttpSession session, @RequestParam("boardFile") MultipartFile file, Model model) throws IOException {
-        // page3에서 확인 버튼을 눌렀을 때 서버에 저장
-        // gameValidation 객체에 필요한 데이터가 모두 채워져 있을 것입니다.
-
-        //정가, 할인율, 판매가가 null이면 보여주는 에러
-       /* if(gameValidation.getOriginal_price() == null) {
-            bindingResult.rejectValue("original_price", "original_priceInCorrect", "값을 확인해주세요.");
-            return "game/page3";
-        }*/
 
         //세션에서 값을 가져옴
         List<String> originFileNames = (List<String>) session.getAttribute("gameContentFiles");
+
         //세션에 저장된 educationalResources 값을 가져온다
         List<EducationalResources> educationalResources = (List<EducationalResources>) session.getAttribute("educationalResources");
 
@@ -373,8 +346,6 @@ public class GameController {
 
         // page3에서 입력 받은 데이터를 세션에 추가 하여 session으로 저장
         session.setAttribute("gameValidation", gameValidationPage1);
-
-        System.out.println("gameValidation?: "+gameValidation);
 
         // gameValidation 값을 gameContents Entity로 변경한다.
         GameContents gameContents = gameService.toGameContents(gameValidation);
@@ -395,8 +366,6 @@ public class GameController {
                 //저장한 gameContentNo(pk)를 가져온다. 가져온 gameContentNo값을 가지고 gameContents를 가져온다.
                 getgameContents = gameService.getGameContents(savedGameValidation.getGame_no());
 
-                System.out.println("education.getGameContents()? : "+education.getGameContents());
-
                 //선택한 교육자료의 GameContents값이 없으면 update.
                 if (education.getGameContents() == null || education.getGameContents().equals("")) {
                     educationService.pgInsert(education, gameContents);
@@ -416,15 +385,14 @@ public class GameController {
         if (fileName != null && !file.isEmpty()) {
             gameFilesService.save(getgameContents, gameValidation);
         }
-        System.out.println("gameValidation: "+gameValidation);
         // 저장 후 세션에서 데이터 삭제
         session.removeAttribute("gameValidationPage1");
         return "redirect:/game/list";
     }
 
-    //게임컨텐츠 구매 할때 목록조회 (페이지네이션)
+    // 게임컨텐츠 구매시 목록조회 (페이지네이션)
     @GetMapping("/alllist")
-    //@PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMID')")
+    @PreAuthorize("hasAuthority('EDUCATOR') or hasAuthority('NORMAL') or hasAuthority('ADMIN')")
     public String gameList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents,@RequestParam(required = false, defaultValue = "") String searchText,@RequestParam(required = false, defaultValue = "") List<Integer> gameContentNo) {
 
         // 게임컨텐츠 목록 조회
@@ -465,7 +433,7 @@ public class GameController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("searchText", searchText);
 
-        return "cyborg-1.0.02/streams";
+        return "game/allList";
     }
 
     @PostMapping("/saveSelectedValues")
@@ -498,24 +466,10 @@ public class GameController {
                 }
             }
         }
-
         // 세션에 선택한 값을 업데이트
         session.setAttribute("selectedValues", selectedValueList);
-
         return ResponseEntity.ok(salePrices);
     }
-
-
-
-
-//게임컨텐츠 구매 할때 목록조회
-    @GetMapping("/testlist")
-    public String test(Model model, @RequestParam(value = "page", defaultValue = "0") int page, GameContents gameContents) {
-
-        return "cyborg-1.0.02/streams";
-    }
-
-
 
 
 }//class

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -57,11 +58,8 @@ public class ResourcesFilesService {
         MultipartFile thumFile = educationValidation.getThumFile();
         MultipartFile boardFile = educationValidation.getBoardFile();
 
-        System.out.println("thumFile?"+thumFile);
-        System.out.println("boardFile?"+boardFile);
         if (!thumFile.isEmpty()) {
             String thumOriginFile = thumFile.getOriginalFilename();
-            System.out.println("thumOriginFile?"+thumOriginFile);
             String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
             String thumCopyFileName = todayDate + "_" + thumOriginFile;
             String thumSavePath = fileUrl + thumCopyFileName;
@@ -75,7 +73,6 @@ public class ResourcesFilesService {
             if (!boardFile.isEmpty()) {
 
                 String originalFileName = boardFile.getOriginalFilename();
-                System.out.println("originalFileName?"+originalFileName);
                 todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
                 String copyFileName = todayDate + "_" + originalFileName;
                 String savePath = fileUrl + copyFileName;
@@ -99,11 +96,8 @@ public class ResourcesFilesService {
         MultipartFile thumFile = educationValidation.getThumFile();
         MultipartFile boardFile = educationValidation.getBoardFile();
 
-        System.out.println("thumFile?"+thumFile);
-        System.out.println("boardFile?"+boardFile);
         if (!thumFile.isEmpty()) {
             String thumOriginFile = thumFile.getOriginalFilename();
-            System.out.println("thumOriginFile?"+thumOriginFile);
             String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
             String thumCopyFileName = todayDate + "_" + thumOriginFile;
             String thumSavePath = fileUrl + thumCopyFileName;
@@ -120,7 +114,6 @@ public class ResourcesFilesService {
             if (!boardFile.isEmpty()) {
 
                 String originalFileName = boardFile.getOriginalFilename();
-                System.out.println("originalFileName?"+originalFileName);
                 todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
                 String copyFileName = todayDate + "_" + originalFileName;
                 String savePath = fileUrl + copyFileName;
@@ -145,10 +138,7 @@ public class ResourcesFilesService {
             if (file.exists() && file.isFile()) {
                 file.delete(); // 파일을 삭제
             }
-            System.out.println("resourcesFiles.getThumOriginFileName()?"+resourcesFiles.getThumOriginFileName());
             // 썸네일 값이 없도 데이터베이스에서 정보를 삭제 , 아니면 수정
-            System.out.println("resourcesFiles.getOriginFileName()?" + resourcesFiles.getOriginFileName());
-// ...
             if (resourcesFiles.getOriginFileName() == null || resourcesFiles.getOriginFileName().isEmpty()) {
                 resourcesFilesRepository.delete(resourcesFiles);
             }
@@ -168,9 +158,7 @@ public class ResourcesFilesService {
             if (file.exists() && file.isFile()) {
                 file.delete(); // 파일을 삭제
             }
-            System.out.println("resourcesFiles.getOriginFileName()?"+resourcesFiles.getOriginFileName());
             // 교육자료 값이 없으면 , 데이터베이스에서 정보를 삭제 , 아니면 수정
-// ...
             if (resourcesFiles.getOriginFileName().isEmpty() && resourcesFiles.getOriginFileName() == null) {
                 resourcesFilesRepository.delete(resourcesFiles);
             }
@@ -218,7 +206,7 @@ public class ResourcesFilesService {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(resource);
         }
-        return null; //오류 처리 필요
+        return ResponseEntity.notFound().build();   //다운로드 불가시 404에러 표시
     }
 
     // 전체 파일 삭제 처리
